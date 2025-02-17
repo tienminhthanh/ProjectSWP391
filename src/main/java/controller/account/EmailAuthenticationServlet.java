@@ -1,0 +1,101 @@
+package controller.account;
+
+import dao.AccountDAO;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Random;
+@WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
+public class EmailAuthenticationServlet extends HttpServlet {
+
+    // Method to send email
+    private void sendEmail(String toEmail, String subject, String content) throws MessagingException {
+        final String fromEmail = "systemwibooks@gmail.com"; // Your email address
+        final String password = "lxuh bqye fyce avzb"; // Your email password
+
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(fromEmail));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+        message.setSubject(subject);
+        message.setText(content);
+
+        Transport.send(message);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String email = request.getParameter("email");
+        String enteredOTP = request.getParameter("otp");
+        AccountDAO accountDAO = new AccountDAO();
+
+        // If OTP is entered, check it
+        if (enteredOTP != null) {
+            String generatedOTP = (String) request.getSession().getAttribute("otp"); // Retrieve OTP from session
+            if (enteredOTP.equals(generatedOTP)) {
+                request.setAttribute("message", "Email verified successfully!");
+            } else {
+                request.setAttribute("message", "Invalid OTP. Please try again.");
+            }
+            request.getRequestDispatcher("home.jsp").forward(request, response);
+            return;
+        }
+
+        // Validate email format
+        if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            request.setAttribute("message", "Invalid email format!");
+            request.getRequestDispatcher("home.jsp").forward(request, response);
+            return;
+        }
+
+        // Check if the email already exists
+        if (accountDAO.isEmailExistForEmail(email)) {
+            request.setAttribute("message", "Email is already registered!");
+            request.getRequestDispatcher("home.jsp").forward(request, response);
+            return;
+        }
+
+        // Generate OTP
+        String otp = generateOTP();
+
+        // Send OTP via email
+        try {
+            sendEmail(email, "Email Verification", "Your verification code is: " + otp);
+            request.getSession().setAttribute("otp", otp); // Store OTP in session
+            request.setAttribute("message", "Verification code has been sent to your email!");
+            request.getRequestDispatcher("home.jsp").forward(request, response);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Error in sending email. Please try again later.");
+            request.getRequestDispatcher("home.jsp").forward(request, response);
+        }
+    }
+
+    // Method to generate OTP
+    private String generateOTP() {
+        Random random = new Random();
+        StringBuilder otp = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            otp.append(random.nextInt(10));  // Generate 6 random digits
+        }
+        return otp.toString();
+    }
+}
