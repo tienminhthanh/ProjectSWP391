@@ -6,14 +6,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Account;
+import utils.*;
 
-public class AccountDAO extends DBContext {
+public class AccountDAO {
     
-    public void test_an(){
-        
-    }
+    private utils.DBContext context;
 
-    public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) {
+    public AccountDAO() {
+        context = new utils.DBContext();
+    }
+    
+
+    public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException{
         // Ensure role is one of the allowed values
         if (!role.equals("customer") && !role.equals("staff") && !role.equals("shipper")) {
             return false;  // Invalid role
@@ -21,22 +25,38 @@ public class AccountDAO extends DBContext {
 
         String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, password);
-            ps.setString(3, role);  // Set role (customer, staff, shipper)
-            ps.setString(4, firstName);
-            ps.setString(5, lastName);
-            ps.setString(6, email);
-            ps.setString(7, phoneNumber);
-            ps.setString(8, birthDate);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return false;
+        Object[] params = {username,password,role,firstName,lastName,email,phoneNumber,birthDate};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+        
     }
+//    public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role){
+//        // Ensure role is one of the allowed values
+//        if (!role.equals("customer") && !role.equals("staff") && !role.equals("shipper")) {
+//            return false;  // Invalid role
+//        }
+//
+//        String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
+//                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
+//        try {
+//            PreparedStatement ps = connection.prepareStatement(sql);
+//            ps.setString(1, username);
+//            ps.setString(2, password);
+//            ps.setString(3, role);  // Set role (customer, staff, shipper)
+//            ps.setString(4, firstName);
+//            ps.setString(5, lastName);
+//            ps.setString(6, email);
+//            ps.setString(7, phoneNumber);
+//            ps.setString(8, birthDate);
+//            return ps.executeUpdate() > 0;
+//        } catch (SQLException e) {
+//            System.out.println(e);
+//        }
+//        return false;
+//    }
+    
+    
+    
 
     public Account getAccountByUsername(String username) {
         String sql = "SELECT * FROM Account WHERE username = ?";

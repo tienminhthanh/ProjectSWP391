@@ -13,6 +13,7 @@ import java.io.IOException;
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -24,29 +25,33 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
+        
+        try {
+            AccountDAO accountDAO = new AccountDAO();
 
-        AccountDAO accountDAO = new AccountDAO();
+            if (accountDAO.getAccountByUsername(username) != null) {
+                request.setAttribute("message", "Username already exists!");
+                return;
+            }
 
-        if (accountDAO.getAccountByUsername(username) != null) {
-            request.setAttribute("message", "Username already exists!");
-            return;
+            if (accountDAO.isEmailExistForEmail(email)) {
+                request.setAttribute("message", "The email address is already in use by another account.");
+                return;
+            }
+
+            boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate,"customer");
+
+            if (success) {
+                request.setAttribute("message", "Registration successful! Please log in.");
+            } else {
+                request.setAttribute("message", "Username or email is already in use.");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
+            dispatcher.forward(request, response);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-
-        if (accountDAO.isEmailExistForEmail(email)) {
-            request.setAttribute("message", "The email address is already in use by another account.");
-            return;
-        }
-
-        boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate,"customer");
-
-        if (success) {
-            request.setAttribute("message", "Registration successful! Please log in.");
-        } else {
-            request.setAttribute("message", "Username or email is already in use.");
-        }
-
-        RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
-        dispatcher.forward(request, response);
     }
 
     @Override
