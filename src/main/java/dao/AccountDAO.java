@@ -8,6 +8,10 @@ import java.util.List;
 import model.Account;
 
 public class AccountDAO extends DBContext {
+    
+    public void test_an(){
+        
+    }
 
     public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) {
         // Ensure role is one of the allowed values
