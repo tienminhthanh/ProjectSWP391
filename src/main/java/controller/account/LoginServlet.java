@@ -36,6 +36,10 @@ public class LoginServlet extends HttpServlet {
                     if (account.getPassword().equals(password)) {
                         HttpSession session = request.getSession();
                         session.setAttribute("account", account);
+                        session.setMaxInactiveInterval(30 * 60); 
+
+                        System.out.println("Session Created for: " + account.getUsername());
+
                         switch (account.getRole()) {
                             case "admin":
                                 response.sendRedirect("dashboard.jsp");
