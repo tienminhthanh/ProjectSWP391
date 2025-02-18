@@ -8,7 +8,7 @@ import java.util.List;
 import model.Account;
 import utils.*;
 
-public class AccountDAO {
+public class AccountDAO extends DBContext{
     
     private utils.DBContext context;
 
@@ -54,9 +54,6 @@ public class AccountDAO {
 //        }
 //        return false;
 //    }
-    
-    
-    
 
     public Account getAccountByUsername(String username) {
         String sql = "SELECT * FROM Account WHERE username = ?";

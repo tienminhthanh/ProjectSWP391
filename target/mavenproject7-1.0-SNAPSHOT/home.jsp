@@ -14,20 +14,18 @@
     <body class="bg-gray-100">
         <header class="bg-blue-600 p-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <select class="p-2 rounded">
-                    <option>
-                        All books
-                    </option>
-                </select>
-                <input class="p-2 rounded w-96" placeholder="title, author or keywords" type="text"/>
+                
+                <form action="search">
+                    <input class="p-2 rounded w-96" placeholder="title, author or keywords" type="search"/>
+                </form>
                 <button class="bg-blue-700 text-white p-2 rounded">
-                    Manga
+                    Merch
                 </button>
                 <button class="bg-blue-700 text-white p-2 rounded">
-                    Light Novels
+                    Books
                 </button>
                 <button class="bg-blue-700 text-white p-2 rounded">
-                    Audiobooks
+                    All Products
                 </button>
             </div>
             <div class="flex items-center space-x-4">
@@ -123,22 +121,22 @@
                     </h2>
                     <div class="flex space-x-4">
                         <button class="bg-blue-500 text-white p-2 rounded">
-                            Audiobooks
+                            On Sale Merch
                         </button>
                         <button class="bg-blue-500 text-white p-2 rounded">
-                            V-Scroll Comics
+                            Top Merch
                         </button>
                         <button class="bg-blue-500 text-white p-2 rounded">
-                            On Sale
+                            On Sale Books
                         </button>
                         <button class="bg-blue-500 text-white p-2 rounded">
-                            Rankings
+                            Top Books
                         </button>
                         <button class="bg-blue-500 text-white p-2 rounded">
-                            Isekai (Different World)
+                            Seasonal Anime - Merch
                         </button>
                         <button class="bg-blue-500 text-white p-2 rounded">
-                            Winter Anime 2025
+                            Seasonal Anime - Books
                         </button>
                     </div>
                 </div>
