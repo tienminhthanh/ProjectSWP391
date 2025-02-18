@@ -1,12 +1,10 @@
 package dao;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Account;
-import utils.*;
 
 public class AccountDAO {
 
@@ -17,11 +15,6 @@ public class AccountDAO {
     }
 
     public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
-        // Ensure role is one of the allowed values
-        if (!role.equals("customer") && !role.equals("staff") && !role.equals("shipper")) {
-            return false;  // Invalid role
-        }
-
         String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
         Object[] params = {username, password, role, firstName, lastName, email, phoneNumber, birthDate};
@@ -76,9 +69,16 @@ public class AccountDAO {
         return rowsAffected > 0;
     }
 
+    public boolean updateAccountStatus(String username, boolean isActive) throws SQLException {
+        String sql = "UPDATE Account SET isActive = ? WHERE username = ?";
+        Object[] params = {isActive, username};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0; // Nếu có ít nhất một dòng bị ảnh hưởng, nghĩa là cập nhật thành công
+    }
+
     public List<Account> getAllAccounts() throws SQLException {
         List<Account> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM Account WHERE isActive = 1";
+        String sql = "SELECT * FROM Account";
         ResultSet rs = context.exeQuery(sql, null);
         while (rs.next()) {
             accounts.add(mapResultSetToAccount(rs));

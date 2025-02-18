@@ -33,7 +33,6 @@ public class UpdateAccountSevlet extends HttpServlet {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-
         }
     }
 
@@ -49,6 +48,7 @@ public class UpdateAccountSevlet extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
 
         try {
+            // Kiểm tra xem email đã tồn tại cho người dùng khác chưa
             if (accountDAO.isEmailExistEmailOfUser(username, email)) {
                 request.setAttribute("message", "The email address is already in use by another account.");
 
@@ -67,9 +67,15 @@ public class UpdateAccountSevlet extends HttpServlet {
                 if (success) {
                     HttpSession session = request.getSession();
                     Account updatedAccount = accountDAO.getAccountByUsername(username);
-                    session.setAttribute("account", updatedAccount); 
+                    session.setAttribute("account", updatedAccount);
 
-                    response.sendRedirect("readAccount?username=" + username);
+                  
+                    Account loggedInAccount = (Account) session.getAttribute("account");
+                    if (loggedInAccount != null && "admin".equals(loggedInAccount.getRole())) {
+                        response.sendRedirect("listAccount");
+                    } else {
+                        response.sendRedirect("readAccount?username=" + username);
+                    }
                 } else {
                     request.setAttribute("message", "Account update failed! Please try again.");
 
@@ -86,8 +92,6 @@ public class UpdateAccountSevlet extends HttpServlet {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-
         }
     }
-
 }

@@ -24,62 +24,51 @@
                 </div>
                 <nav class="space-y-2">
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-tachometer-alt mr-2">
-                        </i>
+                        <i class="fas fa-tachometer-alt mr-2"></i>
                         Dashboard
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
-                        <i class="fas fa-user-friends mr-2">
-                        </i>
-                        Account management
+                        <i class="fas fa-users mr-2"></i> <!-- Cập nhật icon đây -->
+                        Account List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-sms mr-2">
-                        </i>
-                        Text messaging
+                        <i class="fas fa-calendar-alt mr-2"></i> <!-- Cập nhật icon đây -->
+                        Even List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-envelope mr-2">
-                        </i>
-                        Email Messaging
+                        <i class="fas fa-cogs mr-2"></i> <!-- Cập nhật icon đây -->
+                        Product List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-phone-alt mr-2">
-                        </i>
-                        Call logs
+                        <i class="fas fa-comments mr-2"></i> <!-- Cập nhật icon đây -->
+                        Dialogue List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-voicemail mr-2">
-                        </i>
-                        Voicemail
+                        <i class="fas fa-box mr-2"></i> <!-- Cập nhật icon đây -->
+                        Order List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-tasks mr-2">
-                        </i>
-                        Tasks
+                        <i class="fas fa-gift mr-2"></i> <!-- Cập nhật icon đây -->
+                        Voucher List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-handshake mr-2">
-                        </i>
-                        Deals
+                        <i class="fas fa-bell mr-2"></i> <!-- Cập nhật icon đây -->
+                        Notification List
                     </a>
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-user-friends mr-2">
-                        </i>
-                        Referrals
+                        <i class="fas fa-comment-dots mr-2"></i> <!-- Cập nhật icon đây -->
+                        Chat
                     </a>
                     <div class="mt-4">
                         <h3 class="px-2 text-sm font-semibold">
                             SETTINGS
                         </h3>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-cogs mr-2">
-                            </i>
+                            <i class="fas fa-cogs mr-2"></i> <!-- Cập nhật icon đây -->
                             Configuration
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-users-cog mr-2">
-                            </i>
+                            <i class="fas fa-users-cog mr-2"></i> <!-- Cập nhật icon đây -->
                             Management
                         </a>
                     </div>
@@ -88,42 +77,36 @@
                             REPORTS
                         </h3>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-history mr-2">
-                            </i>
+                            <i class="fas fa-phone-alt mr-2"></i> <!-- Cập nhật icon đây -->
                             Call history
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-phone-volume mr-2">
-                            </i>
+                            <i class="fas fa-headset mr-2"></i> <!-- Cập nhật icon đây -->
                             Call queue
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-user-tie mr-2">
-                            </i>
+                            <i class="fas fa-users mr-2"></i> <!-- Cập nhật icon đây -->
                             Agents performance
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-file-invoice-dollar mr-2">
-                            </i>
+                            <i class="fas fa-file-invoice-dollar mr-2"></i> <!-- Cập nhật icon đây -->
                             Commission report
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-calendar-alt mr-2">
-                            </i>
+                            <i class="fas fa-calendar mr-2"></i> <!-- Cập nhật icon đây -->
                             Scheduled report
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                            <i class="fas fa-comments mr-2">
-                            </i>
+                            <i class="fas fa-history mr-2"></i> <!-- Cập nhật icon đây -->
                             Chat history
                         </a>
                         <a class="flex items-center p-2 bg-blue-800" href="#">
-                            <i class="fas fa-chart-line mr-2">
-                            </i>
+                            <i class="fas fa-chart-line mr-2"></i> <!-- Cập nhật icon đây -->
                             Performance report
                         </a>
                     </div>
                 </nav>
+
             </div>
             <!-- Main Content -->
             <div class="flex-1 p-6">

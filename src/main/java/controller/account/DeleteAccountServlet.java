@@ -27,23 +27,23 @@ public class DeleteAccountServlet extends HttpServlet {
                 boolean success = accountDAO.deactivateAccount(username);
 
                 if (success) {
+                 
                     if ("admin".equals(account.getRole())) {
-                        HttpSession session = request.getSession(false);
-                        session.setAttribute("account", account);
-                        response.sendRedirect("listAccount"); 
+                        response.sendRedirect("listAccount");
                     } else {
-                        response.sendRedirect("login.jsp"); 
+                        response.sendRedirect("listAccount");
                     }
                 } else {
-                    response.sendRedirect("readAccount?username=" + username); 
+                    request.setAttribute("errorMessage", "Failed to deactivate account.");
+                    request.getRequestDispatcher("readAccount?username=" + username).forward(request, response);
                 }
             } else {
-                response.sendRedirect("login.jsp");
+                request.setAttribute("errorMessage", "Account not found!");
+                request.getRequestDispatcher("listAccount").forward(request, response);  // Chuyển hướng về danh sách tài khoản
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "An error occurred while processing your request. Please try again later.");
-            request.getRequestDispatcher("error.jsp").forward(request, response); // Forward to error page
+            
         }
     }
 }

@@ -51,7 +51,6 @@ public class AddAccountSevlet extends HttpServlet {
                 return;
             }
 
-            // Check if the username already exists
             if (accountDAO.getAccountByUsername(username) != null) {
                 request.setAttribute("message", "Username already exists!");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
