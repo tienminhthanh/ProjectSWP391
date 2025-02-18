@@ -9,10 +9,10 @@ import javax.mail.internet.*;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
+
 @WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
 public class EmailAuthenticationServlet extends HttpServlet {
 
-    // Method to send email
     private void sendEmail(String toEmail, String subject, String content) throws MessagingException {
         final String fromEmail = "systemwibooks@gmail.com"; // Your email address
         final String password = "lxuh bqye fyce avzb"; // Your email password
@@ -59,24 +59,20 @@ public class EmailAuthenticationServlet extends HttpServlet {
             return;
         }
 
-        // Validate email format
         if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             request.setAttribute("message", "Invalid email format!");
             request.getRequestDispatcher("home.jsp").forward(request, response);
             return;
         }
 
-        // Check if the email already exists
         if (accountDAO.isEmailExistForEmail(email)) {
             request.setAttribute("message", "Email is already registered!");
             request.getRequestDispatcher("home.jsp").forward(request, response);
             return;
         }
 
-        // Generate OTP
         String otp = generateOTP();
 
-        // Send OTP via email
         try {
             sendEmail(email, "Email Verification", "Your verification code is: " + otp);
             request.getSession().setAttribute("otp", otp); // Store OTP in session
@@ -89,7 +85,6 @@ public class EmailAuthenticationServlet extends HttpServlet {
         }
     }
 
-    // Method to generate OTP
     private String generateOTP() {
         Random random = new Random();
         StringBuilder otp = new StringBuilder();

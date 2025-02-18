@@ -18,14 +18,12 @@ public class ReadAccountServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get session and check if the account is logged in
-        HttpSession session = request.getSession(false); // false means don't create a new session
+        HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect("login.jsp"); // Redirect to login page if session does not exist or account is not found
+            response.sendRedirect("login.jsp");
             return;
         }
 
-        // Retrieve the logged-in account from the session
         model.Account account = (model.Account) session.getAttribute("account");
 
         if (account != null) {
@@ -33,7 +31,7 @@ public class ReadAccountServlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("accountRead.jsp");
             dispatcher.forward(request, response);
         } else {
-            response.sendRedirect("login.jsp"); // Redirect to login if no account found in session
+            response.sendRedirect("login.jsp");
         }
     }
 }

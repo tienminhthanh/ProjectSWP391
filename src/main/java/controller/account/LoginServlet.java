@@ -2,7 +2,6 @@ package controller.account;
 
 import dao.AccountDAO;
 import model.Account;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,7 +18,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public void init() {
-        accountDAO = new AccountDAO();  // Initialize AccountDAO to handle login
+        accountDAO = new AccountDAO();
     }
 
     @Override
@@ -28,22 +27,16 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Step 1: Check if the account exists
         Account account = accountDAO.getAccountByUsername(username);
 
         if (account != null) {
-            // Step 2: Check the account status (active or inactive)
             if (account.getIsActive()) {
-                // Step 3: If account is active, check username and password
                 if (account.getPassword().equals(password)) {
-                    // If login successful, set session and redirect based on role
                     HttpSession session = request.getSession();
-                    session.setAttribute("account", account); // Set the account in the session
-
-                    // Redirect to the appropriate dashboard based on role
+                    session.setAttribute("account", account);
                     switch (account.getRole()) {
                         case "admin":
-                            response.sendRedirect("listAccount");
+                            response.sendRedirect("dashboard.jsp");
                             break;
                         case "customer":
                             response.sendRedirect("home.jsp");
@@ -61,17 +54,14 @@ public class LoginServlet extends HttpServlet {
                             break;
                     }
                 } else {
-                    // Incorrect password
                     request.setAttribute("errorMessage", "Wrong password!");
                     request.getRequestDispatcher("login.jsp").forward(request, response);
                 }
             } else {
-                // Account is locked or inactive
                 request.setAttribute("errorMessage", "Your account is deactivated or locked!");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
         } else {
-            // If the username doesn't exist
             request.setAttribute("errorMessage", "Account not found!");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
@@ -82,7 +72,7 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("account") != null) {
-            response.sendRedirect("home.jsp");  // If already logged in, redirect to home
+            response.sendRedirect("home.jsp");
         } else {
             request.getRequestDispatcher("login.jsp").forward(request, response);  // Redirect to login if not logged in
         }
