@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "UpdateAccountSevlet", urlPatterns = {"/updateAccount"})
 public class UpdateAccountSevlet extends HttpServlet {
@@ -19,14 +20,20 @@ public class UpdateAccountSevlet extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         AccountDAO accountDAO = new AccountDAO();
-        Account account = accountDAO.getAccountByUsername(username);
 
-        if (account != null) {
-            request.setAttribute("account", account);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("accountUpdate.jsp");
-            dispatcher.forward(request, response);
-        } else {
-            response.sendRedirect("login.jsp"); // If account not found, redirect to login
+        try {
+            Account account = accountDAO.getAccountByUsername(username);
+
+            if (account != null) {
+                request.setAttribute("account", account);
+                RequestDispatcher dispatcher = request.getRequestDispatcher("accountUpdate.jsp");
+                dispatcher.forward(request, response);
+            } else {
+                response.sendRedirect("login.jsp");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
         }
     }
 
@@ -41,27 +48,46 @@ public class UpdateAccountSevlet extends HttpServlet {
 
         AccountDAO accountDAO = new AccountDAO();
 
-        // Step 1: Check if the email already exists (for another user, excluding the current user's username)
-        if (accountDAO.isEmailExistEmailOfUser(username, email)) {
-            // If the email exists for another user, display an error message
-            request.setAttribute("message", "The email address is already in use by another account.");
-            doGet(request, response);  // Show the update form again with error message
-        } else {
-            // Step 2: Proceed with account update
-            boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate);
+        try {
+            if (accountDAO.isEmailExistEmailOfUser(username, email)) {
+                request.setAttribute("message", "The email address is already in use by another account.");
 
-            if (success) {
-                // Update the session with the updated account information
-                HttpSession session = request.getSession();
-                Account updatedAccount = accountDAO.getAccountByUsername(username);
-                session.setAttribute("account", updatedAccount);  // Update session
+                request.setAttribute("username", username);
+                request.setAttribute("firstName", firstName);
+                request.setAttribute("lastName", lastName);
+                request.setAttribute("email", email);
+                request.setAttribute("phoneNumber", phoneNumber);
+                request.setAttribute("birthDate", birthDate);
 
-                response.sendRedirect("readAccount?username=" + username);  // Redirect back to the account details page
+                RequestDispatcher dispatcher = request.getRequestDispatcher("accountUpdate.jsp");
+                dispatcher.forward(request, response);
             } else {
-                request.setAttribute("message", "Account update failed! Please try again.");
-                doGet(request, response);  // Show the update form again with error message
-            }
-        }
+                boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate);
 
+                if (success) {
+                    HttpSession session = request.getSession();
+                    Account updatedAccount = accountDAO.getAccountByUsername(username);
+                    session.setAttribute("account", updatedAccount); 
+
+                    response.sendRedirect("readAccount?username=" + username);
+                } else {
+                    request.setAttribute("message", "Account update failed! Please try again.");
+
+                    request.setAttribute("username", username);
+                    request.setAttribute("firstName", firstName);
+                    request.setAttribute("lastName", lastName);
+                    request.setAttribute("email", email);
+                    request.setAttribute("phoneNumber", phoneNumber);
+                    request.setAttribute("birthDate", birthDate);
+
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("accountUpdate.jsp");
+                    dispatcher.forward(request, response);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
     }
+
 }

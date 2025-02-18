@@ -62,72 +62,40 @@ public class AccountDAO {
         return false;  // No other user has this email
     }
 
-    public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate) {
+    public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate) throws SQLException {
         String sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ? WHERE username = ? AND isActive = 1";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, firstName);
-            ps.setString(2, lastName);
-            ps.setString(3, email);
-            ps.setString(4, phoneNumber);
-            ps.setString(5, birthDate);
-            ps.setString(6, username);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return false;
+        Object[] params = {firstName, lastName, email, phoneNumber, birthDate, username};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
     }
 
-    public boolean deactivateAccount(String username) {
+    public boolean deactivateAccount(String username) throws SQLException {
         String sql = "UPDATE Account SET isActive = 0 WHERE username = ? AND isActive = 1";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, username);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return false;
+        Object[] params = {username};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
     }
 
-    public List<Account> getAllAccounts() {
+    public List<Account> getAllAccounts() throws SQLException {
         List<Account> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM Account WHERE isActive = 1"; 
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                accounts.add(mapResultSetToAccount(rs));
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
+        String sql = "SELECT * FROM Account WHERE isActive = 1";
+        ResultSet rs = context.exeQuery(sql, null);
+        while (rs.next()) {
+            accounts.add(mapResultSetToAccount(rs));
         }
         return accounts;
     }
 
-    public boolean addStaffOrShipper(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) {
+    public boolean addStaffOrShipper(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
         if (!role.equals("staff") && !role.equals("shipper")) {
-            return false; // Chỉ cho phép thêm staff hoặc shipper
+            return false; // Only allow adding staff or shipper
         }
 
         String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, password);
-            ps.setString(3, role);
-            ps.setString(4, firstName);
-            ps.setString(5, lastName);
-            ps.setString(6, email);
-            ps.setString(7, phoneNumber);
-            ps.setString(8, birthDate);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return false;
+        Object[] params = {username, password, role, firstName, lastName, email, phoneNumber, birthDate};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
     }
 
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
