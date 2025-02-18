@@ -24,12 +24,12 @@ public class DBContext {
             + "trustServerCertificate=true;";
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "123456";
-    // Ph??ng th?c k?t n?i v?i c? s? d? li?u
+   
     protected Connection conn;
 
     public DBContext() {
         try {
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=ICHIBOOKS";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=WIBOOKS";
             String username = "sa";
             String password = "123456";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -61,15 +61,9 @@ public class DBContext {
         }
     }
 
-    public ResultSet exeQuery(String query) throws SQLException {
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        System.out.println("Connected successfully!");
+   
 
-        return preparedStatement.executeQuery();
-    }
-
-    public ResultSet exeQueryAlt(String query, Object[] params) throws SQLException {
+    public ResultSet exeQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         System.out.println("Connected successfully!");
