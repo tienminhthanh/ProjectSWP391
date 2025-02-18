@@ -4,8 +4,8 @@ import dao.AccountDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import javax.mail.*;
-import javax.mail.internet.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
@@ -23,7 +23,7 @@ public class EmailAuthenticationServlet extends HttpServlet {
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
 
-        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+        Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(fromEmail, password);
@@ -92,5 +92,18 @@ public class EmailAuthenticationServlet extends HttpServlet {
             otp.append(random.nextInt(10));  // Generate 6 random digits
         }
         return otp.toString();
+    }
+    
+    public static void main(String[] args) {
+        EmailAuthenticationServlet test = new EmailAuthenticationServlet();
+        String email = "anhk.ce191266@gmail.com";
+
+
+        String otp = test.generateOTP();
+        try {
+            test.sendEmail(email, "Email Verification", "Your verification code is: " + otp);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }
