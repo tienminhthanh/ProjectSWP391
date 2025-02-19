@@ -19,7 +19,7 @@ import javax.annotation.processing.FilerException;
 public class DBContext {
 
     private static String url = "jdbc:sqlserver://localhost:1433;"
-            + "databaseName=WIBOOKS;"
+            + "databaseName=ICHIBOOKS;"
             + "encrypt=true;"
             + "trustServerCertificate=true;";
     private static final String USERNAME = "sa";
@@ -61,15 +61,9 @@ public class DBContext {
         }
     }
 
-    public ResultSet exeQuery(String query) throws SQLException {
-        Connection connection = getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        System.out.println("Connected successfully!");
+   
 
-        return preparedStatement.executeQuery();
-    }
-
-    public ResultSet exeQueryAlt(String query, Object[] params) throws SQLException {
+    public ResultSet exeQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         System.out.println("Connected successfully!");
