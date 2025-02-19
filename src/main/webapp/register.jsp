@@ -25,14 +25,36 @@
                 <hr class="mb-6"/>
                 <form action="register" method="post">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Username & Birth Date -->
                         <div class="mb-4">
                             <label class="sr-only" for="username">Username</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" placeholder="Username" required type="text"/>
                         </div>
                         <div class="mb-4">
-                            <label class="sr-only" for="password">Password</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="password" name="password" placeholder="Password" required type="password"/>
+                            <label class="sr-only" for="birthDate">Birth Date</label>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" required type="date"/>
                         </div>
+
+                        <!-- Password & Confirm Password -->
+                        <!-- Password & Confirm Password -->
+                        <div class="mb-4 relative w-full">
+                            <label class="sr-only" for="password">Password</label>
+                            <input class="w-full p-3 border border-gray-300 rounded pr-10" id="password" name="password" placeholder="Password" required type="password"/>
+                            <button type="button" onclick="togglePassword()" id="toggleIcon" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">👁️</button>
+                        </div>
+
+                        <div class="mb-4 relative w-full">
+                            <label class="sr-only" for="confirmPassword">Confirm Password</label>
+                            <input class="w-full p-3 border border-gray-300 rounded pr-10" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required type="password"/>
+                            <button type="button" onclick="togglePassword()" id="toggleIcon" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">👁️</button>
+                        </div>
+
+
+
+
+
+
+                        <!-- First Name & Last Name -->
                         <div class="mb-4">
                             <label class="sr-only" for="firstName">First Name</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="firstName" name="firstName" placeholder="First Name" required type="text"/>
@@ -41,6 +63,8 @@
                             <label class="sr-only" for="lastName">Last Name</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName" placeholder="Last Name" required type="text"/>
                         </div>
+
+                        <!-- Email & Phone Number -->
                         <div class="mb-4">
                             <label class="sr-only" for="email">Email</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email" placeholder="Email" required type="email"/>
@@ -49,17 +73,28 @@
                             <label class="sr-only" for="phoneNumber">Phone Number</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" required type="text"/>
                         </div>
-                        <div class="mb-4">
-                            <label class="sr-only" for="birthDate">Birth Date</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" placeholder="Birth Date" required type="date"/>
-                        </div>
                     </div>
+
                     <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Register</button>
                 </form>
+
+                <!-- Hiển thị thông báo lỗi -->
                 <c:if test="${not empty message}">
                     <p class="text-red-600 text-center mt-4">${message}</p>
                 </c:if>
-            </div>
+
+                <script>
+                    function togglePassword() {
+                        const password = document.getElementById("password");
+                        const confirmPassword = document.getElementById("confirmPassword");
+                        const toggleIcons = document.querySelectorAll("#toggleIcon");
+                        const isHidden = password.type === "password";
+                        password.type = confirmPassword.type = isHidden ? "text" : "password";S
+                        toggleIcons.forEach(icon => {
+                            icon.textContent = isHidden ? "🙈" : "👁️";
+                        });
+                    }
+                </script>
         </main>
         <footer class="bg-gray-200 py-4 mt-8 w-full">
             <div class="container mx-auto px-4 text-center text-sm text-gray-600">

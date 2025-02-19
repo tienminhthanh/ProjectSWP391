@@ -65,6 +65,11 @@
                     </script>
 
                 </div>
+                <div class="mt-6">
+                    <a class="text-blue-600 hover:underline" href="home.jsp">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to home
+                    </a>
+                </div>
             </div>
         </main>
         <footer class="bg-gray-200 py-4 mt-8 w-full">
