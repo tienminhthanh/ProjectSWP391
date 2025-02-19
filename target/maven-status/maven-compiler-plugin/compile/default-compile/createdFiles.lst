@@ -1,4 +1,5 @@
 controller\account\UpdateAccountSevlet.class
+controller\home\HomepageController.class
 controller\account\EmailAuthenticationServlet$1.class
 controller\account\RegisterServlet.class
 controller\account\ListAccountSevlet.class
@@ -8,7 +9,9 @@ utils\DBContext.class
 dao\DBContext.class
 controller\account\LogoutServlet.class
 controller\account\ReadAccountServlet.class
+model\Product.class
 controller\account\AddAccountSevlet.class
 controller\account\DeleteAccountSevlet.class
+dao\ProductDAO.class
 model\Account.class
 controller\account\LoginServlet.class
