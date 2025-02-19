@@ -103,7 +103,7 @@ public class EmailAuthenticationServlet extends HttpServlet {
 
     public static void main(String[] args) {
         EmailAuthenticationServlet test = new EmailAuthenticationServlet();
-        String email = "anhk.ce191266@gmail.com";
+        String email = "thanhtmce181941@fpt.edu.vn";
 
         String otp = test.generateOTP();
         try {
