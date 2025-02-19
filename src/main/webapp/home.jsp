@@ -5,51 +5,25 @@
         <meta charset="utf-8"/>
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
         <title>
-            Book Walker
+            WIBOOKS - More Than Just Books
         </title>
-        <script src="https://cdn.tailwindcss.com">
-        </script>
+
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+        
+        <link rel="stylesheet" href="css/styleHome.css"/>
+        <!--Header css-->
+        <link href="css/styleHeader.css" rel="stylesheet">
+
+        <!--Footer css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link href="css/styleFooter.css" rel="stylesheet">
+
     </head>
     <body class="bg-gray-100">
-        <header class="bg-blue-600 p-4 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                
-                <form action="search">
-                    <input class="p-2 rounded w-96" placeholder="title, author or keywords" type="search"/>
-                </form>
-                <button class="bg-blue-700 text-white p-2 rounded">
-                    Merch
-                </button>
-                <button class="bg-blue-700 text-white p-2 rounded">
-                    Books
-                </button>
-                <button class="bg-blue-700 text-white p-2 rounded">
-                    All Products
-                </button>
-            </div>
-            <div class="flex items-center space-x-4">
-                <c:choose>
-                    <c:when test="${not empty sessionScope.account}">
-                        <a href="readAccount" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
-                            <i class="fas fa-user mr-2"></i> View Profile
-                        </a>
-                        <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="login.jsp" class="text-white bg-blue-500 p-2 rounded hover:bg-blue-600">
-                            Sign In
-                        </a>
-                        <a href="register.jsp" class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600">
-                            Register
-                        </a>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
-        </header>
+        <div class="header-container">
+            <jsp:include page="header.jsp" flush="true"/> 
+        </div>
         <div class="bg-white p-4">
             <div class="flex space-x-4 overflow-x-auto">
                 <img alt="Banner 1" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+1" width="300"/>
@@ -299,5 +273,23 @@
                 </div>
             </main>
         </div>
+        <jsp:include page="footer.jsp" flush="true"/>
+
+        <script src="https://cdn.tailwindcss.com">
+        </script>
+
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
+        <!--Header script-->
+        <script src="js/scriptHeader.js"></script>
+
+        <!--Footer script-->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+                integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
     </body>
 </html>

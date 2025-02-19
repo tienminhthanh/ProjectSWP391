@@ -4,6 +4,7 @@ controller\account\RegisterServlet.class
 controller\account\ListAccountSevlet.class
 dao\AccountDAO.class
 controller\account\EmailAuthenticationServlet.class
+utils\DBContext.class
 dao\DBContext.class
 controller\account\LogoutServlet.class
 controller\account\ReadAccountServlet.class
