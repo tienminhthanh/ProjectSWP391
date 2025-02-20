@@ -59,10 +59,10 @@ public class AccountDAO {
         String sql;
         Object[] params;
 
-        if (role != null) { // Chỉ cập nhật role nếu admin gửi request
+        if (role != null) { 
             sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ?, role = ? WHERE username = ? AND isActive = 1";
             params = new Object[]{firstName, lastName, email, phoneNumber, birthDate, role, username};
-        } else { // Người dùng khác không thể cập nhật role
+        } else { 
             sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ? WHERE username = ? AND isActive = 1";
             params = new Object[]{firstName, lastName, email, phoneNumber, birthDate, username};
         }

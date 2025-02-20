@@ -22,7 +22,7 @@
                     <i class="fas fa-tachometer-alt mr-2"></i>
                     Dashboard
                 </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
+                <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg"  href="listAccount">
                     <i class="fas fa-users mr-2"></i>
                     Account List
                 </a>
@@ -42,7 +42,8 @@
                     <i class="fas fa-box mr-2"></i>
                     Order List
                 </a>
-                <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg" href="#">
+
+                <a class="flex items-center p-2 hover:bg-blue-800"href="#">
                     <i class="fas fa-gift mr-2"></i>
                     Voucher List
                 </a>
@@ -169,11 +170,12 @@
                                         </c:choose>
                                     </td>
                                     <td class="px-6 py-3 border-b text-left">
-                                        <a class="text-blue-500 hover:text-blue-700 mr-3" href="updateAccount?username=${acc.username}">
+                                        <a href="updateAccount?username=${acc.username}" class="text-blue-500 hover:text-blue-700">
                                             <i class="fas fa-edit"></i> Update
                                         </a>
+
                                         <br>
-                                        <!-- Check if not admin before showing Delete/Unlock -->
+
                                         <c:choose>
                                             <c:when test="${acc.isActive}">
                                                 <a class="text-red-500 hover:text-red-700 mr-3 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
