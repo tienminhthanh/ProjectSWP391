@@ -117,7 +117,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     overflow: hidden;
     text-overflow: ellipsis; /* Adds "..." when the text overflows */
     width: 100%; /* Ensures the ellipsis works correctly */
-    text-align: left;
 }
 
 /* Fomo info */
@@ -144,6 +143,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 .discount-price {
+    
     font-size: 14px;
     font-weight: bold;
     color: red;

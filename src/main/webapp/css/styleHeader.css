@@ -294,7 +294,7 @@ nav ul li a:hover {
         right: 10px;
         left: -300%;
         z-index: 11;
-        top: -300%; /* Position it above the icon */
+        top: -400%; /* Position it above the icon */
     }
 
 }

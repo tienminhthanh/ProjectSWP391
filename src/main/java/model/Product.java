@@ -4,53 +4,107 @@
  */
 package model;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- *
- * @author anhkc
- */
 public class Product {
+
     private int productID;
     private String productName;
-    private List<String> imageURLList;
-    private String productVersion;
-    private String publisherID;
-    private Date releaseDate;
-    private Date saleEndDate;
-    private String productIntro;
-    private int stockCount;
     private double price;
-    private int productDiscount;
-    private int productFlashSale;
-    private boolean onSale;
+    private int stockCount;
+    private Category specificCategory; //Maps from categoryID int
+    private String description;
+    private LocalDate releaseDate;
+    private LocalDateTime lastModifiedTime;
+    private double averageRating;
+    private int numberOfRating;
     private String specialFilter;
+    private int adminID;
+    private String keywords;
+    private String generalCategory;
+    private boolean isActive;
+    private List<Image> imageList; //Represent the relationship with Image entity
 
+    /**
+     * EMPTY - Set attributes later
+     */
     public Product() {
     }
 
-    public Product(int productID, String productName, List<String> imageURLList, Date releaseDate, Date saleEndDate, int stockCount, double price, int productDiscount) {
+    /**
+     * FULL - For retrieve data from Product join Category join Image
+     *
+     * @param productID
+     * @param productName
+     * @param price
+     * @param stockCount
+     * @param specificCategory
+     * @param description
+     * @param releaseDate
+     * @param lastModifiedTime
+     * @param averageRating
+     * @param numberOfRating
+     * @param specialFilter
+     * @param adminID
+     * @param keywords
+     * @param generalCategory
+     * @param isActive
+     * @param imageList
+     */
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, List<Image> imageList) {
         this.productID = productID;
         this.productName = productName;
-        this.imageURLList = imageURLList;
-        this.releaseDate = releaseDate;
-        this.saleEndDate = saleEndDate;
-        this.stockCount = stockCount;
         this.price = price;
-        this.productDiscount = productDiscount;
-        this.onSale = productDiscount > 0;
-    }
-
-    public String getSpecialFilter() {
-        return specialFilter;
-    }
-
-    public void setSpecialFilter(String specialFilter) {
+        this.stockCount = stockCount;
+        this.specificCategory = specificCategory;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lastModifiedTime = lastModifiedTime;
+        this.averageRating = averageRating;
+        this.numberOfRating = numberOfRating;
         this.specialFilter = specialFilter;
+        this.adminID = adminID;
+        this.keywords = keywords;
+        this.generalCategory = generalCategory;
+        this.isActive = isActive;
+        this.imageList = imageList;
     }
-    
-    
+
+    /**
+     * Omit lastModifiedTime, averageRating, numberOfRating - For Add/Update
+     * May be we should omit imageList as well
+     *
+     * @param productID
+     * @param productName
+     * @param price
+     * @param stockCount
+     * @param specificCategory
+     * @param description
+     * @param releaseDate
+     * @param specialFilter
+     * @param adminID
+     * @param keywords
+     * @param generalCategory
+     * @param isActive
+     * @param imageList
+     */
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, List<Image> imageList) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+        this.stockCount = stockCount;
+        this.specificCategory = specificCategory;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.specialFilter = specialFilter;
+        this.adminID = adminID;
+        this.keywords = keywords;
+        this.generalCategory = generalCategory;
+        this.isActive = isActive;
+        this.imageList = imageList;
+    }
 
     public int getProductID() {
         return productID;
@@ -68,52 +122,12 @@ public class Product {
         this.productName = productName;
     }
 
-    public List<String> getImageURLList() {
-        return imageURLList;
+    public double getPrice() {
+        return price;
     }
 
-    public void setImageURLList(List<String> imageURLList) {
-        this.imageURLList = imageURLList;
-    }
-
-    public String getProductVersion() {
-        return productVersion;
-    }
-
-    public void setProductVersion(String productVersion) {
-        this.productVersion = productVersion;
-    }
-
-    public String getPublisherID() {
-        return publisherID;
-    }
-
-    public void setPublisherID(String publisherID) {
-        this.publisherID = publisherID;
-    }
-
-    public Date getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public Date getSaleEndDate() {
-        return saleEndDate;
-    }
-
-    public void setSaleEndDate(Date saleEndDate) {
-        this.saleEndDate = saleEndDate;
-    }
-
-    public String getProductIntro() {
-        return productIntro;
-    }
-
-    public void setProductIntro(String productIntro) {
-        this.productIntro = productIntro;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public int getStockCount() {
@@ -124,38 +138,102 @@ public class Product {
         this.stockCount = stockCount;
     }
 
-    public double getPrice() {
-        return price;
+    public Category getSpecificCategory() {
+        return specificCategory;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setSpecificCategory(Category specificCategory) {
+        this.specificCategory = specificCategory;
     }
 
-    public int getProductDiscount() {
-        return productDiscount;
+    public String getDescription() {
+        return description;
     }
 
-    public void setProductDiscount(int productDiscount) {
-        this.productDiscount = productDiscount;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public int getProductFlashSale() {
-        return productFlashSale;
+    public LocalDate getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setProductFlashSale(int productFlashSale) {
-        this.productFlashSale = productFlashSale;
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
-    public boolean isOnSale() {
-        return onSale;
+    public LocalDateTime getLastModifiedTime() {
+        return lastModifiedTime;
     }
 
-    public void setOnSale(boolean onSale) {
-        this.onSale = onSale;
+    public void setLastModifiedTime(LocalDateTime lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
     }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public int getNumberOfRating() {
+        return numberOfRating;
+    }
+
+    public void setNumberOfRating(int numberOfRating) {
+        this.numberOfRating = numberOfRating;
+    }
+
+    public String getSpecialFilter() {
+        return specialFilter;
+    }
+
+    public void setSpecialFilter(String specialFilter) {
+        this.specialFilter = specialFilter;
+    }
+
+    public int getAdminID() {
+        return adminID;
+    }
+
+    public void setAdminID(int adminID) {
+        this.adminID = adminID;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getGeneralCategory() {
+        return generalCategory;
+    }
+
+    public void setGeneralCategory(String generalCategory) {
+        this.generalCategory = generalCategory;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public List<Image> getImageList() {
+        return imageList;
+    }
+
+    public void setImageList(List<Image> imageList) {
+        this.imageList = imageList;
+    }
+
     
-    
-    
+
 }

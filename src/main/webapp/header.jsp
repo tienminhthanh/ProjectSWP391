@@ -11,16 +11,16 @@
             <div class="search-bar">
                 <!--style this shit properly man, it's killing me-->
                 <form action="search" method="get">
-                <select name="categories" id="categories">
-                    <option value="book">Books</option>
-                    <option value="merch">Merch</option>
-                </select>
+                    <select name="categories" id="categories">
+                        <option value="book">Books</option>
+                        <option value="merch">Merch</option>
+                    </select>
                     <input type="text" placeholder="Search for products..." aria-label="Search" name="query" value="${requestScope.query}">
-                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </form>
             </div>
-                
-                <!--Hide this shit on mobile view bro-->
+
+            <!--Hide this shit on mobile view bro-->
             <nav> 
                 <ul>
                     <li><a href="#">Manga</a></li>
@@ -33,9 +33,10 @@
 
         <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
             <div class="customer-icons">
-                <i class="fa-regular fa-comment"></i>
                 <i class="fa-regular fa-bell"></i>
-                <i class="fa-solid fa-cart-shopping"></i>
+                <a href="cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
 
                 <div class="account-wrapper">
                     <i class="fa-regular fa-user" onclick="toggleAccountMenu()"></i>

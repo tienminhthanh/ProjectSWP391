@@ -28,7 +28,6 @@
     .popup button {
         margin-top: 10px;
         padding: 5px 10px;
-
         color: white;
         border: none;
         cursor: pointer;

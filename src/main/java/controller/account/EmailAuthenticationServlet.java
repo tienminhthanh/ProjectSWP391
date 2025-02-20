@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.*;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Random;
 
@@ -47,9 +48,8 @@ public class EmailAuthenticationServlet extends HttpServlet {
         String enteredOTP = request.getParameter("otp");
         AccountDAO accountDAO = new AccountDAO();
 
-        // If OTP is entered, check it
         if (enteredOTP != null) {
-            String generatedOTP = (String) request.getSession().getAttribute("otp"); // Retrieve OTP from session
+            String generatedOTP = (String) request.getSession().getAttribute("otp");
             if (enteredOTP.equals(generatedOTP)) {
                 request.setAttribute("message", "Email verified successfully!");
             } else {
@@ -65,8 +65,15 @@ public class EmailAuthenticationServlet extends HttpServlet {
             return;
         }
 
-        if (accountDAO.isEmailExistForEmail(email)) {
-            request.setAttribute("message", "Email is already registered!");
+        try {
+            if (accountDAO.isEmailExistForEmail(email)) {
+                request.setAttribute("message", "Email is already registered!");
+                request.getRequestDispatcher("home.jsp").forward(request, response);
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Error occurred while checking email. Please try again later.");
             request.getRequestDispatcher("home.jsp").forward(request, response);
             return;
         }
@@ -89,15 +96,14 @@ public class EmailAuthenticationServlet extends HttpServlet {
         Random random = new Random();
         StringBuilder otp = new StringBuilder();
         for (int i = 0; i < 6; i++) {
-            otp.append(random.nextInt(10));  // Generate 6 random digits
+            otp.append(random.nextInt(10));
         }
         return otp.toString();
     }
-    
+
     public static void main(String[] args) {
         EmailAuthenticationServlet test = new EmailAuthenticationServlet();
-        String email = "anhk.ce191266@gmail.com";
-
+        String email = "thanhtmce181941@fpt.edu.vn";
 
         String otp = test.generateOTP();
         try {

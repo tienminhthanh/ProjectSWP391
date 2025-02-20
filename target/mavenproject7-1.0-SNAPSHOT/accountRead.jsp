@@ -8,6 +8,8 @@
         <title>View Account Information</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+        <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
+
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
@@ -34,8 +36,38 @@
                     <a class="bg-blue-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="updateAccount?username=${account.username}">
                         <i class="fas fa-edit mr-2"></i> Update Information
                     </a>
-                    <a class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" href="deleteAccount?username=${account.username}">
+                    <a class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
+                       href="deleteAccount?username=${account.username}" 
+                       onclick="return confirmDelete()">
                         <i class="fas fa-trash mr-2"></i> Delete Account
+                    </a>
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
+
+
+                    <script>
+                           function confirmAction(message, url) {
+                               // Sử dụng SweetAlert2 để tạo hộp thoại xác nhận đẹp
+                               Swal.fire({
+                                   title: 'Are you sure?',
+                                   text: message,
+                                   icon: 'warning',
+                                   showCancelButton: true,
+                                   confirmButtonText: 'Yes, do it!',
+                                   cancelButtonText: 'Cancel',
+                                   reverseButtons: true
+                               }).then((result) => {
+                                   if (result.isConfirmed) {
+                                       // Nếu người dùng chọn "Yes"
+                                       window.location.href = url;
+                                   }
+                               });
+                           }
+                    </script>
+
+                </div>
+                <div class="mt-6">
+                    <a class="text-blue-600 hover:underline" href="home.jsp">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to home
                     </a>
                 </div>
             </div>

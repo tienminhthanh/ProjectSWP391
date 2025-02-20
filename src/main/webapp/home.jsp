@@ -122,29 +122,30 @@
                 <!--Loopppppppppppppppppppppppppppppp-->
                 <div>
                     <h2 class="text-xl font-bold mb-4">
-                        New Releases (Volumes)
+                        Feeling Lucky ?
                     </h2>
                     <!--<div class="flex space-x-4 overflow-x-auto">-->
                     <div class="w-full">
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:hidden">
-                            <c:forEach var="product" items="${productList}">
-                                <c:set var="currentProduct" value="${product}" scope="request"/>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:hidden">
+                            <c:forEach var="currentProduct" items="${productList}">
+                                <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                 <jsp:include page="productCard.jsp"/>
                             </c:forEach>
-                            <jsp:include page="popuplogin.jsp"/>
                         </div>
 
                         <!-- Horizontal scrolling at lg (1024px+) -->
                         <div class="hidden lg:block w-full overflow-x-auto">
                             <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                <c:forEach var="product" items="${productList}">
-                                    <c:set var="currentProduct" value="${product}" scope="request"/>
+                                <c:forEach var="currentProduct" items="${productList}">
+                                    <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                     <jsp:include page="productCard.jsp"/>
                                 </c:forEach>
-                                <jsp:include page="popuplogin.jsp"/>
                             </div>
                         </div>
                     </div>
+
+                    <!--Popup unauthorized users-->
+                    <jsp:include page="popuplogin.jsp"/>
 
                 </div>
             </main>

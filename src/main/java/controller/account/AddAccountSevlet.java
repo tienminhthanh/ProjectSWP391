@@ -9,8 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
-@WebServlet(name = "AddAccountShipOrStaffSevlet", urlPatterns = {"/addAccount"})
+@WebServlet(name = "AddAccountServlet", urlPatterns = {"/addAccount"})
 public class AddAccountSevlet extends HttpServlet {
 
     @Override
@@ -32,7 +33,6 @@ public class AddAccountSevlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String firstName = request.getParameter("firstName");
@@ -44,26 +44,33 @@ public class AddAccountSevlet extends HttpServlet {
 
         AccountDAO accountDAO = new AccountDAO();
 
-        if (accountDAO.isEmailExistForEmail(email)) {
-            request.setAttribute("message", "The email address is already in use.");
+        try {
+            if (accountDAO.isEmailExistForEmail(email)) {
+                request.setAttribute("message", "The email address is already in use.");
+                request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
+                return;
+            }
+
+            if (accountDAO.getAccountByUsername(username) != null) {
+                request.setAttribute("message", "Username already exists!");
+                request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
+                return;
+            }
+
+            boolean success = accountDAO.addStaffOrShipper(username, password, firstName, lastName, email, phoneNumber, birthDate, role);
+
+            if (success) {
+                request.setAttribute("message", "Account successfully created!");
+            } else {
+                request.setAttribute("message", "There was an issue creating the account. Please try again.");
+            }
+
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
-            return;
-        }
 
-        if (accountDAO.getAccountByUsername(username) != null) {
-            request.setAttribute("message", "Username already exists!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "An error occurred while processing your request. Please try again later.");
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
-            return;
         }
-
-        boolean success = accountDAO.addStaffOrShipper(username, password, firstName, lastName, email, phoneNumber, birthDate, role);
-
-        if (success) {
-            request.setAttribute("message", "Account successfully created!");
-        } else {
-            request.setAttribute("message", "Username or email is already in use.");
-        }
-
-        request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
     }
 }

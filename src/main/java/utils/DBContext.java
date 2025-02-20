@@ -1,9 +1,9 @@
 package utils;
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 
+/*
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+     * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 
 import java.sql.*;
 import java.util.List;
@@ -15,11 +15,10 @@ import javax.annotation.processing.FilerException;
  *
  * @author anhkc
  */
-
 public class DBContext {
 
     private static String url = "jdbc:sqlserver://localhost:1433;"
-            + "databaseName=ICHIBOOKS;"
+            + "databaseName=WIBOOKS;"
             + "encrypt=true;"
             + "trustServerCertificate=true;";
     private static final String USERNAME = "sa";
@@ -29,7 +28,7 @@ public class DBContext {
 
     public DBContext() {
         try {
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=ICHIBOOKS";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=WIBOOKS";
             String username = "sa";
             String password = "123456";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -61,13 +60,10 @@ public class DBContext {
         }
     }
 
-   
-
     public ResultSet exeQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         System.out.println("Connected successfully!");
-
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setObject(i + 1, params[i]);
@@ -75,9 +71,7 @@ public class DBContext {
         }
         return preparedStatement.executeQuery();
     }
-    
-    
-    
+
     public int exeNonQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);

@@ -32,6 +32,9 @@
                                 <input class="w-full p-3 border border-gray-300 rounded" id="password" name="password" placeholder="Password" required type="password"/>
                             </div>
                             <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700" type="submit">Sign-in</button>
+                            <c:if test="${not empty errorMessage}">
+                                <p class="text-red-600 text-center mt-4">${errorMessage}</p>
+                            </c:if>
                             <div class="mt-4 text-right">
                                 <a class="text-blue-600 text-sm" href="forgotPassword.jsp">Forgot your password?</a>
                             </div>
@@ -71,8 +74,6 @@
                 <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
             </div>
         </footer>
-        <c:if test="${not empty errorMessage}">
-            <p class="text-red-600 text-center mt-4">${errorMessage}</p>
-        </c:if>
+
     </body>
 </html>
