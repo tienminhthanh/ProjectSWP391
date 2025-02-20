@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -36,16 +35,14 @@ public class LoginServlet extends HttpServlet {
                     if (account.getPassword().equals(password)) {
                         HttpSession session = request.getSession();
                         session.setAttribute("account", account);
-                        session.setMaxInactiveInterval(30 * 60); 
-
-                        System.out.println("Session Created for: " + account.getUsername());
+                        session.setMaxInactiveInterval(30 * 60); // 30 phút
 
                         switch (account.getRole()) {
                             case "admin":
-                                response.sendRedirect("dashboard.jsp");
+                                response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
                                 break;
                             case "customer":
-                                response.sendRedirect("home.jsp");
+                                response.sendRedirect("readAccount"); // Điều hướng về trang chi tiết tài khoản
                                 break;
                             case "staff":
                                 response.sendRedirect("dashboard.jsp");
@@ -74,21 +71,5 @@ public class LoginServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("account") != null) {
-            response.sendRedirect("home.jsp");
-        } else {
-            request.getRequestDispatcher("login.jsp").forward(request, response);  // Redirect to login if not logged in
-        }
-    }
-
-    @Override
-    public String getServletInfo() {
-        return "Servlet for handling login and account status verification";
     }
 }
