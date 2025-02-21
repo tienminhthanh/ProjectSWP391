@@ -134,3 +134,16 @@ hr {
     border-top: 1px solid #ddd;
     margin: 10px 0;
 }
+.price-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-custom p {
+    margin: 0;
+}
+
+.currency {
+    margin-left: 5px;
+}

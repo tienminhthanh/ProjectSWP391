@@ -20,13 +20,16 @@ public class LoginServlet extends HttpServlet {
     public void init() {
         accountDAO = new AccountDAO();
     }
+    
+    
+    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
+        
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
@@ -35,14 +38,14 @@ public class LoginServlet extends HttpServlet {
                     if (account.getPassword().equals(password)) {
                         HttpSession session = request.getSession();
                         session.setAttribute("account", account);
-                        session.setMaxInactiveInterval(30 * 60); // 30 phút
 
                         switch (account.getRole()) {
                             case "admin":
                                 response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
                                 break;
                             case "customer":
-                                response.sendRedirect("readAccount"); // Điều hướng về trang chi tiết tài khoản
+
+                                response.sendRedirect("home");
                                 break;
                             case "staff":
                                 response.sendRedirect("dashboard.jsp");
@@ -57,16 +60,13 @@ public class LoginServlet extends HttpServlet {
                                 break;
                         }
                     } else {
-                        request.setAttribute("errorMessage", "Wrong password!");
+                        request.setAttribute("errorMessage", "Your account is deactivated or locked!");
                         request.getRequestDispatcher("login.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("errorMessage", "Your account is deactivated or locked!");
+                    request.setAttribute("errorMessage", "Account not found!");
                     request.getRequestDispatcher("login.jsp").forward(request, response);
                 }
-            } else {
-                request.setAttribute("errorMessage", "Account not found!");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             e.printStackTrace();

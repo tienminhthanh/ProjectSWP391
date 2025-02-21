@@ -63,7 +63,7 @@ public class UpdateAccountServlet extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
 
         try {
-            boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate, role);
+            boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate);
 
             if (success) {
                 Account updatedAccount = accountDAO.getAccountByUsername(username);

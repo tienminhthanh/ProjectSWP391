@@ -1,93 +1,89 @@
-    package utils;
-    /*
+package utils;
+
+/*
      * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
      * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
-     */
+ */
+
+import java.sql.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.processing.FilerException;
+
+/**
+ *
+ * @author anhkc
+ */
+public class DBContext {
 
 
-    import java.sql.*;
-    import java.util.List;
-    import java.util.logging.Level;
-    import java.util.logging.Logger;
-    import javax.annotation.processing.FilerException;
+    private static String url = "jdbc:sqlserver://localhost:1433;"
+            + "databaseName=WIBOOKS;"
+            + "encrypt=true;"
+            + "trustServerCertificate=true;";
+    private static final String USERNAME = "sa";
+    private static final String PASSWORD = "123456";
+    // Ph??ng th?c k?t n?i v?i c? s? d? li?u
+    protected Connection conn;
 
-    /**
-     *
-     * @author anhkc
-     */
-    
-    public class DBContext {
-
-        private static String url = "jdbc:sqlserver://localhost:1433;"
-                + "databaseName=userDB;"
-                + "encrypt=true;"
-                + "trustServerCertificate=true;";
-        private static final String USERNAME = "sa";
-        private static final String PASSWORD = "123456";
-
-        protected Connection conn;
-
-        public DBContext() {
-            try {
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=userDB";
-                String username = "sa";
-                String password = "123456";
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-                conn = DriverManager.getConnection(url, username, password);
-            } catch (ClassNotFoundException | SQLException e) {
-                System.out.println(e);
-            }
+    public DBContext() {
+        try {
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=WIBOOKS";
+            String username = "sa";
+            String password = "123456";
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            conn = DriverManager.getConnection(url, username, password);
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(e);
+//>>>>>>> 92031b486a47e6bf79571d5d6fc5e864a6cc84f6
         }
-
-        public Connection getConnection() throws SQLException {
-            try {
-                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return DriverManager.getConnection(url, USERNAME, PASSWORD);
-        }
-
-        public void testConnection() {
-            try {
-                Connection connection = getConnection();
-                if (connection != null) {
-                    System.out.println("Connected successfully!");
-                } else {
-                    System.out.println("Connection failed!");
-                }
-                connection.close();
-            } catch (SQLException e) {
-            }
-        }
-
-
-
-        public ResultSet exeQuery(String query, Object[] params) throws SQLException {
-            Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            System.out.println("Connected successfully!");
-
-            if (params != null) {
-                for (int i = 0; i < params.length; i++) {
-                    preparedStatement.setObject(i + 1, params[i]);
-                }
-            }
-            return preparedStatement.executeQuery();
-        }
-
-
-
-        public int exeNonQuery(String query, Object[] params) throws SQLException {
-            Connection connection = getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            System.out.println("Connected successfully!");
-            if (params != null) {
-                for (int i = 0; i < params.length; i++) {
-                    preparedStatement.setObject(i + 1, params[i]);
-                }
-            }
-            return preparedStatement.executeUpdate();
-        }
-
     }
+
+    public Connection getConnection() throws SQLException {
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return DriverManager.getConnection(url, USERNAME, PASSWORD);
+    }
+
+    public void testConnection() {
+        try {
+            Connection connection = getConnection();
+            if (connection != null) {
+                System.out.println("Connected successfully!");
+            } else {
+                System.out.println("Connection failed!");
+            }
+            connection.close();
+        } catch (SQLException e) {
+        }
+    }
+
+    public ResultSet exeQuery(String query, Object[] params) throws SQLException {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        System.out.println("Connected successfully!");
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeQuery();
+    }
+
+    public int exeNonQuery(String query, Object[] params) throws SQLException {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        System.out.println("Connected successfully!");
+        if (params != null) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+        }
+        return preparedStatement.executeUpdate();
+    }
+
+}
