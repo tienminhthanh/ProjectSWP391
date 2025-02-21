@@ -19,7 +19,7 @@
     public class DBContext {
 
         private static String url = "jdbc:sqlserver://localhost:1433;"
-                + "databaseName=userDB;"
+                + "databaseName=WIBOOKS;"
                 + "encrypt=true;"
                 + "trustServerCertificate=true;";
         private static final String USERNAME = "sa";
@@ -29,7 +29,7 @@
 
         public DBContext() {
             try {
-                String url = "jdbc:sqlserver://localhost:1433;databaseName=userDB";
+                String url = "jdbc:sqlserver://localhost:1433;databaseName=WIBOOKS";
                 String username = "sa";
                 String password = "123456";
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");

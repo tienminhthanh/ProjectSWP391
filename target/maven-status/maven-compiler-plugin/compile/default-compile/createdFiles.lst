@@ -1,0 +1,14 @@
+controller\account\EmailAuthenticationServlet$1.class
+controller\account\RegisterServlet.class
+controller\account\ListAccountSevlet.class
+dao\AccountDAO.class
+controller\account\UpdateAccountServlet.class
+controller\account\EmailAuthenticationServlet.class
+utils\DBContext.class
+controller\account\LogoutServlet.class
+controller\account\ReadAccountServlet.class
+controller\account\AddAccountSevlet.class
+controller\account\UnlockAccountServlet.class
+model\Account.class
+controller\account\DeleteAccountServlet.class
+controller\account\LoginServlet.class
