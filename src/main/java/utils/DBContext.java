@@ -15,7 +15,7 @@
      *
      * @author anhkc
      */
-
+    
     public class DBContext {
 
         private static String url = "jdbc:sqlserver://localhost:1433;"
