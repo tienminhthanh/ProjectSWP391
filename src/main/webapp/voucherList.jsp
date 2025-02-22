@@ -192,8 +192,8 @@
                                                 }
                                             });
                                         }
-                                        function navigateToUpdate(voucherId) {
-                                            window.location = 'voucherDetails?voucherId=' + voucherId;
+                                        function navigateToUpdate(voucherID) {
+                                            window.location = 'voucherDetails?voucherId=' + voucherID;
                                         }
         </script>
 

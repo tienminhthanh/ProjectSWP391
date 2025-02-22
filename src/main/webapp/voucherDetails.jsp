@@ -137,48 +137,43 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="transition duration-300"">
-                                <td class="px-4 py-3 border border-b text-center">${VOUCHER_DETAILS.voucherID}</td>
-                                <td class="px-4 py-3 border border-b text-left">${VOUCHER_DETAILS.voucherName}</td>
-                                <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.voucherValue}</td>
-                                <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.quantity}</td>
-                                <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.minimumPurchaseAmount}</td>
-                                <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.dateCreated}</td>
-                                <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.duration}</td>
-                                <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.adminID}</td>
-                                <td class="px-6 py-3 border border-b text-center">
-                                    <c:choose>
-                                        <c:when test="${VOUCHER_DETAILS.isActive}">
-                                            <span class="text-green-700">Available</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="text-red-700">Expired</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td class="px-6 py-3 border-b text-left">
-                                    <c:choose>
-                                        <c:when test="${acc.isActive}">
-                                            <a class="mb-2 block bg-red-500 text-white py-1 px-3 hover:text-blue-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
+                            <c:choose>
+                                <c:when test="${!empty VOUCHER_DETAILS}">
+                                    <tr class="transition duration-300"">
+                                        <td class="px-4 py-3 border border-b text-center">${VOUCHER_DETAILS.voucherID}</td>
+                                        <td class="px-4 py-3 border border-b text-left">${VOUCHER_DETAILS.voucherName}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.voucherValue}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.quantity}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.minimumPurchaseAmount}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.dateCreated}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.duration}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.adminID}</td>
+                                        <td class="px-6 py-3 border border-b text-center">
+                                            <c:choose>
+                                                <c:when test="${VOUCHER_DETAILS.isActive}">
+                                                    <span class="text-green-700">Available</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-red-700">Expired</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td class="px-6 py-3 border-b text-left">
+                                            <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="mb-2 block bg-green-500 text-white py-1 px-3 hover:text-green-700 rounded">
                                                 Update
                                             </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a class="mb-2 block bg-green-500 text-white py-1 px-3 hover:text-green-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this account?', 'unlockAccount?username=${acc.username}')">
-                                                Renew
+                                            <a class="block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
+                                                Delete 
                                             </a>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <a href="updateAccount?username=${acc.username}" class="block bg-blue-500 text-white py-1 px-3 hover:text-blue-700 rounded">
-                                        Delete
-                                    </a>
-                                </td>
-                            </tr>
-                            <c:if test="${empty VOUCHER_DETAILS}">
-                                <tr>
-                                    <td class="px-4 py-3 border-b text-center text-gray-500 italic" colspan="10">No voucher found.</td>
-                                </tr>
-                            </c:if>
+                                        </td>
+                                    </tr>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td class="px-4 py-3 border-b text-center text-gray-500 italic" colspan="10">No voucher found.</td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
                         </tbody>
                     </table>
                 </div>

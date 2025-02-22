@@ -11,6 +11,8 @@ import java.util.List;
 import model.Voucher;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -77,6 +79,31 @@ public class VoucherDAO {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+    public boolean updateVoucher(Voucher voucher) {
+        try {
+            String sql = "UPDATE [dbo].[Voucher]\n"
+                    + "   SET [voucherName] = ?>\n"
+                    + "      ,[voucherValue] = ?>\n"
+                    + "      ,[quantity] = ?\n"
+                    + "      ,[minimumPurchaseAmount] = ?\n"
+                    + "      ,[duration] = ?\n"
+                    + "      ,[adminID] = ?"
+                    + "+     WHERE [voucherID] = ?";
+            Object[] params = {voucher.getVoucherName(),
+                voucher.getVoucherValue(),
+                voucher.getQuantity(),
+                voucher.getMinimumPurchaseAmount(),
+                voucher.getDuration(),
+                voucher.getAdminID(),
+                voucher.getVoucherID()};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
 }
