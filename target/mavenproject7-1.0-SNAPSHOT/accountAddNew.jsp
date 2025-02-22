@@ -16,6 +16,7 @@
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
                 </div>
+                
             </div>
         </header>
         <main class="flex-grow flex items-center justify-center">
