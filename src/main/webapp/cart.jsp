@@ -78,14 +78,25 @@
                                     <h3 class="text-lg font-bold">Name: ${item.product.productName}</h3>
                                     <p>Price: ${item.priceWithQuantity} VND</p>
                                 </div>
-                                
+                                <!-- Form cập nhật CartItem -->
+                                <form action="cart" method="post" class="ml-4">
+                                    <input type="hidden" name="action" value="update" />
+                                    <input type="hidden" name="itemID" value="${item.itemID}" />
+                                    <input type="hidden" name="customerID" value="${item.customerID}" />
+                                    <input type="hidden" name="productID" value="${item.productID}" />
+                                    <input type="number" name="quantity" value="${item.quantity}" min="1" required/>
+                                    <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
+                                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </form>
                                 <!-- Form xóa CartItem -->
                                 <form action="cart" method="post" onsubmit="deleteCartItem(event, ${item.itemID}, ${item.customerID})" class="ml-4">
                                     <input type="hidden" name="action" value="delete" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded">
-                                        delete
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>

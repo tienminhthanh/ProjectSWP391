@@ -1,7 +1,8 @@
-controller\account\UpdateAccountSevlet.class
+model\CartItem.class
 controller\home\HomepageController.class
 controller\account\EmailAuthenticationServlet$1.class
 dao\AccountDAO.class
+controller\account\UpdateAccountServlet.class
 controller\account\EmailAuthenticationServlet.class
 model\Series.class
 utils\DBContext.class
@@ -20,6 +21,8 @@ controller\account\RegisterServlet.class
 model\Merchandise.class
 controller\account\ListAccountSevlet.class
 model\Brand.class
+dao\CartItemDAO.class
+controller\cart\CartServlet.class
 model\Category.class
 model\Image.class
 model\Book.class
