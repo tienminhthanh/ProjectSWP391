@@ -48,6 +48,7 @@ public class OrderInfo {
         this.paymentExpiredTime = paymentExpiredTime;
         this.paymentStatus = paymentStatus;
     }
+
 // dung de insert 
     public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, int preVoucherAmount, int voucherID, String deliveryStatus, String orderStatus) {
         this.orderID = orderID;
@@ -62,7 +63,7 @@ public class OrderInfo {
     }
 
     public OrderInfo(int i, Date orderDate, String deliveryAddress, int deliveryOptionID, int parseInt, int preVoucherAmount, int voucherID, int i0, int i1, String deliveryStatus, String orderStatus, int i2, Object object, String cod, int i3, String unpaid, List<OrderProduct> orderProducts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public int getOrderID() {
@@ -200,8 +201,6 @@ public class OrderInfo {
     public void setOrderProductList(List<OrderProduct> orderProductList) {
         this.orderProductList = orderProductList;
     }
-
-
 
     @Override
     public String toString() {

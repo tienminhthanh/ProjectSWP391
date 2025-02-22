@@ -20,7 +20,6 @@ model\Account.class
 controller\account\DeleteAccountServlet.class
 model\Creator.class
 controller\account\LoginServlet.class
-controller\order\CreateOrderController.class
 model\DeliveryOption.class
 utils\Utility.class
 controller\account\RegisterServlet.class

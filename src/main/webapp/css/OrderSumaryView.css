@@ -1,32 +1,26 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Feb 21, 2025, 2:30:24 PM
-    Author     : Macbook
-*/
-/* Reset some default styles */
 /* Reset some default styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
     color: #333;
     padding: 20px;
     line-height: 1.6;
-    width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
 .title-custom h1 {
     color: #34495e;
-    font-size: 24px;
+    font-size: 28px;
     margin: 10px 0;
+    text-align: center;
 }
+
 .title-custom p {
     color: #7f8c8d;
-    font-size: 16px;
-    margin-bottom: 20px;
+    font-size: 18px;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 /* Content Layout */
@@ -39,15 +33,16 @@ body {
 /* Left Content Styling */
 .left-content {
     background-color: #fff;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    flex: 1;
 }
 
 .left-content h2 {
     color: #34495e;
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 22px;
+    margin-bottom: 15px;
 }
 
 .input-custom label {
@@ -57,13 +52,20 @@ body {
 
 .input-custom input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 5px;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    transition: border-color 0.3s;
 }
 
+.input-custom input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Payment Method Styling */
 .payment-custom {
     margin-top: 20px;
 }
@@ -78,42 +80,58 @@ body {
 }
 
 /* Submit Button */
-button[type="submit"] {
+button {
     background-color: #3498db;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 25px;
     font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-button[type="submit"]:hover {
+button:hover {
     background-color: #2980b9;
+    transform: translateY(-2px);
 }
 
 /* Right Content Styling */
 .right-content {
     background-color: #fff;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    flex: 0 0 40%;
+}
+
+.right-content h2 {
+    color: #34495e;
+    font-size: 22px;
+    margin-bottom: 15px;
 }
 
 .product-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 .product-infor {
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.product-infor img {
+    margin-right: 10px;
 }
 
 .product-price {
     color: #e74c3c;
     font-weight: bold;
+    font-size: 16px;
 }
 
 .price-custom p {
@@ -122,7 +140,7 @@ button[type="submit"]:hover {
 }
 
 .total-price {
-    font-size: 18px;
+    font-size: 20px;
     color: #2c3e50;
     text-align: right;
     margin-top: 20px;
@@ -132,8 +150,9 @@ button[type="submit"]:hover {
 hr {
     border: none;
     border-top: 1px solid #ddd;
-    margin: 10px 0;
+    margin: 15px 0;
 }
+
 .price-custom {
     display: flex;
     justify-content: space-between;

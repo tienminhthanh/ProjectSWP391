@@ -36,7 +36,6 @@ public class DBContext {
             conn = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e);
-//>>>>>>> 92031b486a47e6bf79571d5d6fc5e864a6cc84f6
         }
     }
 
