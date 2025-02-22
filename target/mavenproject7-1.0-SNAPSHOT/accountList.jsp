@@ -43,7 +43,7 @@
                     Order List
                 </a>
 
-                <a class="flex items-center p-2 hover:bg-blue-800"href="#">
+                <a class="flex items-center p-2 hover:bg-blue-800"href="voucherList">
                     <i class="fas fa-gift mr-2"></i>
                     Voucher List
                 </a>
@@ -98,7 +98,7 @@
                         <i class="fas fa-history mr-2"></i>
                         Chat history
                     </a>
-                    <a class="flex items-center p-2 bg-blue-800" href="#">
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
                         <i class="fas fa-chart-line mr-2"></i>
                         Performance report
                     </a>

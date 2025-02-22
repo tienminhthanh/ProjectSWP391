@@ -12,17 +12,15 @@ public class Voucher {
 
     private int voucherID;
     private String voucherName;
-    private int voucherValue;
+    private double voucherValue;
     private int quantity;
     private int minimumPurchaseAmount;
     private String dateCreated;
     private int duration;
     private int adminID;
+    private boolean isActive;
 
-    public Voucher() {
-    }
-
-    public Voucher(int voucherID, String voucherName, int voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID) {
+    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive) {
         this.voucherID = voucherID;
         this.voucherName = voucherName;
         this.voucherValue = voucherValue;
@@ -31,6 +29,7 @@ public class Voucher {
         this.dateCreated = dateCreated;
         this.duration = duration;
         this.adminID = adminID;
+        this.isActive = isActive;
     }
 
     public int getVoucherID() {
@@ -49,7 +48,7 @@ public class Voucher {
         this.voucherName = voucherName;
     }
 
-    public int getVoucherValue() {
+    public double getVoucherValue() {
         return voucherValue;
     }
 
@@ -97,4 +96,14 @@ public class Voucher {
         this.adminID = adminID;
     }
 
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Voucher() {
+    }
 }
