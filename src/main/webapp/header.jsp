@@ -34,9 +34,9 @@
         <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
             <div class="customer-icons">
                 <i class="fa-regular fa-bell"></i>
-                <a href="cart">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </a>
+                <a href="cart?customerID=${sessionScope.account.accountID}">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
 
                 <div class="account-wrapper">
                     <i class="fa-regular fa-user" onclick="toggleAccountMenu()"></i>

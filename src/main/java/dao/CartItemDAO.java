@@ -24,8 +24,8 @@ public class CartItemDAO {
     }
 
     public boolean updateCartItem(CartItem cartItem) throws SQLException {
-        String sql = "UPDATE CartItem SET customerID = ?, productID = ?, quantity = ?, priceWithQuantity = ? WHERE itemID = ?";
-        Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getQuantity(), cartItem.getPriceWithQuantity(), cartItem.getItemID()};
+        String sql = "UPDATE CartItem SET quantity = ?, priceWithQuantity = ? WHERE itemID = ?";
+        Object[] params = {cartItem.getQuantity(), cartItem.getPriceWithQuantity(), cartItem.getItemID()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }

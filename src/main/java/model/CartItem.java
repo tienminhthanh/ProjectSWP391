@@ -1,6 +1,7 @@
 package model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class CartItem {
     private int itemID;
@@ -8,6 +9,9 @@ public class CartItem {
     private int productID;
     private int quantity;
     private BigDecimal priceWithQuantity;
+    private Product product;
+    private List<CartItem> itemList;
+    private Image image;
     
     public CartItem() {
     }
@@ -56,8 +60,15 @@ public class CartItem {
     public int getQuantity() {
         return quantity;
     }
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setQuantity(int quantity) throws Exception {
+        if (this.itemList == null) {
+            throw new Exception("Cart is empty.");
+        }
+        int totalQuantity = 0;
+        for (CartItem item : this.itemList) {
+            totalQuantity += item.getQuantity();
+        }
+        this.quantity = totalQuantity;
     }
     public BigDecimal getPriceWithQuantity() {
         return priceWithQuantity;
@@ -65,4 +76,31 @@ public class CartItem {
     public void setPriceWithQuantity(BigDecimal priceWithQuantity) {
         this.priceWithQuantity = priceWithQuantity;
     }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+   
+
+    public List<CartItem> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<CartItem> itemList) {
+        this.itemList = itemList;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
 }

@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -63,42 +64,76 @@
                     <div class="bg-blue-900 text-white p-2 rounded-t-lg">Items in Cart</div>
                     <div class="border border-gray-300 rounded-b-lg">
                         <c:forEach var="item" items="${cartItems}">
+                           
                             <div class="flex items-center p-4 border-b border-gray-300">
                                 <!-- Hiển thị hình ảnh tạm (hoặc hiển thị ID sản phẩm) -->
-                                <div class="w-16 h-16 bg-gray-200 flex items-center justify-center mr-4">
-                                    <span class="text-gray-500">ID ${item.productID}</span>
+                                <div class="flex items-center p-4 border-b border-gray-300">
+                                    <a href="productDetails?productID=${item.productID}" class="product-image">
+                                        <img src="${item.productID}" alt="${item.product.getProductName()}">
+                                        <div class="hover-name">${item.product.getProductName()}</div>
+                                    </a>
+                                  
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-lg font-bold">Product ID: ${item.productID}</h3>
-                                    <p>Quantity: ${item.quantity}</p>
-                                    <p>Total Price: USD ${item.priceWithQuantity} (+Tax)</p>
+                                    <h3 class="text-lg font-bold">Name: ${item.product.productName}</h3>
+                                    <p>Price: ${item.priceWithQuantity} VND</p>
                                 </div>
+                                
                                 <!-- Form xóa CartItem -->
-                                <form action="cart" method="post" class="ml-4">
+                                <form action="cart" method="post" onsubmit="deleteCartItem(event, ${item.itemID}, ${item.customerID})" class="ml-4">
                                     <input type="hidden" name="action" value="delete" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
-                                    <input type="hidden" name="customerID" value="2" />
+                                    <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded">
-                                        <i class="fas fa-trash-alt"></i>
+                                        delete
                                     </button>
                                 </form>
                             </div>
                         </c:forEach>
                     </div>
                 </c:if>
-
                 <div class="flex justify-between items-center mt-4">
-                    <button onclick="history.back()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded">Back</button>
+                    <button onclick="history.back()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back</button>
                     <div class="text-lg font-bold">
                         Total: 
                         <span class="text-red-500">
-                            <c:out value="${fn:length(cartItems)}"/> Item(s) - USD <c:out value="${totalPrice}"/> (+Tax)
+                            <c:out value="${fn:length(cartItems)}"/> Item(s) - 
+                            <c:set var="total" value="0" />
+                            <c:forEach var="item" items="${cartItems}">
+                                <c:set var="total" value="${total + item.priceWithQuantity*item.quantity}" />
+                            </c:forEach>
+                            ${total} VND
                         </span>
                     </div>
-                    <button class="bg-orange-500 text-white px-6 py-2 rounded">Checkout</button>
+
+                    <form action="cart" method="post">
+                        <c:forEach var="item" items="${cartItems}">
+                            <input type="hidden" name="action" value="pay" />
+                        </c:forEach>
+                        <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
+                            <i class="fas fa-credit-card"></i> Checkout
+                        </button>
+                    </form>
+
                 </div>
             </div>
         </main>
         <c:import url="footer.jsp"/>
     </body>
+    <script>
+        function deleteCartItem(event, itemID, customerID) {
+            event.preventDefault();
+            if (confirm("Are you sure you want to delete this item?")) {
+                fetch(`cart?itemID=${itemID}&customerID=${customerID}`, {
+                    method: 'DELETE'
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = `cart?customerID=${customerID}`;
+                    } else {
+                        alert("Error deleting item");
+                    }
+                });
+            }
+        }
+    </script>
 </html>

@@ -38,9 +38,9 @@ public class CartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // Lấy danh sách Cart theo customerID (truyền vào dưới dạng tham số)
-            String customerIdParam = request.getParameter("customerID");
-            int customerID = customerIdParam != null ? Integer.parseInt(customerIdParam) : 0;
+            // Lấy danh sách Cart theo accountID (truyền vào dưới dạng tham số)
+            String customerId = request.getParameter("customerID");
+            int customerID = customerId != null ? Integer.parseInt(customerId) : 0;
 //            int customerID = 2;
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
             request.setAttribute("cartItems", cartItems);
@@ -67,14 +67,16 @@ public class CartServlet extends HttpServlet {
                 addToCart(cartItem);
             } else if ("update".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
-                cartItem.setItemID(itemID);
+                cartItem = new CartItem(itemID, customerID, productID, quantity, priceWithQuantity);
                 updateCartItem(cartItem);
+            } else if ("delete".equals(action)) {
+                deleteCartItem(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        response.sendRedirect("cart.jsp");
+        response.sendRedirect("cart?customerID=" + customerID);
     }
 
 //    private void addCartItem(HttpServletRequest request, HttpServletResponse response)
