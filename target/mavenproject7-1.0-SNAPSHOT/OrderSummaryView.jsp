@@ -41,7 +41,7 @@
                     </div>
                     <div class="payment-custom">
                         <h2>Payment Method</h2>
-                        <label><input type="radio" name="paymentMethod" value="PAY001" ${methodname == 'Bank Transfer' ? 'checked' : ''}/> Bank Transfer</label><br>
+                        <!--<label><input type="radio" name="paymentMethod" value="PAY001" ${methodname == 'Bank Transfer' ? 'checked' : ''}/> Bank Transfer</label><br>-->
                         <label><input type="radio" name="paymentMethod" value="PAY002" ${methodname == 'COD' ? 'checked' : ''}/> Cash on Delivery (COD)</label><br>  
                     </div> <hr>
                     <div class="payment-method">

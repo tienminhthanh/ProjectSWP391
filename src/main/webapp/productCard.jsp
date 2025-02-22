@@ -338,7 +338,7 @@
         </c:choose>
     </p>
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
-    <c:choose>
+    <%--<c:choose>
         <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
             </c:when>
@@ -347,8 +347,20 @@
                 <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </a>
         </c:when>
-    </c:choose>
-            
+    </c:choose> --%> 
+    <!--cmt de test checkout-->
+
+    <c:choose>
+        <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
+            <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
+            </c:when>
+            <c:when test="${currentProduct.stockCount > 0}">
+            <a href="OrderController?productID=${currentProduct.productID}">
+                <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+            </a>
+        </c:when>
+    </c:choose> 
+
     <!-- If out of stock -> overlay -->
     <c:if test="${currentProduct.stockCount == 0}">
         <div class="out-of-stock">Out of Stock</div>
