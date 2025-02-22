@@ -44,7 +44,7 @@ a{
     left: 0;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  Optional shadow 
     z-index: 1000;*/
-    background-color: #87CEEB; /* Keep the background */
+background-color: #ecc942; /* Keep the background */
     transition: top 0.3s ease-in-out;
 
 
@@ -94,7 +94,7 @@ a{
 }
 
 .search-bar button {
-    background-color: #00BFFF;
+    background-color: orange;
     border: none;
     color: white;
     padding: 10px 15px;
@@ -169,7 +169,7 @@ nav ul li a:hover {
     display: flex;
     align-items: center;
     gap: 5px;
-    background-color: #00BFFF;
+    background-color: orange;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -270,7 +270,7 @@ nav ul li a:hover {
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #87CEEB;
+        background-color: #ecc942;
         padding: 10px 0;
         z-index: 10;
         justify-content: space-around;

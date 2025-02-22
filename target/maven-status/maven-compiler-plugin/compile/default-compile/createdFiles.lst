@@ -21,7 +21,6 @@ model\Merchandise.class
 controller\account\ListAccountSevlet.class
 model\Brand.class
 model\Category.class
-model\Image.class
 model\Book.class
 model\Character.class
 controller\account\UnlockAccountServlet.class
