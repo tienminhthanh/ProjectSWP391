@@ -55,9 +55,18 @@ public class AccountDAO {
         return false;  // No other user has this email
     }
 
-    public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate) throws SQLException  {
-        String sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ? WHERE username = ? AND isActive = 1";
-        Object[] params = {firstName, lastName, email, phoneNumber, birthDate, username};
+    public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
+        String sql;
+        Object[] params;
+
+        if (role != null) {
+            sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ?, role = ? WHERE username = ? AND isActive = 1";
+            params = new Object[]{firstName, lastName, email, phoneNumber, birthDate, role, username};
+        } else {
+            sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ? WHERE username = ? AND isActive = 1";
+            params = new Object[]{firstName, lastName, email, phoneNumber, birthDate, username};
+        }
+
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }

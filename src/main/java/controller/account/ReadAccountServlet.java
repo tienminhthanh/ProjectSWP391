@@ -15,16 +15,14 @@ import java.io.IOException;
 @WebServlet(name = "ReadAccountServlet", urlPatterns = {"/readAccount"})
 public class ReadAccountServlet extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
+       
 
-        model.Account account = (model.Account) session.getAttribute("account");
+        Account account = (Account) session.getAttribute("account");
 
         if (account != null) {
             request.setAttribute("account", account);

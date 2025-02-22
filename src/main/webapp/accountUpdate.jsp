@@ -27,30 +27,51 @@
                 </c:if>
                 <form action="updateAccount" method="post">
                     <input type="hidden" name="username" value="${account.username}">
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="mb-4">
                             <label class="sr-only" for="firstName">First Name</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="firstName" name="firstName" placeholder="First Name" required type="text" value="${account.firstName}"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="firstName" name="firstName"
+                                   placeholder="First Name" required type="text" value="${account.firstName}"/>
                         </div>
                         <div class="mb-4">
                             <label class="sr-only" for="lastName">Last Name</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName" placeholder="Last Name" required type="text" value="${account.lastName}"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName"
+                                   placeholder="Last Name" required type="text" value="${account.lastName}"/>
                         </div>
                         <div class="mb-4">
                             <label class="sr-only" for="email">Email</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email" placeholder="Email" required type="email" value="${account.email}"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email"
+                                   placeholder="Email" required type="email" value="${account.email}"/>
                         </div>
                         <div class="mb-4">
                             <label class="sr-only" for="phoneNumber">Phone Number</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" required type="text" value="${account.phoneNumber}"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber"
+                                   placeholder="Phone Number" required type="text" value="${account.phoneNumber}"/>
                         </div>
                         <div class="mb-4">
                             <label class="sr-only" for="birthDate">Birth Date</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" placeholder="Birth Date" required type="date" value="${account.birthDate}"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate"
+                                   placeholder="Birth Date" required type="date" value="${account.birthDate}"/>
                         </div>
+
+                        <!-- Chỉ admin mới thấy phần chọn role -->
+                        <c:if test="${sessionScope.account.role eq 'admin'}">
+                            <div class="mb-4">
+                                <label class="sr-only" for="role">Role</label>
+                                <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role">
+                                    <option value="customer" ${account.role eq 'customer' ? 'selected' : ''}>Customer</option>
+                                    <option value="staff" ${account.role eq 'staff' ? 'selected' : ''}>Staff</option>
+                                    <option value="shipper" ${account.role eq 'shipper' ? 'selected' : ''}>Shipper</option>
+                                    <option value="admin" ${account.role eq 'admin' ? 'selected' : ''}>Admin</option>
+                                </select>
+                            </div>
+                        </c:if>
                     </div>
+
                     <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Update</button>
                 </form>
+
                 <div class="mt-6">
                     <a class="text-blue-600 hover:underline" href="readAccount">
                         <i class="fas fa-arrow-left mr-2"></i> Back to Profile

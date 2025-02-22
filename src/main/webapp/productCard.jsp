@@ -342,13 +342,14 @@
         <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
             </c:when>
-            <c:when test="${currentProduct.stockCount > 0}">
-            <a href="addToCart?productID=${currentProduct.productID}">
-                <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </a>
+
+        <c:when test="${currentProduct.stockCount > 0}">
+            <form action="cart" method="post">
+                <button class="add-to-cart" type="submit" name="action" value="add"><i class="fa-solid fa-cart-plus"></i></button>
+            </form>
         </c:when>
     </c:choose>
-            
+
     <!-- If out of stock -> overlay -->
     <c:if test="${currentProduct.stockCount == 0}">
         <div class="out-of-stock">Out of Stock</div>
