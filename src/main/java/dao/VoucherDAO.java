@@ -84,19 +84,17 @@ public class VoucherDAO {
     public boolean updateVoucher(Voucher voucher) {
         try {
             String sql = "UPDATE [dbo].[Voucher]\n"
-                    + "   SET [voucherName] = ?>\n"
-                    + "      ,[voucherValue] = ?>\n"
+                    + "   SET [voucherName] = ?\n"
+                    + "      ,[voucherValue] = ?\n"
                     + "      ,[quantity] = ?\n"
                     + "      ,[minimumPurchaseAmount] = ?\n"
                     + "      ,[duration] = ?\n"
-                    + "      ,[adminID] = ?"
-                    + "+     WHERE [voucherID] = ?";
+                    + "      WHERE [voucherID] = ?";
             Object[] params = {voucher.getVoucherName(),
                 voucher.getVoucherValue(),
                 voucher.getQuantity(),
                 voucher.getMinimumPurchaseAmount(),
                 voucher.getDuration(),
-                voucher.getAdminID(),
                 voucher.getVoucherID()};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;

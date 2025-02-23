@@ -7,9 +7,12 @@ controller\account\EmailAuthenticationServlet.class
 utils\DBContext.class
 controller\voucher\VoucherListServlet.class
 controller\account\LogoutServlet.class
+controller\voucher\VoucherUpdateServlet.class
 controller\account\ReadAccountServlet.class
 controller\account\AddAccountSevlet.class
+controller\voucher\VoucherDetails.class
 model\Voucher.class
+dao\VoucherDAO.class
 controller\account\UnlockAccountServlet.class
 model\Account.class
 controller\account\DeleteAccountServlet.class

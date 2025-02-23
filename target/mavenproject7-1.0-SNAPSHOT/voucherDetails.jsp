@@ -178,6 +178,11 @@
                     </table>
                 </div>
             </div>
+            <div class="mt-6">
+                <a class="text-blue-600 hover:underline" href="voucherList">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Voucher List
+                </a>
+            </div>
         </main>
 
         <!-- FOOTER -->

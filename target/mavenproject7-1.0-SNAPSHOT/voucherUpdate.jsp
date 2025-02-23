@@ -43,7 +43,7 @@
                     <!-- Voucher Value -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700">Voucher Value</label>
-                        <input type="number" name="voucherValue" value="${VOUCHER_DETAILS.voucherValue}" 
+                        <input type="number" step="0.01" name="voucherValue" value="${VOUCHER_DETAILS.voucherValue}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
 
@@ -67,21 +67,15 @@
                         <input type="number" name="duration" value="${VOUCHER_DETAILS.duration}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
-                               
-<!--                     Date Created (Hidden, để giữ nguyên giá trị cũ) 
-                    <input type="hidden" name="dateCreated" value="${VOUCHER_DETAILS.dateCreated}">
-
-                     Admin ID (Hidden, lấy từ session của admin đang đăng nhập) 
-                    <input type="hidden" name="adminID" value="${sessionScope.account.adminID}">-->
 
                     <!-- Submit Button -->
-                    
                     <div class="col-span-3">
                         <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
                             Update Voucher
                         </button>
                     </div>
                 </form>
+
 
 
 

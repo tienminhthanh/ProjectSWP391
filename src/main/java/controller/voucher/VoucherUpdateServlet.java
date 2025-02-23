@@ -23,6 +23,7 @@ import model.Voucher;
 public class VoucherUpdateServlet extends HttpServlet {
 
     private final String VOUCHER_UPDATE_PAGE = "voucherUpdate.jsp";
+    private final String VOUCHER_LIST_PAGE = "voucherList";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -75,19 +76,20 @@ public class VoucherUpdateServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String url = VOUCHER_LIST_PAGE;
         VoucherDAO vDao = new VoucherDAO();
         int id = Integer.parseInt(request.getParameter("voucherID"));
         String name = request.getParameter("voucherName");
         double value = Double.parseDouble(request.getParameter("voucherValue"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
-        String dateCreated = request.getParameter("dateCreated");
+        String dateCreated = vDao.getVoucherByID(id).getDateCreated();
 //        LocalDate today = LocalDate.now();
         int duration = Integer.parseInt(request.getParameter("duration"));
-        int adminID = Integer.parseInt(request.getParameter("adminID"));
+        int adminID = vDao.getVoucherByID(id).getAdminID();
         Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, vDao.getVoucherByID(id).isIsActive());
         if (vDao.updateVoucher(voucher)) {
-            response.sendRedirect("voucherList");
+            response.sendRedirect(url);
         }
     }
 
