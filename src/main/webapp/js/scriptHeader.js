@@ -36,3 +36,11 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener("resize", handleScroll); // Adjust when resizing
 });
 
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    let loginLink = document.getElementById("loginLink");
+    let currentURL = encodeURIComponent(window.location.href);
+    loginLink.href = "login?currentURL=" + currentURL;
+});
+

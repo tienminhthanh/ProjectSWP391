@@ -16,10 +16,12 @@ controller\account\DeleteAccountServlet.class
 model\Creator.class
 controller\account\LoginServlet.class
 utils\Utility.class
+controller\product\ProductDetailsController.class
 controller\account\RegisterServlet.class
 model\Merchandise.class
 controller\account\ListAccountSevlet.class
 model\Brand.class
+controller\product\SearchController.class
 model\Category.class
 model\Book.class
 model\Character.class

@@ -11,7 +11,7 @@
             <div class="search-bar">
                 <!--style this shit properly man, it's killing me-->
                 <form action="search" method="get">
-                    <select name="categories" id="categories">
+                    <select name="type" id="searchType">
                         <option value="book">Books</option>
                         <option value="merch">Merch</option>
                     </select>
@@ -54,7 +54,8 @@
 
         <c:if test="${empty sessionScope.account}">
             <div class="auth-buttons">
-                <a href="login">
+
+                <a href="login" id="loginLink">
                     <button class="sign-in"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
                 </a>
                 <a href="register">
@@ -64,3 +65,18 @@
         </c:if>
     </div>
 </header>
+
+<script>
+    window.addEventListener("load", function () {
+        var type = "<%= request.getAttribute("type") != null ? request.getAttribute("type") : "book"%>";
+
+        console.log("DEBUG: type from JSP:", type);
+
+        var selectElement = document.getElementById("searchType");
+        if (selectElement) {
+            selectElement.value = type;
+        }
+    });
+
+
+</script>

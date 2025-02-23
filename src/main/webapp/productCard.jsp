@@ -20,8 +20,8 @@
     </c:choose>
 
     <!-- Product Image -->
-    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image">
-        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}">
+    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image" title="${currentProduct.productName}">
+        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" >
         <div class="hover-name">${currentProduct.productName}</div>
     </a>
 
@@ -39,7 +39,7 @@
     </c:choose>
 
     <!-- Product Name -->
-    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title">${currentProduct.productName}</a>
+    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title" title="${currentProduct.productName}">${currentProduct.productName}</a>
 
     <!-- Sale Expiry Date or Release Date -->
     <%--<c:if test="${onSale}">--%>
@@ -58,7 +58,7 @@
         <c:choose>
             <%--<c:when test="${onSale}">--%>
             <c:when test="${empty currentProduct.specialFilter}">
-                <span class="discount-price">33333 VND</span>
+                <span class="discount-price">${currentProduct.price * 0.7} VND</span>
                 <span class="original-price">${currentProduct.price} VND</span>
             </c:when>
             <c:otherwise>
@@ -77,7 +77,7 @@
             </a>
         </c:when>
     </c:choose>
-            
+
     <!-- If out of stock -> overlay -->
     <c:if test="${currentProduct.stockCount == 0}">
         <div class="out-of-stock">Out of Stock</div>

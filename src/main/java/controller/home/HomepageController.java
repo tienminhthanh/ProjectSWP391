@@ -63,8 +63,9 @@ public class HomepageController extends HttpServlet {
             throws ServletException, IOException {
         try {
             ProductDAO productDAO = new ProductDAO();
-            List<Product> productList = productDAO.select10RandomActiveBooks();
-
+            List<Product> productList = productDAO.get10RandomActiveProducts("book");
+            
+            
             request.setAttribute("productList", productList);
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {

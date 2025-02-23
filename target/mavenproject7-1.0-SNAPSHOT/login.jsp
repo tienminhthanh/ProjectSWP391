@@ -23,6 +23,7 @@
                     <div class="w-full md:w-1/2 md:pr-4 mb-6 md:mb-0">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
                         <form action="login" method="post">
+                            <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
                             <div class="mb-4">
                                 <label class="sr-only" for="username">Username</label>
                                 <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" placeholder="Username" required type="text"/>

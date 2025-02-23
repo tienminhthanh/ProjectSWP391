@@ -16,9 +16,9 @@
                         <h4>
                             <a href="https://maps.app.goo.gl/8y7potYBMYpJ6E9Q8" class="link contact-content">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <p class="contact-text">
-                                    600 Nguyễn Văn Cừ Nối Dài, An Bình, Bình Thủy, Cần Thơ
-                                </p>
+                                <span class="contact-text">
+                                    600 Nguyen Van Cu Noi Dai, An Binh, Binh Thuy, Can Tho
+                                </span>
                             </a>
                         </h4>
                     </li>
@@ -26,9 +26,9 @@
                         <h4>
                             <a href="mailto:anhk.ce191266@gmail.com" class="link contact-content">
                                 <i class="fa-regular fa-envelope"></i>
-                                <p class="contact-text">
+                                <span class="contact-text">
                                     Email: anhk.ce191266@gmail.com
-                                </p>
+                                </span>
                             </a>
                         </h4>
                     </li>
@@ -36,9 +36,9 @@
                         <h4>
                             <a href="tel:0384417960" class="link contact-content">
                                 <i class="fa-solid fa-phone"></i>
-                                <p class="contact-text">
+                                <span class="contact-text">
                                     Hotline: 0384417960
-                                </p>
+                                </span>
                             </a>
                         </h4>
                     </li>
@@ -47,36 +47,36 @@
 
             <div class="customer-service col-6 col-lg-2">
                 <p class="policy-service-title">
-                    HỖ TRỢ KHÁCH HÀNG
+                    CUSTOMER SUPPORT
                 </p>
                 <div class="policy-service-content">
                     <a href="Cauhoithuonggap.jsp" class="link policy-service-text">
-                        Câu hỏi thường gặp
+                        FAQ
                     </a>
                     <a href="QcHoatDong.jsp" class="link policy-service-text">
-                        Điều khoản dịch vụ
+                        Terms of Service
                     </a>
                 </div>
             </div>
             <div class="policy col-6 col-lg-2">
                 <p class="policy-service-title">
-                    CHÍNH SÁCH
+                    POLICIES
                 </p>
                 <div class="policy-service-content">
                     <a href="CSbaoMat.jsp" class="link policy-service-text">
-                        Chính sách bảo mật
+                        Privacy Policy
                     </a>
                     <a href="CSvanChuyen.jsp" class="link policy-service-text">
-                        Chính sách vận chuyển
+                        Shipping Policy
                     </a>
                     <a href="CStraHang.jsp" class="link policy-service-text">
-                        Chính sách đổi trả
+                        Return & Exchange Policy
                     </a>
                 </div>
             </div>
             <div class="social-media col-12 col-lg-4">
                 <p class="social-media-title">
-                    KẾT NỐI VỚI CHÚNG TÔI
+                    CONNECT WITH US
                 </p>
                 <div class="social-media-icon">
                     <div class="icon-container">

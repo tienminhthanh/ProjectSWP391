@@ -21,16 +21,13 @@ public class LoginServlet extends HttpServlet {
     public void init() {
         accountDAO = new AccountDAO();
     }
-    
-    
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        
+        String currentURL = request.getParameter("currentURL");
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
@@ -44,7 +41,11 @@ public class LoginServlet extends HttpServlet {
                                 response.sendRedirect("dashboard.jsp");
                                 break;
                             case "customer":
-                                response.sendRedirect("home");
+                                if (currentURL == null || currentURL.trim().isEmpty()) {
+                                    response.sendRedirect("home");
+                                } else {
+                                    response.sendRedirect(currentURL);
+                                }
                                 break;
                             case "staff":
                                 response.sendRedirect("dashboard.jsp");
@@ -77,8 +78,12 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("account") != null) {
-            response.sendRedirect("home.jsp");
+            response.sendRedirect("home");
         } else {
+            String currentURL = request.getParameter("currentURL");
+            if (currentURL != null) {
+                request.setAttribute("currentURL", currentURL);
+            }
             request.getRequestDispatcher("login.jsp").forward(request, response);  // Redirect to login if not logged in
         }
     }
