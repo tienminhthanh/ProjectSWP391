@@ -23,29 +23,39 @@ public class OrderDAO {
         context = new utils.DBContext();
     }
 //  CREATE ORDER
-//chen mot order vo orderInfo
 
+//chen mot order vo orderInfo
     public void insertOrderInfo(OrderInfo orderInfo) throws SQLException {
-        String sql = "INSERT INTO OrderInfo (\n"
-                + "    orderID, orderDate, deliveryAddress, deliveryOptionID, customerID, \n"
-                + "    preVoucherAmount, voucherID, deliveryStatus, orderStatus\n"
-                + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        Object[] params = {orderInfo.getOrderID(),
-            orderInfo.getOrderDate(),
+        String sql = "INSERT INTO OrderInfo ("
+                + "  deliveryAddress, deliveryOptionID, customerID, "
+                + "preVoucherAmount, voucherID, staffID, shipperID, deliveryStatus, "
+                + "orderStatus, adminID, deliveredAt, paymentMethod, paymentExpiredTime, paymentStatus"
+                + ") VALUES (   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Object[] params = {
             orderInfo.getDeliveryAddress(),
             orderInfo.getDeliveryOptionID(),
             orderInfo.getCustomerID(),
             orderInfo.getPreVoucherAmount(),
             orderInfo.getVoucherID(),
+            orderInfo.getStaffID(),
+            orderInfo.getShipperID(),
             orderInfo.getDeliveryStatus(),
-            orderInfo.getOrderStatus()};
+            orderInfo.getOrderStatus(),
+            orderInfo.getAdminID(),
+            orderInfo.getDeliveredAt(),
+            orderInfo.getPaymentMethod(),
+            orderInfo.getPaymentExpiredTime(),
+            orderInfo.getPaymentStatus()};
         int rowsAffected = context.exeNonQuery(sql, params);
+        int orderID = getLastInsertedOrderID(); // lay orderID moi duoc tao
+        orderInfo.setOrderID(orderID);
+
         System.out.println(rowsAffected + " rows affected");
-        callInsertOrderProduct(orderInfo);
+        callInsertOrderProduct(orderInfo, orderID);
     }
 
 // insert row vao bang Order_product
-    public void insertOrderPoduct(Object[] params) throws SQLException {
+    public void insertOrderProduct(Object[] params) throws SQLException {
         String sql = "INSERT INTO Order_Product (orderID, productID, quantity, priceWithQuantity)  \n"
                 + "VALUES (?, ?, ?, ?);";
         int rowsAffected = context.exeNonQuery(sql, params);
@@ -53,20 +63,37 @@ public class OrderDAO {
     }
 
 // for them tung obj vao bang order_product
-    public void callInsertOrderProduct(OrderInfo orderInfo) throws SQLException {
+    public void callInsertOrderProduct(OrderInfo orderInfo, int orderID) throws SQLException {
         for (int i = 0; i < orderInfo.getOrderProductList().size(); i++) {
             OrderProduct orderProduct = orderInfo.getOrderProductList().get(i);
-            Object[] params = {orderInfo.getOrderID(), orderProduct.getProductID(),
+            Object[] params = {orderID, orderProduct.getProductID(),
                 orderProduct.getQuantity(), orderProduct.getPriceWithQuantity()};
-            insertOrderPoduct(params);
+            insertOrderProduct(params);
         }
     }
 
     // GET CAC LOAI THONG TIN
+    // lay orderID moi nhat
+    public int getLastInsertedOrderID() throws SQLException {
+        String sql = "SELECT SCOPE_IDENTITY()";
+        try ( ResultSet rs = context.exeQuery(sql, null)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
     // for admin with satff manage orderlist
     public List<OrderInfo> getAllOrders() throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT * FROM OrderInfo";
+        String sql = "SELECT o.*, c.firstName + ' ' + c.lastName AS customerName, "
+                + "s.firstName + ' ' + s.lastName AS shipperName, "
+                + "st.firstName + ' ' + st.lastName AS staffName "
+                + "FROM OrderInfo o "
+                + "LEFT JOIN Customer c ON o.customerID = c.customerID "
+                + "LEFT JOIN Shipper s ON o.shipperID = s.shipperID "
+                + "LEFT JOIN Staff st ON o.staffID = st.staffID";
 
         try ( ResultSet rs = context.exeQuery(sql, null)) {
             while (rs.next()) {
@@ -76,9 +103,30 @@ public class OrderDAO {
         return orderList;
     }
 
+    // lay thong tin product cho orderdetail
+    public List<OrderProduct> getProductsByOrderID(int orderID) throws SQLException {
+        List<OrderProduct> productList = new ArrayList<>();
+        String sql = "SELECT * FROM OrderProducts WHERE orderID = ?";
+        Object[] params = {orderID};
+
+        try ( ResultSet rs = context.exeQuery(sql, params)) {
+            while (rs.next()) {
+                productList.add(mapResultSetToOrderProduct(rs));
+            }
+        }
+        return productList;
+    }
+
     //dung truy van khi ng dung hoac admin xoa order thi an di
     public OrderInfo getOrderByOrderID(int orderID) throws SQLException {
-        String sql = "SELECT * FROM OrderInfo WHERE orderID = ?";
+        String sql = "SELECT o.*, c.firstName + ' ' + c.lastName AS customerName, "
+                + "s.firstName + ' ' + s.lastName AS shipperName, "
+                + "st.firstName + ' ' + st.lastName AS staffName "
+                + "FROM OrderInfo o "
+                + "LEFT JOIN Customer c ON o.customerID = c.customerID "
+                + "LEFT JOIN Shipper s ON o.shipperID = s.shipperID "
+                + "LEFT JOIN Staff st ON o.staffID = st.staffID "
+                + "WHERE o.orderID = ?";
         Object[] param = {orderID};
 
         try ( ResultSet rs = context.exeQuery(sql, param)) {
@@ -92,7 +140,14 @@ public class OrderDAO {
 // lay list order cho cus
     public List<OrderInfo> getOrdersByCustomerID(int customerID) throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT * FROM OrderInfo WHERE customerID = ?";
+        String sql = "SELECT o.*, c.firstName + ' ' + c.lastName AS customerName, "
+                + "s.firstName + ' ' + s.lastName AS shipperName, "
+                + "st.firstName + ' ' + st.lastName AS staffName "
+                + "FROM OrderInfo o "
+                + "LEFT JOIN Customer c ON o.customerID = c.customerID "
+                + "LEFT JOIN Shipper s ON o.shipperID = s.shipperID "
+                + "LEFT JOIN Staff st ON o.staffID = st.staffID "
+                + "WHERE o.customerID = ?";
         Object[] params = {customerID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
@@ -133,12 +188,12 @@ public class OrderDAO {
         return voucherValue;
     }
 
-    // MAP THONG TIN 
 // lay thong tin cac san pham theo oderId de in ra orderdeatil
     public List<OrderProduct> getOrderProductByOrderID(int orderID) throws SQLException {
         List<OrderProduct> OrderProductList = new ArrayList<>();
-        String sql = "SELECT op.productID, op.quantity, op.priceWithQuantity "
-                + "FROM Order_Product op "
+        String sql = "SELECT op.productID, p.productName, p.price, op.quantity, op.priceWithQuantity \n"
+                + "FROM Order_Product op\n"
+                + "JOIN Product p ON op.productID = p.productID\n"
                 + "WHERE op.orderID = ?";
         Object[] params = {orderID};
         try ( ResultSet rs = context.exeQuery(sql, params)) {
@@ -150,6 +205,7 @@ public class OrderDAO {
         return OrderProductList;
     }
 
+    // MAP THONG TIN 
 // map de lay all orderinfo cho listAll
     private OrderInfo mapResultSetToOrderInfo(ResultSet rs) throws SQLException {
         return new OrderInfo(

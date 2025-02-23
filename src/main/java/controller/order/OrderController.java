@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -57,9 +58,8 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productID = request.getParameter("productID");
-        request.setAttribute("productID", productID);
-        request.getRequestDispatcher("OrderSummaryView.jsp").forward(request, response);
+        processRequest(request, response);
+
     }
 
     /**
@@ -73,7 +73,14 @@ public class OrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+        Integer accountID = (Integer) session.getAttribute("accountID");
+        String username = (String) session.getAttribute("username");
+
+        if (accountID == null || username == null) {
+            response.sendRedirect("login.jsp");
+        }
+
     }
 
     /**

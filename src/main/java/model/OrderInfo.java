@@ -29,6 +29,18 @@ public class OrderInfo {
 
     public OrderInfo() {
     }
+// orderInfo khi tao new order
+    public OrderInfo(String deliveryAddress, int deliveryOptionID, int customerID,
+            String paymentMethod, List<OrderProduct> orderProductList) {
+        this.deliveryAddress = deliveryAddress;
+        this.deliveryOptionID = deliveryOptionID;
+        this.customerID = customerID;
+        this.paymentMethod = paymentMethod;
+        this.paymentStatus = "Pending";
+        this.orderStatus = "Pending";
+        this.deliveryStatus = "Not Shipped";
+        this.orderProductList = orderProductList;
+    }
 
     public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, int preVoucherAmount, int voucherID, int staffID, int shipperID, String deliveryStatus, String orderStatus, int adminID, Date deliveredAt, String paymentMethod, int paymentExpiredTime, String paymentStatus) {
         this.orderID = orderID;
