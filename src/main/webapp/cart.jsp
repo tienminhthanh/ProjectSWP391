@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -21,10 +20,53 @@
                 max-width: 200px;
                 height: auto;
             }
-            @media (max-width: 768px) {
+
+/*            @media (max-width: 768px) {
                 .logo img {
                     max-width: 140px;
                 }
+            }*/
+
+            /* Custom styles for the cart */
+            .status-container {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+
+            .status-item {
+                width: 120px; /* Giảm độ rộng */
+                text-align: center;
+                padding: 10px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                margin: 0 10px;
+                font-weight: bold;
+                background-color: #f9fafb;
+            }
+
+            .status-item.active {
+                border-color: #3b82f6;
+                background-color: #3b82f6;
+                color: white;
+            }
+
+            .items-in-cart {
+                text-align: center;
+                background-color: #1e3a8a;
+                color: white;
+                padding: 10px;
+                border-radius: 8px 8px 0 0;
+                margin-bottom: 0;
+            }
+
+            .quantity-input {
+                width: 60px;
+                text-align: center;
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                margin-right: 10px;
             }
         </style>
     </head>
@@ -42,10 +84,12 @@
         <main class="container mx-auto px-4 py-6">
             <div class="bg-white shadow rounded-lg p-4">
                 <h2 class="text-2xl font-bold mb-4">Cart</h2>
-                <div class="flex items-center mb-4">
-                    <div class="flex-1 text-center border-b-2 border-blue-500 pb-2">1 Cart</div>
-                    <div class="flex-1 text-center border-b-2 border-gray-300 pb-2">2 Settlement</div>
-                    <div class="flex-1 text-center border-b-2 border-gray-300 pb-2">3 Complete</div>
+
+                <!-- Trạng thái: 1 Cart, 2 Settlement, 3 Complete -->
+                <div class="status-container">
+                    <div class="status-item active">1 Cart</div>
+                    <div class="status-item">2 Settlement</div>
+                    <div class="status-item">3 Complete</div>
                 </div>
 
                 <!-- Kiểm tra nếu giỏ hàng rỗng -->
@@ -61,12 +105,11 @@
 
                 <!-- Nếu có CartItem -->
                 <c:if test="${not empty cartItems}">
-                    <div class="bg-blue-900 text-white p-2 rounded-t-lg">Items in Cart</div>
+                    <div class="items-in-cart">Items in Cart</div>
                     <div class="border border-gray-300 rounded-b-lg">
                         <c:forEach var="item" items="${cartItems}">
-
                             <div class="flex items-center p-4 border-b border-gray-300">
-                                <!-- Hiển thị hình ảnh tạm (hoặc hiển thị ID sản phẩm) -->
+                                <!-- Hiển thị hình ảnh sản phẩm -->
                                 <div class="w-16 h-16 bg-gray-200 flex items-center justify-center mr-4">
                                     <a href="productDetails?productID=${item.productID}" class="product-image">
                                         <img src="${item.product.imageList[0].imageURL}" alt="${item.product.getProductName()}">
@@ -74,17 +117,17 @@
                                     </a>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-lg font-bold">Name: ${item.product.getProductName()}</h3>
+                                    <h3 class="text-lg font-bold">Name: ${item.product.productName}</h3>
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
-                                    <p>Price: ${item.product.price} VND</p>
+                                <p> ${item.priceWithQuantity} VND</p>
                                 <!-- Form cập nhật CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="update" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}" min="1" required/>
+                                    <input type="number" name="quantity" value="${item.quantity}" min="1" required class="quantity-input"/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>
@@ -103,6 +146,8 @@
                         </c:forEach>
                     </div>
                 </c:if>
+
+                <!-- Tổng cộng và nút thanh toán -->
                 <div class="flex justify-between items-center mt-4">
                     <button onclick="history.back()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back</button>
                     <div class="text-lg font-bold">
@@ -111,12 +156,11 @@
                             <c:out value="${fn:length(cartItems)}"/> Item(s) - 
                             <c:set var="total" value="0" />
                             <c:forEach var="item" items="${cartItems}">
-                                <c:set var="total" value="${total + item.priceWithQuantity*item.quantity}" />
+                                <c:set var="total" value="${total + item.priceWithQuantity * item.quantity}" />
                             </c:forEach>
                             ${total} VND
                         </span>
                     </div>
-
                     <form action="cart" method="post">
                         <c:forEach var="item" items="${cartItems}">
                             <input type="hidden" name="action" value="pay" />
@@ -125,10 +169,9 @@
                             <i class="fas fa-credit-card"></i> Checkout
                         </button>
                     </form>
-
                 </div>
             </div>
         </main>
-        <c:import url="footer.jsp"/>
+       
     </body>
 </html>

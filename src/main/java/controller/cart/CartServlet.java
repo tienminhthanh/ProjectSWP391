@@ -64,9 +64,28 @@ public class CartServlet extends HttpServlet {
         BigDecimal priceWithQuantity = new BigDecimal(request.getParameter("priceWithQuantity"));
 
         try {
+            ProductDAO productDAO = new ProductDAO();
+            product = productDAO.getProductById(productID);
+
+            if (product == null) {
+                throw new Exception("Product not found!");
+            }
+
+            if (quantity > product.getStockCount()) {
+                throw new Exception("Not enough stock for this product!");
+            }
+
             if ("add".equals(action)) {
-                CartItem cartItem = new CartItem(customerID, productID, quantity, priceWithQuantity);
-                addToCart(cartItem);
+                CartItem existingCartItem = cartItemDAO.getCartItemByCustomerAndProduct(customerID, productID);
+                if (existingCartItem != null) {
+                    // Update quantity if the product already exists in the cart
+                    existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity);
+                    updateCartItem(existingCartItem);
+                } else {
+                    // Add new item to the cart
+                    CartItem cartItem = new CartItem(customerID, productID, quantity, priceWithQuantity);
+                    addToCart(cartItem);
+                }
             } else if ("update".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
                 CartItem cartItem = new CartItem(itemID, customerID, productID, quantity, priceWithQuantity);

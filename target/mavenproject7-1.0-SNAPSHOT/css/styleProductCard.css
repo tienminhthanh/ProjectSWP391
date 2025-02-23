@@ -1,14 +1,7 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : Feb 19, 2025, 2:15:21 PM
-    Author     : anhkc
-*/
 
+/* CSS của bạn */
 .product-card {
-    /*width: 220px;*/
+    width: 220px;
     border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
@@ -20,7 +13,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     padding-bottom: 0px;
     height: 90%; /* Ensuring a fixed card height */
 }
-
 
 .product-card:hover {
     transform: scale(1.05);
@@ -50,22 +42,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     text-align: center;
 }
 
-.ribbon-new{
+.ribbon-new {
     background: orange;
     top: 10px;
     right: -40px;
     padding: 10px 50px;
     font-size: 15px;
 }
-.ribbon-pre{
+
+.ribbon-pre {
     background: blue;
     top: 13px;
     right: -30px;
     padding: 10px 30px;
     font-size: 10px;
 }
-
-
 
 /* Product Image */
 .product-image {
@@ -124,12 +115,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     font-size: 13px;
     margin: 5px 0;
 }
-.sale-expiry{
-    color: red;
 
+.sale-expiry {
+    color: red;
 }
-.release-date{
-    color:blue;
+
+.release-date {
+    color: blue;
 }
 
 /* Price */
@@ -143,11 +135,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 }
 
 .discount-price {
-    
     font-size: 14px;
     font-weight: bold;
     color: red;
 }
+
 .original-price {
     font-size: 12px; /* Reduce size so both prices fit */
     color: #888;
@@ -159,7 +151,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .add-to-cart {
     display: none;
     position: absolute;
-    top: 50%;  /* Centers vertically */
+    top: 50%; /* Centers vertically */
     right: 5px; /* Closer to the right edge */
     transform: translateY(-50%); /* Perfect vertical centering */
     background: orange;
@@ -193,4 +185,3 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     /*Allows clicks to go through*/
     pointer-events: none;
 }
-

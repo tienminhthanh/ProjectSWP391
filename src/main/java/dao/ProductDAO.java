@@ -107,18 +107,57 @@ public class ProductDAO {
         return null;
     }
 
-    public HashMap<String,Creator> getCreatorsOfThisProduct(int productID) throws SQLException {
+    public Product getProductById(int productID) throws SQLException {
+        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
+                + "       Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, "
+                + "       Category.categoryName "
+                + "FROM Product "
+                + "INNER JOIN Category ON Product.categoryID = Category.categoryID "
+                + "WHERE Product.productID = ?";
+
+        Object[] params = {productID};
+        ResultSet rs = context.exeQuery(sql, params);
+
+        if (rs.next()) {
+            // Create Category
+            Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
+
+            // Create and return Product object
+            return new Product(
+                    rs.getInt("productID"),
+                    rs.getString("productName"),
+                    rs.getDouble("price"),
+                    rs.getInt("stockCount"),
+                    category,
+                    rs.getString("description"),
+                    rs.getDate("releaseDate").toLocalDate(),
+                    rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                    rs.getDouble("averageRating"),
+                    rs.getInt("numberOfRating"),
+                    rs.getString("specialFilter"),
+                    rs.getInt("adminID"),
+                    rs.getString("keywords"),
+                    rs.getString("generalCategory"),
+                    rs.getBoolean("isActive"),
+                    rs.getString("imageURL")
+            );
+        }
+
+        return null;
+    }
+
+    public HashMap<String, Creator> getCreatorsOfThisProduct(int productID) throws SQLException {
         String sql = "SELECT Product_Creator.creatorID, Creator.creatorName, Creator.creatorRole\n"
                 + "FROM     Creator INNER JOIN\n"
                 + "                  Product_Creator ON Creator.creatorID = Product_Creator.creatorID\n"
                 + "where Product_Creator.productID = ?";
         Object[] params = {productID};
 
-        HashMap<String,Creator> creatorMap = new HashMap<>();
+        HashMap<String, Creator> creatorMap = new HashMap<>();
         ResultSet rs = context.exeQuery(sql, params);
 
         while (rs.next()) {
-            creatorMap.put(rs.getString(3),new Creator(rs.getInt(1), rs.getString(2), rs.getString(3)));
+            creatorMap.put(rs.getString(3), new Creator(rs.getInt(1), rs.getString(2), rs.getString(3)));
         }
 
         return creatorMap;
@@ -135,7 +174,7 @@ public class ProductDAO {
         ResultSet rs = context.exeQuery(sql, params);
 
         while (rs.next()) {
-            genreList.add(new Genre(rs.getInt(1),rs.getString(2)));
+            genreList.add(new Genre(rs.getInt(1), rs.getString(2)));
         }
 
         return genreList;

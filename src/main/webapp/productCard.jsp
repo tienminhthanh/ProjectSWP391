@@ -72,9 +72,11 @@
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
             </c:when>
             <c:when test="${currentProduct.stockCount > 0}">
-            <a href="addToCart?productID=${currentProduct.productID}">
-                <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </a>
+
+            <form action="cart" method="post">
+                <input type="hidden" name="action" value="add">
+                <button type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+            </form>
         </c:when>
     </c:choose>
 

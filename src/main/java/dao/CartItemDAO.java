@@ -58,6 +58,16 @@ public class CartItemDAO {
         return cartItems;
     }
 
+    public CartItem getCartItemByCustomerAndProduct(int customerID, int productID) throws SQLException {
+        String sql = "SELECT * FROM CartItem WHERE customerID = ? AND productID = ?";
+        Object[] params = {customerID, productID};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            return mapResultSetToCartItem(rs);
+        }
+        return null;
+    }
+
     private CartItem mapResultSetToCartItem(ResultSet rs) throws SQLException {
         return new CartItem(
                 rs.getInt("itemID"),
