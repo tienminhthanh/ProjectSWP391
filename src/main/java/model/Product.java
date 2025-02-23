@@ -6,7 +6,6 @@ package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Product {
 
@@ -25,7 +24,7 @@ public class Product {
     private String keywords;
     private String generalCategory;
     private boolean isActive;
-    private List<Image> imageList; //Represent the relationship with Image entity
+    private String imageURL;
 
     /**
      * EMPTY - Set attributes later
@@ -34,7 +33,7 @@ public class Product {
     }
 
     /**
-     * FULL - For retrieve data from Product join Category join Image
+     * FULL - For retrieve data from Product join Category
      *
      * @param productID
      * @param productName
@@ -51,9 +50,9 @@ public class Product {
      * @param keywords
      * @param generalCategory
      * @param isActive
-     * @param imageList
+     * @param imageURL
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, List<Image> imageList) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -69,12 +68,12 @@ public class Product {
         this.keywords = keywords;
         this.generalCategory = generalCategory;
         this.isActive = isActive;
-        this.imageList = imageList;
+        this.imageURL = imageURL;
     }
 
     /**
      * Omit lastModifiedTime, averageRating, numberOfRating - For Add/Update
-     * May be we should omit imageList as well
+     *
      *
      * @param productID
      * @param productName
@@ -83,14 +82,15 @@ public class Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
+     * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
      * @param generalCategory
      * @param isActive
-     * @param imageList
+     * @param imageURL
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, List<Image> imageList) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -98,12 +98,13 @@ public class Product {
         this.specificCategory = specificCategory;
         this.description = description;
         this.releaseDate = releaseDate;
+        this.numberOfRating = numberOfRating;
         this.specialFilter = specialFilter;
         this.adminID = adminID;
         this.keywords = keywords;
         this.generalCategory = generalCategory;
         this.isActive = isActive;
-        this.imageList = imageList;
+        this.imageURL = imageURL;
     }
 
     public int getProductID() {
@@ -226,14 +227,13 @@ public class Product {
         this.isActive = isActive;
     }
 
-    public List<Image> getImageList() {
-        return imageList;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImageList(List<Image> imageList) {
-        this.imageList = imageList;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     
-
 }

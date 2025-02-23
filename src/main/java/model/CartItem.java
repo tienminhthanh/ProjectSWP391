@@ -11,7 +11,7 @@ public class CartItem {
     private BigDecimal priceWithQuantity;
     private Product product;
     private List<CartItem> itemList;
-    private Image image;
+ 
     
     public CartItem() {
     }
@@ -30,15 +30,27 @@ public class CartItem {
         this.quantity = quantity;
         this.priceWithQuantity = priceWithQuantity;
     }
-    
-    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
+
+    public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity, Product product, List<CartItem> itemList) {
+        this.itemID = itemID;
         this.customerID = customerID;
         this.productID = productID;
         this.quantity = quantity;
         this.priceWithQuantity = priceWithQuantity;
+        this.product = product;
+        this.itemList = itemList;
+     
     }
     
-    // Getters và setters
+    
+//    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
+//        this.customerID = customerID;
+//        this.productID = productID;
+//        this.quantity = quantity;
+//        this.priceWithQuantity = priceWithQuantity;
+//    }
+    
+    // Getters vÃ  setters
     public int getItemID() {
         return itemID;
     }
@@ -61,14 +73,7 @@ public class CartItem {
         return quantity;
     }
     public void setQuantity(int quantity) throws Exception {
-        if (this.itemList == null) {
-            throw new Exception("Cart is empty.");
-        }
-        int totalQuantity = 0;
-        for (CartItem item : this.itemList) {
-            totalQuantity += item.getQuantity();
-        }
-        this.quantity = totalQuantity;
+        this.quantity = quantity;
     }
     public BigDecimal getPriceWithQuantity() {
         return priceWithQuantity;
@@ -85,22 +90,12 @@ public class CartItem {
         this.product = product;
     }
 
-   
-
     public List<CartItem> getItemList() {
         return itemList;
     }
 
     public void setItemList(List<CartItem> itemList) {
         this.itemList = itemList;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
     }
 
 }

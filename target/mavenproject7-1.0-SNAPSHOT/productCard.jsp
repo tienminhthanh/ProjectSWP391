@@ -1,8 +1,3 @@
-
-
-
-
-
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div class="product-card w-48">
 
@@ -25,8 +20,8 @@
     </c:choose>
 
     <!-- Product Image -->
-    <a href="productDetails?productID=${currentProduct.productID}" class="product-image">
-        <img src="${currentProduct.imageList[0].imageURL}" alt="${currentProduct.productName}">
+    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image">
+        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}">
         <div class="hover-name">${currentProduct.productName}</div>
     </a>
 
@@ -44,7 +39,7 @@
     </c:choose>
 
     <!-- Product Name -->
-    <a href="productDetails?productID=${currentProduct.productID}" class="product-title">${currentProduct.productName}</a>
+    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title">${currentProduct.productName}</a>
 
     <!-- Sale Expiry Date or Release Date -->
     <%--<c:if test="${onSale}">--%>
@@ -76,11 +71,10 @@
         <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
             </c:when>
-
-        <c:when test="${currentProduct.stockCount > 0}">
-            <form action="cart" method="post">
-                <button class="add-to-cart" type="submit" name="action" value="add"><i class="fa-solid fa-cart-plus"></i></button>
-            </form>
+            <c:when test="${currentProduct.stockCount > 0}">
+            <a href="addToCart?productID=${currentProduct.productID}">
+                <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+            </a>
         </c:when>
     </c:choose>
 

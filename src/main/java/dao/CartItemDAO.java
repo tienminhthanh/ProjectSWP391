@@ -49,7 +49,7 @@ public class CartItemDAO {
 
     public List<CartItem> getCartItemsByCustomer(int customerID) throws SQLException {
         List<CartItem> cartItems = new ArrayList<>();
-        String sql = "SELECT * FROM CartItem WHERE customerID = ?";
+        String sql = "SELECT * FROM CartItem join Product on CartItem.productID=Product.productID WHERE customerID = ?";
         Object[] params = {customerID};
         ResultSet rs = context.exeQuery(sql, params);
         while (rs.next()) {

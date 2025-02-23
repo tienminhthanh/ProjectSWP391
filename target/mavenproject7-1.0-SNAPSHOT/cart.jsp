@@ -64,20 +64,20 @@
                     <div class="bg-blue-900 text-white p-2 rounded-t-lg">Items in Cart</div>
                     <div class="border border-gray-300 rounded-b-lg">
                         <c:forEach var="item" items="${cartItems}">
-                           
+
                             <div class="flex items-center p-4 border-b border-gray-300">
                                 <!-- Hiển thị hình ảnh tạm (hoặc hiển thị ID sản phẩm) -->
-                                <div class="flex items-center p-4 border-b border-gray-300">
+                                <div class="w-16 h-16 bg-gray-200 flex items-center justify-center mr-4">
                                     <a href="productDetails?productID=${item.productID}" class="product-image">
-                                        <img src="${item.productID}" alt="${item.product.getProductName()}">
-                                        <div class="hover-name">${item.product.getProductName()}</div>
+                                        <img src="${item.product.imageList[0].imageURL}" alt="${item.product.getProductName()}">
+                                        <div class="hover-name">${item.product.productName}</div>
                                     </a>
-                                  
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-lg font-bold">Name: ${item.product.productName}</h3>
-                                    <p>Price: ${item.priceWithQuantity} VND</p>
+                                    <h3 class="text-lg font-bold">Name: ${item.product.getProductName()}</h3>
+                                    <p>Stock: ${item.product.stockCount}</p>
                                 </div>
+                                    <p>Price: ${item.product.price} VND</p>
                                 <!-- Form cập nhật CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="update" />
@@ -91,7 +91,7 @@
                                     </button>
                                 </form>
                                 <!-- Form xóa CartItem -->
-                                <form action="cart" method="post" onsubmit="deleteCartItem(event, ${item.itemID}, ${item.customerID})" class="ml-4">
+                                <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="delete" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
@@ -131,20 +131,4 @@
         </main>
         <c:import url="footer.jsp"/>
     </body>
-    <script>
-        function deleteCartItem(event, itemID, customerID) {
-            event.preventDefault();
-            if (confirm("Are you sure you want to delete this item?")) {
-                fetch(`cart?itemID=${itemID}&customerID=${customerID}`, {
-                    method: 'DELETE'
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.href = `cart?customerID=${customerID}`;
-                    } else {
-                        alert("Error deleting item");
-                    }
-                });
-            }
-        }
-    </script>
 </html>
