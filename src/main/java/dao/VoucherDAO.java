@@ -104,4 +104,16 @@ public class VoucherDAO {
         return false;
     }
 
+    public boolean deleteVoucher(int id) {
+        String sql = "DELETE FROM [dbo].[Voucher]\n"
+                + "      WHERE [voucherID] = ?";
+        try {
+            Object[] params = {id};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
 }

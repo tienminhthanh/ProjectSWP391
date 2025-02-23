@@ -162,7 +162,7 @@
                                             <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="mb-2 block bg-green-500 text-white py-1 px-3 hover:text-green-700 rounded">
                                                 Update
                                             </a>
-                                            <a class="block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
+                                            <a class="block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
                                                 Delete 
                                             </a>
                                         </td>
