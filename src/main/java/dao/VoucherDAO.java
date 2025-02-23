@@ -116,4 +116,23 @@ public class VoucherDAO {
         return false;
     }
 
+    public boolean addVoucher(String name, double value, int quantity, int minumum, String dateCreated, int duration, int adminID) {
+        String sql = "INSERT INTO [dbo].[Voucher]\n"
+                + "           ([voucherName]\n"
+                + "           ,[voucherValue]\n"
+                + "           ,[quantity]\n"
+                + "           ,[minimumPurchaseAmount]\n"
+                + "           ,[dateCreated]\n"
+                + "           ,[duration]\n"
+                + "           ,[adminID])\n"
+                + "     VALUES (?, ?, ?, ?, ?, ?, ?)\n";
+        try {
+            Object[] params = {name, value, quantity, minumum, dateCreated, duration, adminID};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
 }

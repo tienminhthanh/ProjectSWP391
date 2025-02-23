@@ -112,7 +112,7 @@
                 <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Voucher List</h1>
                 <hr class="mb-6 border-gray-300"/>
                 <div class="mt-6 flex flex-col items-start"> 
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="accountAddNew.jsp">
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="voucherAddNew">
                         <i class="fas fa-plus mr-2"></i> Add New Voucher
                     </a>
                     <c:if test="${not empty errorMessage}">
