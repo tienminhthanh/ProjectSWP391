@@ -12,13 +12,12 @@
 
         <!-- Header -->
         <header class="bg-white shadow w-full">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png"/>
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+                <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
-                    <a href="login.jsp" class="text-orange-600 font-semibold hover:underline">Login</a>
-                    <a href="home.jsp" class="text-orange-600 font-semibold hover:underline">Home</a>
+                    <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
 
         <!-- Main Content -->
@@ -69,11 +68,15 @@
                     <input type="hidden" name="otp" id="otpHidden">
 
                     <!-- Verify Button -->
-                    <div class="text-center mb-4">
+                    <div class="text-center mb-4 flex justify-center gap-4">
                         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-full w-full hover:bg-blue-700 transition duration-200">
                             Verify
-                        </button>
+
+                            <a href="login.jsp" type="submit" class="bg-gray-600 text-white py-2 px-4 rounded-full w-full hover:bg-gray-700 transition duration-200">
+                                Verify account later
+                            </a>
                     </div>
+
                 </form>
 
                 <!-- Resend OTP -->
@@ -141,6 +144,5 @@
                 }
             });
         </script>
-      
     </body>
 </html>

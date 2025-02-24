@@ -19,26 +19,22 @@ public class EmailAuthenticationServlet extends HttpServlet {
     private void sendEmail(String toEmail, String subject, String content) throws MessagingException {
         final String fromEmail = "systemwibooks@gmail.com";
         final String password = "lxuh bqye fyce avzb";
-
         Properties properties = new Properties();
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.port", "587");
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
-
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(fromEmail, password);
             }
         });
-
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(fromEmail));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
         message.setSubject(subject);
         message.setText(content);
-
         Transport.send(message);
     }
 
@@ -47,9 +43,7 @@ public class EmailAuthenticationServlet extends HttpServlet {
             throws ServletException, IOException {
         String email = (String) request.getSession().getAttribute("tempEmail");
         String otp = generateOTP();
-
         request.getSession().setAttribute("otp", otp);
-
         try {
             sendEmail(email, "Email Verification", "Your verification code is: " + otp);
             request.setAttribute("message", "A verification code has been sent to your email.");
@@ -57,7 +51,6 @@ public class EmailAuthenticationServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("message", "Failed to send email.");
         }
-
         request.getRequestDispatcher("verifyEmail.jsp").forward(request, response);
     }
 
@@ -68,20 +61,16 @@ public class EmailAuthenticationServlet extends HttpServlet {
         String generatedOTP = (String) request.getSession().getAttribute("otp");
         String username = (String) request.getSession().getAttribute("tempUsername");
         String email = (String) request.getSession().getAttribute("tempEmail");
-
         if (generatedOTP == null || enteredOTP == null || !enteredOTP.equals(generatedOTP)) {
             request.setAttribute("message", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("verifyEmail.jsp").forward(request, response);
             return;
         }
-
         try {
             AccountDAO accountDAO = new AccountDAO();
-            boolean updateSuccess = accountDAO.updateEmail(username, email);
-
+            boolean updateSuccess = accountDAO.updateAccount(username, null, null, email, null, null, null);
             if (updateSuccess) {
-                              request.getSession().invalidate();
-
+                request.getSession().invalidate();
                 request.setAttribute("message", "Email verified successfully! You can now log in.");
                 request.getRequestDispatcher("completeAccount.jsp").forward(request, response);
             } else {
@@ -102,7 +91,6 @@ public class EmailAuthenticationServlet extends HttpServlet {
     public static void main(String[] args) {
         EmailAuthenticationServlet test = new EmailAuthenticationServlet();
         String email = "tienminthanh@gmail.com";
-
         String otp = test.generateOTP();
         try {
             test.sendEmail(email, "Email Verification", "Your verification code is: " + otp);

@@ -15,7 +15,7 @@
         <!-- Sidebar -->
         <div class="w-64 bg-blue-900 text-white min-h-screen">
             <div class="p-4">
-                <img alt="Company Logo" class="mb-4" height="50" src="https://storage.googleapis.com/a1aa/image/E7a1IopinJdFFD1b8uBNgeve-ZYaN4NirThMMa4AP40.jpg" width="150"/>
+                <img alt="Company Logo" class="mb-4" height="50" src="./img/logo.png" width="220"/>
             </div>
             <nav class="space-y-2">
                 <a class="flex items-center p-2 hover:bg-blue-800" href="#">
@@ -43,7 +43,7 @@
                     Order List
                 </a>
 
-                <a class="flex items-center p-2 hover:bg-blue-800"href="#">
+                <a class="flex items-center p-2 hover:bg-blue-800" href="voucherList">
                     <i class="fas fa-gift mr-2"></i>
                     Voucher List
                 </a>
@@ -203,14 +203,7 @@
             </div>
         </div>
 
-        <!-- FOOTER -->
-        <footer class="bg-gray-200 py-4 mt-8 w-full">
-            <div class="container mx-auto px-4 text-center text-sm text-gray-600">
-                <a class="mr-4 hover:text-gray-800" href="#">Privacy</a>
-                <a class="hover:text-gray-800" href="#">Terms & Conditions</a>
-                <p class="mt-2">© BOOK WALKER Co.,Ltd.</p>
-            </div>
-        </footer>
+       
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
                                                     function confirmAction(message, url) {

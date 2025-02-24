@@ -10,12 +10,12 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
-                <i class="fas fa-globe text-xl"></i>
+                    <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
@@ -26,23 +26,43 @@
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
                         <form action="login" method="post">
                             <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
+                            
+                            <!-- Username -->
                             <div class="mb-4">
                                 <label class="sr-only" for="username">Username</label>
-                                <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" placeholder="Username" required type="text"/>
+                                <input class="w-full p-3 border border-gray-300 rounded"
+                                       id="username" name="username"
+                                       value="${username}" placeholder="Username" required type="text"/>
                             </div>
-                            <div class="mb-4">
+
+                            <!-- Password + Toggle Visibility -->
+                            <div class="mb-4 relative">
                                 <label class="sr-only" for="password">Password</label>
-                                <input class="w-full p-3 border border-gray-300 rounded" id="password" name="password" placeholder="Password" required type="password"/>
+                                <input class="w-full p-3 border border-gray-300 rounded pr-10"
+                                       id="password" name="password"
+                                       value="${password}" placeholder="Password" required type="password"/>
+                                <button type="button" onclick="togglePassword('password', 'toggleIcon')" 
+                                        class="absolute right-3 top-3 text-gray-500">
+                                    <i id="toggleIcon" class="fas fa-eye"></i>
+                                </button>
                             </div>
-                            <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700" type="submit">Sign-in</button>
+
+                            <!-- Submit Button -->
+                            <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700" type="submit">
+                                Sign-in
+                            </button>
+
+                            <!-- Display Error Message -->
                             <c:if test="${not empty errorMessage}">
                                 <p class="text-red-600 text-center mt-4">${errorMessage}</p>
                             </c:if>
+
                             <div class="mt-4 text-right">
                                 <a class="text-blue-600 text-sm" href="forgotPassword.jsp">Forgot your password?</a>
                             </div>
                         </form>
                     </div>
+                    
                     <div class="w-full md:w-1/2 md:pl-4">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with below accounts</h2>
                         <div class="space-y-4">
@@ -64,6 +84,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="mt-8 p-4 border border-orange-500 bg-orange-100 text-center">
                     <p class="text-lg font-semibold mb-2">If you don't have an account</p>
                     <a class="bg-orange-500 text-white p-3 rounded hover:bg-orange-600" href="register.jsp">Register with your email address</a>
@@ -74,9 +95,25 @@
             <div class="container mx-auto px-4 text-center text-sm text-gray-600">
                 <a class="mr-4" href="#">Privacy</a>
                 <a href="#">Purchase Terms &amp; Conditions</a>
-                <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
+                <p class="mt-4">© WIBOOKS Co.,Ltd.</p>
             </div>
         </footer>
-
     </body>
+
+    <!-- JavaScript -->
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
 </html>
