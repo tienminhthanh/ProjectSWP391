@@ -77,7 +77,7 @@ public class CartItem {
         return quantity;
     }
 
-    public void setQuantity(int quantity) throws Exception {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 

@@ -27,22 +27,18 @@ public class CartItemDAO {
     }
 
     public boolean updateCartItem(CartItem cartItem) throws SQLException {
-        String sql = "UPDATE CartItem SET quantity = ?, priceWithQuantity = ? WHERE itemID = ?";
-        Object[] params = {cartItem.getQuantity(), cartItem.getPriceWithQuantity(), cartItem.getItemID()};
+        String sql = "UPDATE CartItem SET quantity = ? WHERE itemID = ?";
+        Object[] params = {cartItem.getQuantity(), cartItem.getItemID()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 
     public boolean deleteCartItem(int customerID, int itemID) throws SQLException {
-    String sql = "DELETE FROM CartItem WHERE customerID=? AND itemID = ?";
-    Object[] params = {customerID, itemID};
-    int rowsAffected = context.exeNonQuery(sql, params);
-    if (rowsAffected == 0) {
-        Logger.getLogger(CartItemDAO.class.getName()).log(Level.WARNING, 
-            "No cart item deleted for customerID: " + customerID + ", itemID: " + itemID);
+        String sql = "DELETE FROM CartItem WHERE customerID=? AND itemID = ?";
+        Object[] params = {customerID, itemID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
     }
-    return rowsAffected > 0;
-}
 
     public CartItem getCartItemById(int itemID) throws SQLException {
         String sql = "SELECT * FROM CartItem WHERE itemID = ?";
@@ -66,13 +62,15 @@ public class CartItemDAO {
     }
 
     public CartItem getCartItemByCustomerAndProduct(int customerID, int productID) throws SQLException {
-        String sql = "SELECT * FROM CartItem WHERE customerID = ? AND productID = ?";
+        String sql = "SELECT * FROM CartItem JOIN Product ON CartItem.productID = Product.productID WHERE customerID = ? AND CartItem.productID = ?";
         Object[] params = {customerID, productID};
-        ResultSet rs = context.exeQuery(sql, params);
-        if (rs.next()) {
-            return mapResultSetToCartItem(rs);
+
+        try ( ResultSet rs = context.exeQuery(sql, params)) {
+            if (rs.next()) {
+                return mapResultSetToCartItem(rs);
+            }
+            return null;
         }
-        return null;
     }
 
     private CartItem mapResultSetToCartItem(ResultSet rs) throws SQLException {
@@ -93,5 +91,10 @@ public class CartItemDAO {
         );
         cartItem.setProduct(product);
         return cartItem;
+    }
+
+    public static void main(String[] args) throws SQLException {
+        CartItemDAO ci = new CartItemDAO();
+        System.out.println(ci.getCartItemByCustomerAndProduct(2, 18));
     }
 }
