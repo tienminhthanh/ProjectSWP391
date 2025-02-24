@@ -1,7 +1,7 @@
-controller\account\UpdateAccountSevlet.class
 controller\home\HomepageController.class
 controller\account\EmailAuthenticationServlet$1.class
 dao\AccountDAO.class
+controller\account\UpdateAccountServlet.class
 controller\account\EmailAuthenticationServlet.class
 model\Series.class
 utils\DBContext.class

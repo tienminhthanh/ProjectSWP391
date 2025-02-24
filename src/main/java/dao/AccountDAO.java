@@ -14,52 +14,6 @@ public class AccountDAO {
         context = new utils.DBContext();
     }
 
-<<<<<<< HEAD
-    public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
-        String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
-        Object[] params = {username, password, role, firstName, lastName, email, phoneNumber, birthDate};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        return rowsAffected > 0;
-
-    }
-
-    public Account getAccountByUsername(String username) throws SQLException {
-        String sql = "SELECT * FROM Account WHERE username = ?";
-        Object[] params = {username};
-        ResultSet rs = context.exeQuery(sql, params);
-        if (rs.next()) {
-            return mapResultSetToAccount(rs);
-        }
-        return null;
-    }
-
-    public boolean isEmailExistEmailOfUser(String username, String email) throws SQLException {
-        String sql = "SELECT * FROM Account WHERE email  = ? AND username != ?";  // Start by checking if the email exists
-
-        Object[] params = {email, username};
-        ResultSet rs = context.exeQuery(sql, params);
-        if (rs.next()) {
-            return true;
-        }
-        return false;  // No other user has this email
-    }
-
-    public boolean isEmailExistForEmail(String email) throws SQLException {
-        String sql = "SELECT * FROM Account WHERE email = ?";  // Check if the email already exists in the database
-
-        Object[] params = {email};
-        ResultSet rs = context.exeQuery(sql, params);
-        if (rs.next()) {
-            return true;
-        }
-        return false;  // No other user has this email
-    }
-
-    public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate) throws SQLException  {
-        String sql = "UPDATE Account SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, birthDate = ? WHERE username = ? AND isActive = 1";
-        Object[] params = {firstName, lastName, email, phoneNumber, birthDate, username};
-=======
     public boolean updateEmail(String username, String email) throws SQLException {
         String sql = "UPDATE Account SET email = ? WHERE username = ?";
         Object[] params = {email, username};
@@ -120,7 +74,6 @@ public class AccountDAO {
             params = new Object[]{firstName, lastName, email, phoneNumber, birthDate, username};
         }
 
->>>>>>> origin/ThanhMoi
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }

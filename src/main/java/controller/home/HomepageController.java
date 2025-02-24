@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.*;
 import dao.*;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,46 +62,66 @@ public class HomepageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            ProductDAO productDAO = new ProductDAO();
-            List<Product> productList = productDAO.get10RandomActiveProducts("book");
-            
-            if(productList.isEmpty()){
-                throw new Exception("Found no products in the catalog!");
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("account") != null) {
+            Account account = (Account) session.getAttribute("account");
+            switch (account.getRole()) {
+                case "staff":
+                    response.sendRedirect("dashboard.jsp");
+                    break;
+                case "shipper":
+                    response.sendRedirect("shipperDashboard.jsp");
+                    break;
+                case "admin":
+                    response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                    break;
             }
-            
-            request.setAttribute("productList", productList);
-            request.getRequestDispatcher("home.jsp").forward(request, response);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
         }
 
-    }
+            try {
+                ProductDAO productDAO = new ProductDAO();
+                List<Product> productList = productDAO.get10RandomActiveProducts("book");
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+                if (productList.isEmpty()) {
+                    throw new Exception("Found no products in the catalog!");
+                }
+
+                request.setAttribute("productList", productList);
+                request.getRequestDispatcher("home.jsp").forward(request, response);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                request.setAttribute("errorMessage", e.getMessage());
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
+
+        }
+
+        /**
+         * Handles the HTTP <code>POST</code> method.
+         *
+         * @param request servlet request
+         * @param response servlet response
+         * @throws ServletException if a servlet-specific error occurs
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
+        protected void doPost
+        (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
+            processRequest(request, response);
+        }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
+        /**
+         * Returns a short description of the servlet.
+         *
+         * @return a String containing servlet description
+         */
+        @Override
+        public String getServletInfo
+        
+            () {
         return "Short description";
-    }// </editor-fold>
+        }// </editor-fold>
 
-}
+    }

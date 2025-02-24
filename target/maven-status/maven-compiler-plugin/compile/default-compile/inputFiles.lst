@@ -18,9 +18,9 @@ C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Genre.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Publisher.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\AddAccountSevlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Account.java
+C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\UpdateAccountServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\DeleteAccountServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\utils\Utility.java
-C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\UpdateAccountSevlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\LogoutServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Character.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\dao\ProductDAO.java
