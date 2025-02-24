@@ -9,6 +9,7 @@
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+<<<<<<< HEAD
                 <img alt="Book Walker Logo" class="h-10" height="50" src="https://storage.googleapis.com/a1aa/image/eqONjY2PAhJPB-SS1k-WJ6Cn3CmR-ITt6O9vKa2fKhk.jpg" width="150"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
@@ -24,6 +25,22 @@
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
                         <form action="login" method="post">
                             <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
+=======
+                <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
+                <div class="flex items-center space-x-4">
+                <i class="fas fa-globe text-xl"></i>
+                </div>
+            </div>
+        </header>
+        <main class="flex-grow flex items-center justify-center">
+            <div class="w-full max-w-4xl bg-white p-8 shadow-md">
+                <h1 class="text-2xl font-semibold mb-4">Sign-in</h1>
+                <hr class="mb-6"/>
+                <div class="flex flex-col md:flex-row justify-between">
+                    <div class="w-full md:w-1/2 md:pr-4 mb-6 md:mb-0">
+                        <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
+                        <form action="login" method="post">
+>>>>>>> origin/ThanhMoi
                             <div class="mb-4">
                                 <label class="sr-only" for="username">Username</label>
                                 <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" placeholder="Username" required type="text"/>

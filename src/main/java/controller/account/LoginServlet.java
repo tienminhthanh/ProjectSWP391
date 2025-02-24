@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+<<<<<<< HEAD
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -91,5 +92,70 @@ public class LoginServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Servlet for handling login and account status verification";
+=======
+import java.io.IOException;
+import java.sql.SQLException;
+
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+public class LoginServlet extends HttpServlet {
+
+    private AccountDAO accountDAO;
+
+    @Override
+    public void init() {
+        accountDAO = new AccountDAO();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        try {
+            Account account = accountDAO.getAccountByUsername(username);
+
+            if (account != null) {
+                if (account.getIsActive()) {
+                    if (account.getPassword().equals(password)) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("account", account);
+                        session.setMaxInactiveInterval(30 * 60); // 30 phút
+
+                        switch (account.getRole()) {
+                            case "admin":
+                                response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                                break;
+                            case "customer":
+                                response.sendRedirect("readAccount"); // Điều hướng về trang chi tiết tài khoản
+                                break;
+                            case "staff":
+                                response.sendRedirect("dashboard.jsp");
+                                break;
+                            case "shipper":
+                                response.sendRedirect("shipperDashboard.jsp");
+                                break;
+                            default:
+                                session.invalidate();
+                                request.setAttribute("errorMessage", "Invalid access!");
+                                request.getRequestDispatcher("login.jsp").forward(request, response);
+                                break;
+                        }
+                    } else {
+                        request.setAttribute("errorMessage", "Wrong password!");
+                        request.getRequestDispatcher("login.jsp").forward(request, response);
+                    }
+                } else {
+                    request.setAttribute("errorMessage", "Your account is deactivated or locked!");
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("errorMessage", "Account not found!");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+>>>>>>> origin/ThanhMoi
     }
 }
