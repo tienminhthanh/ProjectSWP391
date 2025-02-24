@@ -35,6 +35,7 @@
                 <img alt="Banner 3" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+3" width="300"/>
             </div>
         </div>
+        
         <div class="flex flex-col md:flex-row">
             <jsp:include page="customerSidebar.jsp"/>
             
@@ -67,7 +68,7 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <!--Loopppppppppppppppppppppppppppppp-->
                 <div class="bg-white">
                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
