@@ -105,12 +105,11 @@
                 </div>
             </nav>
         </div>
-
-        <!-- Main Content -->
         <div class="flex-1 p-6">
             <div class="w-full max-w-full bg-white p-8 shadow-lg rounded-lg">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Voucher Details</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Event Details</h1>
                 <hr class="mb-6 border-gray-300"/>
+
                 <div class="mt-6 flex flex-col items-start"> 
                     <c:if test="${not empty errorMessage}">
                         <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
@@ -125,32 +124,28 @@
                         <thead class="bg-blue-600 text-white">
                             <tr>
                                 <th class="px-4 py-3 border border-b">ID</th>
-                                <th class="px-4 py-3 border border-b">Voucher Name</th>
-                                <th class="px-4 py-3 border border-b">Value</th>
-                                <th class="px-4 py-3 border border-b">Quantity</th>
-                                <th class="px-4 py-3 border border-b">Minimum Purchase Amount</th>
+                                <th class="px-4 py-3 border border-b">Event Name</th>
                                 <th class="px-4 py-3 border border-b">Date Created</th>
-                                <th class="px-2 py-1 border border-b">Duration</th>
-                                <th class="px-2 py-1 border border-b">Admin ID</th>
-                                <th class="px-2 py-1 border border-b">Voucher Status</th>
+                                <th class="px-4 py-3 border border-b">Duration (days)</th>
+                                <th class="px-4 py-3 border border-b">Description</th>
+                                <th class="px-4 py-3 border border-b">Admin ID</th>
+                                <th class="px-4 py-3 border border-b">Status</th>
                                 <th class="px-4 py-3 border border-b">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:choose>
-                                <c:when test="${!empty VOUCHER_DETAILS}">
-                                    <tr class="transition duration-300"">
-                                        <td class="px-4 py-3 border border-b text-center">${VOUCHER_DETAILS.voucherID}</td>
-                                        <td class="px-4 py-3 border border-b text-left">${VOUCHER_DETAILS.voucherName}</td>
-                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.voucherValue}</td>
-                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.quantity}</td>
-                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.minimumPurchaseAmount}</td>
-                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.dateCreated}</td>
-                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.duration}</td>
-                                        <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.adminID}</td>
+                                <c:when test="${!empty EVENT_DETAILS}">
+                                    <tr class="transition duration-300">
+                                        <td class="px-4 py-3 border border-b text-center">${EVENT_DETAILS.eventID}</td>
+                                        <td class="px-4 py-3 border border-b text-left">${EVENT_DETAILS.eventName}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${EVENT_DETAILS.dateCreated}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${EVENT_DETAILS.duration}</td>
+                                        <td class="px-4 py-3 border border-b text-left">${EVENT_DETAILS.description}</td>
+                                        <td class="px-4 py-3 border border-b text-right">${EVENT_DETAILS.adminID}</td>
                                         <td class="px-6 py-3 border border-b text-center">
                                             <c:choose>
-                                                <c:when test="${VOUCHER_DETAILS.isActive}">
+                                                <c:when test="${EVENT_DETAILS.isActive}">
                                                     <span class="text-green-700">Available</span>
                                                 </c:when>
                                                 <c:otherwise>
@@ -159,10 +154,12 @@
                                             </c:choose>
                                         </td>
                                         <td class="px-6 py-3 border-b text-left">
-                                            <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="mb-2 block bg-green-500 text-white py-1 px-3 hover:text-green-700 rounded">
+                                            <a href="eventUpdate?eventID=${EVENT_DETAILS.eventID}" class="mb-2 block bg-green-500 text-white py-1 px-3 hover:text-green-700 rounded">
                                                 Update
                                             </a>
-                                            <a class="block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
+                                            <a class="block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" 
+                                               href="javascript:void(0);" 
+                                               onclick="confirmAction('Are you sure you want to delete this event?', 'eventDelete?id=${EVENT_DETAILS.eventID}')">
                                                 Delete 
                                             </a>
                                         </td>
@@ -170,7 +167,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td class="px-4 py-3 border-b text-center text-gray-500 italic" colspan="10">No voucher found.</td>
+                                        <td class="px-4 py-3 border-b text-center text-gray-500 italic" colspan="8">No event found.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
@@ -178,14 +175,14 @@
                     </table>
                 </div>
             </div>
+
             <div class="mt-6">
-                <a class="text-blue-600 hover:underline" href="voucherList">
-                    <i class="fas fa-arrow-left mr-2"></i> Back to Voucher List
+                <a class="text-blue-600 hover:underline" href="eventList">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Event List
                 </a>
             </div>
         </main>
 
-        <!-- FOOTER -->
         <footer class="bg-gray-200 py-4 mt-8 w-full">
             <div class="container mx-auto px-4 text-center text-sm text-gray-600">
                 <a class="mr-4 hover:text-gray-800" href="#">Privacy</a>
@@ -195,24 +192,25 @@
         </footer>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-                                                function confirmAction(message, url) {
-                                                    Swal.fire({
-                                                        title: 'Are you sure?',
-                                                        text: message,
-                                                        icon: 'warning',
-                                                        showCancelButton: true,
-                                                        confirmButtonText: 'Yes, do it!',
-                                                        cancelButtonText: 'Cancel',
-                                                        reverseButtons: true
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            window.location.href = url;
-                                                        }
-                                                    });
-                                                }
-                                                function navigateToUpdate(voucherId) {
-                                                    window.location = 'listAccount?voucherId=' + voucherId;
-                                                }
+                                                   function confirmAction(message, url) {
+                                                       Swal.fire({
+                                                           title: 'Are you sure?',
+                                                           text: message,
+                                                           icon: 'warning',
+                                                           showCancelButton: true,
+                                                           confirmButtonText: 'Yes, do it!',
+                                                           cancelButtonText: 'Cancel',
+                                                           reverseButtons: true
+                                                       }).then((result) => {
+                                                           if (result.isConfirmed) {
+                                                               window.location.href = url;
+                                                           }
+                                                       });
+                                                   }
+                                                   function navigateToUpdate(voucherId) {
+                                                       window.location = 'listAccount?voucherId=' + voucherId;
+                                                   }
         </script>
-</body>
+
+    </body>
 </html>

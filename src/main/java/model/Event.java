@@ -10,6 +10,7 @@ package model;
  */
 public class Event {
 
+    private int eventID;
     private String eventName;
     private String dateCreated;
     private int duration;
@@ -18,7 +19,8 @@ public class Event {
     private int adminID;
     private boolean isActive;
 
-    public Event(String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
+    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
+        this.eventID = eventID;
         this.eventName = eventName;
         this.dateCreated = dateCreated;
         this.duration = duration;
@@ -29,6 +31,14 @@ public class Event {
     }
 
     public Event() {
+    }
+
+    public int getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 
     public boolean isIsActive() {

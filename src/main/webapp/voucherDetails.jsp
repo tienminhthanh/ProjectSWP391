@@ -214,6 +214,5 @@
                                                     window.location = 'listAccount?voucherId=' + voucherId;
                                                 }
         </script>
-
 </body>
 </html>

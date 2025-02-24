@@ -4,7 +4,7 @@
  */
 package controller.event;
 
-import dao.EventDAO;
+import dao.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,17 +12,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.Event;
+import model.*;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "EventListServlet", urlPatterns = {"/eventList"})
-public class EventListServlet extends HttpServlet {
+@WebServlet(name = "EventDetailsServlet", urlPatterns = {"/eventDetails"})
+public class EventDetailsServlet extends HttpServlet {
 
-    private final String EVENT_LIST_PAGE = "eventList.jsp";
+    private final String EVENT_DETAILS_PAGE = "eventDetails.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,13 +37,14 @@ public class EventListServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            String url = EVENT_LIST_PAGE;
+            String url = EVENT_DETAILS_PAGE;
             try {
+                int id = Integer.parseInt(request.getParameter("eventId"));
                 EventDAO eDao = new EventDAO();
-                List<Event> listEvent = eDao.getListEvent();
-                request.setAttribute("LIST_EVENT", listEvent);
+                Event eventDetails = eDao.getEventByID(id);
+                request.setAttribute("EVENT_DETAILS", eventDetails);
             } catch (Exception ex) {
-                log("VoucherListServlet error:" + ex.getMessage());
+                log("VoucherDetailsServlet error:" + ex.getMessage());
             } finally {
                 request.getRequestDispatcher(url).forward(request, response);
             }
