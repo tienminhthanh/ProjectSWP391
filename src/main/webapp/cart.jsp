@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -123,13 +124,14 @@
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
                                 <p> ${item.priceWithQuantity} VND</p>
+                                <fmt:formatNumber value="${not empty item.quantity ? item.quantity : 1}" type="number" maxFractionDigits="0" var="formattedQuantity"/>
                                 <!-- Form cập nhật CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="update" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}" min="1" required class="quantity-input"/>
+                                    <input type="number" name="quantity" value="${item.quantity}"  min="1"  class="quantity-input" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>
@@ -138,7 +140,7 @@
                                 <!-- Form xóa CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
-                                     <input type="hidden" name="customerID" value="${item.customerID}" />
+                                    <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <button type="submit" name="action" value="delete" class="bg-red-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
@@ -180,6 +182,5 @@
 
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
-
     </body>
 </html>

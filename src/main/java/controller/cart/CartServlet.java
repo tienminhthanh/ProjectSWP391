@@ -48,7 +48,6 @@ public class CartServlet extends HttpServlet {
             int customerID = customerId != null ? Integer.parseInt(customerId) : 0;
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
             session.setAttribute("cartItems", cartItems);
-            request.setAttribute("cartItems", cartItems);
             RequestDispatcher dispatcher = request.getRequestDispatcher("cart.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException ex) {
