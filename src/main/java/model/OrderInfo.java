@@ -26,19 +26,24 @@ public class OrderInfo {
     private int paymentExpiredTime;
     private String paymentStatus;
     private List<OrderProduct> orderProductList;
-
+    private DeliveryOption deliveryOption;
+            
     public OrderInfo() {
+        this.paymentStatus = "pending";
+        this.orderStatus = "pending";
+        this.deliveryStatus = "pending";
     }
 // orderInfo khi tao new order
+
     public OrderInfo(String deliveryAddress, int deliveryOptionID, int customerID,
             String paymentMethod, List<OrderProduct> orderProductList) {
         this.deliveryAddress = deliveryAddress;
         this.deliveryOptionID = deliveryOptionID;
         this.customerID = customerID;
         this.paymentMethod = paymentMethod;
-        this.paymentStatus = "Pending";
-        this.orderStatus = "Pending";
-        this.deliveryStatus = "Not Shipped";
+        this.paymentStatus = "pending";
+        this.orderStatus = "pending";
+        this.deliveryStatus = "pending";
         this.orderProductList = orderProductList;
     }
 
@@ -61,6 +66,8 @@ public class OrderInfo {
         this.paymentStatus = paymentStatus;
     }
 
+    
+    
 // dung de insert 
     public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, int preVoucherAmount, int voucherID, String deliveryStatus, String orderStatus) {
         this.orderID = orderID;
@@ -212,6 +219,14 @@ public class OrderInfo {
 
     public void setOrderProductList(List<OrderProduct> orderProductList) {
         this.orderProductList = orderProductList;
+    }
+
+    public DeliveryOption getDeliveryOption() {
+        return deliveryOption;
+    }
+
+    public void setDeliveryOption(DeliveryOption deliveryOption) {
+        this.deliveryOption = deliveryOption;
     }
 
     @Override

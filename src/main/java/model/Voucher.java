@@ -1,29 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-import java.sql.Date;
 
 /**
  *
- * @author Macbook
+ * @author trungtinh
  */
 public class Voucher {
+
     private int voucherID;
     private String voucherName;
-    private int voucherValue;
+    private double voucherValue;
     private int quantity;
     private int minimumPurchaseAmount;
-    private Date dateCreated;
+    private String dateCreated;
     private int duration;
     private int adminID;
+    private boolean isActive;
 
-    public Voucher() {
-    }
-
-    public Voucher(int voucherID, String voucherName, int voucherValue, int quantity, int minimumPurchaseAmount, Date dateCreated, int duration, int adminID) {
+    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive) {
         this.voucherID = voucherID;
         this.voucherName = voucherName;
         this.voucherValue = voucherValue;
@@ -32,6 +26,8 @@ public class Voucher {
         this.dateCreated = dateCreated;
         this.duration = duration;
         this.adminID = adminID;
+
+        this.isActive = isActive;
     }
 
     public int getVoucherID() {
@@ -50,7 +46,8 @@ public class Voucher {
         this.voucherName = voucherName;
     }
 
-    public int getVoucherValue() {
+
+    public double getVoucherValue() {
         return voucherValue;
     }
 
@@ -74,11 +71,12 @@ public class Voucher {
         this.minimumPurchaseAmount = minimumPurchaseAmount;
     }
 
-    public Date getDateCreated() {
+
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -98,10 +96,15 @@ public class Voucher {
         this.adminID = adminID;
     }
 
-    @Override
-    public String toString() {
-        return "Voucher{" + "voucherID=" + voucherID + ", voucherName=" + voucherName + ", voucherValue=" + voucherValue + ", quantity=" + quantity + ", minimumPurchaseAmount=" + minimumPurchaseAmount + ", dateCreated=" + dateCreated + ", duration=" + duration + ", adminID=" + adminID + '}';
+
+    public boolean isIsActive() {
+        return isActive;
     }
-    
-    
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Voucher() {
+    }
 }

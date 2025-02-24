@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import model.Account;
 import model.CartItem;
 import model.OrderInfo;
 import model.OrderProduct;
@@ -52,28 +54,31 @@ public class OrderController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        // Retrieve the cart items from the session
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
 
         if (cartItems == null || cartItems.isEmpty()) {
-            response.sendRedirect("home"); // Redirect to home if cart is empty
+            response.sendRedirect("home");
             return;
         }
-
-        // Calculate the order subtotal
         double subtotal = 0;
         for (CartItem item : cartItems) {
             subtotal += item.getPriceWithQuantity().doubleValue();
         }
-
-        // Set attributes for the cart and subtotal
+        Account account = (Account) session.getAttribute("account");
+        if (account != null) {
+            // Set thông tin từ account vào request để gửi đến JSP
+            request.setAttribute("fullName", account.getUsername());
+//            request.setAttribute("address", account.());
+            request.setAttribute("phone", account.getPhoneNumber());
+            request.setAttribute("email", account.getEmail());
+        }
         request.setAttribute("cartItems", cartItems);
         request.setAttribute("priceWithQuantity", subtotal);
 
-        // Forward to the order summary view
         RequestDispatcher dispatcher = request.getRequestDispatcher("OrderSummaryView.jsp");
         dispatcher.forward(request, response);
     }
@@ -86,6 +91,7 @@ public class OrderController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
@@ -97,82 +103,44 @@ public class OrderController extends HttpServlet {
             return;
         }
 
-        // Calculate the order subtotal
-        double subtotal = 0;
-        for (CartItem item : cartItems) {
-            subtotal += item.getPriceWithQuantity().doubleValue();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
+            response.sendRedirect("login");
+            return;
         }
 
-        // Retrieve shipping option and discount code from request
-        String shippingOption = request.getParameter("shippingOption"); // "DEL001" or "DEL002"
-        String discountCode = request.getParameter("discountCode");
-
-        // Calculate shipping fee based on the selected option
-        double shippingFee = 0;
-        if ("DEL001".equals(shippingOption)) {
-            shippingFee = 30000; // Express shipping
-        } else if ("DEL002".equals(shippingOption)) {
-            shippingFee = 15000; // Economy shipping
-        }
-
-        // Apply discount if valid
-        double discount = 0;
-        if ("DISCOUNT10".equals(discountCode)) {
-            discount = 10000; // Discount for valid code , ex
-        }
-
-        // Calculate the total order amount
-        double orderTotalAmount = subtotal + shippingFee - discount;
-
-        // Set attributes for cart, shipping fee, discount, and total amount
-        request.setAttribute("cartItems", cartItems);
-        request.setAttribute("priceWithQuantity", subtotal);
-        request.setAttribute("optionCost", shippingFee);
-        request.setAttribute("voucherValue", discount);
-        request.setAttribute("orderTotalAmount", orderTotalAmount);
-
-        // Retrieve other parameters from the request (delivery address, payment method, etc.)
-        String deliveryAddress = request.getParameter("deliveryAddress");
-        String paymentMethod = request.getParameter("paymentMethod");
-
-        // Create a new OrderInfo object
-        OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setDeliveryAddress(deliveryAddress);
-        orderInfo.setDeliveryOptionID(Integer.parseInt(shippingOption)); // Update with correct option ID
-        orderInfo.setOrderStatus("Pending");
-        orderInfo.setDeliveryStatus("Pending");
-        orderInfo.setPaymentMethod(paymentMethod);
-        orderInfo.setPaymentStatus("Pending");
-
-        // Set other properties like customer, voucher
-        orderInfo.setCustomerID(Integer.parseInt(request.getParameter("customerID")));
-        orderInfo.setPreVoucherAmount(Integer.parseInt(request.getParameter("preVoucherAmount")));
-        orderInfo.setVoucherID(Integer.parseInt(request.getParameter("voucherID")));
-        orderInfo.setStaffID(Integer.parseInt(request.getParameter("staffID")));
-        orderInfo.setShipperID(Integer.parseInt(request.getParameter("shipperID")));
-
-        // Add the cart items to the order
-        List<OrderProduct> orderProducts = (List<OrderProduct>) request.getSession().getAttribute("cart");
-        orderInfo.setOrderProductList(orderProducts);
-
-        // Call DAO to insert the order into the database
-        OrderDAO orderDAO = new OrderDAO();
         try {
-            orderDAO.insertOrderInfo(orderInfo);
-            //for de update stock cua product
-            for (OrderProduct orderProduct : orderProducts) {
-                // Call the updateProductStock method for each product in the order
-                boolean isUpdated = orderDAO.updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
-                if (isUpdated) {
-                    System.out.println("Stock updated for product ID: " + orderProduct.getProductID());
-                } else {
-                    System.out.println("Failed to update stock for product ID: " + orderProduct.getProductID());
-                }
+            OrderInfo orderInfo = new OrderInfo();
+
+            orderInfo.setCustomerID(account.getAccountID());
+            orderInfo.setDeliveryAddress(request.getParameter("addr")); // Assuming form has a field for delivery address
+            String test = (request.getParameter("shippingOption"));
+            orderInfo.setDeliveryOptionID(Integer.parseInt(request.getParameter("shippingOption"))); // Delivery option selected by user
+            orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
+
+            // Add products to the OrderInfo object
+            List<OrderProduct> orderProductList = new ArrayList<>();
+            for (CartItem item : cartItems) {
+                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
+                orderProductList.add(orderProduct);
             }
-            response.sendRedirect("cart");
+            orderInfo.setOrderProductList(orderProductList);
+
+            // Insert the order info into the database
+            OrderDAO orderDAO = new OrderDAO();
+            orderDAO.insertOrderInfo(orderInfo);
+
+            // Clear the cart after the order is successfully placed
+            session.removeAttribute("cartItems");
+
+            // Redirect the user to the order confirmation page or show a success message
+//            request.setAttribute("totalAmount", orderInfo.getPreVoucherAmount());
+            response.sendRedirect("OrderListController");
+
         } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendRedirect("home");
+            System.out.println(e.getMessage());
+            response.sendRedirect("error.jsp"); // Redirect to an error page if something goes wrong
         }
     }
 

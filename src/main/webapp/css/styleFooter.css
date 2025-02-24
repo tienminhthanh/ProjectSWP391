@@ -27,11 +27,11 @@ footer {
 }
 
 footer a:hover {
-    color: #92c4ec;
+    color: #ecc942;
 }
 
 footer a>p:hover {
-    color: #92c4ec;
+    color: #ecc942;
 }
 
 
@@ -90,7 +90,7 @@ footer a>p:hover {
 }
 
 .icon-container:hover {
-    background-color: #92c4ec;
+    background-color: #ecc942;
 }
 
 .social-media-icon .icon-container a {
@@ -100,7 +100,7 @@ footer a>p:hover {
 }
 
 .icon-container a i {
-    color: #313131;
+    color: black;
 }
 
 .footer-logo img {

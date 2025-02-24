@@ -1,0 +1,273 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 23, 2025, 4:04:53 AM
+    Author     : anhkc
+*/
+
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f5;
+}
+
+.root-container {
+    padding: 20px;
+}
+
+.bread-crumb-area{
+    margin-bottom: 20px;
+    color: orange;
+}
+.bread-crumb-area a{
+    color:orange;
+}
+
+.big-product-name-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.big-product-name-inner>p{
+    margin-bottom: 0;
+    font-size: 1.5em; 
+}
+
+.creator-top {
+    font-size: 0.8rem;
+    margin: 5px 0 0;
+}
+
+.main-area {
+    display: flex;
+    align-items: flex-start;
+    /* Ensure items align at the top */
+    gap: 20px;
+
+    flex-wrap: wrap;
+}
+
+.info-area {
+    flex: 1;
+    max-width: 80%;
+    /* Adjust as needed */
+
+}
+
+.purchase-area {
+    flex: 0 0 20%;
+    background-color:white;
+    /* Prevents it from shrinking */
+}
+
+.overview-area {
+    min-height: 80vh;
+    margin-bottom: 20px;
+    background-color:white;
+}
+
+.overview-inner {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.image-area {
+    flex: 0 0 30%;
+    /* Keeps it at 30% width */
+    min-width: 300px;
+}
+
+.image-area img {
+    max-width: 100%;
+    height: auto;
+}
+
+.description-area {
+    flex: 1 1 auto;
+    overflow-wrap: break-word;
+    white-space: normal;
+    /* Allow text wrapping */
+    /* Allows it to take up remaining space */
+    min-width: 0;
+    /* Prevents overflow issues */
+}
+
+.details-area {
+    margin-top: 10px;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow-wrap: break-word;
+    white-space: normal;
+    /* Allow text wrapping */
+    /* Allows it to take up remaining space */
+    min-width: 0;
+    /* Prevents overflow issues */
+    background-color:white;
+}
+
+.details-area table td{
+    padding: 10px;
+}
+
+.price-area {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px;
+    padding-bottom: 0px;
+}
+.final-price{
+    color: orange;
+}
+
+.initial-price {
+    text-decoration: line-through;
+    color: gray;
+    font-size: 1rem;
+    margin-left: 10px;
+}
+
+.purchase-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.purchase-form button {
+    padding: 15px;
+    border: none;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.info-area h3 {
+    font-size: 1.2rem;
+}
+
+.description-title{
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1); /* Low-opacity line */
+    border-left: 10px solid orange;
+    padding: 10px;
+}
+
+
+
+.fomo-info {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+.fomo-info.pre{
+    color: blue;
+    border: 2px solid blue;
+}
+
+.fomo-info.sale{
+    color:red;
+    border: 2px solid red;
+}
+
+.ratings-area,.stock-count{
+    font-size: 1.5em;
+    padding-left: 10px;
+}
+
+.stock-count{
+    margin-bottom: 0;
+    margin-top: 10px;
+}
+
+
+.purchase-form form {
+    padding: 10px;
+    padding-top: 0px;
+}
+
+#quantityInput{
+    width: 37%;
+}
+
+button.add-to-cart{
+    background: orange;
+}
+
+button.buy-now{
+    background: #2be2b2;
+}
+
+.fa-star{
+    color:rgb(248, 208, 12);
+}
+
+
+@media (max-width: 768px) {
+    .overview-inner {
+        flex-direction: column;
+    }
+
+    .image-area,
+    .description-area {
+        flex: none;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .description-area {
+        text-align: left;
+    }
+
+    .image-area img {
+        max-width: 70%;
+        /* Adjust the size */
+    }
+
+    .main-area {
+        flex-direction: column;
+    }
+
+
+    .info-area,
+    .purchase-area {
+        flex: 100%;
+        flex: none;
+        width: 100%;
+    }
+
+    .info-area {
+        max-width: 100%;
+    }
+
+    .purchase-area{
+        text-align: center;
+    }
+
+    .fomo-info{
+        width: 70%;
+        margin-top: 10px;
+    }
+
+
+    .purchase-form form {
+        padding: 0px;
+    }
+
+    .purchase-form button {
+        display: block;
+        width: 50%;
+        margin: 10px auto;
+    }
+
+}

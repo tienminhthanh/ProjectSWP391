@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -114,12 +115,14 @@
                             <div class="flex items-center p-4 border-b border-gray-300">
                                 <!-- Hiển thị hình ảnh sản phẩm -->
                                 <div class="w-13 h-19 bg-gray-200 flex items-center justify-center mr-4">
-                                    <a href="productDetails?productID=${item.productID}" class="product-image">
+                                    <a href="productDetails?id=${item.productID}&type=${item.product.generalCategory}" class="product-image">
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="50">
                                     </a>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-lg font-bold">${item.product.productName}</h3>
+                                    <a href="productDetails?id=${item.productID}&type=${item.product.generalCategory}" class="product-image">
+                                        <h3 class="text-lg font-bold">${item.product.productName}</h3>
+                                    </a>
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
                                 <p> ${item.priceWithQuantity} VND</p>
@@ -129,7 +132,7 @@
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}" min="1" required class="quantity-input"/>
+                                    <input type="number" name="quantity" value="${item.quantity}"  min="1"  class="quantity-input" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>
@@ -162,7 +165,7 @@
                             ${total} VND
                         </span>
                     </div>
-                    <form action="orderSummary" method="get">
+                    <form action="OrderController" method="get">
                         <input type="hidden" name="totalAmount" value="${total}" />
                         <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
                             <i class="fas fa-credit-card"></i> Checkout
@@ -179,5 +182,6 @@
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
+        
     </body>
 </html>

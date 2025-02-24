@@ -43,15 +43,15 @@ public class CartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        String customerId = request.getParameter("customerID");
+        int customerID = customerId != null ? Integer.parseInt(customerId) : 0;
+
         try {
-            String customerId = request.getParameter("customerID");
-            int customerID = customerId != null ? Integer.parseInt(customerId) : 0;
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
             session.setAttribute("cartItems", cartItems);
-            request.setAttribute("cartItems", cartItems);
             RequestDispatcher dispatcher = request.getRequestDispatcher("cart.jsp");
             dispatcher.forward(request, response);
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(CartServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -68,7 +68,8 @@ public class CartServlet extends HttpServlet {
             String productIdStr = request.getParameter("productID");
             String quantityStr = request.getParameter("quantity");
             String priceStr = request.getParameter("priceWithQuantity");
-
+            String currentURL = request.getParameter("currentURL");
+            
             int customerID = Integer.parseInt(customerIdStr);
 
             // Validate session
@@ -85,8 +86,13 @@ public class CartServlet extends HttpServlet {
                     throw new Exception("Product not found!");
                 }
                 addToCart(request, customerID, productID, quantity, priceWithQuantity, product);
-                response.sendRedirect("home");
+                
+                if (currentURL == null || currentURL.trim().isEmpty()) {
+                    currentURL = "home";
+                }
+                response.sendRedirect(currentURL);
                 return;
+                
             } else if ("update".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
                 int productID = Integer.parseInt(productIdStr);
@@ -101,19 +107,22 @@ public class CartServlet extends HttpServlet {
                 }
                 CartItem cartItem = new CartItem(itemID, customerID, productID, quantity, priceWithQuantity);
                 updateCartItem(cartItem, product);
+                
             } else if ("delete".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
                 deleteCartItem(customerID, itemID);
                 List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID); // Lấy lại danh sách mới
                 session.setAttribute("cartItems", cartItems); // Cập nhật session
             }
+            
+            response.sendRedirect("cart?customerID=" + request.getParameter("customerID"));
+            
         } catch (Exception e) {
-            request.setAttribute("error", e.getMessage());
-            doGet(request, response);
-            return;
+            e.printStackTrace();
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
-        response.sendRedirect("cart?customerID=" + request.getParameter("customerID"));
     }
 
     private void addToCart(HttpServletRequest request, int customerID, int productID, int quantity,

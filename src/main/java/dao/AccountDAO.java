@@ -14,6 +14,13 @@ public class AccountDAO {
         context = new utils.DBContext();
     }
 
+    public boolean updateEmail(String username, String email) throws SQLException {
+        String sql = "UPDATE Account SET email = ? WHERE username = ?";
+        Object[] params = {email, username};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
+
     public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
         String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";

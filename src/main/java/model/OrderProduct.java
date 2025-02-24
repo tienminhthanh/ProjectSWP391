@@ -12,6 +12,7 @@ public class OrderProduct {
     private int priceWithQuantity;
     private int rating;
     private String comment;
+    private Product product;
 
     public OrderProduct() {
     }
@@ -77,6 +78,14 @@ public class OrderProduct {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     @Override

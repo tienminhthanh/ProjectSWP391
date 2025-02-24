@@ -82,6 +82,7 @@ public class CartItemDAO {
         product.setPrice(rs.getDouble("price"));
         product.setStockCount(rs.getInt("stockCount"));
         product.setImageURL(rs.getString("imageURL"));
+        product.setGeneralCategory(rs.getString("generalCategory"));
         // Add other Product fields as needed
 
         CartItem cartItem = new CartItem(

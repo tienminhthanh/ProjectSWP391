@@ -13,7 +13,6 @@ public class CartItem {
 
     private BigDecimal priceWithQuantity;
     private Product product;
-    private List<CartItem> itemList;
 
     public CartItem() {
     }
@@ -35,16 +34,6 @@ public class CartItem {
         this.priceWithQuantity = priceWithQuantity;
     }
 
-    public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity, Product product, List<CartItem> itemList) {
-        this.itemID = itemID;
-        this.customerID = customerID;
-        this.productID = productID;
-        this.quantity = quantity;
-        this.priceWithQuantity = priceWithQuantity;
-        this.product = product;
-        this.itemList = itemList;
-
-    }
 
 //    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
 //        this.customerID = customerID;
@@ -102,11 +91,4 @@ public class CartItem {
         this.product = product;
     }
 
-    public List<CartItem> getItemList() {
-        return itemList;
-    }
-
-    public void setItemList(List<CartItem> itemList) {
-        this.itemList = itemList;
-    }
 }

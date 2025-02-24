@@ -21,9 +21,8 @@
     </c:choose>
 
     <!-- Product Image -->
-
-    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image">
-        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}">
+    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image" title="${currentProduct.productName}">
+        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" >
         <div class="hover-name">${currentProduct.productName}</div>
     </a>
 
@@ -41,8 +40,7 @@
     </c:choose>
 
     <!-- Product Name -->
-
-    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title">${currentProduct.productName}</a>
+    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title" title="${currentProduct.productName}">${currentProduct.productName}</a>
 
     <!-- Sale Expiry Date or Release Date -->
     <%--<c:if test="${onSale}">--%>
@@ -61,7 +59,7 @@
         <c:choose>
             <%--<c:when test="${onSale}">--%>
             <c:when test="${empty currentProduct.specialFilter}">
-                <span class="discount-price">33333 VND</span>
+                <span class="discount-price">${currentProduct.price * 0.7} VND</span>
                 <span class="original-price">${currentProduct.price} VND</span>
             </c:when>
             <c:otherwise>
@@ -75,8 +73,7 @@
         <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
             </c:when>
-            <c:when test="${currentProduct.stockCount > 0}">
-
+            <c:when test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
             <form action="cart" method="post">
                 <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                 <input type="hidden" name="productID" value="${currentProduct.productID}">

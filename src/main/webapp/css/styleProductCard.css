@@ -156,8 +156,7 @@
 .add-to-cart {
     display: none;
     position: absolute;
-
-    top: 50%; /* Centers vertically */
+    top: 30%;  /* Centers vertically */
     right: 5px; /* Closer to the right edge */
     transform: translateY(-50%); /* Perfect vertical centering */
     background: orange;
