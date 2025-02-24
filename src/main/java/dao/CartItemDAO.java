@@ -1,0 +1,97 @@
+package dao;
+
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.CartItem;
+import model.Product;
+import utils.DBContext;
+
+public class CartItemDAO {
+
+    private DBContext context;
+
+    public CartItemDAO() {
+        context = new DBContext();
+    }
+
+    public boolean addCartItem(CartItem cartItem) throws SQLException {
+        String sql = "INSERT INTO CartItem (customerID, productID, quantity, priceWithQuantity) VALUES (?, ?, ?, ?)";
+        Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getQuantity(), cartItem.getPriceWithQuantity()};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
+
+    public boolean updateCartItem(CartItem cartItem) throws SQLException {
+        String sql = "UPDATE CartItem SET quantity = ?, priceWithQuantity = ? WHERE itemID = ?";
+        Object[] params = {cartItem.getQuantity(), cartItem.getPriceWithQuantity(), cartItem.getItemID()};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
+
+    public boolean deleteCartItem(int customerID, int itemID) throws SQLException {
+    String sql = "DELETE FROM CartItem WHERE customerID=? AND itemID = ?";
+    Object[] params = {customerID, itemID};
+    int rowsAffected = context.exeNonQuery(sql, params);
+    if (rowsAffected == 0) {
+        Logger.getLogger(CartItemDAO.class.getName()).log(Level.WARNING, 
+            "No cart item deleted for customerID: " + customerID + ", itemID: " + itemID);
+    }
+    return rowsAffected > 0;
+}
+
+    public CartItem getCartItemById(int itemID) throws SQLException {
+        String sql = "SELECT * FROM CartItem WHERE itemID = ?";
+        Object[] params = {itemID};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            return mapResultSetToCartItem(rs);
+        }
+        return null;
+    }
+
+    public List<CartItem> getCartItemsByCustomer(int customerID) throws SQLException {
+        List<CartItem> cartItems = new ArrayList<>();
+        String sql = "SELECT * FROM CartItem join Product on CartItem.productID=Product.productID WHERE customerID = ?";
+        Object[] params = {customerID};
+        ResultSet rs = context.exeQuery(sql, params);
+        while (rs.next()) {
+            cartItems.add(mapResultSetToCartItem(rs));
+        }
+        return cartItems;
+    }
+
+    public CartItem getCartItemByCustomerAndProduct(int customerID, int productID) throws SQLException {
+        String sql = "SELECT * FROM CartItem WHERE customerID = ? AND productID = ?";
+        Object[] params = {customerID, productID};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            return mapResultSetToCartItem(rs);
+        }
+        return null;
+    }
+
+    private CartItem mapResultSetToCartItem(ResultSet rs) throws SQLException {
+        Product product = new Product();
+        product.setProductID(rs.getInt("productID"));
+        product.setProductName(rs.getString("productName"));
+        product.setPrice(rs.getDouble("price"));
+        product.setStockCount(rs.getInt("stockCount"));
+        product.setImageURL(rs.getString("imageURL"));
+        // Add other Product fields as needed
+
+        CartItem cartItem = new CartItem(
+                rs.getInt("itemID"),
+                rs.getInt("customerID"),
+                rs.getInt("productID"),
+                rs.getInt("quantity"),
+                rs.getBigDecimal("priceWithQuantity")
+        );
+        cartItem.setProduct(product);
+        return cartItem;
+    }
+}

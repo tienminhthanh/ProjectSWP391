@@ -13,7 +13,8 @@ import java.util.List;
  * @author anhkc
  */
 public class Merchandise extends Product {
-    private int merchandiseID;
+
+
     private Series series;
     private Character character;
     private Brand brand;
@@ -23,12 +24,13 @@ public class Merchandise extends Product {
     private String copyright;
 
     // Constructor
-    public Merchandise() {}
-    
+
+    public Merchandise() {
+    }
+
     /**
-     * FULL
-     * 
-     * @param merchandiseID
+     * Full
+     *
      * @param series
      * @param character
      * @param brand
@@ -51,12 +53,11 @@ public class Merchandise extends Product {
      * @param keywords
      * @param generalCategory
      * @param isActive
-     * @param imageList 
+
+     * @param imageURL
      */
-    
-    public Merchandise(int merchandiseID, Series series, Character character, Brand brand, String size, String scaleLevel, String material, String copyright, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, List<Image> imageList) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageList);
-        this.merchandiseID = merchandiseID;
+    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, String copyright, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -65,12 +66,10 @@ public class Merchandise extends Product {
         this.material = material;
         this.copyright = copyright;
     }
-    
+
     /**
-     * Omit lastModifiedTime, averageRating, numberOfRating - For Add/Update
-     * May be we should omit imageList as well
-     * 
-     * @param merchandiseID
+     * Omit some
+     *
      * @param series
      * @param character
      * @param brand
@@ -85,16 +84,18 @@ public class Merchandise extends Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
+
+     * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
      * @param generalCategory
      * @param isActive
-     * @param imageList 
+
+     * @param imageURL
      */
-    public Merchandise(int merchandiseID, Series series, Character character, Brand brand, String size, String scaleLevel, String material, String copyright, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, List<Image> imageList) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, specialFilter, adminID, keywords, generalCategory, isActive, imageList);
-        this.merchandiseID = merchandiseID;
+    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, String copyright, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -104,13 +105,6 @@ public class Merchandise extends Product {
         this.copyright = copyright;
     }
 
-    public int getMerchandiseID() {
-        return merchandiseID;
-    }
-
-    public void setMerchandiseID(int merchandiseID) {
-        this.merchandiseID = merchandiseID;
-    }
 
     public Series getSeries() {
         return series;
@@ -167,10 +161,7 @@ public class Merchandise extends Product {
     public void setCopyright(String copyright) {
         this.copyright = copyright;
     }
-
-    
-    
+   
     
 
 }
-

@@ -1,8 +1,7 @@
 package controller.account;
 
 import dao.AccountDAO;
-import model.Account;
-import jakarta.servlet.RequestDispatcher;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,11 +11,13 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import model.Account;
 
 @WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/updateAccount"})
 public class UpdateAccountServlet extends HttpServlet {
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+
+    @Override    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {
@@ -63,7 +64,8 @@ public class UpdateAccountServlet extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
 
         try {
-            boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate);
+
+            boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate, role);
 
             if (success) {
                 Account updatedAccount = accountDAO.getAccountByUsername(username);

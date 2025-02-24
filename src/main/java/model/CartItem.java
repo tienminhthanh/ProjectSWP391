@@ -1,24 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package model;
 
-/**
- *
- * @author Macbook
- */
+import java.math.BigDecimal;
+import java.util.List;
+
 public class CartItem {
+
     private int itemID;
     private int customerID;
     private int productID;
     private int quantity;
-    private int priceWithQuantity;
+
+    private BigDecimal priceWithQuantity;
+    private Product product;
+    private List<CartItem> itemList;
 
     public CartItem() {
     }
 
-    public CartItem(int itemID, int customerID, int productID, int quantity, int priceWithQuantity) {
+
+    public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.itemID = itemID;
         this.customerID = customerID;
         this.productID = productID;
@@ -26,6 +27,32 @@ public class CartItem {
         this.priceWithQuantity = priceWithQuantity;
     }
 
+
+    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
+        this.customerID = customerID;
+        this.productID = productID;
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
+    }
+
+    public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity, Product product, List<CartItem> itemList) {
+        this.itemID = itemID;
+        this.customerID = customerID;
+        this.productID = productID;
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
+        this.product = product;
+        this.itemList = itemList;
+
+    }
+
+//    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
+//        this.customerID = customerID;
+//        this.productID = productID;
+//        this.quantity = quantity;
+//        this.priceWithQuantity = priceWithQuantity;
+//    }
+    // Getters vÃ  setters
     public int getItemID() {
         return itemID;
     }
@@ -54,22 +81,32 @@ public class CartItem {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+
+    public void setQuantity(int quantity) throws Exception {
         this.quantity = quantity;
     }
 
-    public int getPriceWithQuantity() {
+    public BigDecimal getPriceWithQuantity() {
         return priceWithQuantity;
     }
 
-    public void setPriceWithQuantity(int priceWithQuantity) {
+    public void setPriceWithQuantity(BigDecimal priceWithQuantity) {
         this.priceWithQuantity = priceWithQuantity;
     }
 
-    @Override
-    public String toString() {
-        return "CartItem{" + "itemID=" + itemID + ", customerID=" + customerID + ", productID=" + productID + ", quantity=" + quantity + ", priceWithQuantity=" + priceWithQuantity + '}';
+    public Product getProduct() {
+        return product;
     }
-    
-    
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public List<CartItem> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<CartItem> itemList) {
+        this.itemList = itemList;
+    }
 }

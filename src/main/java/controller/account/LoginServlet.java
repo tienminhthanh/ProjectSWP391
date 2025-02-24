@@ -1,3 +1,4 @@
+
 package controller.account;
 
 import dao.AccountDAO;
@@ -45,7 +46,7 @@ public class LoginServlet extends HttpServlet {
                                 break;
                             case "customer":
 
-                                response.sendRedirect("home");
+                                response.sendRedirect("/home");
                                 break;
                             case "staff":
                                 response.sendRedirect("dashboard.jsp");

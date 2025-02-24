@@ -1,9 +1,3 @@
-<%-- 
-    Document   : OrderSummaryView
-    Created on : Feb 21, 2025, 2:28:45 PM
-    Author     : Macbook
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -22,7 +16,7 @@
         <div class="content">
             <div class="left-content" style="width: 60%">
                 <h2>Shipping Information</h2> <hr>
-                <form action="payment" method="POST">
+                <form action="OrderController" method="POST">
                     <div class="input-custom">
                         <label for="name">Full Name</label><br>
                         <input type="text" name="name" id="name" required/>
@@ -39,16 +33,24 @@
                         <label for="email">Email</label><br>
                         <input type="text" name="email" id="email" required/>
                     </div>
+                    
                     <div class="payment-custom">
                         <h2>Payment Method</h2>
-                        <!--<label><input type="radio" name="paymentMethod" value="PAY001" ${methodname == 'Bank Transfer' ? 'checked' : ''}/> Bank Transfer</label><br>-->
-                        <label><input type="radio" name="paymentMethod" value="PAY002" ${methodname == 'COD' ? 'checked' : ''}/> Cash on Delivery (COD)</label><br>  
+                        <label><input type="radio" name="paymentMethod" value="PAY002" checked/> Cash on Delivery (COD)</label><br>  
                     </div> <hr>
+
                     <div class="payment-method">
                         <h2>Delivery Method</h2>
-                        <label><input type="radio" name="deliveryOption" value="DEL001" /> Express Delivery</label><br>
-                        <label><input type="radio" name="deliveryOption" value="DEL002" /> Economy Delivery</label><br>  
+                        <label><input type="radio" name="deliveryOptionID" value="DEL001" /> Express Delivery</label><br>
+                        <label><input type="radio" name="deliveryOptionID" value="DEL002" /> Economy Delivery</label><br>  
                     </div> <hr>
+                    
+                    <!-- Thêm các trường hidden để gửi phí vận chuyển và giảm giá -->
+                    <input type="hidden" name="shippingFee" value="${optionCost}">
+                    <input type="hidden" name="discount" value="${voucherValue}">
+                    <input type="hidden" name="priceWithQuantity" value="${priceWithQuantity}">
+                    <input type="hidden" name="orderTotalAmount" value="${orderTotalAmount}">
+                    
                     <button class="back" onclick="history.back()">Back to Cart</button>
                     <button type="submit">Place Order</button>
                 </form>
@@ -59,7 +61,9 @@
                 <div class="product-list">
                     <c:forEach var="item" items="${cartItems}">
                         <div class="product-item">
-                            <span class="product-infor"><img src="${item.image}" alt="${item.productName}" width="80px" height="80px"/></span>
+                            <span class="product-infor">
+                                <img src="${item.image}" alt="${item.productName}" width="80px" height="80px"/>
+                            </span>
                             <span class="product-infor">${item.productName}</span>
                             <span class="product-price">${item.priceWithQuantity} VND</span>
                         </div>
@@ -86,7 +90,6 @@
                 <div class="total-price">
                     <strong>Total: ${orderTotalAmount} <span class="currency">VND</span></strong>
                 </div>
-
             </div>
         </div>
     </body>
