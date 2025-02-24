@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
+import model.Account;
 import model.Voucher;
 
 /**
@@ -85,9 +86,15 @@ public class VoucherAddNewServlet extends HttpServlet {
         int duration = Integer.parseInt(request.getParameter("duration"));
 
         LocalDate dateCreated = LocalDate.now();
+
         HttpSession session = request.getSession();
-        int adminID = (int) session.getAttribute("account.adminID");
-        
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+        int adminID = account.getAccountID();
+
         VoucherDAO vDao = new VoucherDAO();
         boolean add = vDao.addVoucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID);
         if (add) {

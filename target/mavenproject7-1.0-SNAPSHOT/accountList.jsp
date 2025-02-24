@@ -26,7 +26,7 @@
                     <i class="fas fa-users mr-2"></i>
                     Account List
                 </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                <a class="flex items-center p-2 hover:bg-blue-800" href="eventList">
                     <i class="fas fa-calendar-alt mr-2"></i>
                     Event List
                 </a>

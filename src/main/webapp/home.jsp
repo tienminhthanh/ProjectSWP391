@@ -14,7 +14,7 @@
     <body class="bg-gray-100">
         <header class="bg-blue-600 p-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                
+
                 <form action="search">
                     <input class="p-2 rounded w-96" placeholder="title, author or keywords" type="search"/>
                 </form>
@@ -50,13 +50,51 @@
             </div>
 
         </header>
-        <div class="bg-white p-4">
-            <div class="flex space-x-4 overflow-x-auto">
-                <img alt="Banner 1" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+1" width="300"/>
-                <img alt="Banner 2" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+2" width="300"/>
-                <img alt="Banner 3" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+3" width="300"/>
+        <!-- Import Alpine.js -->
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+        <div x-data="{ 
+             current: 0, 
+             banners: [
+             '/mavenproject7/img/banner_event/banner1.jpg',
+             '/mavenproject7/img/banner_event/banner2.jpg',
+             '/mavenproject7/img/banner_event/banner3.jpg',
+             '/mavenproject7/img/banner_event/banner4.jpg'
+             ],
+             next() {
+             this.current = (this.current + 1) % this.banners.length;
+             },
+             prev() {
+             this.current = (this.current - 1 + this.banners.length) % this.banners.length;
+             },
+             autoSlide() {
+             setInterval(() => { this.next(); }, 3000);
+             }
+             }" x-init="autoSlide()" class="relative w-full h-64 overflow-hidden">
+
+            <!-- banner hiển thị -->
+            <img :src="banners[current]" class="w-full h-full object-cover transition-opacity duration-500">
+
+            <!-- nút điều hướng -->
+            <button @click="prev()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+                ⬅
+            </button>
+            <button @click="next()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+                ➡
+            </button>
+
+            <!-- chỉ số -->
+            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                <template x-for="(banner, index) in banners" :key="index">
+                    <div @click="current = index" :class="current === index ? 'bg-blue-500' : 'bg-gray-300'"
+                          class="w-3 h-3 rounded-full cursor-pointer"></div>
+                </template>
             </div>
         </div>
+
+
+
+
         <div class="flex">
             <aside class="w-1/4 p-4 bg-gray-200">
                 <div class="bg-orange-500 text-white p-4 rounded mb-4">
@@ -140,6 +178,30 @@
                         </button>
                     </div>
                 </div>
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold">
+                        Voucher List
+                    </h2>
+                    <div class="flex flex-wrap gap-4">
+                        <c:forEach var="voucher" items="${listVoucher}">
+                            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                                    onclick="navigateToUpdate(${voucher.voucherID})">
+                                ${voucher.voucherName} - ${voucher.voucherValue}
+                            </button>
+                        </c:forEach>
+
+                        <c:if test="${empty listVoucher}">
+                            <p class="text-gray-500 italic">No vouchers available.</p>
+                        </c:if>
+                    </div>
+                </div>
+                <!--
+                <script>
+                    function navigateToUpdate(voucherID) {
+                        window.location = 'voucherDetails?voucherId=' + voucherID;
+                    }
+                </script>-->
+
                 <div>
                     <h2 class="text-xl font-bold mb-4">
                         New Releases (Volumes)
@@ -300,5 +362,5 @@
             </main>
         </div>
     </body>
-    
+
 </html>
