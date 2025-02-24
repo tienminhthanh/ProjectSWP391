@@ -9,6 +9,9 @@
         <title>Cart</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link href="css/styleFooter.css" rel="stylesheet">
         <style>
             .logo {
                 display: flex;
@@ -21,11 +24,11 @@
                 height: auto;
             }
 
-/*            @media (max-width: 768px) {
-                .logo img {
-                    max-width: 140px;
-                }
-            }*/
+            /*            @media (max-width: 768px) {
+                            .logo img {
+                                max-width: 140px;
+                            }
+                        }*/
 
             /* Custom styles for the cart */
             .status-container {
@@ -74,7 +77,7 @@
         <header class="bg-white shadow">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <div class="logo">
-                    <img src="img/logo.png" alt="WIBOOKS" />
+                    <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
                 </div>
                 <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
                     <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
@@ -93,7 +96,7 @@
                 </div>
 
                 <!-- Kiểm tra nếu giỏ hàng rỗng -->
-                <c:if test="${empty cartItems}">
+                <c:if test="${empty sessionScope.cartItems}">
                     <div class="p-4 text-center text-gray-500">
                         *Your cart is empty.
                     </div>
@@ -104,20 +107,19 @@
                 </c:if>
 
                 <!-- Nếu có CartItem -->
-                <c:if test="${not empty cartItems}">
+                <c:if test="${not empty sessionScope.cartItems}">
                     <div class="items-in-cart">Items in Cart</div>
                     <div class="border border-gray-300 rounded-b-lg">
-                        <c:forEach var="item" items="${cartItems}">
+                        <c:forEach var="item" items="${sessionScope.cartItems}">
                             <div class="flex items-center p-4 border-b border-gray-300">
                                 <!-- Hiển thị hình ảnh sản phẩm -->
-                                <div class="w-16 h-16 bg-gray-200 flex items-center justify-center mr-4">
+                                <div class="w-13 h-19 bg-gray-200 flex items-center justify-center mr-4">
                                     <a href="productDetails?productID=${item.productID}" class="product-image">
-                                        <img src="${item.product.imageList[0].imageURL}" alt="${item.product.getProductName()}">
-                                        <div class="hover-name">${item.product.productName}</div>
+                                        <img src="${item.product.imageURL}" alt="${item.product.productName}" width="50">
                                     </a>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-lg font-bold">Name: ${item.product.productName}</h3>
+                                    <h3 class="text-lg font-bold">${item.product.productName}</h3>
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
                                 <p> ${item.priceWithQuantity} VND</p>
@@ -135,10 +137,9 @@
                                 </form>
                                 <!-- Form xóa CartItem -->
                                 <form action="cart" method="post" class="ml-4">
-                                    <input type="hidden" name="action" value="delete" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
-                                    <input type="hidden" name="customerID" value="${item.customerID}" />
-                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded">
+                                     <input type="hidden" name="customerID" value="${item.customerID}" />
+                                    <button type="submit" name="action" value="delete" class="bg-red-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -153,16 +154,16 @@
                     <div class="text-lg font-bold">
                         Total: 
                         <span class="text-red-500">
-                            <c:out value="${fn:length(cartItems)}"/> Item(s) - 
+                            <c:out value="${fn:length(sessionScope.cartItems)}"/> Item(s) - 
                             <c:set var="total" value="0" />
-                            <c:forEach var="item" items="${cartItems}">
+                            <c:forEach var="item" items="${sessionScope.cartItems}">
                                 <c:set var="total" value="${total + item.priceWithQuantity * item.quantity}" />
                             </c:forEach>
                             ${total} VND
                         </span>
                     </div>
                     <form action="cart" method="post">
-                        <c:forEach var="item" items="${cartItems}">
+                        <c:forEach var="item" items="${sessionScope.cartItems}">
                             <input type="hidden" name="action" value="pay" />
                         </c:forEach>
                         <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
@@ -172,6 +173,13 @@
                 </div>
             </div>
         </main>
-       
+        <jsp:include page="footer.jsp"/>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
     </body>
 </html>

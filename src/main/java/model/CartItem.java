@@ -12,7 +12,6 @@ public class CartItem {
     private BigDecimal priceWithQuantity;
     private Product product;
     private List<CartItem> itemList;
-    private Product productName;
 
     public CartItem() {
     }
@@ -105,13 +104,4 @@ public class CartItem {
     public void setItemList(List<CartItem> itemList) {
         this.itemList = itemList;
     }
-
-    public Product getProductName() {
-        return productName;
-    }
-
-    public void setProductName(Product productName) {
-        this.productName = productName;
-    }
-    
 }

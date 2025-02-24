@@ -12,7 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.EOFException;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -31,21 +31,23 @@ public class CartServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private CartItemDAO cartItemDAO;
-    private Product product;
+    private ProductDAO productDAO;
 
     @Override
     public void init() throws ServletException {
         cartItemDAO = new CartItemDAO();
-        product = new Product();
+        productDAO = new ProductDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         try {
             String customerId = request.getParameter("customerID");
             int customerID = customerId != null ? Integer.parseInt(customerId) : 0;
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
+            session.setAttribute("cartItems", cartItems);
             request.setAttribute("cartItems", cartItems);
             RequestDispatcher dispatcher = request.getRequestDispatcher("cart.jsp");
             dispatcher.forward(request, response);
@@ -57,65 +59,114 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
-        int customerID = Integer.parseInt(request.getParameter("customerID"));
-        int productID = Integer.parseInt(request.getParameter("productID"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        BigDecimal priceWithQuantity = new BigDecimal(request.getParameter("priceWithQuantity"));
 
         try {
-            ProductDAO productDAO = new ProductDAO();
-            product = productDAO.getProductById(productID);
+            // Check required parameters
+            String customerIdStr = request.getParameter("customerID");
+            String productIdStr = request.getParameter("productID");
+            String quantityStr = request.getParameter("quantity");
+            String priceStr = request.getParameter("priceWithQuantity");
 
-            if (product == null) {
-                throw new Exception("Product not found!");
-            }
+            int customerID = Integer.parseInt(customerIdStr);
 
-            if (quantity > product.getStockCount()) {
-                throw new Exception("Not enough stock for this product!");
+            // Validate session
+            if (session.getAttribute("account") == null) {
+                throw new Exception("Please login to add items to cart!");
             }
 
             if ("add".equals(action)) {
-                CartItem existingCartItem = cartItemDAO.getCartItemByCustomerAndProduct(customerID, productID);
-                if (existingCartItem != null) {
-                    // Update quantity if the product already exists in the cart
-                    existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity);
-                    updateCartItem(existingCartItem);
-                } else {
-                    // Add new item to the cart
-                    CartItem cartItem = new CartItem(customerID, productID, quantity, priceWithQuantity);
-                    addToCart(cartItem);
+                int productID = Integer.parseInt(productIdStr);
+                int quantity = Integer.parseInt(quantityStr);
+                BigDecimal priceWithQuantity = new BigDecimal(priceStr);
+                Product product = productDAO.getProductById(productID);
+                if (product == null) {
+                    throw new Exception("Product not found!");
                 }
+                addToCart(request, customerID, productID, quantity, priceWithQuantity, product);
+                response.sendRedirect("home");
+                return;
             } else if ("update".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
+                int productID = Integer.parseInt(productIdStr);
+                int quantity = Integer.parseInt(quantityStr);
+                BigDecimal priceWithQuantity = new BigDecimal(priceStr);
+                if (customerIdStr == null || productIdStr == null || quantityStr == null || priceStr == null) {
+                    throw new Exception("Missing required parameters!");
+                }
+                Product product = productDAO.getProductById(productID);
+                if (product == null) {
+                    throw new Exception("Product not found!");
+                }
                 CartItem cartItem = new CartItem(itemID, customerID, productID, quantity, priceWithQuantity);
-                updateCartItem(cartItem);
+                updateCartItem(cartItem, product);
             } else if ("delete".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
-                deleteCartItem(itemID);
+                deleteCartItem(customerID, itemID);
+                List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID); // Lấy lại danh sách mới
+                session.setAttribute("cartItems", cartItems); // Cập nhật session
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            request.setAttribute("error", e.getMessage());
+            doGet(request, response);
+            return;
         }
 
-        response.sendRedirect("cart?customerID=" + customerID);
+        response.sendRedirect("cart?customerID=" + request.getParameter("customerID"));
     }
 
-    private void addToCart(CartItem cartItem) throws SQLException, Exception {
-//        if (cartItem.getQuantity() > product.getStockCount()) {
-//            throw new Exception("Not enough stock for this product!");
-//        }
-        cartItemDAO.addCartItem(cartItem);
+    private void addToCart(HttpServletRequest request, int customerID, int productID, int quantity,
+            BigDecimal priceWithQuantity, Product product) throws SQLException, Exception {
+        HttpSession session = request.getSession();
+
+        // Check product availability
+        if (product == null) {
+            throw new Exception("Product not found!");
+        }
+
+        // Check stock
+        if (quantity > product.getStockCount()) {
+            throw new Exception("Not enough stock for this product! Available: " + product.getStockCount());
+        }
+
+        // Get cart from session or database
+        List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
+        if (cartItems == null) {
+            cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
+            session.setAttribute("cartItems", cartItems);
+        }
+
+        // Check if product already exists in cart
+        CartItem existingCartItem = cartItemDAO.getCartItemByCustomerAndProduct(customerID, productID);
+        if (existingCartItem != null) {
+            // Update quantity if product exists
+            int newQuantity = existingCartItem.getQuantity() + quantity;
+            if (newQuantity > product.getStockCount()) {
+                throw new Exception("Total quantity exceeds available stock! Available: " + product.getStockCount());
+            }
+            existingCartItem.setQuantity(newQuantity);
+            cartItemDAO.updateCartItem(existingCartItem);
+        } else {
+            // Add new item to cart
+            CartItem cartItem = new CartItem(customerID, productID, quantity, priceWithQuantity);
+            cartItemDAO.addCartItem(cartItem);
+            cartItems.add(cartItem);
+        }
+
+        session.setAttribute("cartItems", cartItems);
     }
 
-    private void updateCartItem(CartItem cartItem) throws SQLException, Exception {
-//        if (cartItem.getQuantity() > product.getStockCount()) {
-//            throw new Exception("Not enough stock for this product!");
-//        }
+    private void updateCartItem(CartItem cartItem, Product product) throws SQLException, Exception {
+        // Check if updated quantity exceeds stock
+        if (cartItem.getQuantity() > product.getStockCount()) {
+            throw new Exception("Updated quantity exceeds available stock! Available: " + product.getStockCount());
+        }
         cartItemDAO.updateCartItem(cartItem);
     }
 
-    private void deleteCartItem(int itemID) throws SQLException {
-        cartItemDAO.deleteCartItem(itemID);
+    private void deleteCartItem(int customerID, int itemID) throws SQLException {
+        cartItemDAO.deleteCartItem(customerID, itemID);
+
     }
 }

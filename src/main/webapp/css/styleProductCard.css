@@ -166,6 +166,11 @@
 .product-card:hover .add-to-cart {
     display: block;
 }
+.inline-form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
 
 /* Out of Stock Overlay */
 .out-of-stock {

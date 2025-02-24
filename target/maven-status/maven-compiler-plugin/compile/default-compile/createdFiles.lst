@@ -24,7 +24,6 @@ model\Brand.class
 dao\CartItemDAO.class
 controller\cart\CartServlet.class
 model\Category.class
-model\Image.class
 model\Book.class
 model\Character.class
 controller\account\UnlockAccountServlet.class
