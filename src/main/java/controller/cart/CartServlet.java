@@ -145,7 +145,6 @@ public class CartServlet extends HttpServlet {
             cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
             session.setAttribute("cartItems", cartItems);
         }
-
         // Check if product already exists in cart
         CartItem existingCartItem = cartItemDAO.getCartItemByCustomerAndProduct(customerID, productID);
         if (existingCartItem != null) {
@@ -154,8 +153,22 @@ public class CartServlet extends HttpServlet {
             if (newQuantity > product.getStockCount()) {
                 throw new Exception("Total quantity exceeds available stock! Available: " + product.getStockCount());
             }
-            existingCartItem.setQuantity(newQuantity);
-            cartItemDAO.updateCartItem(existingCartItem);
+            // Update existing item using the constructor with itemID
+            CartItem updatedCartItem = new CartItem(existingCartItem.getItemID(),
+                    customerID,
+                    productID,
+                    newQuantity,
+                    priceWithQuantity
+            );
+            cartItemDAO.updateCartItem(updatedCartItem);
+
+            // Update the item in the session list
+            for (int i = 0; i < updatedCartItem.getQuantity(); i++) {
+                if (cartItems.get(i).getItemID() == existingCartItem.getItemID()) {
+                    cartItems.set(i, updatedCartItem);
+                    break;
+                }
+            }
         } else {
             // Add new item to cart
             CartItem cartItem = new CartItem(customerID, productID, quantity, priceWithQuantity);
@@ -168,9 +181,9 @@ public class CartServlet extends HttpServlet {
 
     private void updateCartItem(CartItem cartItem, Product product) throws SQLException, Exception {
         // Check if updated quantity exceeds stock
-        if (cartItem.getQuantity() > product.getStockCount()) {
-            throw new Exception("Updated quantity exceeds available stock! Available: " + product.getStockCount());
-        }
+//        if (cartItem.getQuantity() > product.getStockCount()) {
+//            throw new Exception("Updated quantity exceeds available stock! Available: " + product.getStockCount());
+//        }
         cartItemDAO.updateCartItem(cartItem);
     }
 
