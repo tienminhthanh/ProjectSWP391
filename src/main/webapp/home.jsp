@@ -23,22 +23,56 @@
         <!--Product card css-->
         <link rel="stylesheet" href="css/styleProductCard.css"/>
 
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     </head>
     <body class="bg-gray-100">
         <div class="header-container">
             <jsp:include page="header.jsp" flush="true"/> 
         </div>
-        <div class="bg-white p-4">
-            <div class="flex space-x-4 overflow-x-auto">
-                <img alt="Banner 1" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+1" width="300"/>
-                <img alt="Banner 2" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+2" width="300"/>
-                <img alt="Banner 3" class="w-1/3" height="100" src="https://placehold.co/300x100?text=Banner+3" width="300"/>
+
+
+        <div x-data="{ 
+             current: 0, 
+             banners: [
+             '/img/banner_event/banner1.jpg',
+             '/img/banner_event/banner2.jpg',
+             '/img/banner_event/banner3.jpg',
+             '/img/banner_event/banner4.jpg'
+             ],
+             next() {
+             this.current = (this.current + 1) % this.banners.length;
+             },
+             prev() {
+             this.current = (this.current - 1 + this.banners.length) % this.banners.length;
+             },
+             autoSlide() {
+             setInterval(() => { this.next(); }, 3000);
+             }
+             }" x-init="autoSlide()" class="relative w-full h-64 overflow-hidden">
+
+            <!-- banner hiển thị -->
+            <img :src="banners[current]" class="w-full h-full object-cover transition-opacity duration-500">
+
+            <!-- nút điều hướng -->
+            <button @click="prev()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+                ⬅
+            </button>
+            <button @click="next()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+                ➡
+            </button>
+
+            <!-- chỉ số -->
+            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                <template x-for="(banner, index) in banners" :key="index">
+                    <div @click="current = index" :class="current === index ? 'bg-blue-500' : 'bg-gray-300'"
+                          class="w-3 h-3 rounded-full cursor-pointer"></div>
+                </template>
             </div>
         </div>
-        
+
         <div class="flex flex-col md:flex-row">
             <jsp:include page="customerSidebar.jsp"/>
-            
+
             <!--Main section-->
             <main class="w-full md:w-5/6 p-3">
                 <div class="mb-4 bg-white">
@@ -68,10 +102,30 @@
                         </button>
                     </div>
                 </div>
-                
+
+                <div class="mb-4 bg-white">
+                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
+                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                        Vouchers
+                    </h2>
+                    <div class="flex flex-wrap gap-4">
+                        <c:forEach var="voucher" items="${listVoucher}">
+                            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                                    onclick="navigateToUpdate(${voucher.voucherID})">
+                                ${voucher.voucherName} - ${voucher.voucherValue}
+                            </button>
+                        </c:forEach>
+
+                        <c:if test="${empty listVoucher}">
+                            <p class="text-gray-500 italic">No vouchers available.</p>
+                        </c:if>
+                    </div>
+                </div>
+
                 <!--Loopppppppppppppppppppppppppppppp-->
                 <div class="bg-white">
-                   <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
+                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
                         <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
                         <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
                         Random Pick
@@ -124,9 +178,10 @@
         <!--Tailwind-->
         <script src="https://cdn.tailwindcss.com">
         </script>
-        
+
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
     </body>
 </html>
 
