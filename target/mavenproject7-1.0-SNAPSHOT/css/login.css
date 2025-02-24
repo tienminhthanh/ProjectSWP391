@@ -1,0 +1,21 @@
+/* TailwindCSS customizations, if any */
+@import url('https://cdn.tailwindcss.com');
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Custom button styles */
+button {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: #2b6cb0;
+}
+
+/* Error message styling */
+.error-message {
+    color: red;
+    font-size: 14px;
+}

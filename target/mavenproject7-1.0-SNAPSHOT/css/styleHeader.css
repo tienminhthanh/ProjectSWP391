@@ -1,0 +1,300 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 19, 2025, 9:25:20 AM
+    Author     : anhkc
+*/
+
+header {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    
+    
+}
+
+a{
+    text-decoration: none;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    
+     
+    
+}
+
+.logo img {
+    max-width: 200px;
+    height: auto;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+/*    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  Optional shadow 
+    z-index: 1000;*/
+background-color: #ecc942; /* Keep the background */
+    transition: top 0.3s ease-in-out;
+
+
+}
+
+.search-nav-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.search-bar form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    background: white;
+}
+
+.search-bar select {
+    padding: 10px;
+    border: none;
+    border-right: 1px solid #ccc;
+    background: white;
+    outline: none;
+    flex-shrink: 0;
+    height: 40px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    min-width: 0;
+    height: 40px;
+}
+
+.search-bar button {
+    background-color: orange;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 40px;
+}
+
+.search-bar button i {
+    font-size: 16px;
+    color: white;
+}
+
+/* Fix extra space */
+.search-bar * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+
+
+.search-bar button i {
+    font-size: 25px; /* Larger icon size */
+    color: white;
+}
+nav{
+    width: 100%;
+}
+nav ul {
+    display: flex;
+    list-style-type: none;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+}
+
+nav ul li a:hover {
+    color: #f0f0f0;
+}
+
+
+.auth-buttons,
+.customer-icons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.customer-icons {
+    display: flex;
+    justify-content: space-around;
+    width: 200px;
+}
+.customer-icons i {
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+}
+
+.auth-buttons button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.account-wrapper {
+    position: relative;
+}
+
+.account-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 160px;
+    right: 10px;
+    z-index: 10;
+}
+
+.account-menu button {
+    width: 100%;
+    border: none;
+    background: none;
+    color:black;
+    text-align: left;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.account-menu button:hover {
+    background-color: #f0f0f0;
+}
+
+.customer-icons i {
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 900px){
+    .search-nav-container nav{
+        display:none;
+        
+    }
+    
+}
+
+@media (max-width: 768px) {
+    .logo img {
+        max-width: 140px;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .search-nav-container {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .search-bar {
+        display: flex;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .search-bar input {
+        flex: 1;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px 0 0 5px;
+    }
+
+    .search-bar button {
+        padding: 10px 15px;
+        border-radius: 0 5px 5px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .customer-icons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ecc942;
+        padding: 10px 0;
+        z-index: 10;
+        justify-content: space-around;
+    }
+
+    .auth-buttons {
+        margin-top: 10px;
+    }
+    /* New styles for account menu positioning in mobile view */
+    .account-wrapper {
+        position: relative;
+    }
+
+    .account-menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        width: 160px;
+        right: 10px;
+        left: -300%;
+        z-index: 11;
+        top: -400%; /* Position it above the icon */
+    }
+
+}

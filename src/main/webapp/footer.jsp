@@ -24,10 +24,10 @@
                     </li>
                     <li class="nav-item email">
                         <h4>
-                            <a href="mailto:anhk.ce191266@gmail.com" class="link contact-content">
+                            <a href="mailto:systemwibooks@gmail.com" class="link contact-content">
                                 <i class="fa-regular fa-envelope"></i>
                                 <span class="contact-text">
-                                    Email: anhk.ce191266@gmail.com
+                                    Email: System WiBooks
                                 </span>
                             </a>
                         </h4>
