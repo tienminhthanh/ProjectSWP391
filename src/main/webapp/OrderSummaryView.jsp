@@ -33,7 +33,7 @@
                         <label for="email">Email</label><br>
                         <input type="text" name="email" id="email" required/>
                     </div>
-                    
+
                     <div class="payment-custom">
                         <h2>Payment Method</h2>
                         <label><input type="radio" name="paymentMethod" value="PAY002" checked/> Cash on Delivery (COD)</label><br>  
@@ -44,13 +44,13 @@
                         <label><input type="radio" name="deliveryOptionID" value="DEL001" /> Express Delivery</label><br>
                         <label><input type="radio" name="deliveryOptionID" value="DEL002" /> Economy Delivery</label><br>  
                     </div> <hr>
-                    
+
                     <!-- Thêm các trường hidden để gửi phí vận chuyển và giảm giá -->
                     <input type="hidden" name="shippingFee" value="${optionCost}">
                     <input type="hidden" name="discount" value="${voucherValue}">
                     <input type="hidden" name="priceWithQuantity" value="${priceWithQuantity}">
                     <input type="hidden" name="orderTotalAmount" value="${orderTotalAmount}">
-                    
+
                     <button class="back" onclick="history.back()">Back to Cart</button>
                     <button type="submit">Place Order</button>
                 </form>
@@ -76,14 +76,14 @@
                             <p>Subtotal:</p>
                             <p>${priceWithQuantity} <span class="currency">VND</span></p>
                         </div>
-                        <div class="price-custom">
-                            <p>Shipping Fee:</p>
-                            <p>${optionCost} <span class="currency">VND</span></p>
-                        </div>
-                        <div class="price-custom">
-                            <p>Discount:</p>
-                            <p>${voucherValue} <span class="currency">VND</span></p>
-                        </div>
+                        <!--                        <div class="price-custom">
+                                                    <p>Shipping Fee:</p>
+                                                    <p>${optionCost} <span class="currency">VND</span></p>
+                                                </div>-->
+                        <!--                        <div class="price-custom">
+                                                    <p>Discount:</p>
+                                                    <p>${voucherValue} <span class="currency">VND</span></p>
+                                                </div>-->
                     </div>
                     <hr>
                 </div>

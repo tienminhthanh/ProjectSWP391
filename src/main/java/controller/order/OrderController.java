@@ -1,3 +1,4 @@
+package controller.order;
 
 import dao.OrderDAO;
 import jakarta.servlet.RequestDispatcher;
@@ -117,7 +118,7 @@ public class OrderController extends HttpServlet {
         // Apply discount if valid
         double discount = 0;
         if ("DISCOUNT10".equals(discountCode)) {
-            discount = 10000; // Discount for valid code
+            discount = 10000; // Discount for valid code , ex
         }
 
         // Calculate the total order amount
@@ -143,7 +144,7 @@ public class OrderController extends HttpServlet {
         orderInfo.setPaymentMethod(paymentMethod);
         orderInfo.setPaymentStatus("Pending");
 
-        // Set other properties like customer, voucher, etc. (Retrieve from request as needed)
+        // Set other properties like customer, voucher
         orderInfo.setCustomerID(Integer.parseInt(request.getParameter("customerID")));
         orderInfo.setPreVoucherAmount(Integer.parseInt(request.getParameter("preVoucherAmount")));
         orderInfo.setVoucherID(Integer.parseInt(request.getParameter("voucherID")));
@@ -158,10 +159,20 @@ public class OrderController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         try {
             orderDAO.insertOrderInfo(orderInfo);
-            response.sendRedirect("orderSuccess.jsp"); // Redirect to success page
+            //for de update stock cua product
+            for (OrderProduct orderProduct : orderProducts) {
+                // Call the updateProductStock method for each product in the order
+                boolean isUpdated = orderDAO.updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
+                if (isUpdated) {
+                    System.out.println("Stock updated for product ID: " + orderProduct.getProductID());
+                } else {
+                    System.out.println("Failed to update stock for product ID: " + orderProduct.getProductID());
+                }
+            }
+            response.sendRedirect("cart");
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("orderError.jsp"); // Redirect to error page
+            response.sendRedirect("home");
         }
     }
 

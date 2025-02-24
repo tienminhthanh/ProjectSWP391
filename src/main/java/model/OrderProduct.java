@@ -6,7 +6,7 @@ package model;
  */
 public class OrderProduct {
 
-   private int orderID;
+    private int orderID;
     private int productID;
     private int quantity;
     private int priceWithQuantity;
@@ -83,9 +83,5 @@ public class OrderProduct {
     public String toString() {
         return "OrderProduct{" + "orderID=" + orderID + ", productID=" + productID + ", quantity=" + quantity + ", priceWithQuantity=" + priceWithQuantity + ", rating=" + rating + ", comment=" + comment + '}';
     }
-    
-    
-    
-    
 
 }

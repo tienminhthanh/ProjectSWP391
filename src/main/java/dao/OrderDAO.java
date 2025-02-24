@@ -282,4 +282,11 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
+    public boolean updateProductStock(int productID, int quantityOrdered) throws SQLException {
+        String sql = "UPDATE Product SET stockCount = stockCount - ? WHERE productID = ?";
+        Object[] params = {quantityOrdered, productID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        System.out.println(rowsAffected + " rows affected");
+        return rowsAffected > 0;
+    }
 }

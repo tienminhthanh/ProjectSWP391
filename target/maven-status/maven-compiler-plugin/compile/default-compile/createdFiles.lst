@@ -14,7 +14,6 @@ controller\account\LogoutServlet.class
 model\Publisher.class
 controller\account\ReadAccountServlet.class
 model\Product.class
-OrderController.class
 controller\account\AddAccountSevlet.class
 model\Voucher.class
 model\Account.class
@@ -34,4 +33,5 @@ model\Image.class
 model\Book.class
 model\Character.class
 controller\account\UnlockAccountServlet.class
+controller\order\OrderController.class
 dao\ProductDAO.class
