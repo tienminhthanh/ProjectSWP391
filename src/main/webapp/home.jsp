@@ -8,6 +8,7 @@
             WIBOOKS - More Than Just Books
         </title>
 
+
         <!--Unknown import-->
         <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>-->
 
@@ -166,6 +167,7 @@
         <script src="js/scriptHeader.js"></script>
 
         <!--Footer script-->
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>

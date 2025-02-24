@@ -68,9 +68,29 @@ public class AccountDAO {
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
 
-    /**
-     * Cập nhật thông tin tài khoản
-     */
+    public boolean isEmailExistEmailOfUser(String username, String email) throws SQLException {
+        String sql = "SELECT * FROM Account WHERE email  = ? AND username != ?";  // Start by checking if the email exists
+
+        Object[] params = {email, username};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            return true;
+        }
+        return false;  // No other user has this email
+    }
+
+    public boolean isEmailExistForEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM Account WHERE email = ?";  // Check if the email already exists in the database
+
+        Object[] params = {email};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            return true;
+        }
+        return false;  // No other user has this email
+    }
+
+
     public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
         StringBuilder sql = new StringBuilder("UPDATE Account SET ");
         List<Object> params = new ArrayList<>();

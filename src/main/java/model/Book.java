@@ -7,6 +7,7 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
 /**
  *
  * @author anhkc
@@ -20,6 +21,7 @@ public class Book extends Product {
     }
 
     /**
+
      * FULL - Retrieve data from Book join Product join Category join Publisher
      *
      * @param publisher
@@ -39,6 +41,7 @@ public class Book extends Product {
      * @param keywords
      * @param generalCategory
      * @param isActive
+
      * @param imageURL
      */
     public Book(Publisher publisher, String duration, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
@@ -49,6 +52,7 @@ public class Book extends Product {
 
     /**
      * Omit lastModifiedTime, averageRating, numberOfRating - For Add/Update
+
      *
      * @param publisher
      * @param duration
@@ -59,12 +63,14 @@ public class Book extends Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
+
      * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
      * @param generalCategory
      * @param isActive
+
      * @param imageURL
      */
     public Book(Publisher publisher, String duration, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {

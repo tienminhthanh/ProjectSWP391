@@ -1,3 +1,4 @@
+
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div class="product-card w-48">
 
@@ -67,6 +68,7 @@
         </c:choose>
     </p>
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
+
     <c:choose>
         <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>

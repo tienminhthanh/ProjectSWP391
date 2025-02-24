@@ -1,3 +1,4 @@
+
 package model;
 
 import java.math.BigDecimal;
@@ -9,11 +10,13 @@ public class CartItem {
     private int customerID;
     private int productID;
     private int quantity;
+
     private BigDecimal priceWithQuantity;
     private Product product;
 
     public CartItem() {
     }
+
 
     public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.itemID = itemID;
@@ -22,6 +25,7 @@ public class CartItem {
         this.quantity = quantity;
         this.priceWithQuantity = priceWithQuantity;
     }
+
 
     public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.customerID = customerID;

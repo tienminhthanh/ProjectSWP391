@@ -156,7 +156,7 @@
                                                     <input type="hidden" name="quantity" class="quantity"/>
                                                     <button name="action" value="add" class="add-to-cart" type="submit">Add to Cart</button>
                                                 </form>
-                                                <form action="buy" method="post">
+                                                <form action="OrderController" method="get">
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity" value="${product.price}"/>

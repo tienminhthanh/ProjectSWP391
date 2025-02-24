@@ -11,6 +11,7 @@
     import java.util.logging.Logger;
     import javax.annotation.processing.FilerException;
 
+
     /**
      *
      * @author anhkc
@@ -23,7 +24,7 @@
                 + "encrypt=true;"
                 + "trustServerCertificate=true;";
         private static final String USERNAME = "sa";
-        private static final String PASSWORD = "sa123456";
+        private static final String PASSWORD = "123456";
 
         protected Connection conn;
 
@@ -31,7 +32,7 @@
             try {
                 String url = "jdbc:sqlserver://localhost:1433;databaseName=WIBOOKS";
                 String username = "sa";
-                String password = "sa123456";
+                String password = "123456";
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 conn = DriverManager.getConnection(url, username, password);
             } catch (ClassNotFoundException | SQLException e) {
