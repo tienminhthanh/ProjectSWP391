@@ -26,6 +26,44 @@ public class ProductDAO {
         this.context = new utils.DBContext();
     }
 
+    public Product getProductById(int productID) throws SQLException {
+        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
+                + "       Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, "
+                + "       Category.categoryName "
+                + "FROM Product "
+                + "INNER JOIN Category ON Product.categoryID = Category.categoryID "
+                + "WHERE Product.productID = ?";
+
+        Object[] params = {productID};
+        ResultSet rs = context.exeQuery(sql, params);
+
+        if (rs.next()) {
+            // Create Category
+            Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
+
+            // Create and return Product object
+            return new Product(
+                    rs.getInt("productID"),
+                    rs.getString("productName"),
+                    rs.getDouble("price"),
+                    rs.getInt("stockCount"),
+                    category,
+                    rs.getString("description"),
+                    rs.getDate("releaseDate").toLocalDate(),
+                    rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                    rs.getDouble("averageRating"),
+                    rs.getInt("numberOfRating"),
+                    rs.getString("specialFilter"),
+                    rs.getInt("adminID"),
+                    rs.getString("keywords"),
+                    rs.getString("generalCategory"),
+                    rs.getBoolean("isActive"),
+                    rs.getString("imageURL")
+            );
+        }
+
+        return null;
+    }
 
     public Book getBookById(int productID) throws SQLException {
         String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
@@ -106,7 +144,7 @@ public class ProductDAO {
 
         return genreList;
     }
-    
+
     public List<Product> get10RandomActiveProducts(String type) throws SQLException {
         String sql = "SELECT top 10 Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, \n"
                 + "                  Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, Category.categoryName\n"
@@ -114,10 +152,10 @@ public class ProductDAO {
                 + "                  Product ON Category.categoryID = Product.categoryID\n"
                 + "WHERE  (Product.isActive = 1) AND (Product.generalCategory = ?)\n"
                 + "order by newid()";
-        
+
         Object[] params = {type};
         List<Product> bookList = new ArrayList<>();
-        ResultSet rs = context.exeQuery(sql,params);
+        ResultSet rs = context.exeQuery(sql, params);
         while (rs.next()) {
             bookList.add(mapResultSetToProduct(rs));
 
@@ -125,7 +163,6 @@ public class ProductDAO {
         return bookList;
 
     }
-    
 
     public List<Product> getAllActiveProducts(String type, String sortCriteria) throws SQLException {
         String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description,\n"
@@ -135,7 +172,7 @@ public class ProductDAO {
                 + "JOIN Product ON Category.categoryID = Product.categoryID\n"
                 + "WHERE  (Product.isActive = 1) and (Product.generalCategory = ?)\n"
                 + "ORDER BY ";
-        
+
         sql += getSortOrder(sortCriteria);
 
         Object[] params = {type};
@@ -148,6 +185,7 @@ public class ProductDAO {
         return productList;
 
     }
+
     public List<Product> getSearchResult(String query, String type, String sortCriteria) throws SQLException {
         String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description,\n"
                 + "Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, Product.specialFilter,\n"
@@ -159,11 +197,9 @@ public class ProductDAO {
                 + "ON Product.productID = KEY_TBL.[KEY]\n"
                 + "WHERE  (Product.isActive = 1) and (Product.generalCategory = ?)\n"
                 + "ORDER BY ";
-        
-        
+
         String formattedQuery = formatQuery(query);
         sql += getSortOrder(sortCriteria);
-        
 
         Object[] params = {formattedQuery, type};
         ResultSet rs = context.exeQuery(sql, params);
@@ -175,17 +211,17 @@ public class ProductDAO {
         return productList;
 
     }
-    
-    private String formatQuery(String query){
+
+    private String formatQuery(String query) {
         String[] queryParts = query.split("\\s+");
         for (int i = 0; i < queryParts.length; i++) {
             queryParts[i] = "\"" + queryParts[i] + "*\"";
         }
-        
+
         return String.join(" OR ", queryParts);
     }
-    
-    private String getSortOrder(String sortCriteria){
+
+    private String getSortOrder(String sortCriteria) {
         switch (sortCriteria) {
             case "relevance":
                 return "KEY_TBL.RANK DESC";
@@ -199,26 +235,25 @@ public class ProductDAO {
 
         }
     }
-    
-    
-    private Product mapResultSetToProduct(ResultSet rs) throws SQLException{
+
+    private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
         return new Product(rs.getInt("productID"),
-                    rs.getString("productName"),
-                    rs.getDouble("price"),
-                    rs.getInt("stockCount"),
-                    category,
-                    rs.getString("description"),
-                    rs.getDate("releaseDate").toLocalDate(),
-                    rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
-                    rs.getDouble("averageRating"),
-                    rs.getInt("numberOfRating"),
-                    rs.getString("specialFilter"),
-                    rs.getInt("adminID"),
-                    rs.getString("keywords"),
-                    rs.getString("generalCategory"),
-                    rs.getBoolean("isActive"),
-                    rs.getString("imageURL"));
+                rs.getString("productName"),
+                rs.getDouble("price"),
+                rs.getInt("stockCount"),
+                category,
+                rs.getString("description"),
+                rs.getDate("releaseDate").toLocalDate(),
+                rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                rs.getDouble("averageRating"),
+                rs.getInt("numberOfRating"),
+                rs.getString("specialFilter"),
+                rs.getInt("adminID"),
+                rs.getString("keywords"),
+                rs.getString("generalCategory"),
+                rs.getBoolean("isActive"),
+                rs.getString("imageURL"));
     }
 
     public static void main(String[] args) {

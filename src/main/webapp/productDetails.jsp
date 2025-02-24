@@ -17,10 +17,10 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
         <link href="css/styleFooter.css" rel="stylesheet">
-        
+
         <!--Product Details CSS-->
         <link rel="stylesheet" href="css/styleproductDetails.css">
-        
+
     </head>
 
     <body>
@@ -66,7 +66,7 @@
                                         </div>
                                         <div class="description-area">
                                             <h3 class="description-title">Description</h3>
-                                            
+
                                             <p class="description-content">${product.description}</p>
                                             <p class="tags">
                                                 <c:forTokens var="tag" items="${product.keywords}" delims=",">
@@ -135,19 +135,37 @@
                                     </div>
                                     <div class="purchase-form">
                                         <p class="stock-count">In Stock: ${product.stockCount}</p>
-                                        <form action="productDetails" method="post">
-                                            <input type="hidden" name="productID" value="${product.productID}"/>
-                                            <input type="number" name="purchaseQuantity" id="quantityInput" value="1" min="1" oninput="validity.valid || (value = 1)"/>
-                                            <c:choose>
-                                                <c:when test="${product.specialFilter == 'pre-order'}">
+                                        <input type="number" name="purchaseQuantity" id="quantityInput" value="1" min="1" oninput="validity.valid || (value = 1)"/>
+                                        <c:choose>
+                                            <c:when test="${product.specialFilter == 'pre-order'}">
+                                                <form action="preorder" method="post">
+                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                    <input type="hidden" name="productID" value="${product.productID}"/>
+                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                    <input type="hidden" name="currentURL" class="currentURL"/>
+                                                    <input type="hidden" name="quantity" class="quantity"/>
                                                     <button name="action" value="preOrder" class="pre-order">Pre-Order</button>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <button name="action" value="addToCart" class="add-to-cart" type="submit">Add to Cart</button>
+                                                </form>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <form action="cart" method="post">
+                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                    <input type="hidden" name="productID" value="${product.productID}"/>
+                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                    <input type="hidden" name="currentURL" class="currentURL"/>
+                                                    <input type="hidden" name="quantity" class="quantity"/>
+                                                    <button name="action" value="add" class="add-to-cart" type="submit">Add to Cart</button>
+                                                </form>
+                                                <form action="buy" method="post">
+                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                    <input type="hidden" name="productID" value="${product.productID}"/>
+                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                    <input type="hidden" name="currentURL" class="currentURL"/>
+                                                    <input type="hidden" name="quantity" class="quantity"/>
                                                     <button name="action" value="buyNow" class="buy-now">Buy Now</button>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </form>
+                                                </form>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </div>
                             </div>
@@ -160,6 +178,34 @@
             <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
             <script>
                 document.getElementById("quantityInput").max = "${product.stockCount}";
+                
+                document.addEventListener("DOMContentLoaded", function () {
+                    let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                    // Loop through all hidden inputs and update their values
+                    hiddenInputs.forEach(function (hiddenInput) {
+                        hiddenInput.value = numberValue.value;
+                    });
+
+                    // Optional: Display the values for verification
+                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                    console.log("quantity:",displayValues);
+                });
+
+                document.getElementById("quantityInput").addEventListener("input", function (event) {
+                    let numberValue = event.target.value; // Get the value from the number input
+                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                    // Loop through all hidden inputs and update their values
+                    hiddenInputs.forEach(function (hiddenInput) {
+                        hiddenInput.value = numberValue;
+                    });
+
+                    // Optional: Display the values for verification
+                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                    console.log("quantity:",displayValues);
+                });
             </script>
             <!--Header script-->
             <script src="js/scriptHeader.js"></script>
@@ -168,7 +214,7 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                     integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"></script>
-            
+
             <!--Product details-->
             <script src="js/scriptProductDetails.js"></script>
         </c:if>

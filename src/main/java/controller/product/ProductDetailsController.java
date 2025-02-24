@@ -118,28 +118,7 @@ public class ProductDetailsController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
-        String id = request.getParameter("productID");
-        String quantity = request.getParameter("purchaseQuantity");
-        request.setAttribute("productID", id);
-        request.setAttribute("purchaseQuantity", quantity);
-        request.setAttribute("productDetailsAction", action);
-//        String productDetailsAction = (String) request.getAttribute("productDetailsAction");
-//        if ( productDetailsAction != null && productDetailsAction.equals("addToCart")) {
-//            int idToAdd = Integer.parseInt((String)request.getAttribute("productID"));
-//            int quantityToAdd = Integer.parseInt((String)request.getAttribute("purchaseQuantity"));
-//        }
-        switch (action) {
-            case "addToCart":
-                request.getRequestDispatcher("cart").forward(request, response);
-                break;
-            case "buyNow":
-                request.getRequestDispatcher("purchase").forward(request, response);
-                break;
-            case "preOrder":
-                request.getRequestDispatcher("preorder").forward(request, response);
-                break;
-        }
+        processRequest(request, response);
     }
 
     /**

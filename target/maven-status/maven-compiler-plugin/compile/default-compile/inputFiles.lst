@@ -13,7 +13,9 @@ C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Merchandise.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Product.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\LoginServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\utils\DBContext.java
+C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\cart\CartServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\product\ProductDetailsController.java
+C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\dao\CartItemDAO.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Genre.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Publisher.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\AddAccountSevlet.java
@@ -24,5 +26,6 @@ C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\utils\Utility.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\LogoutServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\Character.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\dao\ProductDAO.java
+C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\model\CartItem.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\EmailAuthenticationServlet.java
 C:\Users\anhkc\Desktop\ProjectSWP391\src\main\java\controller\account\ReadAccountServlet.java

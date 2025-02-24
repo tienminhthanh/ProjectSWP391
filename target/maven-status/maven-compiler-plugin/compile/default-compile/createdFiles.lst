@@ -1,3 +1,4 @@
+model\CartItem.class
 controller\home\HomepageController.class
 controller\account\EmailAuthenticationServlet$1.class
 dao\AccountDAO.class
@@ -21,7 +22,9 @@ controller\account\RegisterServlet.class
 model\Merchandise.class
 controller\account\ListAccountSevlet.class
 model\Brand.class
+dao\CartItemDAO.class
 controller\product\SearchController.class
+controller\cart\CartServlet.class
 model\Category.class
 model\Book.class
 model\Character.class

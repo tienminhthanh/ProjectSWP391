@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     priceElements.forEach(priceEl => {
         let priceText = priceEl.innerText.trim(); // Get the text inside span
         let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-        console.log("formatted price: ",price);
+        console.log("formatted price: ", price);
 
         if (!isNaN(price)) {
             // Format price with commas (e.g., 4,400 VND)
@@ -17,5 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
 
 

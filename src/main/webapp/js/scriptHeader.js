@@ -40,7 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("DOMContentLoaded", function () {
     let loginLink = document.getElementById("loginLink");
-    let currentURL = encodeURIComponent(window.location.href);
-    loginLink.href = "login?currentURL=" + currentURL;
+    if (loginLink) {
+        let currentURL = encodeURIComponent(window.location.href);
+        loginLink.href = "login?currentURL=" + currentURL;
+    }
 });
 

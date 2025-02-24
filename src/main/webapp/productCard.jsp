@@ -71,10 +71,14 @@
         <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
             <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
             </c:when>
-            <c:when test="${currentProduct.stockCount > 0}">
-            <a href="addToCart?productID=${currentProduct.productID}">
-                <button class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </a>
+            <c:when test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
+            <form action="cart" method="post">
+                <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                <input type="hidden" name="productID" value="${currentProduct.productID}">
+                <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
+                <input type="hidden" name="priceWithQuantity" value="${currentProduct.price}">
+                <button name="action" value="add" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+            </form>
         </c:when>
     </c:choose>
 
