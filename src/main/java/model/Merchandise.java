@@ -20,7 +20,6 @@ public class Merchandise extends Product {
     private String size;
     private String scaleLevel;
     private String material;
-    private String copyright;
 
     // Constructor
     public Merchandise() {
@@ -35,7 +34,6 @@ public class Merchandise extends Product {
      * @param size
      * @param scaleLevel
      * @param material
-     * @param copyright
      * @param productID
      * @param productName
      * @param price
@@ -53,7 +51,7 @@ public class Merchandise extends Product {
      * @param isActive
      * @param imageURL
      */
-    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, String copyright, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
@@ -61,7 +59,6 @@ public class Merchandise extends Product {
         this.size = size;
         this.scaleLevel = scaleLevel;
         this.material = material;
-        this.copyright = copyright;
     }
 
     /**
@@ -73,7 +70,6 @@ public class Merchandise extends Product {
      * @param size
      * @param scaleLevel
      * @param material
-     * @param copyright
      * @param productID
      * @param productName
      * @param price
@@ -89,7 +85,7 @@ public class Merchandise extends Product {
      * @param isActive
      * @param imageURL
      */
-    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, String copyright, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         super(productID, productName, price, stockCount, specificCategory, description, releaseDate, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
@@ -97,7 +93,6 @@ public class Merchandise extends Product {
         this.size = size;
         this.scaleLevel = scaleLevel;
         this.material = material;
-        this.copyright = copyright;
     }
 
     public Series getSeries() {
@@ -148,14 +143,6 @@ public class Merchandise extends Product {
         this.material = material;
     }
 
-    public String getCopyright() {
-        return copyright;
-    }
-
-    public void setCopyright(String copyright) {
-        this.copyright = copyright;
-    }
-    
     
 
 }

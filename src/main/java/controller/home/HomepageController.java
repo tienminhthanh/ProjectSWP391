@@ -65,11 +65,16 @@ public class HomepageController extends HttpServlet {
             ProductDAO productDAO = new ProductDAO();
             List<Product> productList = productDAO.get10RandomActiveProducts("book");
             
+            if(productList.isEmpty()){
+                throw new Exception("Found no products in the catalog!");
+            }
             
             request.setAttribute("productList", productList);
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
     }

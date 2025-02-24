@@ -71,7 +71,7 @@ public class ProductDetailsController extends HttpServlet {
         String generalCategory = request.getParameter("type");
         if (generalCategory.equals("book")) {
             getTheBook(request, response);
-        } else if (generalCategory.equals("merch")){
+        } else if (generalCategory.equals("merch")) {
             getTheMerch(request, response);
         }
 
@@ -82,22 +82,26 @@ public class ProductDetailsController extends HttpServlet {
         String productID = request.getParameter("id");
         try {
             int id = Integer.parseInt(productID);
+            
             Book requestedBook = productDAO.getBookById(id);
             HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
             List<Genre> genreList = productDAO.getGenresOfThisBook(id);
+            
             String breadCrumb = String.format("<a href='home'>Home</a> > <a href='catalog?type=book'>Books</a> > <a href='catalog?category=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
-                    requestedBook.getSpecificCategory().getCategoryID(),requestedBook.getSpecificCategory().getCategoryName(),id,requestedBook.getGeneralCategory(),requestedBook.getProductName());
-    request.setAttribute("breadCrumb", breadCrumb);
+                    requestedBook.getSpecificCategory().getCategoryID(), requestedBook.getSpecificCategory().getCategoryName(), id, requestedBook.getGeneralCategory(), requestedBook.getProductName());
+            
+            request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("product", requestedBook);
             request.setAttribute("creatorMap", creatorMap);
             request.setAttribute("genreList", genreList);
+            request.getRequestDispatcher("productDetails.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            request.setAttribute("exception", e);
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
-            request.getRequestDispatcher("productDetails.jsp").forward(request, response);
     }
-    
+
     private void getTheMerch(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 //        WORKING ON PROGRESS
@@ -119,6 +123,12 @@ public class ProductDetailsController extends HttpServlet {
         String quantity = request.getParameter("purchaseQuantity");
         request.setAttribute("productID", id);
         request.setAttribute("purchaseQuantity", quantity);
+        request.setAttribute("productDetailsAction", action);
+//        String productDetailsAction = (String) request.getAttribute("productDetailsAction");
+//        if ( productDetailsAction != null && productDetailsAction.equals("addToCart")) {
+//            int idToAdd = Integer.parseInt((String)request.getAttribute("productID"));
+//            int quantityToAdd = Integer.parseInt((String)request.getAttribute("purchaseQuantity"));
+//        }
         switch (action) {
             case "addToCart":
                 request.getRequestDispatcher("cart").forward(request, response);
