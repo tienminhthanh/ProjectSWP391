@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
                                 response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
                                 break;
                             case "customer":
-                                if (currentURL == null || currentURL.trim().isEmpty()) {
+                                if (currentURL == null || currentURL.isEmpty()) {
                                     response.sendRedirect("home");
                                 } else {
                                     response.sendRedirect(currentURL);

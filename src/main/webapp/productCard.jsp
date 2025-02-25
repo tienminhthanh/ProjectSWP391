@@ -69,20 +69,16 @@
     </p>
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
 
-    <c:choose>
-        <c:when test="${empty sessionScope.account || sessionScope.account.getRole() != 'customer'}">
-            <button class="add-to-cart" onclick="openLoginPopup()"><i class="fa-solid fa-cart-plus"></i></button>
-            </c:when>
-            <c:when test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
-            <form action="cart" method="post">
-                <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                <input type="hidden" name="productID" value="${currentProduct.productID}">
-                <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
-                <input type="hidden" name="priceWithQuantity" value="${currentProduct.price}">
-                <button name="action" value="add" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
-            </form>
-        </c:when>
-    </c:choose>
+    <c:if test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
+        <form action="cart" method="post">
+            <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+            <input type="hidden" name="productID" value="${currentProduct.productID}">
+            <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
+            <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
+            <input type="hidden" name="priceWithQuantity" value="${currentProduct.price}">
+            <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+        </form>
+    </c:if>
 
     <!-- If out of stock -> overlay -->
     <c:if test="${currentProduct.stockCount == 0}">

@@ -56,7 +56,7 @@
         <c:if test="${empty sessionScope.account}">
             <div class="auth-buttons">
 
-                <a href="login" id="loginLink">
+                <a href="login?currentURL=${pageContext.request.requestURI}" id="loginLink">
                     <button class="sign-in"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
                 </a>
                 <a href="register">

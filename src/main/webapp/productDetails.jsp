@@ -142,9 +142,9 @@
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL"/>
+                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                     <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="preOrder" class="pre-order">Pre-Order</button>
+                                                    <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
                                                 </form>
                                             </c:when>
                                             <c:otherwise>
@@ -152,17 +152,17 @@
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL"/>
+                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                     <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="add" class="add-to-cart" type="submit">Add to Cart</button>
+                                                    <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
                                                 </form>
                                                 <form action="OrderController" method="get">
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL"/>
+                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                     <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="buyNow" class="buy-now">Buy Now</button>
+                                                    <button name="action" value="buyNow" onclick="openLoginPopup()" class="buy-now">Buy Now</button>
                                                 </form>
                                             </c:otherwise>
                                         </c:choose>
@@ -172,13 +172,20 @@
                         </div>
                     </div>
                 </div>
+
             </main>
+            <!--Popup unauthorized users-->
+            <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                <c:set var="currentURL" value="${currentURL}" scope="request"/>
+                <jsp:include page="popuplogin.jsp"/>
+            </c:if>
+
             <jsp:include page="footer.jsp"/>
 
             <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
             <script>
                 document.getElementById("quantityInput").max = "${product.stockCount}";
-                
+
                 document.addEventListener("DOMContentLoaded", function () {
                     let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
                     let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
@@ -190,7 +197,7 @@
 
                     // Optional: Display the values for verification
                     let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:",displayValues);
+                    console.log("quantity:", displayValues);
                 });
 
                 document.getElementById("quantityInput").addEventListener("input", function (event) {
@@ -204,7 +211,7 @@
 
                     // Optional: Display the values for verification
                     let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:",displayValues);
+                    console.log("quantity:", displayValues);
                 });
             </script>
             <!--Header script-->
