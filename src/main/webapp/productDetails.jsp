@@ -173,40 +173,64 @@
                     </div>
                 </div>
             </main>
+            <jsp:include page="chat.jsp"/>
             <jsp:include page="footer.jsp"/>
+
 
             <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
             <script>
                 document.getElementById("quantityInput").max = "${product.stockCount}";
-                
                 document.addEventListener("DOMContentLoaded", function () {
-                    let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue.value;
-                    });
-
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:",displayValues);
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                hiddenInput.value = numberValue.value;
                 });
-
+                // Optional: Display the values for verification
+                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                console.log("quantity:", displayValues);
+                });
                 document.getElementById("quantityInput").addEventListener("input", function (event) {
-                    let numberValue = event.target.value; // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                let numberValue = event.target.value; // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue;
-                    });
-
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:",displayValues);
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                hiddenInput.value = numberValue;
                 });
-            </script>
+                // Optional: Display the values for verification
+                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                console.log("quantity:", displayValues);
+                });
+                <script>
+                    document.getElementById("quantityInput").max = "${product.stockCount}";
+                    document.addEventListener("DOMContentLoaded", function () {
+                        let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                hiddenInput.value = numberValue.value;
+                });
+                // Optional: Display the values for verification
+                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                console.log("quantity:", displayValues);
+                        });
+                        document.getElementById("quantityInput").addEventListener("input", function (event) {
+                        let numberValue = event.target.value; // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                hiddenInput.value = numberValue;
+                });
+                // Optional: Display the values for verification
+                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                console.log("quantity:", displayValues);
+                                                });
+                                        </script>
             <!--Header script-->
             <script src="js/scriptHeader.js"></script>
 
@@ -217,6 +241,7 @@
 
             <!--Product details-->
             <script src="js/scriptProductDetails.js"></script>
-        </c:if>
-    </body>
-</html>
+            </c:if>
+        </body>
+
+    </html>

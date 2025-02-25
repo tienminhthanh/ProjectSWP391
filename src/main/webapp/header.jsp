@@ -33,10 +33,16 @@
 
         <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
             <div class="customer-icons">
-                <i class="fa-regular fa-bell"></i>
+                
+                <!--Notification button-->
+                <a href="notification.jsp">
+                    <i class="fa-regular fa-bell"></i>
+                </a>
+                
+                <!--Cart button-->
                 <a href="cart?customerID=${sessionScope.account.accountID}">
-            <i class="fa-solid fa-cart-shopping"></i>
-        </a>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
 
                 <div class="account-wrapper">
                     <i class="fa-regular fa-user" onclick="toggleAccountMenu()"></i>

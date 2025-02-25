@@ -157,6 +157,7 @@
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
+        <jsp:include page="chat.jsp"/>
 
 
         <!--Script for include icons-->
