@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import java.util.List;
@@ -11,10 +7,6 @@ import java.util.ArrayList;
 import model.Notification;
 import utils.DBContext;
 
-/**
- *
- * @author ADMIN
- */
 public class NotificationDAO {
 
     private DBContext context;
@@ -61,9 +53,34 @@ public class NotificationDAO {
                 notifications.add(notification);
             }
         } finally {
-            rs.close(); // Đảm bảo đóng ResultSet trong khối finally
+            rs.close();
         }
+        return notifications;
+    }
 
+    // Lấy tất cả thông báo
+    public List<Notification> getAllNotifications() throws SQLException {
+        String sql = "SELECT * FROM Notification ORDER BY dateCreated DESC";
+        ResultSet rs = context.exeQuery(sql, new Object[]{});
+        List<Notification> notifications = new ArrayList<>();
+
+        try {
+            while (rs.next()) {
+                Notification notification = new Notification(
+                        rs.getInt("notificationID"),
+                        rs.getInt("senderID"),
+                        rs.getInt("receiverID"),
+                        rs.getString("notificationDetails"),
+                        rs.getDate("dateCreated"),
+                        rs.getBoolean("isDeleted"),
+                        rs.getString("notificationTitle"),
+                        rs.getBoolean("isRead")
+                );
+                notifications.add(notification);
+            }
+        } finally {
+            rs.close();
+        }
         return notifications;
     }
 
