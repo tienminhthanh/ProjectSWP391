@@ -35,7 +35,7 @@
             <div class="customer-icons">
                 
                 <!--Notification button-->
-                <a href="notification.jsp">
+                <a href="notification?action=list&receiverID=${sessionScope.account.accountID}">
                     <i class="fa-regular fa-bell"></i>
                 </a>
                 

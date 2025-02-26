@@ -2,80 +2,137 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller.notification;
 
+import dao.NotificationDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Notification;
 
 /**
  *
  * @author ADMIN
  */
+
 public class NotificationController extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet NotificationController</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet NotificationController at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+    private static final long serialVersionUID = 1L;
+    private NotificationDAO notificationDAO;
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
+    public void init() {
+        notificationDAO = new NotificationDAO();
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
     @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            String receiverIDParam = request.getParameter("receiverID");
+            int receiverID = Integer.parseInt(receiverIDParam);
+            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
+            request.setAttribute("notifications", notifications);
+            request.getRequestDispatcher("notification.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServletException("Database error", ex);
+        } catch (NumberFormatException ex) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid receiverID");
+        }
+    }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "insert"; // Mặc định là thêm thông báo mới nếu không có action
+        }
+
+        switch (action) {
+            case "insert":
+                insertNotification(request, response);
+                break;
+            case "markAsRead":
+                markAsRead(request, response);
+                break;
+            case "delete":
+                deleteNotification(request, response);
+                break;
+            default:
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+                break;
+        }
+    }
+
+    // Lấy danh sách thông báo theo receiverID
+    private void listNotifications(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
+            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
+            request.setAttribute("notifications", notifications);
+            request.getRequestDispatcher("notifications.jsp").forward(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ServletException("Database error", ex);
+        }
+    }
+
+    // Thêm thông báo mới
+    private void insertNotification(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int senderID = Integer.parseInt(request.getParameter("senderID"));
+            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
+            String details = request.getParameter("notificationDetails");
+            String title = request.getParameter("notificationTitle");
+            Date dateCreated = new Date(System.currentTimeMillis());
+            boolean isDeleted = false;
+            boolean isRead = false;
+
+            Notification notification = new Notification(0, senderID, receiverID, details, dateCreated, isDeleted, title, isRead);
+            notificationDAO.insertNotification(notification);
+            response.sendRedirect("notification?action=list&receiverID=" + receiverID);
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+        }
+    }
+
+    // Đánh dấu thông báo là đã đọc
+    private void markAsRead(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int notificationID = Integer.parseInt(request.getParameter("notificationID"));
+            notificationDAO.markAsRead(notificationID);
+            response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+        }
+    }
+
+    // Xóa thông báo (cập nhật isDeleted thành true)
+    private void deleteNotification(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int notificationID = Integer.parseInt(request.getParameter("notificationID"));
+            notificationDAO.deleteNotification(notificationID);
+            response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+        }
+    }
 }
