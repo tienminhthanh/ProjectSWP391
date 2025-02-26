@@ -80,6 +80,8 @@ public class ProductDetailsController extends HttpServlet {
     private void getTheBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String productID = request.getParameter("id");
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+        
         try {
             int id = Integer.parseInt(productID);
             
@@ -90,10 +92,12 @@ public class ProductDetailsController extends HttpServlet {
             String breadCrumb = String.format("<a href='home'>Home</a> > <a href='catalog?type=book'>Books</a> > <a href='catalog?category=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
                     requestedBook.getSpecificCategory().getCategoryID(), requestedBook.getSpecificCategory().getCategoryName(), id, requestedBook.getGeneralCategory(), requestedBook.getProductName());
             
+            request.setAttribute("currentURL", currentURL);
             request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("product", requestedBook);
             request.setAttribute("creatorMap", creatorMap);
             request.setAttribute("genreList", genreList);
+            
             request.getRequestDispatcher("productDetails.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -25,7 +26,7 @@
                     <div class="w-full md:w-1/2 md:pr-4 mb-6 md:mb-0">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
                         <form action="login" method="post">
-                            <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
+                            <input type="hidden" name="currentURL" value="${fn:escapeXml(requestScope.currentURL)}">
                             
                             <!-- Username -->
                             <div class="mb-4">

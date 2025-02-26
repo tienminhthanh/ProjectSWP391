@@ -12,7 +12,7 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
-           <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
@@ -46,6 +46,9 @@
                 <div class="mt-6 flex justify-between">
                     <a class="bg-blue-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="updateAccount?username=${account.username}">
                         <i class="fas fa-edit mr-2"></i> Update Information
+                    </a>
+                    <a class="bg-green-600 text-white p-3 rounded hover:bg-green-700 flex items-center" href="OrderListController">
+                        <i class="fas fa-shopping-cart mr-2"></i> Order List
                     </a>
                     <a class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
                        href="deleteAccount?username=${account.username}" 

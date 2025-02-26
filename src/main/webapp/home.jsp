@@ -152,7 +152,9 @@
                     </div>
 
                     <!--Popup unauthorized users-->
-                    <jsp:include page="popuplogin.jsp"/>
+                    <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                        <jsp:include page="popuplogin.jsp"/>
+                    </c:if>
 
                 </div>
             </main>

@@ -34,7 +34,7 @@
 
         <!--Product card css-->
         <link rel="stylesheet" href="css/styleProductCard.css"/>
-        
+
         <!--Search css-->
         <link rel="stylesheet" href="css/styleSearch.css"/>
     </head>
@@ -114,6 +114,9 @@
                     </div>
 
                     <div class="w-full">
+                        <p>Debug: Main page URI = ${pageContext.request.requestURI}</p>
+                        <p>Debug: Full URL = ${currentURL}</p>
+                        <c:set var="currentURL" value="${currentURL}" scope="request"/>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-5">
                             <c:forEach var="currentProduct" items="${productList}">
                                 <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
@@ -123,8 +126,10 @@
                     </div>
 
                     <!--Popup unauthorized users-->
-                    <jsp:include page="popuplogin.jsp"/>
-
+                    <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                        
+                        <jsp:include page="popuplogin.jsp" />
+                    </c:if>
                 </div>
             </main>
         </div>
@@ -139,14 +144,14 @@
             }
 
             window.addEventListener("load", function () {
-                    var sortCriteria = "<%= request.getAttribute("sortCriteria") != null ? request.getAttribute("sortCriteria") : "releaseDate"%>";
+                var sortCriteria = "<%= request.getAttribute("sortCriteria") != null ? request.getAttribute("sortCriteria") : "releaseDate"%>";
 
-                    console.log("DEBUG: sort from JSP:", sortCriteria);
+                console.log("DEBUG: sort from JSP:", sortCriteria);
 
-                    var selectElement = document.getElementById("sortCriteria");
-                    if (selectElement) {
-                        selectElement.value = sortCriteria;
-                    }
+                var selectElement = document.getElementById("sortCriteria");
+                if (selectElement) {
+                    selectElement.value = sortCriteria;
+                }
             });
         </script>
 
@@ -164,8 +169,8 @@
         <!--Tailwind-->
         <script src="https://cdn.tailwindcss.com">
         </script>
-        
-         <!--Product Card-->
+
+        <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
     </body>
 </html>

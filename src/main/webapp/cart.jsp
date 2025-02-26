@@ -167,7 +167,7 @@
                     </div>
                     <form action="OrderController" method="get">
                         <input type="hidden" name="totalAmount" value="${total}" />
-                        <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
+                        <button type="submit" name="action" value="checkOut"  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
                             <i class="fas fa-credit-card"></i> Checkout
                         </button>
                     </form>

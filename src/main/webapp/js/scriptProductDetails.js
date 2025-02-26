@@ -19,15 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    let currentURLs = document.querySelectorAll(".currentURL");
-
-    let url = window.location.href;
-    if (currentURLs) {
-        currentURLs.forEach(function (hiddenInput) {
-            hiddenInput.value = url;
-        });
-    }
-
-    console.log("url", url);
-});
+//document.addEventListener("DOMContentLoaded", function () {
+//    let currentURLs = document.querySelectorAll(".currentURL");
+//
+//    let url = window.location.href;
+//    if (currentURLs) {
+//        currentURLs.forEach(function (hiddenInput) {
+//            hiddenInput.value = url;
+//        });
+//    }
+//
+//    console.log("url", url);
+//});

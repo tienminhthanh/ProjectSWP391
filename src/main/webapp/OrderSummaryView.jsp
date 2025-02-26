@@ -11,27 +11,16 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-                <link href="css/styleFooter.css" rel="stylesheet">
+        <link href="css/styleFooter.css" rel="stylesheet">
         <title>Payment</title>
         <style>
-            .logo {
-                display: flex;
-                justify-content: center;
-                margin: 10px 0;
-            }
+
 
             .logo img {
                 max-width: 200px;
                 height: auto;
             }
 
-            /*            @media (max-width: 768px) {
-                            .logo img {
-                                max-width: 140px;
-                            }
-                        }*/
-
-            /* Custom styles for the cart */
             .status-container {
                 display: flex;
                 justify-content: center;
@@ -63,8 +52,16 @@
                 border-radius: 8px 8px 0 0;
                 margin-bottom: 0;
             }
+            .logo {
+                display: flex;
+                justify-content: flex-start; /* Căn trái */
+                margin: 10px 0;
+            }
 
-
+            .sign-out {
+                display: flex;
+                justify-content: flex-end; /* Căn phải */
+            }
         </style>
     </head>
     <body class="bg-gray-100">
@@ -73,9 +70,11 @@
                 <div class="logo">
                     <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
                 </div>
-                <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
-                </a>
+                <div class="sign-out">
+                    <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
+                    </a>
+                </div>
             </div>
         </header>
         <main class="container mx-auto px-4 py-6">
@@ -131,8 +130,10 @@
                             <input type="hidden" name="priceWithQuantity" value="${priceWithQuantity}">
                             <input type="hidden" name="orderTotalAmount" value="${orderTotalAmount}">
 
-                            <button class="back" onclick="window.location.href = 'cart'">Back to Cart</button>
-                            <button type="submit">Place Order</button>
+                            <div class="d-flex justify-content-between mt-4">
+                                <button class="btn btn-secondary" onclick="history.back();">Back to Cart</button>
+                                <button type="submit" class="btn btn-primary">Place Order</button>
+                            </div>
                         </form>
                     </div>
 
@@ -154,7 +155,7 @@
                             <div class="price">
                                 <div class="price-custom">
                                     <p>Subtotal:</p>
-                                    <p>${priceWithQuantity} <span class="currency">VND</span></p>
+                                    <p>${priceWithQuantity}<span class="currency">VND</span></p>
                                 </div>
                             </div>
                             <hr>

@@ -1,3 +1,5 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <style>
     /*Popup Styling*/
     .popup {
@@ -43,14 +45,19 @@
 <div class="overlay" id="login-popup-overlay" onclick="closeLoginPopup()"></div>
 <div class="popup" id="login-popup">
     <p>Please login with a <strong>'Customer'</strong> account first!</p>
-    <a href="login">
+    <c:url var="encodedLoginURL" value="/login">
+        <c:param name="currentURL" value="${requestScope.currentURL}" />
+    </c:url>
+    <a href="${encodedLoginURL}">
         <button onclick="closeLoginPopup()" class="proceed">Login</button>
     </a>
+    
     <button onclick="closeLoginPopup()" class="cancel">Cancel</button>
 </div>
 
 <script>
     function openLoginPopup() {
+        event.preventDefault();
         document.getElementById("login-popup").style.display = "block";
         document.getElementById("login-popup-overlay").style.display = "block";
     }
