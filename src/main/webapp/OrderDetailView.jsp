@@ -40,12 +40,11 @@
                         <p><strong>Shipping Address:</strong> ${orderInfo.deliveryAddress}</p>
                         <p><strong>Payment Method:</strong> ${orderInfo.paymentMethod}</p>
                         <p><strong>Order Status:</strong> ${orderInfo.orderStatus}</p>
-
+                        
                         <c:forEach var="item" items="${orderInfo.orderProductList}">
                             <p><strong>Product Price:</strong> ${item.product.productName} </p>
                             <p><strong>Product Price:</strong> ${item.quantity}</p>                            
                             <p><strong>Product Price:</strong> ${item.priceWithQuantity} VND</p>
-
                         </c:forEach>
 
                         <p><strong>Total Order:</strong> ${orderInfo.preVoucherAmount} VND</p>

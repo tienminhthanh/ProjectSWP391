@@ -1,13 +1,19 @@
 /* Reset some default styles */
+
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
     color: #333;
     padding: 20px;
     line-height: 1.6;
-    max-width: 1200px;
-    margin: 0 auto;
+    margin: 0;
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+    min-height: 100vh; /* Đảm bảo chiếm ít nhất toàn bộ chiều cao màn hình */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa nội dung theo chiều ngang */
 }
+
 
 .title-custom h1 {
     color: #34495e;

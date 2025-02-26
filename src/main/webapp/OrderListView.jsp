@@ -22,7 +22,7 @@
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <div class="logo">
                     <a href="home">
-                        <img src="img/logo.png" alt="WIBOOKS" class="h-10"/>
+                        <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
                     </a> 
                 </div>
                 <a href="logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex items-center">
@@ -36,7 +36,7 @@
             </div>
             <div class="space-y-4">
 
-      
+
                 <c:forEach items="${requestScope.list}" var="c"> 
                     <c:set var="id" value="${c.orderID}"/>
                     <div class="bg-white shadow-md rounded-lg p-4">
