@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 @WebServlet(name = "AddAccountServlet", urlPatterns = {"/addAccount"})
@@ -34,7 +37,7 @@ public class AddAccountSevlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String password = hashMD5(request.getParameter("password"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
@@ -64,6 +67,21 @@ public class AddAccountSevlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("message", "An error occurred while processing your request. Please try again later.");
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
+        }
+    }
+
+    public String hashMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] inputBytes = input.getBytes(StandardCharsets.UTF_16LE);
+            byte[] hashBytes = md.digest(inputBytes);
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02X", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Lỗi khi mã hóa MD5", e);
         }
     }
 }

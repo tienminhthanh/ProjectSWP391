@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import model.Account;
 
 @WebServlet(name = "DeleteAccountServlet", urlPatterns = {"/deleteAccount"})
 public class DeleteAccountServlet extends HttpServlet {
@@ -17,16 +18,22 @@ public class DeleteAccountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Account account = new Account();
+        account = (Account) session.getAttribute("account");
+
         String username = request.getParameter("username");
         AccountDAO accountDAO = new AccountDAO();
+
         try {
-            model.Account account = accountDAO.getAccountByUsername(username);
-            if (account != null) {
+            Account account2 = accountDAO.getAccountByUsername(username);
+            if (account2 != null) {
                 boolean success = accountDAO.updateAccountStatus(username, false);
                 if (success) {
                     if ("admin".equals(account.getRole())) {
                         response.sendRedirect("listAccount");
                     } else {
+                        session.invalidate();
                         response.sendRedirect("login.jsp");
                     }
                 } else {
@@ -35,11 +42,12 @@ public class DeleteAccountServlet extends HttpServlet {
                 }
             } else {
                 request.setAttribute("errorMessage", "Account not found!");
-                request.getRequestDispatcher("listAccount").forward(request, response);  
+                request.getRequestDispatcher("listAccount").forward(request, response);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error occurred.");
         }
     }
+
 }
