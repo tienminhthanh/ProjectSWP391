@@ -121,25 +121,26 @@
 
                 <!-- TABLE -->
                 <div class="overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full bg-white border border-gray-200">
+                    <table class="min-w-full bg-white border border-gray-200 table-fixed">
                         <thead class="bg-blue-600 text-white">
                             <tr>
-                                <th class="px-4 py-3 border border-b">ID</th>
-                                <th class="px-4 py-3 border border-b">Voucher Name</th>
-                                <th class="px-4 py-3 border border-b">Value</th>
-                                <th class="px-4 py-3 border border-b">Quantity</th>
-                                <th class="px-4 py-3 border border-b">Minimum Purchase Amount</th>
-                                <th class="px-4 py-3 border border-b">Date Created</th>
-                                <th class="px-2 py-1 border border-b">Duration</th>
-                                <th class="px-2 py-1 border border-b">Admin ID</th>
-                                <th class="px-2 py-1 border border-b">Voucher Status</th>
-                                <th class="px-4 py-3 border border-b">Action</th>
+                                <th class="px-4 py-3 border border-b w-16">ID</th>
+                                <th class="px-4 py-3 border border-b w-40">Voucher Name</th>
+                                <th class="px-4 py-3 border border-b w-24">Value</th>
+                                <th class="px-4 py-3 border border-b w-16">Quantity</th>
+                                <th class="px-4 py-3 border border-b w-24">Minimum Purchase Amount</th>
+                                <th class="px-4 py-3 border border-b w-32">Date Created</th>
+                                <th class="px-2 py-1 border border-b w-24">Duration</th>
+                                <th class="px-2 py-1 border border-b w-24">Admin ID</th>
+                                <th class="px-2 py-1 border border-b w-16">Expiry</th>
+                                <th class="px-2 py-1 border border-b w-16">Voucher Status</th>
+                                <th class="px-4 py-3 border border-b w-16">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:choose>
                                 <c:when test="${!empty VOUCHER_DETAILS}">
-                                    <tr class="transition duration-300"">
+                                    <tr class="transition duration-300">
                                         <td class="px-4 py-3 border border-b text-center">${VOUCHER_DETAILS.voucherID}</td>
                                         <td class="px-4 py-3 border border-b text-left">${VOUCHER_DETAILS.voucherName}</td>
                                         <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.voucherValue}</td>
@@ -148,23 +149,41 @@
                                         <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.dateCreated}</td>
                                         <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.duration}</td>
                                         <td class="px-4 py-3 border border-b text-right">${VOUCHER_DETAILS.adminID}</td>
-                                        <td class="px-6 py-3 border border-b text-center">
+                                        <td class="px-4 py-3 border border-b text-center">
                                             <c:choose>
-                                                <c:when test="${VOUCHER_DETAILS.isActive}">
-                                                    <span class="text-green-700">Available</span>
+                                                <c:when test="${VOUCHER_DETAILS.expiry}">
+                                                    <span>Available</span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="text-red-700">Expired</span>
+                                                    <span>Expired</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-                                        <td class="px-6 py-3 border-b text-left">
+                                        <td class="px-2 py-3 border border-b text-center">
+                                            <c:choose>
+                                                <c:when test="${VOUCHER_DETAILS.expiry}">
+                                                    <c:choose>
+                                                        <c:when test="${VOUCHER_DETAILS.isActive}">
+                                                            <span class="text-green-700">Active</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-red-700">Deactivate</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="text-red-700">Deactivate</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td class="px-4 py-3 border-b text-left">
                                             <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="mb-2 block bg-green-500 text-white py-1 px-3 hover:text-green-700 rounded">
                                                 Update
                                             </a>
-                                            <a class="block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
-                                                Delete 
+                                            <a class="mb-2 block bg-red-500 text-white py-1 px-3 hover:text-red-700 rounded" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
+                                                Delete
                                             </a>
+
                                         </td>
                                     </tr>
                                 </c:when>
@@ -176,6 +195,7 @@
                             </c:choose>
                         </tbody>
                     </table>
+
                 </div>
             </div>
             <div class="mt-6">
@@ -195,24 +215,24 @@
         </footer>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-                                                function confirmAction(message, url) {
-                                                    Swal.fire({
-                                                        title: 'Are you sure?',
-                                                        text: message,
-                                                        icon: 'warning',
-                                                        showCancelButton: true,
-                                                        confirmButtonText: 'Yes, do it!',
-                                                        cancelButtonText: 'Cancel',
-                                                        reverseButtons: true
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            window.location.href = url;
+                                                        function confirmAction(message, url) {
+                                                            Swal.fire({
+                                                                title: 'Are you sure?',
+                                                                text: message,
+                                                                icon: 'warning',
+                                                                showCancelButton: true,
+                                                                confirmButtonText: 'Yes, do it!',
+                                                                cancelButtonText: 'Cancel',
+                                                                reverseButtons: true
+                                                            }).then((result) => {
+                                                                if (result.isConfirmed) {
+                                                                    window.location.href = url;
+                                                                }
+                                                            });
                                                         }
-                                                    });
-                                                }
-                                                function navigateToUpdate(voucherId) {
-                                                    window.location = 'listAccount?voucherId=' + voucherId;
-                                                }
+                                                        function navigateToUpdate(voucherId) {
+                                                            window.location = 'listAccount?voucherId=' + voucherId;
+                                                        }
         </script>
 </body>
 </html>

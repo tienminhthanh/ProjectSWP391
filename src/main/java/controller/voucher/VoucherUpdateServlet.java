@@ -87,7 +87,7 @@ public class VoucherUpdateServlet extends HttpServlet {
 //        LocalDate today = LocalDate.now();
         int duration = Integer.parseInt(request.getParameter("duration"));
         int adminID = vDao.getVoucherByID(id).getAdminID();
-        Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, vDao.getVoucherByID(id).isIsActive());
+        Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, true, vDao.getVoucherByID(id).isIsActive());
         if (vDao.updateVoucher(voucher)) {
             response.sendRedirect(url);
         }

@@ -11,6 +11,7 @@ utils\DBContext.class
 controller\account\LogoutServlet.class
 controller\voucher\VoucherUpdateServlet.class
 controller\account\ReadAccountServlet.class
+controller\event\EventDetailsServlet.class
 model\Product.class
 controller\account\AddAccountSevlet.class
 model\Voucher.class

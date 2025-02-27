@@ -96,7 +96,8 @@ public class VoucherAddNewServlet extends HttpServlet {
         int adminID = account.getAccountID();
 
         VoucherDAO vDao = new VoucherDAO();
-        boolean add = vDao.addVoucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID);
+        Voucher voucher = new Voucher(adminID, name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true);
+        boolean add = vDao.addVoucher(voucher);
         if (add) {
             response.sendRedirect(VOUCHER_LIST_PAGE);
         }

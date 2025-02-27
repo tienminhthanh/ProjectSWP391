@@ -26,7 +26,7 @@
                     <i class="fas fa-users mr-2"></i>
                     Account List
                 </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="eventList">
+                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
                     <i class="fas fa-calendar-alt mr-2"></i>
                     Event List
                 </a>
@@ -132,7 +132,8 @@
                                 <th class="px-4 py-3 border border-b">Voucher Name</th>
                                 <th class="px-4 py-3 border border-b">Value</th>
                                 <th class="px-4 py-3 border border-b">Quantity</th>
-                                <th class="px-6 py-3 border border-b">Voucher Status</th>
+                                <th class="px-4 py-3 border border-b">Expiry</th>
+                                <th class="px-2 py-3 border border-b">Voucher Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,16 +145,36 @@
                                     <td class="px-4 py-3 border border-b text-left">${voucher.voucherName}</td>
                                     <td class="px-4 py-3 border border-b text-right">${voucher.voucherValue}</td>
                                     <td class="px-4 py-3 border border-b text-right">${voucher.quantity}</td>
-                                    <td class="px-6 py-3 border border-b text-center">
+                                    <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
-                                        <c:when test="${voucher.isActive}">
-                                            <span class="text-green-700">Available</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="text-red-700">Expired</span>
-                                        </c:otherwise>
-                                    </c:choose>
+                                            <c:when test="${voucher.expiry}">
+                                                <span>Available</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span>Expired</span>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
+
+                                    <td class="px-2 py-3 border border-b text-center">
+                                        <c:choose>
+                                            <c:when test="${voucher.expiry}">
+                                                <c:choose>
+                                                    <c:when test="${voucher.isActive}">
+                                                        <span class="text-green-700">Active</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-red-700">Deactivate</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-red-700">Deactivate</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+
+
                                 </tr>
                             </c:forEach>
                             <c:if test="${empty LIST_VOUCHER}">

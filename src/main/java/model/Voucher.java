@@ -19,8 +19,9 @@ public class Voucher {
     private int duration;
     private int adminID;
     private boolean isActive;
+    private boolean expiry;
 
-    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive) {
+    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry) {
         this.voucherID = voucherID;
         this.voucherName = voucherName;
         this.voucherValue = voucherValue;
@@ -30,6 +31,15 @@ public class Voucher {
         this.duration = duration;
         this.adminID = adminID;
         this.isActive = isActive;
+        this.expiry = expiry;
+    }
+
+    public boolean isExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(boolean expiry) {
+        this.expiry = expiry;
     }
 
     public int getVoucherID() {
