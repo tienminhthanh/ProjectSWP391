@@ -51,15 +51,23 @@
                         <p class="mt-4 text-lg font-bold">Total Order: ${orderInfo.preVoucherAmount} VND</p>
                         <p><strong>Payment Method:</strong> ${methodName}</p>
                         <div class="flex space-x-2 mt-4">
-                            <a href="updateOrder?id=${orderID}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</a>
+                            <button type="button" onclick="showUpdateForm()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</button>
                             <form action="DeleteOrderController" method="POST" onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
                                 <input type="hidden" name="id" value="${orderInfo.orderID}">
                                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
                             </form>
                             <a href="OrderListController" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Back</a>
+                            <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
+                            <c:if test="${orderInfo.orderStatus == 'Đang giao hàng'}">
+                                <form action="ConfirmReceivedOrderController" method="POST">
+                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
+                                        Đã nhận hàng
+                                    </button>
+                                </form>
+                            </c:if>
 
                         </div>
-
                     </div>
 
                     <!-- Hình ảnh sản phẩm bên phải -->
@@ -77,8 +85,34 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
+
+        <!-- Form cập nhật địa chỉ giao hàng -->
+        <div id="updateForm" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                <h2 class="text-xl font-semibold mb-4">Update Shipping Address</h2>
+                <form action="UpdateOrderController" method="POST">
+                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                    <label for="newAddress" class="block font-medium mb-2">New Address:</label>
+                    <input type="text" name="newAddress" id="newAddress" class="w-full p-2 border rounded-lg mb-4" required>
+
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" onclick="hideUpdateForm()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function showUpdateForm() {
+                document.getElementById("updateForm").classList.remove("hidden");
+            }
+
+            function hideUpdateForm() {
+                document.getElementById("updateForm").classList.add("hidden");
+            }
+        </script>
     </body>
 </html>
