@@ -44,7 +44,7 @@ public class RegisterServlet extends HttpServlet {
             // Check if the email exists in the system
             Account accountByEmail = accountDAO.getAccountByEmail(email);
 
-            if (accountByEmail != null && ! "admin".equals(accountByEmail.getRole())) {
+            if (accountByEmail != null && !"admin".equals(accountByEmail.getRole())) {
                 // If email exists, check if the account is active or locked
                 if (accountByEmail.getIsActive()) {
                     // If account is active, deny registration
@@ -67,7 +67,8 @@ public class RegisterServlet extends HttpServlet {
                 message = "Passwords do not match!";
             } // Proceed with registration
             else {
-                password = hashMD5(confirmPassword);
+                AccountLib lib = new AccountLib();
+                password = lib.hashMD5(confirmPassword);
                 boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate);
                 if (success) {
                     // Store temporary email for verification
@@ -106,19 +107,4 @@ public class RegisterServlet extends HttpServlet {
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
-    // Hash password using MD5
-    public String hashMD5(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] inputBytes = input.getBytes(StandardCharsets.UTF_16LE);
-            byte[] hashBytes = md.digest(inputBytes);
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                hexString.append(String.format("%02X", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error while hashing password with MD5", e);
-        }
-    }
 }

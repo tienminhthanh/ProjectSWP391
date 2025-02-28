@@ -32,7 +32,7 @@ public class RemoveEmailFromLockedAccountServlet extends HttpServlet {
             }
 
             // Generate OTP
-            MyLib lib = new MyLib();
+            AccountLib lib = new AccountLib();
             String otp = lib.generateOTP();
             request.getSession().setAttribute("otp", otp);
             request.getSession().setAttribute("tempEmail", email);
