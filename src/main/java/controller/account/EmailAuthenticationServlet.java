@@ -17,7 +17,7 @@ public class EmailAuthenticationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        MyLib lib = new MyLib();
+        AccountLib lib =new AccountLib();
         String email = (String) request.getSession().getAttribute("tempEmail");
         String otp = lib.generateOTP();
         request.getSession().setAttribute("otp", otp);

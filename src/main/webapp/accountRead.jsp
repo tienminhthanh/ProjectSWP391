@@ -45,6 +45,9 @@
                     <a class="bg-blue-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="updateAccount?username=${account.username}">
                         <i class="fas fa-edit mr-2"></i> Update Information
                     </a>
+                    <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="changePassword.jsp">
+                        <i class="fas fa-edit mr-2"></i> Change password
+                    </a>
                     <a class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
                        href="deleteAccount?username=${account.username}" 
                        onclick="return confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${account.username}')">

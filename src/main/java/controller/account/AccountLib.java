@@ -12,10 +12,13 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 import java.util.Random;
 
-public class MyLib {
+public class AccountLib {
 
     public String generateOTP() {
         return String.format("%06d", new Random().nextInt(999999));
@@ -42,5 +45,20 @@ public class MyLib {
         message.setText(content);
         Transport.send(message);
     }
+// MD5 hashing function
 
+    public String hashMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] inputBytes = input.getBytes(StandardCharsets.UTF_16LE);
+            byte[] hashBytes = md.digest(inputBytes);
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02X", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error while hashing MD5", e);
+        }
+    }
 }
