@@ -12,14 +12,22 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import model.Account;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("register.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+
+        // Retrieve form data
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -28,19 +36,41 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
+
         try {
             AccountDAO accountDAO = new AccountDAO();
             String message = null;
+
+            // Check if the email exists in the system
+            Account accountByEmail = accountDAO.getAccountByEmail(email);
+
+            if (accountByEmail != null && ! "admin".equals(accountByEmail.getRole())) {
+                // If email exists, check if the account is active or locked
+                if (accountByEmail.getIsActive()) {
+                    // If account is active, deny registration
+                    message = "Email already exists!";
+                } else {
+                    request.getSession().setAttribute("tempEmail", email);
+                    // If account is locked, redirect to unlock/re-register page
+                    request.setAttribute("lockedAccount", accountByEmail);
+                    request.setAttribute("message", "This email is associated with a locked account. Do you want to unlock it or remove the email?");
+                    request.getRequestDispatcher("unlockOrRegister.jsp").forward(request, response);
+                    return;
+                }
+            }
+
+            // Check if username already exists
             if (accountDAO.getAccountByUsername(username) != null) {
                 message = "Username already exists!";
-            } else if (accountDAO.isEmailExist(email, null)) {
-                message = "Email already exists!";
-            } else if (!password.equals(confirmPassword)) {
+            } // Check if passwords match
+            else if (!password.equals(confirmPassword)) {
                 message = "Passwords do not match!";
-            } else {
+            } // Proceed with registration
+            else {
                 password = hashMD5(confirmPassword);
                 boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate);
                 if (success) {
+                    // Store temporary email for verification
                     request.getSession().setAttribute("tempEmail", email);
                     request.getSession().setAttribute("tempUsername", username);
                     response.sendRedirect("emailAuthentication");
@@ -49,6 +79,8 @@ public class RegisterServlet extends HttpServlet {
                     message = "Registration failed. Please try again.";
                 }
             }
+
+            // If there is an error, return to the registration page
             if (message != null) {
                 request.setAttribute("message", message);
                 forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate);
@@ -60,15 +92,7 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
-        dispatcher.forward(request, response);
-    }
-
-    /**
-     * Chuyển hướng lại trang đăng ký và giữ nguyên dữ liệu nhập vào.
-     */
+    // Forward request to register page and keep entered data
     private void forwardToRegisterPage(HttpServletRequest request, HttpServletResponse response,
             String username, String firstName, String lastName,
             String email, String phoneNumber, String birthDate)
@@ -82,6 +106,7 @@ public class RegisterServlet extends HttpServlet {
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
+    // Hash password using MD5
     public String hashMD5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -93,7 +118,7 @@ public class RegisterServlet extends HttpServlet {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Lỗi khi mã hóa MD5", e);
+            throw new RuntimeException("Error while hashing password with MD5", e);
         }
     }
 }

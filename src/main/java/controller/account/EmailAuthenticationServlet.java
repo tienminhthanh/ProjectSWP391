@@ -7,45 +7,23 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.mail.*;
-import jakarta.mail.internet.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.Random;
 
 @WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
 public class EmailAuthenticationServlet extends HttpServlet {
 
-    private void sendEmail(String toEmail, String subject, String content) throws MessagingException {
-        final String fromEmail = "systemwibooks@gmail.com";
-        final String password = "lxuh bqye fyce avzb";
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(fromEmail, password);
-            }
-        });
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(fromEmail));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-        message.setSubject(subject);
-        message.setText(content);
-        Transport.send(message);
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        MyLib lib = new MyLib();
         String email = (String) request.getSession().getAttribute("tempEmail");
-        String otp = generateOTP();
+        String otp = lib.generateOTP();
         request.getSession().setAttribute("otp", otp);
+
         try {
-            sendEmail(email, "Email Verification", "Your verification code is: " + otp);
+            lib.sendEmail(email, "Email Verification", "Your verification code is: " + otp);
             request.setAttribute("message", "A verification code has been sent to your email.");
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -84,18 +62,4 @@ public class EmailAuthenticationServlet extends HttpServlet {
         }
     }
 
-    private String generateOTP() {
-        return String.format("%06d", new Random().nextInt(999999));
-    }
-
-    public static void main(String[] args) {
-        EmailAuthenticationServlet test = new EmailAuthenticationServlet();
-        String email = "tienminthanh@gmail.com";
-        String otp = test.generateOTP();
-        try {
-            test.sendEmail(email, "Email Verification", "Your verification code is: " + otp);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-    }
 }

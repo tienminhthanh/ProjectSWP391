@@ -116,9 +116,12 @@
                     </button>
                 </form>
 
-                <!-- Display Error Message -->
+
+                <c:if test="${not empty errorMessage}">
+                    <p class="text-red-600 text-center mt-4">${errorMessage}</p>
+                </c:if>
                 <c:if test="${not empty message}">
-                    <p class="text-red-600 text-center mt-4">${message}</p>
+                    <p class="text-green-600 text-center mt-4">${message}</p>
                 </c:if>
             </div>
         </main>
@@ -130,7 +133,7 @@
             </div>
         </footer>
 
-       
+
         <script>
             function togglePassword(inputId, iconId) {
                 const input = document.getElementById(inputId);

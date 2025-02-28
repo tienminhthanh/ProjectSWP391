@@ -26,7 +26,7 @@
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
                         <form action="login" method="post">
                             <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
-                            
+
                             <!-- Username -->
                             <div class="mb-4">
                                 <label class="sr-only" for="username">Username</label>
@@ -56,13 +56,16 @@
                             <c:if test="${not empty errorMessage}">
                                 <p class="text-red-600 text-center mt-4">${errorMessage}</p>
                             </c:if>
+                            <c:if test="${not empty message}">
+                                <p class="text-green-600 text-center mt-4">${message}</p>
+                            </c:if>
 
                             <div class="mt-4 text-right">
                                 <a class="text-blue-600 text-sm" href="forgotPassword.jsp">Forgot your password?</a>
                             </div>
                         </form>
                     </div>
-                    
+
                     <div class="w-full md:w-1/2 md:pl-4">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with below accounts</h2>
                         <div class="space-y-4">

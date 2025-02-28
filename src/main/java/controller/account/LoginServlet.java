@@ -92,7 +92,7 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("dashboard.jsp");
                     break;
                 case "shipper":
-                    response.sendRedirect("shipperDashboard.jsp");
+                    response.sendRedirect("dashboardShipper.jsp");
                     break;
                 case "admin":
                     response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
