@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!isNaN(price)) {
             // Format price with commas (e.g., 4,400 VND)
-            priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " VND";
+            priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
         }
     });
 });

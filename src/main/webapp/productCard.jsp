@@ -1,6 +1,6 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<div class="product-card w-48">
+<div class="product-card w-32 md:w-48">
 
     <!-- Sale Label (Shown only if on sale) -->
     <!--Event related-->
@@ -42,14 +42,7 @@
     <!-- Product Name -->
     <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title" title="${currentProduct.productName}">${currentProduct.productName}</a>
 
-    <!-- Sale Expiry Date or Release Date -->
-    <%--<c:if test="${onSale}">--%>
-    <c:if test="${empty currentProduct.specialFilter}">
-        <p class="fomo-info sale-expiry">Sale ends on: 2025-01-01</p>
-    </c:if>
-    <c:if test="${currentProduct.specialFilter == 'pre-order'}">
-        <p class="fomo-info release-date">Release on: ${currentProduct.releaseDate}</p>
-    </c:if>
+    
 
     <!--Stockcount section-->
     <p class="stock-count">Stock count: ${currentProduct.stockCount}</p>
@@ -59,14 +52,31 @@
         <c:choose>
             <%--<c:when test="${onSale}">--%>
             <c:when test="${empty currentProduct.specialFilter}">
-                <span class="discount-price">${currentProduct.price * 0.7} VND</span>
-                <span class="original-price">${currentProduct.price} VND</span>
+                <span class="discount-price">${currentProduct.price * 0.7}</span>
+                <span class="original-price">${currentProduct.price}</span>
             </c:when>
             <c:otherwise>
-                <span class="discount-price">${currentProduct.price} VND</span>
+                <span class="discount-price">${currentProduct.price}</span>
             </c:otherwise>
         </c:choose>
     </p>
+    
+    <!-- Sale Expiry Date or Release Date -->
+    <%--<c:if test="${onSale}">--%>
+    <c:choose>
+        
+    <c:when test="${empty currentProduct.specialFilter}">
+        <p class="fomo-info sale-expiry">Sale ends on: 2025-01-01</p>
+    </c:when>
+    <c:when test="${currentProduct.specialFilter == 'pre-order'}">
+        <p class="fomo-info release-date">Release on: ${currentProduct.releaseDate}</p>
+    </c:when>
+    <c:otherwise>
+        <p class="fomo-info release-date hidden">Release on: ${currentProduct.releaseDate}</p>
+    </c:otherwise>
+    </c:choose>
+
+
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
 
     <c:if test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">

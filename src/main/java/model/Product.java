@@ -24,7 +24,6 @@ public class Product {
     private String keywords;
     private String generalCategory;
     private boolean isActive;
-
     private String imageURL;
 
     /**
@@ -32,6 +31,7 @@ public class Product {
      */
     public Product() {
     }
+
 
     /**
 

@@ -1,6 +1,11 @@
-
-<aside class="w-full md:w-1/6 p-3 bg-gray-200">
-    <div class="bg-orange-400 text-white p-4 rounded mb-4">
+<div class="overlay" id="cus-sidebar-overlay" onclick="closeMobileMenu()"></div>
+<aside id="cus-sidebar" class="md:w-1/6 p-3 bg-gray-100">
+    <div class="close-icon">
+        <button type="button" onclick="closeMobileMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="bg-orange-400 text-white p-4 rounded mt-4 mb-4">
         <h2>
             New to WIBOOKS?
         </h2>

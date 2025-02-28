@@ -21,10 +21,15 @@
         <!--Product Details CSS-->
         <link rel="stylesheet" href="css/styleproductDetails.css">
 
+        <!--Customer sidebar-->
+        <link rel="stylesheet" href="css/styleCustomerSidebar.css">
+
     </head>
 
     <body>
         <jsp:include page="header.jsp"/>
+        <jsp:include page="customerSidebar.jsp"/>
+
         <c:if test="${not empty requestScope.exception}">
             <h3>
                 An error occurred when retrieving product information!
@@ -40,140 +45,156 @@
             <fmt:formatDate value="<%= new java.util.Date()%>" pattern="yyyy-MM-dd" var="todayDate"/>
 
             <main>
-                <div class="root-container">
-                    <div class="bread-crumb-area">
+                <div class="root-container bg-gray-100">
+                    <div class="bread-crumb-area text-sm ">
                         ${breadCrumb}
                     </div>
                     <div class="detail-container">
-                        <div class="big-product-name">
-                            <div class="big-product-name-inner">
-                                <h2>${product.productName}</h2>
-                                <p class="category"> - ${product.specificCategory.categoryName}</p>
+                        <div class="big-product-name bg-gray-50">
+                            <div class="big-product-name-inner w-full">
+                                <h2 class="w-full">${product.productName}</h2>
+                                <p class="category w-full">${product.specificCategory.categoryName}</p>
                             </div>
-                            <div class="creator-top">
+                            <div class="creator-top text-xs">
                                 <c:forEach var="creator" items ="${creatorMap}" varStatus="loopStatus">
                                     <c:out value="${creator.value.creatorName}"/>
                                     <c:if test="${!loopStatus.last}"> - </c:if>
                                 </c:forEach>
                             </div>
                         </div>
-                        <div class="main-area">
-                            <div class="info-area">
-                                <div class="overview-area">
-                                    <div class="overview-inner">
-                                        <div class="image-area">
-                                            <img src="${product.imageURL}" alt="${product.productName}">
-                                        </div>
-                                        <div class="description-area">
-                                            <h3 class="description-title">Description</h3>
+                        <div class="main-area flex flex-row md:flex-wrap gap-2 items-center w-full md:items-start">
+                            <div class="overview-area w-1/2 md:w-4/5 flex-grow">
+                                <div class="overview-inner">
+                                    <div class="image-area">
+                                        <img src="${product.imageURL}" alt="${product.productName}">
+                                    </div>
+                                    <div class="description-area text-sm leading-loose">
+                                        <h3 class="description-title text-lg">Description</h3>
 
-                                            <p class="description-content">${product.description}</p>
-                                            <p class="tags">
-                                                <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                                    #${tag} 
-                                                </c:forTokens>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="details-area">
-                                    <h3 class="description-title">Product Details</h3>
-                                    <table>
-                                        <tr><td>Title</td><td>${product.productName}</td></tr>
-                                        <c:if test="${not empty creatorMap.author}">
-                                            <tr><td>Author</td><td>${creatorMap.author.creatorName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty creatorMap.artist}">
-                                            <tr><td>Artist</td><td>${creatorMap.artist}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty creatorMap.sculptor}">
-                                            <tr><td>Sculptor</td><td>${creatorMap.scupltor}</td></tr>
-                                        </c:if>
-                                        <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
-                                        <tr>
-                                            <td>Genre</td>
-                                            <td>
-                                                <c:forEach var= "genre" items="${genreList}" varStatus="loopStatus">
-                                                    ${genre.genreName}
-                                                    <c:if test="${!loopStatus.last}">, </c:if>
-                                                </c:forEach>
-                                            </td>
-                                        </tr>
-                                        <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
-                                        <c:if test="${not empty product.duration}">
-                                            <tr><td>Duration</td><td>${product.duration}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty ranking}">
-                                            <tr><td>Ranking</td><td>${ranking}</td></tr>
-                                        </c:if>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="purchase-area">
-                                <c:if test="${product.specialFilter == 'pre-order'}">
-                                    <h4 class="fomo-info pre">Release Date: ${product.releaseDate}</h4>
-                                </c:if>
-
-                                <c:if test="${empty product.specialFilter}">
-                                    <h4 class="fomo-info sale">Sale Ends Date: ${todayDate}</h4>
-                                </c:if>
-                                <div class="purchase-inner">
-                                    <div class="price-area">
-                                        <c:if test="${empty product.specialFilter}">
-                                            <p class="final-price">${product.price} VND</p>
-                                        </c:if>
-                                        <c:if test="${not empty product.specialFilter}">
-                                            <p class="final-price">${product.price * 0.7} VND</p>
-                                            <p class="initial-price">${product.price} VND</p>
-                                        </c:if>
-                                    </div>
-                                    <div class="ratings-area">
-                                        <%--<c:if test="${product.numberOfRating > 0}">--%>
-                                        <span class="avg-rating"><i class="fa-solid fa-star"></i> 4.5</span>
-                                        <span class="ratings-count">(650 Reviews)</span>
-                                        <%--</c:if>--%>
-                                    </div>
-                                    <div class="purchase-form">
-                                        <p class="stock-count">In Stock: ${product.stockCount}</p>
-                                        <input type="number" name="purchaseQuantity" id="quantityInput" value="1" min="1" oninput="validity.valid || (value = ${product.stockCount})"/>
-                                        <c:choose>
-                                            <c:when test="${product.specialFilter == 'pre-order'}">
-                                                <form action="preorder" method="post">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
-                                                </form>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <form action="cart" method="post">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
-                                                </form>
-                                                <form action="OrderController" method="get">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="buyNow" onclick="openLoginPopup()" class="buy-now">Buy Now</button>
-                                                </form>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <p class="description-content">${product.description}</p>
+                                        <p class="tags">
+                                            <c:forTokens var="tag" items="${product.keywords}" delims=",">
+                                                #${tag} 
+                                            </c:forTokens>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
+                            <div class="purchase-area w-2/5 md:w-1/5 flex-grow">
+                                <div class="business-info">
+
+                                    <c:if test="${product.specialFilter == 'pre-order'}">
+                                        <h4 class="fomo-info pre">Release Date: ${product.releaseDate}</h4>
+                                    </c:if>
+
+                                    <c:if test="${empty product.specialFilter}">
+                                        <h4 class="fomo-info sale">Sale Ends Date: ${todayDate}</h4>
+                                    </c:if>
+                                    <div class="purchase-inner">
+                                        <div class="price-area flex flex-row items-center">
+                                            <c:if test="${empty product.specialFilter}">
+                                                <p class="final-price w-full">${product.price}</p>
+                                            </c:if>
+                                            <c:if test="${not empty product.specialFilter}">
+                                                <p class="final-price w-3/10 ">${product.price * 0.7}</p>
+                                                <p class="initial-price w-2/10">${product.price}</p>
+                                            </c:if>
+                                        </div>
+                                        <div class="ratings-area text-sm mt-2">
+                                            <%--<c:if test="${product.numberOfRating > 0}">--%>
+                                            <span class="avg-rating"><i class="fa-solid fa-star"></i> 4.5</span>
+                                            <span class="ratings-count">(650 Reviews)</span>
+                                            <%--</c:if>--%>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="purchase-form">
+                                    <div class="flex flex-col flex-row items-center mt-4">
+                                        <p class="stock-count w-1/2 pl-5 text-left text-sm lg:text-base">Stock: ${product.stockCount}</p>
+                                        <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-sm lg:text-base" id="quantityInput" value="1" min="1" max="${product.stockCount}" oninput="validity.valid || (value = ${product.stockCount})"/>
+                                    </div>
+                                    <c:choose>
+                                        <c:when test="${product.specialFilter == 'pre-order'}">
+                                            <form action="preorder" method="post">
+                                                <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                <input type="hidden" name="productID" value="${product.productID}"/>
+                                                <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                <input type="hidden" name="quantity" class="quantity"/>
+                                                <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
+                                            </form>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <form action="cart" method="post">
+                                                <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                <input type="hidden" name="productID" value="${product.productID}"/>
+                                                <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                <input type="hidden" name="quantity" class="quantity"/>
+                                                <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
+                                            </form>
+                                            <form action="OrderController" method="get">
+                                                <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                <input type="hidden" name="productID" value="${product.productID}"/>
+                                                <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                <input type="hidden" name="quantity" class="quantity"/>
+                                                <button name="action" value="buyNow" onclick="openLoginPopup()" class="buy-now">Buy Now</button>
+                                            </form>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+
+                            </div>
+                            <div class="description-area mobile-version text-sm leading-loose">
+                                <h3 class="description-title text-lg">Description</h3>
+
+                                <p class="description-content">${product.description}</p>
+                                <p class="tags">
+                                    <c:forTokens var="tag" items="${product.keywords}" delims=",">
+                                        #${tag} 
+                                    </c:forTokens>
+                                </p>
+                            </div>
+                            <div class="details-area text-sm w-full">
+                                <h3 class="description-title text-lg">Product Details</h3>
+                                <table>
+                                    <tr><td>Title</td><td>${product.productName}</td></tr>
+                                    <c:if test="${not empty creatorMap.author}">
+                                        <tr><td>Author</td><td>${creatorMap.author.creatorName}</td></tr>
+                                    </c:if>
+                                    <c:if test="${not empty creatorMap.artist}">
+                                        <tr><td>Artist</td><td>${creatorMap.artist}</td></tr>
+                                    </c:if>
+                                    <c:if test="${not empty creatorMap.sculptor}">
+                                        <tr><td>Sculptor</td><td>${creatorMap.scupltor}</td></tr>
+                                    </c:if>
+                                    <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
+                                    <tr>
+                                        <td>Genre</td>
+                                        <td>
+                                            <c:forEach var= "genre" items="${genreList}" varStatus="loopStatus">
+                                                ${genre.genreName}
+                                                <c:if test="${!loopStatus.last}">, </c:if>
+                                            </c:forEach>
+                                        </td>
+                                    </tr>
+                                    <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
+                                    <c:if test="${not empty product.duration}">
+                                        <tr><td>Duration</td><td>${product.duration}</td></tr>
+                                    </c:if>
+                                    <c:if test="${not empty ranking}">
+                                        <tr><td>Ranking</td><td>${ranking}</td></tr>
+                                    </c:if>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
             </main>
+            <jsp:include page="chat.jsp"/>
             <!--Popup unauthorized users-->
             <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
                 <c:set var="currentURL" value="${currentURL}" scope="request"/>
@@ -182,38 +203,9 @@
 
             <jsp:include page="footer.jsp"/>
 
+            <!--Icon-->
             <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
-            <script>
-                document.getElementById("quantityInput").max = "${product.stockCount}";
 
-                document.addEventListener("DOMContentLoaded", function () {
-                    let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue.value;
-                    });
-
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:", displayValues);
-                });
-
-                document.getElementById("quantityInput").addEventListener("input", function (event) {
-                    let numberValue = event.target.value; // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue;
-                    });
-
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:", displayValues);
-                });
-            </script>
             <!--Header script-->
             <script src="js/scriptHeader.js"></script>
 
@@ -224,6 +216,14 @@
 
             <!--Product details-->
             <script src="js/scriptProductDetails.js"></script>
+
+            <!--customer sidebar-->
+            <script src="js/scriptCusSidebar.js"></script>
+
+            <!--Tailwind-->
+            <script src="https://cdn.tailwindcss.com">
+            </script>
         </c:if>
     </body>
+
 </html>

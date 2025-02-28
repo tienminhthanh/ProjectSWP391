@@ -69,7 +69,7 @@ public class CartServlet extends HttpServlet {
             String quantityStr = request.getParameter("quantity");
             String priceStr = request.getParameter("priceWithQuantity");
             String currentURL = request.getParameter("currentURL");
-            
+
             int customerID = Integer.parseInt(customerIdStr);
 
             // Validate session
@@ -86,13 +86,13 @@ public class CartServlet extends HttpServlet {
                     throw new Exception("Product not found!");
                 }
                 addToCart(request, customerID, productID, quantity, priceWithQuantity, product);
-                
+
                 if (currentURL == null || currentURL.trim().isEmpty()) {
                     currentURL = "home";
                 }
                 response.sendRedirect(currentURL);
                 return;
-                
+
             } else if ("update".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
                 int productID = Integer.parseInt(productIdStr);
@@ -107,16 +107,16 @@ public class CartServlet extends HttpServlet {
                 }
                 CartItem cartItem = new CartItem(itemID, customerID, productID, quantity, priceWithQuantity);
                 updateCartItem(cartItem, product);
-                
+
             } else if ("delete".equals(action)) {
                 int itemID = Integer.parseInt(request.getParameter("itemID"));
                 deleteCartItem(customerID, itemID);
                 List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID); // Lấy lại danh sách mới
                 session.setAttribute("cartItems", cartItems); // Cập nhật session
             }
-            
+
             response.sendRedirect("cart?customerID=" + request.getParameter("customerID"));
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", e.getMessage());

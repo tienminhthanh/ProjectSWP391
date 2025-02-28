@@ -25,7 +25,13 @@ public class ProductDAO {
     public ProductDAO() {
         this.context = new utils.DBContext();
     }
-
+    
+    /**
+     * For add, update cart
+     * @param productID
+     * @return
+     * @throws SQLException 
+     */
     public Product getProductById(int productID) throws SQLException {
         String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
                 + "       Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, "
@@ -64,16 +70,24 @@ public class ProductDAO {
 
         return null;
     }
-
+    
+    /**
+     * For view product details
+     * @param productID
+     * @return
+     * @throws SQLException 
+     */
     public Book getBookById(int productID) throws SQLException {
-        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
-                + "       Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, "
-                + "       Category.categoryName, Book.publisherID, Book.duration, Publisher.publisherName "
-                + "FROM Product "
-                + "INNER JOIN Category ON Product.categoryID = Category.categoryID "
-                + "INNER JOIN Book ON Product.productID = Book.bookID "
-                + "INNER JOIN Publisher ON Book.publisherID = Publisher.publisherID "
-                + "WHERE Product.productID = ?";
+        String sql = "SELECT\n"
+                + "P.*, C.categoryName, B.publisherID, B.duration,\n"
+                + "Pub.publisherName, EP.discountPercentage, EP.eventID, E.isActive as isActiveEvent\n"
+                + "FROM Product AS P\n"
+                + "JOIN Book AS B ON P.productID = B.bookID\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
+                + "LEFT JOIN Event_Product AS EP ON P.productID = EP.productID\n"
+                + "LEFT JOIN Event AS E ON EP.eventID = E.eventID\n"
+                + "WHERE P.isActive = 1 AND P.productID = ?";
 
         Object[] params = {productID};
         ResultSet rs = context.exeQuery(sql, params);
@@ -113,10 +127,10 @@ public class ProductDAO {
     }
 
     public HashMap<String, Creator> getCreatorsOfThisProduct(int productID) throws SQLException {
-        String sql = "SELECT Product_Creator.creatorID, Creator.creatorName, Creator.creatorRole\n"
-                + "FROM     Creator INNER JOIN\n"
-                + "                  Product_Creator ON Creator.creatorID = Product_Creator.creatorID\n"
-                + "where Product_Creator.productID = ?";
+        String sql = "SELECT PC.creatorID, C.creatorName, C.creatorRole\n"
+                + "FROM Creator AS C\n"
+                + "JOIN Product_Creator AS PC ON C.creatorID = PC.creatorID\n"
+                + "WHERE PC.productID = ?";
         Object[] params = {productID};
 
         HashMap<String, Creator> creatorMap = new HashMap<>();
@@ -130,10 +144,10 @@ public class ProductDAO {
     }
 
     public List<Genre> getGenresOfThisBook(int productID) throws SQLException {
-        String sql = "SELECT Book_Genre.genreID, Genre.genreName\n"
-                + "FROM     Book_Genre INNER JOIN\n"
-                + "                  Genre ON Book_Genre.genreID = Genre.genreID\n"
-                + "WHERE Book_Genre.bookID = ?";
+        String sql = "SELECT BG.genreID, G.genreName\n"
+                + "FROM Book_Genre AS BG\n"
+                + "JOIN Genre AS G ON BG.genreID = G.genreID\n"
+                + "WHERE BG.bookID = ?";
         Object[] params = {productID};
 
         List<Genre> genreList = new ArrayList<>();
@@ -145,14 +159,16 @@ public class ProductDAO {
 
         return genreList;
     }
-
+    
     public List<Product> get10RandomActiveProducts(String type) throws SQLException {
-        String sql = "SELECT top 10 Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, \n"
-                + "                  Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, Category.categoryName\n"
-                + "FROM     Category INNER JOIN\n"
-                + "                  Product ON Category.categoryID = Product.categoryID\n"
-                + "WHERE  (Product.isActive = 1) AND (Product.generalCategory = ?)\n"
-                + "order by newid()";
+        String sql = "SELECT top 10 P.*, C.categoryName, EP.eventID, EP.discountPercentage,\n"
+                + "E.isActive AS isActiveEvent\n"
+                + "FROM Product AS P\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "LEFT JOIN Event_Product AS EP ON P.productID = EP.productID\n"
+                + "LEFT JOIN Event AS E ON EP.eventID = E.eventID\n"
+                + "WHERE P.isActive = 1 and generalCategory = ?\n"
+                + "ORDER BY NEWID()";
 
         Object[] params = {type};
         List<Product> bookList = new ArrayList<>();
@@ -164,14 +180,22 @@ public class ProductDAO {
         return bookList;
 
     }
-
+    
+    /**
+     * When user does not enter anything in the search bar
+     * @param type
+     * @param sortCriteria
+     * @return
+     * @throws SQLException 
+     */
     public List<Product> getAllActiveProducts(String type, String sortCriteria) throws SQLException {
-        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description,\n"
-                + "Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, Product.specialFilter,\n"
-                + "Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, Category.categoryName\n"
-                + "FROM Category \n"
-                + "JOIN Product ON Category.categoryID = Product.categoryID\n"
-                + "WHERE  (Product.isActive = 1) and (Product.generalCategory = ?)\n"
+        String sql = "SELECT P.*, C.categoryName, EP.eventID, EP.discountPercentage,\n"
+                + "E.isActive AS isActiveEvent\n"
+                + "FROM Product AS P\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "LEFT JOIN Event_Product AS EP ON P.productID = EP.productID\n"
+                + "LEFT JOIN Event AS E ON EP.eventID = E.eventID\n"
+                + "WHERE P.isActive = 1 and generalCategory = ?\n"
                 + "ORDER BY ";
 
         sql += getSortOrder(sortCriteria);
@@ -186,17 +210,16 @@ public class ProductDAO {
         return productList;
 
     }
-
+    
+    
     public List<Product> getSearchResult(String query, String type, String sortCriteria) throws SQLException {
-        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description,\n"
-                + "Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, Product.specialFilter,\n"
-                + "Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, Category.categoryName,\n"
-                + "KEY_TBL.RANK AS relevance_score\n"
-                + "FROM Category \n"
-                + "JOIN Product ON Category.categoryID = Product.categoryID\n"
-                + "JOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL\n"
-                + "ON Product.productID = KEY_TBL.[KEY]\n"
-                + "WHERE  (Product.isActive = 1) and (Product.generalCategory = ?)\n"
+        String sql = "SELECT P.*, C.categoryName, EP.discountPercentage, EP.eventID, E.isActive AS isActiveEvent, KEY_TBL.RANK AS relevance_score \n"
+                + "FROM Product AS P \n"
+                + "    JOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY] \n"
+                + "	LEFT JOIN Category AS C  ON C.categoryID = P.categoryID \n"
+                + "    LEFT JOIN Event_Product AS EP ON EP.productID = P.productID\n"
+                + "	LEFT JOIN Event AS E ON E.eventID = EP.eventID\n"
+                + "WHERE P.isActive = 1 AND P.generalCategory = ? \n"
                 + "ORDER BY ";
 
         String formattedQuery = formatQuery(query);
@@ -225,14 +248,14 @@ public class ProductDAO {
     private String getSortOrder(String sortCriteria) {
         switch (sortCriteria) {
             case "relevance":
-                return "KEY_TBL.RANK DESC";
+                return "KEY_TBL.RANK DESC, P.productName ASC";
             case "name":
-                return "Product.productName ASC";
+                return "P.productName ASC";
             case "hotDeal":
             case "rank":
             case "releaseDate":
             default:
-                return "Product.releaseDate DESC";
+                return "P.releaseDate DESC";
 
         }
     }

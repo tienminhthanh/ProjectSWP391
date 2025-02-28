@@ -37,10 +37,14 @@
 
         <!--Search css-->
         <link rel="stylesheet" href="css/styleSearch.css"/>
+
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
     </head>
     <body>
         <!--Header-->
         <jsp:include page="header.jsp"/>
+
 
         <!--Breadcrumb-->
         <div class="bread-crumb-area">
@@ -59,8 +63,7 @@
             </c:choose>
 
         </div>
-
-        <div class="flex flex-col md:flex-row">
+        <div class="flex flex-col md:flex-row bg-gray-100">
             <jsp:include page="customerSidebar.jsp"/>
 
             <!--Main section-->
@@ -114,8 +117,6 @@
                     </div>
 
                     <div class="w-full">
-                        <p>Debug: Main page URI = ${pageContext.request.requestURI}</p>
-                        <p>Debug: Full URL = ${currentURL}</p>
                         <c:set var="currentURL" value="${currentURL}" scope="request"/>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-5">
                             <c:forEach var="currentProduct" items="${productList}">
@@ -127,7 +128,7 @@
 
                     <!--Popup unauthorized users-->
                     <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-                        
+
                         <jsp:include page="popuplogin.jsp" />
                     </c:if>
                 </div>
@@ -137,6 +138,7 @@
 
         <!--Footer-->
         <jsp:include page="footer.jsp"/>
+        <jsp:include page="chat.jsp"/>
 
         <script>
             function submitSort() {
@@ -172,5 +174,10 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script>
+
     </body>
 </html>

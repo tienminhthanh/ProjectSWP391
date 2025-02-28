@@ -10,10 +10,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 
 body {
     font-family: Arial, sans-serif;
-    font-size: 13px;
     margin: 0;
     padding: 0;
-    background-color: #f7f7f5;
+}
+
+#cus-sidebar{
+    display: none;
 }
 
 .root-container {
@@ -28,18 +30,18 @@ body {
     color:orange;
 }
 
-.big-product-name-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.big-product-name-inner h2{
+    font-size:2em;
+    font-weight: bold;
 }
 .big-product-name-inner>p{
     margin-bottom: 0;
-    font-size: 1.5em; 
+    font-size: 1em;
 }
 
 .creator-top {
     font-size: 0.8rem;
+    font-style: italic;
     margin: 5px 0 0;
 }
 
@@ -47,8 +49,6 @@ body {
     display: flex;
     align-items: flex-start;
     /* Ensure items align at the top */
-    gap: 20px;
-
     flex-wrap: wrap;
 }
 
@@ -66,6 +66,7 @@ body {
 }
 
 .overview-area {
+    max-width: 77%;
     min-height: 80vh;
     margin-bottom: 20px;
     background-color:white;
@@ -98,7 +99,16 @@ body {
     /* Prevents overflow issues */
 }
 
+.description-content{
+    margin-top: 10px;
+}
+.tags{
+    margin-top: 20px;
+    font-size: 0.8em;
+}
+
 .details-area {
+    max-width: 77%;
     margin-top: 10px;
     min-width: 0;
     flex: 1 1 auto;
@@ -116,19 +126,18 @@ body {
 }
 
 .price-area {
-    font-size: 1.5rem;
     font-weight: bold;
     padding: 10px;
     padding-bottom: 0px;
 }
 .final-price{
     color: orange;
+    font-size:1.5em;
 }
 
 .initial-price {
     text-decoration: line-through;
     color: gray;
-    font-size: 1rem;
     margin-left: 10px;
 }
 
@@ -162,7 +171,6 @@ body {
 
 
 .fomo-info {
-    font-size: 1rem;
     font-weight: bold;
     padding: 10px;
     display: inline-block;
@@ -180,14 +188,14 @@ body {
     border: 2px solid red;
 }
 
-.ratings-area,.stock-count{
-    font-size: 1.5em;
+.ratings-area{
+    font-size: 1.2em;
     padding-left: 10px;
 }
 
 .stock-count{
     margin-bottom: 0;
-    margin-top: 10px;
+    font-size:1.2em;
 }
 
 
@@ -197,7 +205,8 @@ body {
 }
 
 #quantityInput{
-    width: 37%;
+    border: 1px solid black;
+    border-radius: 3px;
 }
 
 button.add-to-cart{
@@ -212,27 +221,46 @@ button.buy-now{
     color:rgb(248, 208, 12);
 }
 
+.description-area.mobile-version{
+    display:none;
+}
+
 
 @media (max-width: 768px) {
-    .overview-inner {
-        flex-direction: column;
+    .overview-area{
+        width:40%;
+        min-height: fit-content;
+    }
+    .overview-inner{
+        width: 100%;
+        padding: 0;
+        gap:0;
     }
 
     .image-area,
     .description-area {
         flex: none;
         max-width: 100%;
+        min-width: 200px;
         text-align: center;
+    }
+    
+    .image-area img{
+        max-width: 100%;
     }
 
     .description-area {
+        display:none;
+    }
+    .description-area.mobile-version{
+        display:block;
         text-align: left;
+        background: white;
+    }
+    .description-content,.tags{
+        padding: 10px;
     }
 
-    .image-area img {
-        max-width: 70%;
-        /* Adjust the size */
-    }
 
     .main-area {
         flex-direction: column;
@@ -253,12 +281,14 @@ button.buy-now{
     .purchase-area{
         text-align: center;
     }
-
     .fomo-info{
-        width: 70%;
+        width: 90%;
         margin-top: 10px;
     }
-
+    
+    .ratings-area{
+        text-align: left;
+    }
 
     .purchase-form form {
         padding: 0px;
@@ -266,8 +296,12 @@ button.buy-now{
 
     .purchase-form button {
         display: block;
-        width: 50%;
+        width: 90%;
         margin: 10px auto;
+    }
+    
+    .details-area {
+        min-width: 100%
     }
 
 }
