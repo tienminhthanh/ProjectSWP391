@@ -18,11 +18,10 @@ public class ChangePasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        AccountLib lib = new AccountLib();
 
         // Get the input values from the form
-        String currentPassword = request.getParameter("currentPassword");
-        String newPassword = request.getParameter("newPassword");
-        String confirmPassword = request.getParameter("confirmPassword");
+        String currentPassword = lib.hashMD5(request.getParameter("currentPassword"));
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {

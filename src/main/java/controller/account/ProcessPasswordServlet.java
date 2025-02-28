@@ -37,7 +37,7 @@ public class ProcessPasswordServlet extends HttpServlet {
                 // Update the account with the new password
                 AccountDAO accountDAO = new AccountDAO();
                 AccountLib lib = new AccountLib();
-                boolean success = accountDAO.updateAccount(account.getUsername(), null, null, account.getEmail(), null, null, lib.hashMD5(newPassword));
+                boolean success = accountDAO.updatePassword(account.getUsername(), lib.hashMD5(newPassword));
                 if (success) {
                     // Successfully changed the password
                     request.setAttribute("message", "Password changed successfully.");
@@ -49,11 +49,11 @@ public class ProcessPasswordServlet extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
                 request.setAttribute("errorMessage", "Database error occurred.");
-                request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+                request.getRequestDispatcher("processPassword.jsp").forward(request, response);
             }
         } else {
             request.setAttribute("errorMessage", "New passwords do not match.");
-            request.getRequestDispatcher("changePassword.jsp").forward(request, response);
+            request.getRequestDispatcher("processPassword.jsp").forward(request, response);
         }
 
     }

@@ -124,6 +124,14 @@ public class AccountDAO {
         return context.exeNonQuery(sql.toString(), params.toArray()) > 0;
     }
 
+    public boolean updatePassword(String username, String newPassword) throws SQLException {
+        String sql = "UPDATE Account SET password = ? WHERE username = ? AND isActive = 1"; // Check if account is active
+        Object[] params = {newPassword, username}; // Parameters to pass into the query
+
+        // Execute the query
+        return context.exeNonQuery(sql, params) > 0; // Returns true if the update was successful
+    }
+
     /**
      * Lấy danh sách tất cả tài khoản
      */
@@ -136,12 +144,12 @@ public class AccountDAO {
         }
         return accounts;
     }
-    public boolean removeEmailFromAccount(String username) throws SQLException {
-    String sql = "UPDATE Account SET email = ? WHERE username = ?";
-    Object[] params = { "", username };  // Đặt email thành rỗng
-    return context.exeNonQuery(sql, params) > 0;
-}
 
+    public boolean removeEmailFromAccount(String username) throws SQLException {
+        String sql = "UPDATE Account SET email = ? WHERE username = ?";
+        Object[] params = {"", username};  // Đặt email thành rỗng
+        return context.exeNonQuery(sql, params) > 0;
+    }
 
     /**
      * Chuyển đổi ResultSet thành đối tượng Account
