@@ -35,6 +35,13 @@ public class Notification {
     public Notification() {
     }
 
+    public Notification(int notificationID, String notificationTitle, String notificationDetails, Date dateCreated) {
+        this.notificationID = notificationID;
+        this.notificationDetails = notificationDetails;
+        this.dateCreated = dateCreated;
+        this.notificationTitle = notificationTitle;
+    }
+
     public int getNotificationID() {
         return notificationID;
     }

@@ -41,32 +41,25 @@ public class AddAccountSevlet extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
         String role = request.getParameter("role");
-
         AccountDAO accountDAO = new AccountDAO();
-
         try {
-            if (accountDAO.isEmailExistForEmail(email)) {
+            if (accountDAO.isEmailExist(email, null)) {
                 request.setAttribute("message", "The email address is already in use.");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
-
             if (accountDAO.getAccountByUsername(username) != null) {
                 request.setAttribute("message", "Username already exists!");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
-
-            boolean success = accountDAO.addStaffOrShipper(username, password, firstName, lastName, email, phoneNumber, birthDate, role);
-
+            boolean success = accountDAO.createAccount(username, password, firstName, lastName, email, phoneNumber, birthDate, role);
             if (success) {
                 request.setAttribute("message", "Account successfully created!");
             } else {
                 request.setAttribute("message", "There was an issue creating the account. Please try again.");
             }
-
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
-
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("message", "An error occurred while processing your request. Please try again later.");

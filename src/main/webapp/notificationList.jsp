@@ -2,10 +2,10 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>List Nitification - Admin</title>
+        <title>List Notification - Admin</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="/css/styleHeader.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -43,7 +43,7 @@
                 border-radius: 6px;
                 padding: 16px;
                 margin-bottom: 10px;
-                background-color: #334155; /* Màu thống nhất cho tất cả thông báo */
+                background-color: #334155;
             }
             .btn-primary {
                 background-color: #3b82f6;
@@ -72,7 +72,7 @@
                         <i class="fas fa-tachometer-alt mr-2"></i>
                         Dashboard
                     </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800"  href="listAccount">
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
                         <i class="fas fa-users mr-2"></i>
                         Account List
                     </a>
@@ -92,13 +92,10 @@
                         <i class="fas fa-box mr-2"></i>
                         Order List
                     </a>
-
                     <a class="flex items-center p-2 hover:bg-blue-800" href="voucherList">
                         <i class="fas fa-gift mr-2"></i>
                         Voucher List
                     </a>
-
-
                     <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg" href="listnotification">
                         <i class="fas fa-bell mr-2"></i>
                         Notification List
@@ -108,7 +105,7 @@
                         Chat
                     </a>
                     <div class="mt-4">
-                        <h3 class="px-2 text-sm font-semibold"> SETTINGS </h3>
+                        <h3 class="px-2 text-sm font-semibold">SETTINGS</h3>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
                             <i class="fas fa-cogs mr-2"></i>
                             Configuration
@@ -118,12 +115,12 @@
                             Management
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
-                            <i class="fas fa-sign-out-alt mr-2"></i> 
+                            <i class="fas fa-sign-out-alt mr-2"></i>
                             Logout
                         </a>
                     </div>
                     <div class="mt-4">
-                        <h3 class="px-2 text-sm font-semibold"> REPORTS </h3>
+                        <h3 class="px-2 text-sm font-semibold">REPORTS</h3>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
                             <i class="fas fa-phone-alt mr-2"></i>
                             Call history
@@ -164,13 +161,15 @@
                             </a>
                         </h2>
                         <div class="space-x-4">
-                            <c:set var="notification" value="${notifications[0]}" /> <%-- Get the first notification --%>
+                            <c:set var="notification" value="${notifications[0]}" />
+                            <!-- Form to create a new notification -->
                             <form action="createnotification" method="get">
                                 <input type="hidden" name="senderID" value="${notification.senderID}">
                                 <button type="submit" class="btn btn-primary">Create Notification</button>
-                            </form>  
+                            </form>
                         </div>
                     </div>
+                    <!-- Display error message if present -->
                     <% if (request.getAttribute("error") != null) {%>
                     <p class="text-red-400"><%= request.getAttribute("error")%></p>
                     <% }%>
@@ -192,6 +191,15 @@
                                                 <p class="text-gray-400 text-sm">
                                                     <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
                                                 </p>
+                                            </div>
+                                            <div flex-4>
+                                                <!-- Form to update notification -->
+                                                <form action="updatenotification" method="get">
+                                                    <input type="hidden" name="notificationID" value="${notification.notificationID}">
+                                                    <button type="submit" class="btn btn-secondary">
+                                                        <i class="fas fa-edit mr-1"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>

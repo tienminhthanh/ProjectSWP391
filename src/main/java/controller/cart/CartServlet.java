@@ -180,10 +180,10 @@ public class CartServlet extends HttpServlet {
     }
 
     private void updateCartItem(CartItem cartItem, Product product) throws SQLException, Exception {
-        // Check if updated quantity exceeds stock
-//        if (cartItem.getQuantity() > product.getStockCount()) {
-//            throw new Exception("Updated quantity exceeds available stock! Available: " + product.getStockCount());
-//        }
+//         Check if updated quantity exceeds stock
+        if (cartItem.getQuantity() > product.getStockCount()) {
+            throw new Exception("Updated quantity exceeds available stock! Available: " + product.getStockCount());
+        }
         cartItemDAO.updateCartItem(cartItem);
     }
 

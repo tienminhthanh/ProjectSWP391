@@ -12,12 +12,12 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="Book Walker Logo" class="h-10" height="50" src="https://storage.googleapis.com/a1aa/image/eqONjY2PAhJPB-SS1k-WJ6Cn3CmR-ITt6O9vKa2fKhk.jpg" width="150"/>
+           <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+                <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
@@ -84,7 +84,7 @@
             <div class="container mx-auto px-4 text-center text-sm text-gray-600">
                 <a class="mr-4" href="#">Privacy</a>
                 <a href="#">Purchase Terms &amp; Conditions</a>
-                <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
+                <p class="mt-4">© WIBOOKS Co.,Ltd.</p>
             </div>
         </footer>
     </body>

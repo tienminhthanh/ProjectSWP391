@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Thêm Thông Báo Mới - Admin</title>
+        <title>Create New Notification - Admin</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="/css/styleHeader.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -39,11 +39,52 @@
             .btn-secondary:hover {
                 background-color: #475569;
             }
+            .btn-success {
+                background-color: #10b981;
+                border: none;
+            }
+            .btn-success:hover {
+                background-color: #059669;
+            }
+            .customer-row {
+                cursor: pointer;
+                padding: 10px;
+                border-radius: 5px;
+                transition: background-color 0.2s;
+            }
+            .customer-row:hover {
+                background-color: #334155;
+            }
+            .customer-list-container {
+                position: relative;
+            }
+            .customer-list {
+                max-height: 0;
+                overflow-y: auto;
+                transition: max-height 0.3s ease-out;
+                background-color: #1e293b;
+                border: 1px solid #475569;
+                border-radius: 5px;
+                margin-top: 5px;
+            }
+            .customer-list.expanded {
+                max-height: 300px; /* Adjust height as needed */
+            }
+            .customer-list::-webkit-scrollbar {
+                width: 8px;
+            }
+            .customer-list::-webkit-scrollbar-thumb {
+                background-color: #64748b;
+                border-radius: 4px;
+            }
+            .customer-list::-webkit-scrollbar-thumb:hover {
+                background-color: #475569;
+            }
         </style>
     </head>
     <body>
         <div class="flex mt-4 mx-0">
-            <!-- Sidebar -->
+            <!-- Sidebar (unchanged) -->
             <div class="w-64 bg-blue-900 text-white min-h-screen">
                 <div class="p-4">
                     <img alt="Company Logo" class="mb-4" height="50" src="https://storage.googleapis.com/a1aa/image/E7a1IopinJdFFD1b8uBNgeve-ZYaN4NirThMMa4AP40.jpg" width="150"/>
@@ -53,7 +94,7 @@
                         <i class="fas fa-tachometer-alt mr-2"></i>
                         Dashboard
                     </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800"  href="listAccount">
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
                         <i class="fas fa-users mr-2"></i>
                         Account List
                     </a>
@@ -73,13 +114,10 @@
                         <i class="fas fa-box mr-2"></i>
                         Order List
                     </a>
-
                     <a class="flex items-center p-2 hover:bg-blue-800" href="voucherList">
                         <i class="fas fa-gift mr-2"></i>
                         Voucher List
                     </a>
-
-
                     <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg" href="listnotification">
                         <i class="fas fa-bell mr-2"></i>
                         Notification List
@@ -89,7 +127,7 @@
                         Chat
                     </a>
                     <div class="mt-4">
-                        <h3 class="px-2 text-sm font-semibold"> SETTINGS </h3>
+                        <h3 class="px-2 text-sm font-semibold">SETTINGS</h3>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
                             <i class="fas fa-cogs mr-2"></i>
                             Configuration
@@ -99,12 +137,12 @@
                             Management
                         </a>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
-                            <i class="fas fa-sign-out-alt mr-2"></i> 
+                            <i class="fas fa-sign-out-alt mr-2"></i>
                             Logout
                         </a>
                     </div>
                     <div class="mt-4">
-                        <h3 class="px-2 text-sm font-semibold"> REPORTS </h3>
+                        <h3 class="px-2 text-sm font-semibold">REPORTS</h3>
                         <a class="flex items-center p-2 hover:bg-blue-800" href="#">
                             <i class="fas fa-phone-alt mr-2"></i>
                             Call history
@@ -139,19 +177,21 @@
             <main class="flex-1 p-4">
                 <div class="admin-container">
                     <h1 class="text-2xl font-bold mb-4">Create New Notification</h1>
+                    <!-- Display error message if present -->
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger" role="alert">
                             ${error}
                         </div>
                     </c:if>
 
-                    <form action="createnotification" method="post" class="space-y-4">
+                    <!-- Form to create a new notification -->
+                    <form action="createnotification" method="post" class="space-y-4" id="notificationForm">
                         <div>
                             <label for="senderID" class="form-label">Sender ID</label>
                             <c:choose>
-                                <c:when test="${not empty senderID}">
+                                <c:when test="${not empty sessionScope.account.accountID}">
                                     <input type="number" class="form-control" id="senderID" name="senderID" 
-                                           value="${senderID}" readonly>
+                                           value="${sessionScope.account.accountID}" readonly>
                                 </c:when>
                                 <c:otherwise>
                                     <input type="number" class="form-control" id="senderID" name="senderID" 
@@ -159,10 +199,18 @@
                                 </c:otherwise>
                             </c:choose>
                         </div>
-                        <div>
-                            <label for="receiverID" class="form-label">Receiver ID</label>
-                            <input type="number" class="form-control" id="receiverID" name="receiverID" 
-                                   required min="1">
+                        <div class="customer-list-container">
+                            <label class="form-label" onclick="toggleCustomerList()">Receivers <i class="fas fa-caret-down ml-2"></i></label>
+                            <div class="customer-list" id="customerList">
+                                <c:forEach var="customer" items="${customers}">
+                                    <div class="customer-row" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="receiverID" value="${customer.accountID}" 
+                                               class="mr-2">
+                                        <span>${customer.lastName} ${customer.firstName} (ID: ${customer.accountID})</span>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                            <button type="button" class="btn btn-success mt-2" onclick="selectAll()">Select All</button>
                         </div>
                         <div>
                             <label for="notificationTitle" class="form-label">Notification Title</label>
@@ -175,7 +223,7 @@
                                       name="notificationDetails" rows="4" required maxlength="500"></textarea>
                         </div>
                         <div class="flex space-x-4">
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary">Send</button>
                             <a href="listnotification" class="btn btn-secondary">Back</a>
                         </div>
                     </form>
@@ -187,5 +235,23 @@
         crossorigin="anonymous"></script>
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <script src="/js/scriptHeader.js"></script>
+        <script>
+                                function toggleCheckbox(row) {
+                                    const checkbox = row.querySelector('input[type="checkbox"]');
+                                    if (event.target !== checkbox) { // Avoid double toggle if clicking checkbox directly
+                                        checkbox.checked = !checkbox.checked;
+                                    }
+                                }
+
+                                function toggleCustomerList() {
+                                    const customerList = document.getElementById('customerList');
+                                    customerList.classList.toggle('expanded');
+                                }
+
+                                function selectAll() {
+                                    const checkboxes = document.querySelectorAll('input[name="receiverID"]');
+                                    checkboxes.forEach(checkbox => checkbox.checked = true);
+                                }
+        </script>
     </body>
 </html>

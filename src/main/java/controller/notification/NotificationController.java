@@ -23,7 +23,6 @@ import model.Notification;
  *
  * @author ADMIN
  */
-
 public class NotificationController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -65,6 +64,9 @@ public class NotificationController extends HttpServlet {
                 break;
             case "markAsRead":
                 markAsRead(request, response);
+                break;
+            case "markAsAllRead":
+                markAsAllRead(request, response);
                 break;
             case "delete":
                 deleteNotification(request, response);
@@ -116,6 +118,19 @@ public class NotificationController extends HttpServlet {
         try {
             int notificationID = Integer.parseInt(request.getParameter("notificationID"));
             notificationDAO.markAsRead(notificationID);
+            response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
+        } catch (SQLException ex) {
+            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+        }
+    }
+
+    // Đánh dấu tất cả thông báo là đã đọc
+    private void markAsAllRead(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
+            notificationDAO.markAsAllRead(receiverID);
             response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);

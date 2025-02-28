@@ -24,6 +24,7 @@ public class Product {
     private String keywords;
     private String generalCategory;
     private boolean isActive;
+
     private String imageURL;
 
     /**
@@ -33,6 +34,7 @@ public class Product {
     }
 
     /**
+
      * FULL - For retrieve data from Product join Category
      *
      * @param productID
@@ -50,6 +52,7 @@ public class Product {
      * @param keywords
      * @param generalCategory
      * @param isActive
+
      * @param imageURL
      */
     public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
@@ -68,11 +71,13 @@ public class Product {
         this.keywords = keywords;
         this.generalCategory = generalCategory;
         this.isActive = isActive;
+
         this.imageURL = imageURL;
     }
 
     /**
      * Omit lastModifiedTime, averageRating, numberOfRating - For Add/Update
+
      *
      *
      * @param productID
@@ -82,12 +87,14 @@ public class Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
+
      * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
      * @param generalCategory
      * @param isActive
+
      * @param imageURL
      */
     public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
@@ -98,12 +105,14 @@ public class Product {
         this.specificCategory = specificCategory;
         this.description = description;
         this.releaseDate = releaseDate;
+
         this.numberOfRating = numberOfRating;
         this.specialFilter = specialFilter;
         this.adminID = adminID;
         this.keywords = keywords;
         this.generalCategory = generalCategory;
         this.isActive = isActive;
+
         this.imageURL = imageURL;
     }
 
@@ -226,6 +235,7 @@ public class Product {
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
+
 
     public String getImageURL() {
         return imageURL;

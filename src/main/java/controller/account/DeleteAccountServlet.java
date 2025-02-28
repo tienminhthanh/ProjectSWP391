@@ -19,19 +19,15 @@ public class DeleteAccountServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         AccountDAO accountDAO = new AccountDAO();
-
         try {
             model.Account account = accountDAO.getAccountByUsername(username);
-
             if (account != null) {
-                boolean success = accountDAO.deactivateAccount(username);
-
+                boolean success = accountDAO.updateAccountStatus(username, false);
                 if (success) {
-                 
                     if ("admin".equals(account.getRole())) {
                         response.sendRedirect("listAccount");
                     } else {
-                        response.sendRedirect("listAccount");
+                        response.sendRedirect("login.jsp");
                     }
                 } else {
                     request.setAttribute("errorMessage", "Failed to deactivate account.");
@@ -39,11 +35,11 @@ public class DeleteAccountServlet extends HttpServlet {
                 }
             } else {
                 request.setAttribute("errorMessage", "Account not found!");
-                request.getRequestDispatcher("listAccount").forward(request, response);  // Chuyển hướng về danh sách tài khoản
+                request.getRequestDispatcher("listAccount").forward(request, response);  
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            
+
         }
     }
 }

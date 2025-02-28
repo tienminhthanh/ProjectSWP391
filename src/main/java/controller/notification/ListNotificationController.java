@@ -12,7 +12,7 @@ import dao.NotificationDAO;
 import model.Notification;
 
 @WebServlet(name = "ListNotification", urlPatterns = {"/listnotification"})
-public class ListNotification extends HttpServlet {
+public class ListNotificationController extends HttpServlet {
 
     private NotificationDAO notificationDAO;
 

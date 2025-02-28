@@ -1,4 +1,3 @@
-
 package controller.account;
 
 import dao.AccountDAO;
@@ -9,8 +8,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
@@ -27,7 +28,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String password = hashMD5(request.getParameter("password"));
         String currentURL = request.getParameter("currentURL");
         try {
             Account account = accountDAO.getAccountByUsername(username);
@@ -44,7 +45,7 @@ public class LoginServlet extends HttpServlet {
                                 response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
                                 break;
                             case "customer":
-                                if (currentURL == null || currentURL.trim().isEmpty()) {
+                                if (currentURL == null || currentURL.isEmpty()) {
                                     response.sendRedirect("home");
                                 } else {
                                     response.sendRedirect(currentURL);
@@ -108,8 +109,19 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    @Override
-    public String getServletInfo() {
-        return "Servlet for handling login and account status verification";
+  
+    public  String hashMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] inputBytes = input.getBytes(StandardCharsets.UTF_16LE);
+            byte[] hashBytes = md.digest(inputBytes);
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02X", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Lỗi khi mã hóa MD5", e);
+        }
     }
 }

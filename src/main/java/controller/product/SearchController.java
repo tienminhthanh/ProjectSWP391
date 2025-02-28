@@ -71,8 +71,10 @@ public class SearchController extends HttpServlet {
         String type = request.getParameter("type");
         String query = request.getParameter("query");
         String sortCriteria = request.getParameter("sortCriteria");
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+        
         try {
-            
+
             if (sortCriteria == null) {
                 sortCriteria = getDefaultSortCriteria(sortCriteria, query);
             }
@@ -91,10 +93,11 @@ public class SearchController extends HttpServlet {
                 request.setAttribute("productList", productList);
                 request.setAttribute("sortCriteria", sortCriteria);
             }
-            
+
+            request.setAttribute("currentURL", currentURL);
             request.setAttribute("type", type);
             request.getRequestDispatcher("searchResult.jsp").forward(request, response);
-            
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             request.setAttribute("errorMessage", e.getMessage());

@@ -52,24 +52,30 @@
                         <!-- Username & Birth Date -->
                         <div class="mb-4">
                             <label class="text-gray-700 font-semibold">Username</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" placeholder="Enter your username" required type="text"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" 
+                                   placeholder="Enter your username" required type="text" 
+                                   value="${username != null ? username : ''}"/>
                         </div>
                         <div class="mb-4">
                             <label class="text-gray-700 font-semibold">Birth Date</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" required type="date"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" 
+                                   required type="date" 
+                                   value="${birthDate != null ? birthDate : ''}"/>
                         </div>
 
                         <!-- Password & Confirm Password -->
                         <div class="mb-4 relative">
                             <label class="text-gray-700 font-semibold">Password</label>
-                            <input class="w-full p-3 border border-gray-300 rounded pr-10" id="password" name="password" placeholder="Enter password" required type="password"/>
+                            <input class="w-full p-3 border border-gray-300 rounded pr-10" id="password" name="password" 
+                                   placeholder="Enter password" required type="password"/>
                             <button type="button" onclick="togglePassword('password', 'toggleIcon1')" class="absolute right-3 top-10 text-gray-500">
                                 <i id="toggleIcon1" class="fas fa-eye"></i>
                             </button>
                         </div>
                         <div class="mb-4 relative">
                             <label class="text-gray-700 font-semibold">Confirm Password</label>
-                            <input class="w-full p-3 border border-gray-300 rounded pr-10" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required type="password"/>
+                            <input class="w-full p-3 border border-gray-300 rounded pr-10" id="confirmPassword" name="confirmPassword" 
+                                   placeholder="Confirm password" required type="password"/>
                             <button type="button" onclick="togglePassword('confirmPassword', 'toggleIcon2')" class="absolute right-3 top-10 text-gray-500">
                                 <i id="toggleIcon2" class="fas fa-eye"></i>
                             </button>
@@ -78,21 +84,29 @@
                         <!-- First Name & Last Name -->
                         <div class="mb-4">
                             <label class="text-gray-700 font-semibold">First Name</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="firstName" name="firstName" placeholder="Your first name" required type="text"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="firstName" name="firstName" 
+                                   placeholder="Your first name" required type="text" 
+                                   value="${firstName != null ? firstName : ''}"/>
                         </div>
                         <div class="mb-4">
                             <label class="text-gray-700 font-semibold">Last Name</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName" placeholder="Your last name" required type="text"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName" 
+                                   placeholder="Your last name" required type="text" 
+                                   value="${lastName != null ? lastName : ''}"/>
                         </div>
 
                         <!-- Email & Phone Number -->
                         <div class="mb-4">
                             <label class="text-gray-700 font-semibold">Email</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email" placeholder="Enter your email" required type="email"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email" 
+                                   placeholder="Enter your email" required type="email" 
+                                   value="${email != null ? email : ''}"/>
                         </div>
                         <div class="mb-4">
                             <label class="text-gray-700 font-semibold">Phone Number</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number" required type="text"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber" 
+                                   placeholder="Enter your phone number" required type="text" 
+                                   value="${phoneNumber != null ? phoneNumber : ''}"/>
                         </div>
                     </div>
 
@@ -116,7 +130,7 @@
             </div>
         </footer>
 
-        <!-- JavaScript -->
+       
         <script>
             function togglePassword(inputId, iconId) {
                 const input = document.getElementById(inputId);

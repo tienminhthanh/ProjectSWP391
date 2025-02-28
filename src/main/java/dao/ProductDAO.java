@@ -79,6 +79,7 @@ public class ProductDAO {
         ResultSet rs = context.exeQuery(sql, params);
 
         if (rs.next()) {
+
             // Create Category
             Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
 
