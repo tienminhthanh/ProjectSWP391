@@ -50,11 +50,16 @@
 
                         <p class="mt-4 text-lg font-bold">Total Order: ${orderInfo.preVoucherAmount} VND</p>
                         <p><strong>Payment Method:</strong> ${methodName}</p>
-
                         <div class="flex space-x-2 mt-4">
                             <a href="updateOrder?id=${orderID}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</a>
-                            <a href="deleteOrder?id=${orderID}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onclick="return confirm('Are you sure you want to delete item with ID = ${orderID}?')">Cancel</a>
+                            <form action="DeleteOrderController" method="POST" onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
+                                <input type="hidden" name="id" value="${orderInfo.orderID}">
+                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
+                            </form>
+                            <a href="OrderListController" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Back</a>
+
                         </div>
+
                     </div>
 
                     <!-- Hình ảnh sản phẩm bên phải -->

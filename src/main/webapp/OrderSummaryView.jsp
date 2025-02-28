@@ -14,13 +14,24 @@
         <link href="css/styleFooter.css" rel="stylesheet">
         <title>Payment</title>
         <style>
-
+            .logo {
+                display: flex;
+                justify-content: center;
+                margin: 10px 0;
+            }
 
             .logo img {
                 max-width: 200px;
                 height: auto;
             }
 
+            /*            @media (max-width: 768px) {
+                            .logo img {
+                                max-width: 140px;
+                            }
+                        }*/
+
+            /* Custom styles for the cart */
             .status-container {
                 display: flex;
                 justify-content: center;
@@ -52,15 +63,14 @@
                 border-radius: 8px 8px 0 0;
                 margin-bottom: 0;
             }
-            .logo {
-                display: flex;
-                justify-content: flex-start; /* Căn trái */
-                margin: 10px 0;
-            }
 
-            .sign-out {
-                display: flex;
-                justify-content: flex-end; /* Căn phải */
+            .quantity-input {
+                width: 60px;
+                text-align: center;
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                margin-right: 10px;
             }
         </style>
     </head>
@@ -70,11 +80,9 @@
                 <div class="logo">
                     <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
                 </div>
-                <div class="sign-out">
-                    <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
-                    </a>
-                </div>
+                <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
+                </a>
             </div>
         </header>
         <main class="container mx-auto px-4 py-6">
@@ -117,6 +125,19 @@
                                 <!--                        <label><input type="radio" name="paymentMethod" value="online" checked/> Cash on Delivery (COD)</label><br>  -->
 
                             </div> <hr>
+
+                            <!-- Voucher Selection -->
+                            <label class="form-label fw-bold">Select voucher:</label>
+                            <select class="form-select border-2 border-primary" id="voucherSelect" name="voucherID">
+                                <option value="">-- Select voucher --</option>
+                                <c:forEach var="voucher" items="${listVoucher}">
+                                    <option value="${voucher.voucherID}">
+                                        ${voucher.voucherName} - Discount <fmt:formatNumber value="${voucher.voucherValue}" type="number"/>₫
+                                    </option>
+                                </c:forEach>
+                            </select>
+
+                            <button type="submit" class="btn btn-primary">Apply Voucher</button>
 
                             <div class="payment-method">
                                 <h2>Delivery Method</h2>

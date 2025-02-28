@@ -32,8 +32,8 @@ public class OrderDAO {
         String sql = "INSERT INTO OrderInfo ("
                 + "  deliveryAddress, deliveryOptionID, customerID, "
                 + "preVoucherAmount,  deliveryStatus, "
-                + "orderStatus, deliveredAt, paymentMethod, paymentExpiredTime, paymentStatus"
-                + ") VALUES (  ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?)";
+                + "orderStatus, deliveredAt, paymentMethod, paymentExpiredTime, paymentStatus,voucherID"
+                + ") VALUES (  ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = {
             orderInfo.getDeliveryAddress(),
             orderInfo.getDeliveryOptionID(),
@@ -44,17 +44,23 @@ public class OrderDAO {
             orderInfo.getDeliveredAt(),
             orderInfo.getPaymentMethod(),
             orderInfo.getPaymentExpiredTime(),
-            orderInfo.getPaymentStatus()};
+            orderInfo.getPaymentStatus(),
+            orderInfo.getVoucherID()
+        };
+
         int rowsAffected = context.exeNonQuery(sql, params);
         int orderID = getLastInsertedOrderID(orderInfo.getCustomerID()); // lay orderID moi duoc tao
 //        orderInfo.setOrderID(orderID);
 
-        System.out.println(rowsAffected + " rows affected");
+        System.out.println(rowsAffected
+                + " rows affected");
 
         callInsertOrderProduct(orderInfo, orderID);
-        for (OrderProduct orderProduct : orderInfo.getOrderProductList()) {
+        for (OrderProduct orderProduct
+                : orderInfo.getOrderProductList()) {
             updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
         }
+
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
     }
 
@@ -324,6 +330,32 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
+    public void restoreProductStockByOrderID(int orderID) throws SQLException {
+        // Lấy dữ liệu từ Order_Product, nhưng không ép kiểu trực tiếp
+        String selectSQL = "SELECT productID, quantity FROM Order_Product WHERE orderID = ?";
+        ResultSet rs = (ResultSet) context.exeQuery(selectSQL, new Object[]{orderID});
+
+        List<Object[]> productList = new ArrayList<>();
+
+        // Chuyển từ ResultSet sang List<Object[]>
+        while (rs.next()) {
+            productList.add(new Object[]{rs.getInt("productID"), rs.getInt("quantity")});
+        }
+
+        int rowsUpdated = 0;
+        for (Object[] row : productList) {
+            int productID = (int) row[0];
+            int quantityOrdered = (int) row[1];
+
+            // Cập nhật lại tồn kho
+            String updateSQL = "UPDATE Product SET stockCount = stockCount + ? WHERE productID = ?";
+            Object[] updateParams = {quantityOrdered, productID};
+            rowsUpdated += context.exeNonQuery(updateSQL, updateParams);
+        }
+
+        System.out.println(rowsUpdated + " rows updated in stock");
+    }
+
     //DELETE CAC THU
     public boolean deleteCartItemsByCustomerID(int customerID) throws SQLException {
         String sql = "DELETE FROM CartItem WHERE customerID = ?";
@@ -332,4 +364,19 @@ public class OrderDAO {
         System.out.println(rowsAffected + " cart items deleted.");
         return rowsAffected > 0;
     }
+
+    public void deleteOrderInfoByOrderID(int orderID) throws SQLException {
+        String sql = "DELETE FROM OrderInfo WHERE orderID = ?";
+        Object[] params = {orderID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        System.out.println(rowsAffected + " order info deleted.");
+    }
+
+    public void deleteOrderProductByOrderID(int orderID) throws SQLException {
+        String sql = "DELETE FROM Order_Product WHERE orderID = ?";
+        Object[] params = {orderID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        System.out.println(rowsAffected + " order products deleted.");
+    }
+
 }
