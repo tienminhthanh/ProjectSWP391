@@ -12,6 +12,10 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
         <link href="css/styleFooter.css" rel="stylesheet">
+
+        <script src="js/OrderSummaryView.js"></script>
+
+
         <title>Payment</title>
         <style>
             .logo {
@@ -129,20 +133,19 @@
                             <!-- Voucher Selection -->
                             <label class="form-label fw-bold">Select voucher:</label>
                             <select class="form-select border-2 border-primary" id="voucherSelect" name="voucherID">
-                                <option value="">-- Select voucher --</option>
+                                <option value="0" data-discount="0">-- Select voucher --</option>
                                 <c:forEach var="voucher" items="${listVoucher}">
-                                    <option value="${voucher.voucherID}">
+                                    <option value="${voucher.voucherID}" data-discount="${voucher.voucherValue}">
                                         ${voucher.voucherName} - Discount <fmt:formatNumber value="${voucher.voucherValue}" type="number"/>₫
                                     </option>
                                 </c:forEach>
                             </select>
 
-                            <button type="submit" class="btn btn-primary">Apply Voucher</button>
-
                             <div class="payment-method">
                                 <h2>Delivery Method</h2>
-                                <label><input type="radio" name="shippingOption" value="1"  /> Express Delivery</label><br>
-                                <label><input type="radio" name="shippingOption" value="2" required /> Economy Delivery</label><br>  
+                                <label><input type="radio" name="shippingOption" value="1" data-cost="50000" checked/> Express Delivery (50,000 VND)</label><br>
+                                <label><input type="radio" name="shippingOption" value="2" data-cost="20000"/> Economy Delivery (20,000 VND)</label><br>  
+
                             </div> <hr>
 
                             <!-- Hidden fields to send shipping fee, discount, etc. -->
@@ -175,15 +178,23 @@
                         <div class="order-summary">
                             <div class="price">
                                 <div class="price-custom">
-                                    <p>Subtotal:</p>
-                                    <p>${priceWithQuantity}<span class="currency">VND</span></p>
+                                    <div class="price-item">
+                                        <p>Subtotal: <span id="subtotal">${priceWithQuantity}</span> VND</p>
+                                    </div> 
+                                    <div class="price-item">
+                                        <p>Discount: <span id="discount">0</span> VND</p>
+                                    </div>
+                                    <div class="price-item">
+                                        <p>Shipping Fee: <span id="shippingFee">50,000</span> VND</p>
+                                    </div>
+                                    <div class="price-item">
+                                        <p>Total: <span id="totalAmount">${orderTotalAmount}</span> VND</p>
+                                    </div>
                                 </div>
                             </div>
                             <hr>
                         </div>
-                        <!--                <div class="total-price">
-                                            <strong>Total: ${orderTotalAmount} <span class="currency">VND</span></strong>
-                                        </div>-->
+
                     </div>
                 </div>
         </main>
