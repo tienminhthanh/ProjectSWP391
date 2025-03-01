@@ -86,6 +86,8 @@ public class LoginWithGoogleServlet extends HttpServlet {
             }
         } else {
             // User doesn't exist in the database, prompt to register
+            request.setAttribute("errorMessage", "Email account is not registered yet, \n"
+                    + "you can use that account to register.");
             request.setAttribute("googleAccount", googleAccount); // Pass Google account data for registration
             request.getRequestDispatcher("register.jsp").forward(request, response); // Redirect to registration page
         }

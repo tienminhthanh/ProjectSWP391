@@ -1,5 +1,6 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage="error.jsp" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -8,23 +9,28 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     </head>
-    <body class="bg-gray-100 min-h-screen flex flex-col">
+    <body class="bg-gray-100 min-h-screen flex flex-col" onload="checkFailedAttempts()">
+        <!-- Header -->
         <header class="bg-white shadow w-full">
             <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
+                <img alt="WIBOOKS Logo" class="h-10" src="./img/logoWibooks-removebg-preview.png"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
                 </div>
             </a>
         </header>
+
+        <!-- Main Content -->
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
                 <h1 class="text-2xl font-semibold mb-4">Sign-in</h1>
                 <hr class="mb-6"/>
+
                 <div class="flex flex-col md:flex-row justify-between">
+                    <!-- Login Form -->
                     <div class="w-full md:w-1/2 md:pr-4 mb-6 md:mb-0">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
-                        <form action="login" method="post">
+                        <form action="login" method="post" onsubmit="return checkLockStatus()">
                             <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
 
                             <!-- Username -->
@@ -40,7 +46,7 @@
                                 <label class="sr-only" for="password">Password</label>
                                 <input class="w-full p-3 border border-gray-300 rounded pr-10"
                                        id="password" name="password"
-                                       value="${password}" placeholder="Password" required type="password"/>
+                                       placeholder="Password" required type="password"/>
                                 <button type="button" onclick="togglePassword('password', 'toggleIcon')" 
                                         class="absolute right-3 top-3 text-gray-500">
                                     <i id="toggleIcon" class="fas fa-eye"></i>
@@ -52,11 +58,14 @@
                                 Sign-in
                             </button>
 
-                            <!-- Display Error Message -->
+                            <!-- Display Error Messages -->
                             <c:if test="${not empty errorMessage}">
+                                <script>handleFailedLogin();</script>
                                 <p class="text-red-600 text-center mt-4">${errorMessage}</p>
                             </c:if>
+
                             <c:if test="${not empty message}">
+                                <script>resetFailedAttempts();</script>
                                 <p class="text-green-600 text-center mt-4">${message}</p>
                             </c:if>
 
@@ -66,20 +75,16 @@
                         </form>
                     </div>
 
+                    <!-- Social Login -->
                     <div class="w-full md:w-1/2 md:pl-4">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with below accounts</h2>
                         <div class="space-y-4">
-                            <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/loginGoogle&response_type=code&client_id=103840178226-4ev8f05cv55sr4l86jchjtvfd5hvscjb.apps.googleusercontent.com&approval_prompt=force" class="w-full bg-red-600 text-white p-3 rounded flex items-center justify-center hover:bg-red-700">
+                            <a href="https://accounts.google.com/o/oauth2/auth?...&client_id=YOUR_CLIENT_ID"
+                               class="w-full bg-red-600 text-white p-3 rounded flex items-center justify-center hover:bg-red-700">
                                 <i class="fab fa-google mr-2"></i> Login with Google
                             </a>
                             <button class="w-full bg-black text-white p-3 rounded flex items-center justify-center hover:bg-gray-800">
                                 <i class="fab fa-apple mr-2"></i> Sign in with Apple
-                            </button>
-                            <button class="w-full bg-black text-white p-3 rounded flex items-center justify-center hover:bg-gray-800">
-                                <img alt="Niconico Logo" class="mr-2" height="20" src="https://storage.googleapis.com/a1aa/image/Fa8wNYak4irMw53nH9r4AMpIqKZO7Ew2TEyJMJ9vVsU.jpg" width="20"/> Login with niconico
-                            </button>
-                            <button class="w-full bg-black text-white p-3 rounded flex items-center justify-center hover:bg-gray-800">
-                                <i class="fab fa-twitter mr-2"></i> Login with X (formerly Twitter)
                             </button>
                             <button class="w-full bg-blue-600 text-white p-3 rounded flex items-center justify-center hover:bg-blue-700">
                                 <i class="fab fa-facebook-f mr-2"></i> Login with Facebook
@@ -88,12 +93,15 @@
                     </div>
                 </div>
 
+                <!-- Register Prompt -->
                 <div class="mt-8 p-4 border border-orange-500 bg-orange-100 text-center">
                     <p class="text-lg font-semibold mb-2">If you don't have an account</p>
                     <a class="bg-orange-500 text-white p-3 rounded hover:bg-orange-600" href="register.jsp">Register with your email address</a>
                 </div>
             </div>
         </main>
+
+        <!-- Footer -->
         <footer class="bg-gray-200 py-4 mt-8 w-full">
             <div class="container mx-auto px-4 text-center text-sm text-gray-600">
                 <a class="mr-4" href="#">Privacy</a>
@@ -101,22 +109,50 @@
                 <p class="mt-4">© WIBOOKS Co.,Ltd.</p>
             </div>
         </footer>
-    </body>
 
-    <!-- JavaScript -->
-    <script>
-        function togglePassword(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            } else {
-                input.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+        <!-- JavaScript -->
+        <script>
+            let failedAttempts = localStorage.getItem("failedAttempts") || 0;
+
+            function checkFailedAttempts() {
+                if (failedAttempts >= 5) {
+                    alert("Your account has been locked due to multiple failed login attempts.");
+                    window.location.href = "deleteAccount?username=" + document.getElementById("username").value;
+                }
             }
-        }
-    </script>
+
+            function handleFailedLogin() {
+                failedAttempts++;
+                localStorage.setItem("failedAttempts", failedAttempts);
+                if (failedAttempts >= 5) {
+                    alert("Your account has been locked.");
+                    window.location.href = "deleteAccount?username=" + document.getElementById("username").value;
+                }
+            }
+
+            function resetFailedAttempts() {
+                localStorage.setItem("failedAttempts", 0);
+            }
+
+            function togglePassword(inputId, iconId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById(iconId);
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.replace("fa-eye", "fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.replace("fa-eye-slash", "fa-eye");
+                }
+            }
+
+            function checkLockStatus() {
+                if (failedAttempts >= 5) {
+                    alert("Your account has been locked.");
+                    return false;
+                }
+                return true;
+            }
+        </script>
+    </body>
 </html>
