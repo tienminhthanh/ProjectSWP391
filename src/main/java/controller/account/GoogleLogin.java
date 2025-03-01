@@ -1,7 +1,6 @@
 package controller.account;
 
 import com.google.gson.Gson;  // Import Gson to convert objects to JSON and vice versa.
-
 import com.google.gson.JsonObject;  // Import JsonObject to handle JSON responses.
 import model.Iconstant;  // Import constant values (like client ID and secret).
 import model.GoogleAccount;  // Import the model to hold Google user information.
