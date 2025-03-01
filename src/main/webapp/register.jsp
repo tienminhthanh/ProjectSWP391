@@ -13,16 +13,18 @@
     <body class="bg-gray-100 min-h-screen flex flex-col">
 
         <!-- Header -->
-        <header class="bg-white shadow w-full">
+        <!-- Header -->
+        <header class="bg-white shadow w-full mb-4">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png"/>
+                <a href="home.jsp">
+                    <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png" />
+                </a>
                 <div class="flex items-center space-x-4">
                     <a href="login.jsp" class="text-orange-600 font-semibold hover:underline">Login</a>
                     <a href="home.jsp" class="text-orange-600 font-semibold hover:underline">Home</a>
                 </div>
             </div>
         </header>
-
         <!-- Main Content -->
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-3xl bg-white p-8 shadow-md rounded-lg">
@@ -50,13 +52,13 @@
                 <form action="register" method="post">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Username & Birth Date -->
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="text-gray-700 font-semibold">Username</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="username" name="username" 
                                    placeholder="Enter your username" required type="text" 
                                    value="${username != null ? username : ''}"/>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="text-gray-700 font-semibold">Birth Date</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" 
                                    required type="date" 
@@ -64,7 +66,7 @@
                         </div>
 
                         <!-- Password & Confirm Password -->
-                        <div class="mb-4 relative">
+                        <div class="mb-2 relative">
                             <label class="text-gray-700 font-semibold">Password</label>
                             <input class="w-full p-3 border border-gray-300 rounded pr-10" id="password" name="password" 
                                    placeholder="Enter password" required type="password"/>
@@ -72,7 +74,7 @@
                                 <i id="toggleIcon1" class="fas fa-eye"></i>
                             </button>
                         </div>
-                        <div class="mb-4 relative">
+                        <div class="mb-2 relative">
                             <label class="text-gray-700 font-semibold">Confirm Password</label>
                             <input class="w-full p-3 border border-gray-300 rounded pr-10" id="confirmPassword" name="confirmPassword" 
                                    placeholder="Confirm password" required type="password"/>
@@ -82,13 +84,13 @@
                         </div>
 
                         <!-- First Name & Last Name -->
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="text-gray-700 font-semibold">First Name</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="firstName" name="firstName" 
                                    placeholder="Your first name" required type="text" 
                                    value="${firstName != null ? firstName : ''}"/>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="text-gray-700 font-semibold">Last Name</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName" 
                                    placeholder="Your last name" required type="text" 
@@ -96,13 +98,13 @@
                         </div>
 
                         <!-- Email & Phone Number -->
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="text-gray-700 font-semibold">Email</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email" 
                                    placeholder="Enter your email" required type="email" 
                                    value="${email != null ? email : ''}"/>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="text-gray-700 font-semibold">Phone Number</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber" 
                                    placeholder="Enter your phone number" required type="text" 
