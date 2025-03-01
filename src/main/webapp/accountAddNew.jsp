@@ -155,6 +155,18 @@
                             <input class="w-full p-4 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" 
                                    id="phoneNumber" name="phoneNumber" value="${phoneNumber}" placeholder="Enter phone number" required type="text"/>
                         </div>
+                        <div class="mb-4">
+                            <label class="sr-only" for="birthDate">Birth Date</label>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate" placeholder="Birth Date" required type="date"/>
+                        </div>
+                        <div class="mb-4">
+                            <label class="sr-only" for="role">Role</label>
+                            <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role">
+                               
+                                <option value="staff">Staff</option>
+                                <option value="shipper">Shipper</option>
+                            </select>
+                        </div>
                     </div>
 
                     <button class="w-full bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105" type="submit">
@@ -162,7 +174,7 @@
                     </button>
                 </form>
 
-               
+
                 <div class="mt-6 flex justify-start">
                     <a class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center transition duration-300 ease-in-out transform hover:scale-105" href="listAccount">
                         <i class="fas fa-arrow-left mr-2"></i> Back to Account List

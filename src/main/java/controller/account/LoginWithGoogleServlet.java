@@ -66,9 +66,7 @@ public class LoginWithGoogleServlet extends HttpServlet {
 
             // Role-based redirection
             switch (existingAccount.getRole()) {
-                case "admin":
-                    response.sendRedirect("listAccount"); // Redirect to the account list page for admin
-                    break;
+              
                 case "customer":
                     response.sendRedirect("home"); // Redirect to the home page for customers
                     break;

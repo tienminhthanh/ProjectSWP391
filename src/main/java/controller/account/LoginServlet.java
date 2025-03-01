@@ -22,15 +22,20 @@ public class LoginServlet extends HttpServlet {
         accountDAO = new AccountDAO();
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("login.jsp").forward(request, response);
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AccountLib lib = new AccountLib();
-        
+
         String username = request.getParameter("username");
         String password = lib.hashMD5(request.getParameter("password"));
         HttpSession session = request.getSession();
-        
+
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
