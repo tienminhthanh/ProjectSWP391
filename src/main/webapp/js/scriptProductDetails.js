@@ -50,9 +50,12 @@ document.getElementById("quantityInput").addEventListener("input", function (eve
     console.log("quantity:", displayValues);
 });
 
-//Close sidebar on resize
-window.addEventListener('resize', () => {
-    const clientWidth = document.documentElement.clientWidth;
-    const sidebar = document.getElementById('cus-sidebar');
-    sidebar.style.display = 'none';
-});
+
+
+
+////Close sidebar on resize
+//window.addEventListener('resize', () => {
+//    const clientWidth = document.documentElement.clientWidth;
+//    const sidebar = document.getElementById('cus-sidebar');
+//    sidebar.style.display = 'none';
+//});

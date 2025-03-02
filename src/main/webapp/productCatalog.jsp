@@ -11,17 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>
-            <c:choose>
-                <c:when test="${not empty query}">
-                    Search Result: ${query} - WIBOOKS
-                </c:when>
-                <c:when test="${type == 'book'}">
-                    Books - WIBOOKS
-                </c:when>
-                <c:when test="${type == 'merch'}">
-                    Merchandises - WIBOOKS
-                </c:when>
-            </c:choose>
+            ${pageTitle} - WIBOOKS
         </title>
 
         <!--Header css-->
@@ -36,7 +26,7 @@
         <link rel="stylesheet" href="css/styleProductCard.css"/>
 
         <!--Search css-->
-        <link rel="stylesheet" href="css/styleSearch.css"/>
+        <link rel="stylesheet" href="css/styleCatalog.css"/>
 
         <!--Customer Sidebar-->
         <link href="css/styleCustomerSidebar.css" rel="stylesheet">
@@ -45,25 +35,13 @@
         <!--Header-->
         <jsp:include page="header.jsp"/>
 
-
         <!--Breadcrumb-->
-        <div class="bread-crumb-area">
-            <a href="home">Home</a>
-            <span> > </span>
-            <c:choose>
-                <c:when test="${not empty query}">
-                    <a href="search?query=${query}&type=${type}">Search Result: ${query}</a>
-                </c:when>
-                <c:when test="${type == 'book'}">
-                    <a href="search?type=${type}">Books</a>
-                </c:when>
-                <c:when test="${type == 'merch'}">
-                    <a href="search?type=${type}">Merchandises</a>
-                </c:when>
-            </c:choose>
-
+        <div class="bread-crumb-area pt-2 pl-4 pb-2 text-sm text-yellow-500 bg-gray-100">
+            ${breadCrumb}
         </div>
-        <div class="flex flex-col md:flex-row bg-gray-100">
+        
+        <!--Sidebar-->
+        <div class="flex flex-col md:flex-row pt-4 bg-gray-50">
             <jsp:include page="customerSidebar.jsp"/>
 
             <!--Main section-->
@@ -73,17 +51,7 @@
                     <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
                         <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
                         <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                        <c:choose>
-                            <c:when test="${not empty query}">
-                                Search Result: ${query}
-                            </c:when>
-                            <c:when test="${type == 'book'}">
-                                Books
-                            </c:when>
-                            <c:when test="${type == 'merch'}">
-                                Merchandises
-                            </c:when>
-                        </c:choose>
+                        ${pageTitle}
                     </h2>
 
 
@@ -126,12 +94,11 @@
                         </div>
                     </div>
 
-                    <!--Popup unauthorized users-->
-                    <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-
-                        <jsp:include page="popuplogin.jsp" />
-                    </c:if>
                 </div>
+                <!--Popup unauthorized users-->
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                    <jsp:include page="popuplogin.jsp" />
+                </c:if>
             </main>
         </div>
 

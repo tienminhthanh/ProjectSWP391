@@ -20,3 +20,15 @@ function closeMobileMenu(){
         
     }
     
+    
+//    Move this to a separate .js file if we dont need side bar on large view on all screen
+    window.addEventListener('resize', () => {
+    const clientWidth = document.documentElement.clientWidth;
+    const sidebar = document.getElementById('cus-sidebar');
+    if (clientWidth > 768) {
+        sidebar.style.display = 'block';
+    } else {
+        sidebar.style.display = 'none';
+    }
+});
+    

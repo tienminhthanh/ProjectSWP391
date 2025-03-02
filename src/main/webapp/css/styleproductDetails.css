@@ -7,6 +7,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : anhkc
 */
 
+html{
+    font-size:13px;
+}
+
 
 body {
     font-family: Arial, sans-serif;
@@ -14,20 +18,19 @@ body {
     padding: 0;
 }
 
-#cus-sidebar{
+/*#cus-sidebar{
     display: none;
-}
+}*/
 
 .root-container {
     padding: 20px;
+    padding-top: 0;
 }
 
-.bread-crumb-area{
-    margin-bottom: 20px;
-    color: orange;
-}
-.bread-crumb-area a{
+.bread-crumb-area a:hover{
     color:orange;
+    font-weight: bold;
+    text-decoration: underline;
 }
 
 .big-product-name-inner h2{
@@ -52,34 +55,9 @@ body {
     flex-wrap: wrap;
 }
 
-.info-area {
-    flex: 1;
-    max-width: 80%;
-    /* Adjust as needed */
-
-}
-
-.purchase-area {
-    flex: 0 0 20%;
-    background-color:white;
-    /* Prevents it from shrinking */
-}
-
-.overview-area {
-    max-width: 77%;
-    min-height: 80vh;
-    margin-bottom: 20px;
-    background-color:white;
-}
-
-.overview-inner {
-    padding: 20px;
-    display: flex;
-    gap: 20px;
-}
 
 .image-area {
-    flex: 0 0 30%;
+    /*flex: 0 0 100%;*/
     /* Keeps it at 30% width */
     min-width: 300px;
 }
@@ -89,7 +67,11 @@ body {
     height: auto;
 }
 
+
+
 .description-area {
+        text-align: left;
+        background: white;
     flex: 1 1 auto;
     overflow-wrap: break-word;
     white-space: normal;
@@ -108,8 +90,7 @@ body {
 }
 
 .details-area {
-    max-width: 77%;
-    margin-top: 10px;
+    max-width: 100%;
     min-width: 0;
     flex: 1 1 auto;
     overflow-wrap: break-word;
@@ -125,15 +106,7 @@ body {
     padding: 10px;
 }
 
-.price-area {
-    font-weight: bold;
-    padding: 10px;
-    padding-bottom: 0px;
-}
-.final-price{
-    color: orange;
-    font-size:1.5em;
-}
+
 
 .initial-price {
     text-decoration: line-through;
@@ -158,6 +131,10 @@ body {
     margin: 10px 0;
 }
 
+.purchase-form button:hover{
+    opacity: 0.8;
+}
+
 .info-area h3 {
     font-size: 1.2rem;
 }
@@ -172,10 +149,7 @@ body {
 
 .fomo-info {
     font-weight: bold;
-    padding: 10px;
     display: inline-block;
-    width: 100%;
-    text-align: center;
 }
 
 .fomo-info.pre{
@@ -188,10 +162,7 @@ body {
     border: 2px solid red;
 }
 
-.ratings-area{
-    font-size: 1.2em;
-    padding-left: 10px;
-}
+
 
 .stock-count{
     margin-bottom: 0;
@@ -221,9 +192,6 @@ button.buy-now{
     color:rgb(248, 208, 12);
 }
 
-.description-area.mobile-version{
-    display:none;
-}
 
 
 @media (max-width: 768px) {
@@ -237,8 +205,7 @@ button.buy-now{
         gap:0;
     }
 
-    .image-area,
-    .description-area {
+    .image-area{
         flex: none;
         max-width: 100%;
         min-width: 200px;
@@ -249,17 +216,7 @@ button.buy-now{
         max-width: 100%;
     }
 
-    .description-area {
-        display:none;
-    }
-    .description-area.mobile-version{
-        display:block;
-        text-align: left;
-        background: white;
-    }
-    .description-content,.tags{
-        padding: 10px;
-    }
+    
 
 
     .main-area {
@@ -281,14 +238,7 @@ button.buy-now{
     .purchase-area{
         text-align: center;
     }
-    .fomo-info{
-        width: 90%;
-        margin-top: 10px;
-    }
-    
-    .ratings-area{
-        text-align: left;
-    }
+   
 
     .purchase-form form {
         padding: 0px;

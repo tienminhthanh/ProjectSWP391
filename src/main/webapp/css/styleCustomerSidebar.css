@@ -35,7 +35,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     .close-icon{
         display: block;
         position: absolute;
-        top:10px;
+        top:5px;
         right:10px;
         font-size: 25px;
     }

@@ -85,9 +85,7 @@
             <main class="w-full md:w-5/6 p-3 flex flex-col">
                 <!--Div1-->
                 <div class="mb-4 bg-white popular-search-area">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Popular Searches
                     </h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
@@ -114,9 +112,7 @@
 
                 <!--Div2-->
                 <div class="mb-4 bg-white voucher-area">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Vouchers
                     </h2>
                     <div class="flex flex-wrap gap-4">
@@ -133,17 +129,13 @@
                     </div>
                 </div>
 
-                <!--Other Divs-->
+                <!--Random Pick-->
                 <div class="bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center border-t-4 border-orange-300">
                         Random Pick
                     </h2>
-                    <!--<div class="flex space-x-4 overflow-x-auto">-->
+                    <!--Loop through product list-->
                     <div class="w-full">
-
-                        <!-- Horizontal scrolling at lg (1024px+) -->
                         <div class="gap-4 w-full overflow-x-auto">
                             <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
                                 <c:forEach var="currentProduct" items="${productList}">
@@ -154,12 +146,11 @@
                         </div>
                     </div>
 
-                    <!--Popup unauthorized users-->
-                    <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-                        <jsp:include page="popuplogin.jsp"/>
-                    </c:if>
-
                 </div>
+                <!--Popup unauthorized users-->
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                    <jsp:include page="popuplogin.jsp"/>
+                </c:if>
             </main>
         </div>
         <jsp:include page="footer.jsp"/>

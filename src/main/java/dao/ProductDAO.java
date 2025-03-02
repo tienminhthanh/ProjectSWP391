@@ -281,15 +281,13 @@ public class ProductDAO {
     }
 
     public static void main(String[] args) {
-        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description,\n"
-                + "Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, Product.specialFilter,\n"
-                + "Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, Category.categoryName,\n"
-                + "KEY_TBL.RANK AS relevance_score\n"
-                + "FROM Category \n"
-                + "JOIN Product ON Category.categoryID = Product.categoryID\n"
-                + "JOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL\n"
-                + "ON Product.productID = KEY_TBL.[KEY]\n"
-                + "WHERE  (Product.isActive = 1) and (Product.generalCategory = ?)\n"
+        String sql = "SELECT P.*, C.categoryName, EP.discountPercentage, EP.eventID, E.isActive AS isActiveEvent, KEY_TBL.RANK AS relevance_score \n"
+                + "FROM Product AS P \n"
+                + "    JOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY] \n"
+                + "	LEFT JOIN Category AS C  ON C.categoryID = P.categoryID \n"
+                + "    LEFT JOIN Event_Product AS EP ON EP.productID = P.productID\n"
+                + "	LEFT JOIN Event AS E ON E.eventID = EP.eventID\n"
+                + "WHERE P.isActive = 1 AND P.generalCategory = ? \n"
                 + "ORDER BY ";
         System.out.println(sql);
     }
