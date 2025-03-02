@@ -12,7 +12,6 @@
     </head>
     <body class="bg-gray-50 min-h-screen flex">
 
-       
         <div class="w-64 bg-orange-400 text-white min-h-screen">
              <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
