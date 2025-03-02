@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
@@ -103,13 +104,7 @@ public class OrderDAO {
     // for admin with satff manage orderlist
     public List<OrderInfo> getAllOrders() throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT o.*, c.firstName + ' ' + c.lastName AS customerName, "
-                + "s.firstName + ' ' + s.lastName AS shipperName, "
-                + "st.firstName + ' ' + st.lastName AS staffName "
-                + "FROM OrderInfo o "
-                + "LEFT JOIN Customer c ON o.customerID = c.customerID "
-                + "LEFT JOIN Shipper s ON o.shipperID = s.shipperID "
-                + "LEFT JOIN Staff st ON o.staffID = st.staffID";
+        String sql = "SELECT * from OrderInfo";
 
         try ( ResultSet rs = context.exeQuery(sql, null)) {
             while (rs.next()) {
@@ -189,7 +184,43 @@ public class OrderDAO {
         return orderList;
     }
 
-//lay gia tri vocher de dua vao orderdeatil
+    public Account getAccountByShipperIDAndOrderID(int orderID, int shipperID) throws SQLException {
+        String sql = "SELECT \n"
+                + "    a.accountID,\n"
+                + "    a.username,\n"
+                + "    a.firstName , a.lastName ,\n"
+                + "    a.email,\n"
+                + "    a.phoneNumber,\n"
+                + "    a.birthDate,\n"
+                + "    a.role,\n"
+                + "    a.isActive,\n"
+                + "    a.dateAdded\n"
+                + "FROM Account a\n"
+                + "JOIN Customer c ON a.accountID = c.customerID\n"
+                + "JOIN OrderInfo o ON c.customerID = o.customerID\n"
+                + "WHERE o.shipperID = ? AND o.orderID = ?;";
+
+        Object[] params = {shipperID, orderID};
+
+        try ( ResultSet rs = context.exeQuery(sql, params)) {
+            if (rs.next()) {
+                Account acc = new Account();
+                acc.setAccountID(rs.getInt("accountID"));
+                acc.setUsername(rs.getString("username"));
+                acc.setFirstName(rs.getString("firstName"));
+                acc.setLastName(rs.getString("lastName"));
+                acc.setEmail(rs.getString("email"));
+                acc.setPhoneNumber(rs.getString("phoneNumber"));
+                acc.setBirthDate(rs.getDate("birthDate") != null ? rs.getDate("birthDate").toString() : null);
+                acc.setRole(rs.getString("role"));
+                acc.setIsActive(rs.getBoolean("isActive"));
+                return acc;
+            }
+        }
+        return null; 
+    }
+
+    //lay gia tri vocher de dua vao orderdeatil
     public int getVoucherValueByOrderID(int orderID) throws SQLException {
         int voucherValue = 0;
         String sql = "SELECT v.voucherValue FROM OrderInfo o "
@@ -205,7 +236,7 @@ public class OrderDAO {
         return voucherValue;
     }
 
-// lay thong tin cac san pham theo oderId de in ra orderdeatil
+    // lay thong tin cac san pham theo oderId de in ra orderdeatil
     public List<OrderProduct> getOrderProductByOrderID(int orderID) throws SQLException {
         List<OrderProduct> OrderProductList = new ArrayList<>();
         String sql = "SELECT Order_Product.orderID, Order_Product.productID, Order_Product.quantity, Order_Product.priceWithQuantity, Product.productName, Product.imageURL\n"
@@ -365,11 +396,11 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
-    public void deleteOrderInfoByOrderID(int orderID) throws SQLException {
-        String sql = "DELETE FROM OrderInfo WHERE orderID = ?";
-        Object[] params = {orderID};
+    public void cancelOrderByOrderID(int orderID) throws SQLException {
+        String sql = "UPDATE OrderInfo SET orderStatus = ? WHERE orderID = ?";
+        Object[] params = {"canceled", orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
-        System.out.println(rowsAffected + " order info deleted.");
+        System.out.println(rowsAffected + " order(s) canceled.");
     }
 
     public void deleteOrderProductByOrderID(int orderID) throws SQLException {

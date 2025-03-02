@@ -22,8 +22,6 @@
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
                 <h1 class="text-2xl font-semibold mb-4">Account Information</h1>
-
-                <!-- Hiển thị thông báo cập nhật thành công bằng SweetAlert2 -->
                 <c:if test="${not empty param.message}">
                     <p class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                         <strong class="font-bold">Account update success! </strong>
@@ -47,8 +45,11 @@
                     <a class="bg-blue-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="updateAccount?username=${account.username}">
                         <i class="fas fa-edit mr-2"></i> Update Information
                     </a>
-                    <a class="bg-green-600 text-white p-3 rounded hover:bg-green-700 flex items-center" href="OrderListController">
-                        <i class="fas fa-shopping-cart mr-2"></i> Order List
+                    <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="changePassword.jsp">
+                        <i class="fas fa-edit mr-2"></i> Change password
+                    </a>
+                    <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="OrderListController">
+                        <i class="fas fa-edit mr-2"></i> Order List
                     </a>
                     <a class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
                        href="deleteAccount?username=${account.username}" 

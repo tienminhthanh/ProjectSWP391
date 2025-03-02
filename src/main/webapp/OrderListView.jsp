@@ -55,51 +55,51 @@
                 </a>
             </div>
         </header>
-<!--        <div class="w-64 flex-shrink-0">
-            <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Orders</h3>
-                <nav class="space-y-2">
-                    <a href="OrderListController" 
-                       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${empty param.status ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-                        All Orders
-                        <span class="float-right">${fn:length(requestScope.list)}</span>
-                    </a>
-                    <a href="OrderListController?status=Processing" 
-                       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Processing' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-                        Processing
-                        <c:set var="processingCount" value="${0}"/>
-                        <c:forEach items="${requestScope.list}" var="order">
-                            <c:if test="${order.orderStatus == 'Processing'}">
-                                <c:set var="processingCount" value="${processingCount + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                        <span class="float-right">${processingCount}</span>
-                    </a>
-                    <a href="OrderListController?status=Delivered" 
-                       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Delivered' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-                        Delivered
-                        <c:set var="deliveredCount" value="${0}"/>
-                        <c:forEach items="${requestScope.list}" var="order">
-                            <c:if test="${order.orderStatus == 'Delivered'}">
-                                <c:set var="deliveredCount" value="${deliveredCount + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                        <span class="float-right">${deliveredCount}</span>
-                    </a>
-                    <a href="OrderListController?status=Cancelled" 
-                       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Cancelled' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-                        Cancelled
-                        <c:set var="cancelledCount" value="${0}"/>
-                        <c:forEach items="${requestScope.list}" var="order">
-                            <c:if test="${order.orderStatus == 'Cancelled'}">
-                                <c:set var="cancelledCount" value="${cancelledCount + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                        <span class="float-right">${cancelledCount}</span>
-                    </a>
-                </nav>
-            </div>
-        </div>-->
+        <!--        <div class="w-64 flex-shrink-0">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Orders</h3>
+                        <nav class="space-y-2">
+                            <a href="OrderListController" 
+                               class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${empty param.status ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
+                                All Orders
+                                <span class="float-right">${fn:length(requestScope.list)}</span>
+                            </a>
+                            <a href="OrderListController?status=Processing" 
+                               class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Processing' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
+                                Processing
+        <c:set var="processingCount" value="${0}"/>
+        <c:forEach items="${requestScope.list}" var="order">
+            <c:if test="${order.orderStatus == 'Processing'}">
+                <c:set var="processingCount" value="${processingCount + 1}"/>
+            </c:if>
+        </c:forEach>
+        <span class="float-right">${processingCount}</span>
+    </a>
+    <a href="OrderListController?status=Delivered" 
+       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Delivered' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
+        Delivered
+        <c:set var="deliveredCount" value="${0}"/>
+        <c:forEach items="${requestScope.list}" var="order">
+            <c:if test="${order.orderStatus == 'Delivered'}">
+                <c:set var="deliveredCount" value="${deliveredCount + 1}"/>
+            </c:if>
+        </c:forEach>
+        <span class="float-right">${deliveredCount}</span>
+    </a>
+    <a href="OrderListController?status=Cancelled" 
+       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Cancelled' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
+        Cancelled
+        <c:set var="cancelledCount" value="${0}"/>
+        <c:forEach items="${requestScope.list}" var="order">
+            <c:if test="${order.orderStatus == 'Cancelled'}">
+                <c:set var="cancelledCount" value="${cancelledCount + 1}"/>
+            </c:if>
+        </c:forEach>
+        <span class="float-right">${cancelledCount}</span>
+    </a>
+</nav>
+</div>
+</div>-->
 
         <main class="container mx-auto px-4 py-8">
             <div class="mb-8 text-center">
@@ -124,7 +124,7 @@
                                 <span class="status-badge
                                       ${c.orderStatus == 'Delivered' ? 'bg-green-100 text-green-800' : 
                                         c.orderStatus == 'Processing' ? 'bg-orange-100 text-orange-800' : 
-                                        c.orderStatus == 'Cancelled' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}">
+                                        c.orderStatus == 'Cancelled' ?'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}}">
                                           ${c.orderStatus}
                                       </span>
                                 </div>

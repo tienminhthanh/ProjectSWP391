@@ -14,8 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import model.Account;
 import model.OrderInfo;
 
@@ -23,8 +23,8 @@ import model.OrderInfo;
  *
  * @author Macbook
  */
-@WebServlet(name = "DeleteOrderContronller", urlPatterns = {"/DeleteOrderController"})
-public class DeleteOrderController extends HttpServlet {
+@WebServlet(name = "OrderListForShipperController", urlPatterns = {"/OrderListForShipperController"})
+public class OrderListForShipperController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +43,10 @@ public class DeleteOrderController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteOrderContronller</title>");
+            out.println("<title>Servlet OrderListForShipperController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteOrderContronller at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet OrderListForShipperController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,7 +64,27 @@ public class DeleteOrderController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        OrderDAO orderDAO = new OrderDAO();
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        try {
+            List<OrderInfo> orderList = orderDAO.getOrdersByShipperID(account.getAccountID());
+            List<Account> accountList = new ArrayList<>();
+        // Duyệt qua từng đơn hàng để lấy thông tin khách hàng
+            for (OrderInfo order : orderList) {
+                Account acc = orderDAO.getAccountByShipperIDAndOrderID(order.getOrderID(), account.getAccountID());
+                if (acc != null) {
+                    accountList.add(acc); // Chỉ thêm nếu không null
+                }
+            }
+            request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
+            request.setAttribute("accountList", accountList);
+            request.getRequestDispatcher("OrderListForShipperView.jsp").forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching order list.");
+        }
     }
 
     /**
@@ -78,22 +98,7 @@ public class DeleteOrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
-        try {
-            String orderID = request.getParameter("id");
-            int id = Integer.parseInt(orderID);
-                    System.out.println(id);
-           
-            orderDAO.restoreProductStockByOrderID(id);
-            orderDAO.deleteOrderProductByOrderID(id);
-             orderDAO.cancelOrderByOrderID(id);
-            
-       
-        } catch (SQLException ex) {
-            Logger.getLogger(DeleteOrderController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        response.sendRedirect("OrderListController");
-
+        processRequest(request, response);
     }
 
     /**

@@ -75,15 +75,22 @@ public class OrderController extends HttpServlet {
                 return;
             }
 
-            VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
-            request.setAttribute("listVoucher", listVoucher);
-
             double subtotal = 0;
             for (CartItem item : cartItems) {
-                subtotal += item.getPriceWithQuantity().doubleValue();
+                subtotal += item.getPriceWithQuantity().doubleValue() * item.getQuantity();
             }
 
+            VoucherDAO vDao = new VoucherDAO();
+            List<Voucher> listVoucher = vDao.getListVoucher();
+            List<Voucher> validVouchers = new ArrayList<>();
+
+            for (Voucher voucher : listVoucher) {
+                if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
+                    validVouchers.add(voucher);
+                }
+            }
+
+            request.setAttribute("listVoucher", validVouchers);
             Account account = (Account) session.getAttribute("account");
             if (account != null) {
                 request.setAttribute("fullName", account.getUsername());
@@ -117,12 +124,21 @@ public class OrderController extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
-            request.setAttribute("listVoucher", listVoucher);
 
             int sum = (int) (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
+            VoucherDAO vDao = new VoucherDAO();
+            List<Voucher> listVoucher = vDao.getListVoucher();
+            List<Voucher> validVouchers = new ArrayList<>();
+
+            for (Voucher voucher : listVoucher) {
+                if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
+                    validVouchers.add(voucher);
+                }
+            }
+
+            request.setAttribute("listVoucher", validVouchers);
+
             cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
@@ -158,6 +174,7 @@ public class OrderController extends HttpServlet {
         int subtotal = 0;
         for (CartItem item : cartItems) {
             subtotal += item.getPriceWithQuantity().doubleValue();
+
         }
 
         if ("1".equals(request.getParameter("shippingOption"))) {
@@ -175,9 +192,17 @@ public class OrderController extends HttpServlet {
             try {
                 int tempVoucherID = Integer.parseInt(voucherIDParam);
                 Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
-                if (voucher != null && voucher.isIsActive() && subtotal >= voucher.getMinimumPurchaseAmount()) {
+                if (voucher.getQuantity() > 0) {
+                    voucher.setQuantity(voucher.getQuantity() - 1);
+                } else {
+                    System.out.println("Voucher hết số lượng!");
+                    voucherID = null;
+                }
+
+                if ( voucher.isIsActive() && subtotal >= voucher.getMinimumPurchaseAmount()) {
                     subtotal -= voucher.getVoucherValue();
                     voucherID = tempVoucherID; // Chỉ gán khi voucher hợp lệ
+                    voucher.setQuantity(voucher.getQuantity() - 1);
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid voucher ID format: " + voucherIDParam);

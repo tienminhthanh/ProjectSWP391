@@ -170,8 +170,10 @@
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
-                                    <span class="product-price">${item.priceWithQuantity} VND</span>
+                                    <span class="product-price"> ${item.priceWithQuantity} VND</span><br>
+
                                 </div>
+                                <span clas="product-quantity">Quantity: ${item.quantity}</span>
                                 <hr>
                             </c:forEach>
                         </div>
@@ -181,11 +183,12 @@
                                     <div class="price-item">
                                         <p>Subtotal: <span id="subtotal">${priceWithQuantity}</span> VND</p>
                                     </div> 
-                                    <div class="price-item">
-                                        <p>Discount: <span id="discount">0</span> VND</p>
-                                    </div>
+
                                     <div class="price-item">
                                         <p>Shipping Fee: <span id="shippingFee">50,000</span> VND</p>
+                                    </div>
+                                    <div class="price-item">
+                                        <p>Discount: <span id="discount">0</span> VND</p>
                                     </div>
                                     <div class="price-item">
                                         <p>Total: <span id="totalAmount">${orderTotalAmount}</span> VND</p>

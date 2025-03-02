@@ -14,8 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import model.Account;
 import model.OrderInfo;
 
@@ -23,8 +22,8 @@ import model.OrderInfo;
  *
  * @author Macbook
  */
-@WebServlet(name = "DeleteOrderContronller", urlPatterns = {"/DeleteOrderController"})
-public class DeleteOrderController extends HttpServlet {
+@WebServlet(name = "OrderDetailForShipperController", urlPatterns = {"/OrderDetailForShipperController"})
+public class OrderDetailForShipperController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +42,10 @@ public class DeleteOrderController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteOrderContronller</title>");
+            out.println("<title>Servlet OrderDetailForShipper</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteOrderContronller at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet OrderDetailForShipper at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,6 +63,23 @@ public class DeleteOrderController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        OrderDAO orderDAO = new OrderDAO();
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        try {
+            String orderID = request.getParameter("id");
+            OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
+            Account acc = orderDAO.getAccountByShipperIDAndOrderID(Integer.parseInt(orderID), account.getAccountID());
+
+         
+            request.setAttribute("acc", acc);
+            request.setAttribute("orderInfo", orderInfo); 
+            // Chuyển hướng đến OrderListView.jsp
+            request.getRequestDispatcher("OrderDetailForShipper.jsp").forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching order list.");
+        }
         processRequest(request, response);
     }
 
@@ -78,22 +94,7 @@ public class DeleteOrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
-        try {
-            String orderID = request.getParameter("id");
-            int id = Integer.parseInt(orderID);
-                    System.out.println(id);
-           
-            orderDAO.restoreProductStockByOrderID(id);
-            orderDAO.deleteOrderProductByOrderID(id);
-             orderDAO.cancelOrderByOrderID(id);
-            
-       
-        } catch (SQLException ex) {
-            Logger.getLogger(DeleteOrderController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        response.sendRedirect("OrderListController");
-
+        processRequest(request, response);
     }
 
     /**
