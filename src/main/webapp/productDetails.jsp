@@ -10,6 +10,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><c:out value="${product.productName} - ${product.specificCategory.categoryName} - WIBOOKS"/></title>
+
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 

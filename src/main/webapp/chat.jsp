@@ -4,6 +4,9 @@
 
 
 <style>
+    .chat-button{
+        z-index: 10;
+    }
     .chat-container {
         width: 65%;
         height: 70%;
@@ -30,7 +33,7 @@
     }
 </style>
 <!-- Chat Button -->
-<div class="fixed bottom-4 right-4">
+<div class="fixed bottom-4 right-4 chat-button">
     <button id="chatButton" class="bg-yellow-500 text-white p-2 rounded-full shadow-lg">
         <i class="fas fa-comments"></i>
         <span class="ml-1">Chat</span>

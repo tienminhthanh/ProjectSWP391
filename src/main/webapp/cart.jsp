@@ -27,11 +27,11 @@
                 height: auto;
             }
 
-                        @media (max-width: 768px) {
-                            .logo img {
-                                max-width: 140px;
-                            }
-                        }
+            @media (max-width: 768px) {
+                .logo img {
+                    max-width: 140px;
+                }
+            }
 
             .items-in-cart {
                 text-align: center;

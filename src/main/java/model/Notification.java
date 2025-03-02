@@ -11,6 +11,7 @@ import java.sql.Date;
  * @author ADMIN
  */
 public class Notification {
+
     private int notificationID;
     private int senderID;
     private int receiverID;
@@ -18,12 +19,9 @@ public class Notification {
     private Date dateCreated;
     private boolean isDeleted;
     private String notificationTitle;
-    private boolean ísRead;
+    private boolean isRead;
 
-    public Notification() {
-    }
-
-    public Notification(int notificationID, int senderID, int receiverID, String notificationDetails, Date dateCreated, boolean isDeleted, String notificationTitle, boolean ísRead) {
+    public Notification(int notificationID, int senderID, int receiverID, String notificationDetails, Date dateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
         this.notificationID = notificationID;
         this.senderID = senderID;
         this.receiverID = receiverID;
@@ -31,7 +29,17 @@ public class Notification {
         this.dateCreated = dateCreated;
         this.isDeleted = isDeleted;
         this.notificationTitle = notificationTitle;
-        this.ísRead = ísRead;
+        this.isRead = isRead;
+    }
+
+    public Notification() {
+    }
+
+    public Notification(int notificationID, String notificationTitle, String notificationDetails, Date dateCreated) {
+        this.notificationID = notificationID;
+        this.notificationDetails = notificationDetails;
+        this.dateCreated = dateCreated;
+        this.notificationTitle = notificationTitle;
     }
 
     public int getNotificationID() {
@@ -74,11 +82,11 @@ public class Notification {
         this.dateCreated = dateCreated;
     }
 
-    public boolean isIsDeleted() {
+    public boolean isDeleted() {
         return isDeleted;
     }
 
-    public void setIsDeleted(boolean isDeleted) {
+    public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
@@ -90,11 +98,11 @@ public class Notification {
         this.notificationTitle = notificationTitle;
     }
 
-    public boolean isÍsRead() {
-        return ísRead;
+    public boolean isRead() {
+        return isRead;
     }
 
-    public void setÍsRead(boolean ísRead) {
-        this.ísRead = ísRead;
+    public void setRead(boolean isRead) {
+        this.isRead = isRead;
     }
 }

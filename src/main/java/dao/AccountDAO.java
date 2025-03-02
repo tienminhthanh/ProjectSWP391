@@ -39,20 +39,20 @@ public class AccountDAO {
         }
 
         String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
         Object[] params = {username, password, role, firstName, lastName, email, phoneNumber, birthDate};
         return context.exeNonQuery(sql, params) > 0;
     }
 
     /**
-     * Kiểm tra xem email đã tồn tại chưa
-     * Nếu `username` null => kiểm tra email trong toàn bộ hệ thống (cho đăng ký)
-     * Nếu `username` không null => kiểm tra email trừ tài khoản của chính user đó (cho cập nhật)
+     * Kiểm tra xem email đã tồn tại chưa Nếu `username` null => kiểm tra email
+     * trong toàn bộ hệ thống (cho đăng ký) Nếu `username` không null => kiểm
+     * tra email trừ tài khoản của chính user đó (cho cập nhật)
      */
     public boolean isEmailExist(String email, String username) throws SQLException {
-        String sql = username == null ? 
-                     "SELECT 1 FROM Account WHERE email = ?" :
-                     "SELECT 1 FROM Account WHERE email = ? AND username != ?";
+        String sql = username == null
+                ? "SELECT 1 FROM Account WHERE email = ?"
+                : "SELECT 1 FROM Account WHERE email = ? AND username != ?";
         Object[] params = username == null ? new Object[]{email} : new Object[]{email, username};
         ResultSet rs = context.exeQuery(sql, params);
         return rs.next();
@@ -90,20 +90,38 @@ public class AccountDAO {
         return false;  // No other user has this email
     }
 
-
     public boolean updateAccount(String username, String firstName, String lastName, String email, String phoneNumber, String birthDate, String role) throws SQLException {
         StringBuilder sql = new StringBuilder("UPDATE Account SET ");
         List<Object> params = new ArrayList<>();
 
-        if (firstName != null) { sql.append("firstName = ?, "); params.add(firstName); }
-        if (lastName != null) { sql.append("lastName = ?, "); params.add(lastName); }
-        if (email != null) { sql.append("email = ?, "); params.add(email); }
-        if (phoneNumber != null) { sql.append("phoneNumber = ?, "); params.add(phoneNumber); }
-        if (birthDate != null) { sql.append("birthDate = ?, "); params.add(birthDate); }
-        if (role != null) { sql.append("role = ?, "); params.add(role); }
+        if (firstName != null) {
+            sql.append("firstName = ?, ");
+            params.add(firstName);
+        }
+        if (lastName != null) {
+            sql.append("lastName = ?, ");
+            params.add(lastName);
+        }
+        if (email != null) {
+            sql.append("email = ?, ");
+            params.add(email);
+        }
+        if (phoneNumber != null) {
+            sql.append("phoneNumber = ?, ");
+            params.add(phoneNumber);
+        }
+        if (birthDate != null) {
+            sql.append("birthDate = ?, ");
+            params.add(birthDate);
+        }
+        if (role != null) {
+            sql.append("role = ?, ");
+            params.add(role);
+        }
 
-        if (params.isEmpty()) return false; // Không có gì để cập nhật
-
+        if (params.isEmpty()) {
+            return false; // Không có gì để cập nhật
+        }
         sql.setLength(sql.length() - 2); // Xóa dấu ", " cuối cùng
         sql.append(" WHERE username = ? AND isActive = 1");
         params.add(username);
@@ -140,5 +158,31 @@ public class AccountDAO {
                 rs.getString("birthDate"),
                 rs.getBoolean("isActive")
         );
+    }
+
+    public List<Account> getAllCustomers() throws SQLException {
+        String sql = "SELECT * FROM Account WHERE role = 'customer' AND isActive = 1";
+        ResultSet rs = context.exeQuery(sql, new Object[]{});
+        List<Account> customers = new ArrayList<>();
+
+        try {
+            while (rs.next()) {
+                Account account = new Account();
+                account.setAccountID(rs.getInt("accountID"));
+                account.setUsername(rs.getString("username"));
+                account.setPassword(rs.getString("password"));
+                account.setRole(rs.getString("role"));
+                account.setFirstName(rs.getString("firstName"));
+                account.setLastName(rs.getString("lastName"));
+                account.setEmail(rs.getString("email"));
+                account.setPhoneNumber(rs.getString("phoneNumber"));
+                account.setBirthDate(rs.getString("birthDate"));
+                account.setIsActive(rs.getBoolean("isActive"));
+                customers.add(account);
+            }
+        } finally {
+            rs.close();
+        }
+        return customers;
     }
 }

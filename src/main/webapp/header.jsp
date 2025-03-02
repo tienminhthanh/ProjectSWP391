@@ -30,7 +30,7 @@
                 </form>
             </div>
 
-            <!--Hide this shit on mobile view bro-->
+            <!--Hide this shit on mobile view bro -->
             <nav> 
                 <ul>
                     <li><a href="#">Manga</a></li>
@@ -43,9 +43,10 @@
 
         <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
             <div class="customer-icons">
+                
 
                 <!--Notification button-->
-                <a href="notification.jsp">
+                <a href="notification?action=list&receiverID=${sessionScope.account.accountID}">
                     <i class="fa-regular fa-bell"></i>
                 </a>
 
