@@ -177,7 +177,7 @@
                                 </div>
 
                                 <!--Description-->
-                                
+
                                 <div class="description-area text-md leading-loose mb-4 block desc-common">
                                     <h3 class="description-title text-lg">Description</h3>
 
@@ -192,35 +192,72 @@
                                 <!--Details-->
                                 <div class="details-area text-sm w-full mb-4">
                                     <h3 class="description-title text-lg">Product Details</h3>
-                                    <table class="m-2">
-                                        <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                        <c:if test="${not empty creatorMap.author}">
-                                            <tr><td>Author</td><td>${creatorMap.author.creatorName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty creatorMap.artist}">
-                                            <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty creatorMap.sculptor}">
-                                            <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
-                                        </c:if>
-                                        <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
-                                        <tr>
-                                            <td>Genre</td>
-                                            <td>
-                                                <c:forEach var= "genre" items="${genreList}" varStatus="loopStatus">
-                                                    ${genre.genreName}
-                                                    <c:if test="${!loopStatus.last}">, </c:if>
-                                                </c:forEach>
-                                            </td>
-                                        </tr>
-                                        <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
-                                        <c:if test="${not empty product.duration}">
-                                            <tr><td>Duration</td><td>${product.duration}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty ranking}">
-                                            <tr><td>Ranking</td><td>${ranking}</td></tr>
-                                        </c:if>
-                                    </table>
+                                    <c:choose>
+                                        <c:when test="${type=='book'}">
+                                            <table class="m-2">
+                                                <tr><td>Title</td><td>${product.productName}</td></tr>
+                                                <c:if test="${not empty creatorMap.author}">
+                                                    <tr><td>Author</td><td>${creatorMap.author.creatorName}</td></tr>
+                                                </c:if>
+                                                <c:if test="${not empty creatorMap.artist}">
+                                                    <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
+                                                </c:if>
+                                                <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
+                                                <tr>
+                                                    <td>Genre</td>
+                                                    <td>
+                                                        ${product.specificCategory.categoryName}, 
+                                                        <c:forEach var= "genre" items="${genreList}" varStatus="loopStatus">
+                                                            ${genre.genreName}
+                                                            <c:if test="${!loopStatus.last}">, </c:if>
+                                                        </c:forEach>
+                                                    </td>
+                                                </tr>
+                                                <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
+                                                <c:if test="${not empty product.duration}">
+                                                    <tr><td>Duration</td><td>${product.duration}</td></tr>
+                                                </c:if>
+                                                <c:if test="${not empty ranking}">
+                                                    <tr><td>Ranking</td><td>${ranking}</td></tr>
+                                                </c:if>
+                                            </table>
+                                        </c:when>
+                                        
+                                        <c:when test= "${type=='merch'}">
+                                            <table class="m-2">
+                                                <tr><td>Product Name</td><td>${product.productName}</td></tr>
+                                                 <c:if test="${not empty creatorMap.sculptor}">
+                                                    <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
+                                                </c:if>
+                                                <c:if test="${not empty creatorMap.artist}">
+                                                    <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
+                                                </c:if>
+                                                <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
+                                                <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
+                                                <tr><td>Character</td><td>${product.character.characterName}</td></tr>
+                                                
+                                                
+                                                <tr>
+                                                    <td>Specification</td>
+                                                    <td>
+                                                        <ul>
+                                                            <li>Category: ${product.specificCategory.categoryName}</li>
+                                                            <li>Scale level: ${product.scaleLevel}</li>
+                                                            <li>Size: ${product.size}</li>
+                                                            <li>Material: ${product.material}</li>
+                                                        </ul>
+                                                        
+                                                    </td>
+                                                </tr>
+                                                
+                                                
+                                                <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
+                                                <c:if test="${not empty ranking}">
+                                                    <tr><td>Ranking</td><td>${ranking}</td></tr>
+                                                </c:if>
+                                            </table>
+                                        </c:when>
+                                    </c:choose>
                                 </div>
 
                             </div>
@@ -282,7 +319,7 @@
                     purchase.classList.add('md:w-1/3');
 
                 }
-                
+
 //                if (type === 'book') {
 //                    overview.classList.add('md:w-2/3');
 //                    purchase.classList.add('md:w-1/3');
