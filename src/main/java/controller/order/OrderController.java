@@ -196,6 +196,7 @@ public class OrderController extends HttpServlet {
                 if (voucher != null && voucher.isIsActive() && subtotal >= voucher.getMinimumPurchaseAmount()) {
                     subtotal -= voucher.getVoucherValue();
                     voucherID = tempVoucherID; // Chỉ gán khi voucher hợp lệ
+                  voucher.setQuantity(voucher.getQuantity()-1);
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid voucher ID format: " + voucherIDParam);

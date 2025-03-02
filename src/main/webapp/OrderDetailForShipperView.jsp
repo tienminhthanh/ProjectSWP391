@@ -1,5 +1,5 @@
 <%-- 
-    Document   : dashboardShipper
+    Document   : OrderDetailForShipper
     Created on : 27 Feb 2025, 11:14:28
     Author     : Admin
 --%>
@@ -71,7 +71,10 @@
                             <th class="py-2">Số lượng</th>
                             <th class="py-2">Đơn vị</th>
                             <th class="py-2">Đơn giá</th>
-                            <th class="py-2">Thành tiền</th>
+                              <th class="py-2">Sản phẩm</th>
+                            <th class="py-2">Mô tả</th>
+                            <th class="py-2">Số lượng</th>
+                            <th class <th class="py-2">Thành tiền</th>
                         </tr>
                     </thead>
                     <tbody>

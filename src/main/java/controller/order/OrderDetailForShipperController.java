@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.List;
 import model.Account;
 import model.OrderInfo;
 
@@ -68,8 +69,11 @@ public class OrderDetailForShipperController extends HttpServlet {
         try {
             String orderID = request.getParameter("id");
             OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
-            request.setAttribute("orderInfo", orderInfo); // Đặt dữ liệu vào requestScope
+            Account acc = orderDAO.getAccountByShipperIDAndOrderID(Integer.parseInt(orderID), account.getAccountID());
 
+         
+            request.setAttribute("acc", acc);
+            request.setAttribute("orderInfo", orderInfo); 
             // Chuyển hướng đến OrderListView.jsp
             request.getRequestDispatcher("OrderDetailForShipper.jsp").forward(request, response);
         } catch (SQLException e) {

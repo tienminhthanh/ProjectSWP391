@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import model.Account;
 import model.OrderInfo;
@@ -68,12 +69,18 @@ public class OrderListForShipperController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
 
         try {
-
             List<OrderInfo> orderList = orderDAO.getOrdersByShipperID(account.getAccountID());
+            List<Account> accountList = new ArrayList<>();
+        // Duyệt qua từng đơn hàng để lấy thông tin khách hàng
+            for (OrderInfo order : orderList) {
+                Account acc = orderDAO.getAccountByShipperIDAndOrderID(order.getOrderID(), account.getAccountID());
+                if (acc != null) {
+                    accountList.add(acc); // Chỉ thêm nếu không null
+                }
+            }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
-
-            // Chuyển hướng đến DeliveryViewOfShipperView.jsp
-            request.getRequestDispatcher("DeliveryViewOfShipperView.jsp").forward(request, response);
+            request.setAttribute("accountList", accountList);
+            request.getRequestDispatcher("OrderListForShipperView.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching order list.");

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
@@ -187,6 +188,42 @@ public class OrderDAO {
             }
         }
         return orderList;
+    }
+
+    public Account getAccountByShipperIDAndOrderID(int orderID, int shipperID) throws SQLException {
+        String sql = "SELECT \n"
+                + "    a.accountID,\n"
+                + "    a.username,\n"
+                + "    a.firstName , a.lastName ,\n"
+                + "    a.email,\n"
+                + "    a.phoneNumber,\n"
+                + "    a.birthDate,\n"
+                + "    a.role,\n"
+                + "    a.isActive,\n"
+                + "    a.dateAdded\n"
+                + "FROM Account a\n"
+                + "JOIN Customer c ON a.accountID = c.customerID\n"
+                + "JOIN OrderInfo o ON c.customerID = o.customerID\n"
+                + "WHERE o.shipperID = ? AND o.orderID = ?;";
+
+        Object[] params = {shipperID, orderID};
+
+        try ( ResultSet rs = context.exeQuery(sql, params)) {
+            if (rs.next()) {
+                Account acc = new Account();
+                acc.setAccountID(rs.getInt("accountID"));
+                acc.setUsername(rs.getString("username"));
+                acc.setFirstName(rs.getString("firstName"));
+                acc.setLastName(rs.getString("lastName"));
+                acc.setEmail(rs.getString("email"));
+                acc.setPhoneNumber(rs.getString("phoneNumber"));
+                acc.setBirthDate(rs.getDate("birthDate") != null ? rs.getDate("birthDate").toString() : null);
+                acc.setRole(rs.getString("role"));
+                acc.setIsActive(rs.getBoolean("isActive"));
+                return acc;
+            }
+        }
+        return null; // Trả về null nếu không có dữ liệu
     }
 
 //lay gia tri vocher de dua vao orderdeatil

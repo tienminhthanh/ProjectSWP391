@@ -58,7 +58,7 @@ public class LoginServlet extends HttpServlet {
                                 response.sendRedirect("dashboard.jsp");
                                 break;
                             case "shipper":
-                                response.sendRedirect("DeliveryViewOfShipperView.jsp");
+                                response.sendRedirect("OrderListForShipperController");
                                 break;
                             default:
                                 session.invalidate();
