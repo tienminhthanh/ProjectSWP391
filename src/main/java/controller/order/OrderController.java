@@ -124,7 +124,7 @@ public class OrderController extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
             int sum = (int) (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
@@ -139,7 +139,7 @@ public class OrderController extends HttpServlet {
 
             request.setAttribute("listVoucher", validVouchers);
 
-            cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
+            cartItems.add(new CartItem(account.getAccountID(), product, 1, subtotal));
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
             session.setAttribute("cartItems", cartItems);
@@ -173,7 +173,7 @@ public class OrderController extends HttpServlet {
 
         int subtotal = 0;
         for (CartItem item : cartItems) {
-            subtotal += item.getPriceWithQuantity().doubleValue();
+            subtotal += item.getPriceWithQuantity().doubleValue()* item.getQuantity();
 
         }
 
@@ -192,14 +192,9 @@ public class OrderController extends HttpServlet {
             try {
                 int tempVoucherID = Integer.parseInt(voucherIDParam);
                 Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
-                if (voucher.getQuantity() > 0) {
-                    voucher.setQuantity(voucher.getQuantity() - 1);
-                } else {
-                    System.out.println("Voucher hết số lượng!");
-                    voucherID = null;
-                }
+               
 
-                if ( voucher.isIsActive() && subtotal >= voucher.getMinimumPurchaseAmount()) {
+                if (voucherID!=null &&  voucher.isIsActive() && subtotal >= voucher.getMinimumPurchaseAmount()) {
                     subtotal -= voucher.getVoucherValue();
                     voucherID = tempVoucherID; // Chỉ gán khi voucher hợp lệ
                     voucher.setQuantity(voucher.getQuantity() - 1);
