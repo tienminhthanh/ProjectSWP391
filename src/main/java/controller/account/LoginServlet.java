@@ -27,9 +27,12 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        AccountLib lib= new AccountLib();
+        
         String username = request.getParameter("username");
-        String password = hashMD5(request.getParameter("password"));
+        String password = lib.hashMD5(request.getParameter("password"));
         String currentURL = request.getParameter("currentURL");
+
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
@@ -38,11 +41,11 @@ public class LoginServlet extends HttpServlet {
                     if (account.getPassword().equals(password)) {
                         HttpSession session = request.getSession();
                         session.setAttribute("account", account);
-                        session.setMaxInactiveInterval(30 * 60); // 30 phút
+                        session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
                         switch (account.getRole()) {
                             case "admin":
-                                response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                                response.sendRedirect("listAccount"); // Redirect to account list page
                                 break;
                             case "customer":
                                 if (currentURL == null || currentURL.isEmpty()) {
@@ -55,25 +58,25 @@ public class LoginServlet extends HttpServlet {
                                 response.sendRedirect("dashboard.jsp");
                                 break;
                             case "shipper":
-                                response.sendRedirect("shipperDashboard.jsp");
+                                response.sendRedirect("DeliveryViewOfShipperView.jsp");
                                 break;
                             default:
                                 session.invalidate();
                                 request.setAttribute("errorMessage", "Invalid access!");
-                                request.getRequestDispatcher("login.jsp").forward(request, response);
+                                forwardToLoginPage(request, response, username); // Forward with data
                                 break;
                         }
                     } else {
                         request.setAttribute("errorMessage", "Wrong password!");
-                        request.getRequestDispatcher("login.jsp").forward(request, response);
+                        forwardToLoginPage(request, response, username); // Forward with data
                     }
                 } else {
                     request.setAttribute("errorMessage", "Your account is deactivated or locked!");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    forwardToLoginPage(request, response, username); // Forward with data
                 }
             } else {
                 request.setAttribute("errorMessage", "Account not found!");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                forwardToLoginPage(request, response, username); // Forward with data
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,10 +94,10 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("dashboard.jsp");
                     break;
                 case "shipper":
-                    response.sendRedirect("shipperDashboard.jsp");
+                    response.sendRedirect("dashboardShipper.jsp");
                     break;
                 case "admin":
-                    response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                    response.sendRedirect("listAccount"); // Redirect to account list
                     break;
                 case "customer":
                 default:
@@ -109,19 +112,12 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-  
-    public  String hashMD5(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] inputBytes = input.getBytes(StandardCharsets.UTF_16LE);
-            byte[] hashBytes = md.digest(inputBytes);
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                hexString.append(String.format("%02X", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Lỗi khi mã hóa MD5", e);
-        }
+    
+
+    // Helper method to forward to login page and keep entered data
+    private void forwardToLoginPage(HttpServletRequest request, HttpServletResponse response, String username)
+            throws ServletException, IOException {
+        request.setAttribute("username", username);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }

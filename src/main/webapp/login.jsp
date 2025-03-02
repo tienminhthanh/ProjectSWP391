@@ -26,8 +26,8 @@
                     <div class="w-full md:w-1/2 md:pr-4 mb-6 md:mb-0">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with your username</h2>
                         <form action="login" method="post">
-                            <input type="hidden" name="currentURL" value="${fn:escapeXml(requestScope.currentURL)}">
-                            
+                            <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
+
                             <!-- Username -->
                             <div class="mb-4">
                                 <label class="sr-only" for="username">Username</label>
@@ -57,19 +57,22 @@
                             <c:if test="${not empty errorMessage}">
                                 <p class="text-red-600 text-center mt-4">${errorMessage}</p>
                             </c:if>
+                            <c:if test="${not empty message}">
+                                <p class="text-green-600 text-center mt-4">${message}</p>
+                            </c:if>
 
                             <div class="mt-4 text-right">
                                 <a class="text-blue-600 text-sm" href="forgotPassword.jsp">Forgot your password?</a>
                             </div>
                         </form>
                     </div>
-                    
+
                     <div class="w-full md:w-1/2 md:pl-4">
                         <h2 class="text-lg font-semibold mb-4">Sign-in with below accounts</h2>
                         <div class="space-y-4">
-                            <button class="w-full bg-red-600 text-white p-3 rounded flex items-center justify-center hover:bg-red-700">
+                            <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/loginGoogle&response_type=code&client_id=103840178226-4ev8f05cv55sr4l86jchjtvfd5hvscjb.apps.googleusercontent.com&approval_prompt=force" class="w-full bg-red-600 text-white p-3 rounded flex items-center justify-center hover:bg-red-700">
                                 <i class="fab fa-google mr-2"></i> Login with Google
-                            </button>
+                            </a>
                             <button class="w-full bg-black text-white p-3 rounded flex items-center justify-center hover:bg-gray-800">
                                 <i class="fab fa-apple mr-2"></i> Sign in with Apple
                             </button>

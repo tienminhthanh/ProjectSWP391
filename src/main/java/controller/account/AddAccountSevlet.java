@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 @WebServlet(name = "AddAccountServlet", urlPatterns = {"/addAccount"})
@@ -33,8 +36,10 @@ public class AddAccountSevlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        AccountLib lib = new AccountLib();
+
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String password = lib.hashMD5(request.getParameter("password"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
@@ -66,4 +71,5 @@ public class AddAccountSevlet extends HttpServlet {
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
         }
     }
+
 }

@@ -75,15 +75,24 @@ public class OrderController extends HttpServlet {
                 return;
             }
 
-            VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
-            request.setAttribute("listVoucher", listVoucher);
-
             double subtotal = 0;
             for (CartItem item : cartItems) {
-                subtotal += item.getPriceWithQuantity().doubleValue();
+                BigDecimal price = item.getPriceWithQuantity().abs();
+                BigDecimal quantity = new BigDecimal(item.getQuantity()); // Chuyển `quantity` thành BigDecimal
+                subtotal += price.multiply(quantity).doubleValue();
             }
 
+            VoucherDAO vDao = new VoucherDAO();
+            List<Voucher> listVoucher = vDao.getListVoucher();
+            List<Voucher> validVouchers = new ArrayList<>();
+
+            for (Voucher voucher : listVoucher) {
+                if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
+                    validVouchers.add(voucher);
+                }
+            }
+
+            request.setAttribute("listVoucher", validVouchers);
             Account account = (Account) session.getAttribute("account");
             if (account != null) {
                 request.setAttribute("fullName", account.getUsername());
@@ -117,12 +126,21 @@ public class OrderController extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
-            request.setAttribute("listVoucher", listVoucher);
 
             int sum = (int) (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
+            VoucherDAO vDao = new VoucherDAO();
+            List<Voucher> listVoucher = vDao.getListVoucher();
+            List<Voucher> validVouchers = new ArrayList<>();
+
+            for (Voucher voucher : listVoucher) {
+                if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
+                    validVouchers.add(voucher);
+                }
+            }
+
+            request.setAttribute("listVoucher", validVouchers);
+
             cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);

@@ -13,9 +13,11 @@
     <body class="bg-gray-100 min-h-screen flex flex-col">
 
         <!-- Header -->
-        <header class="bg-white shadow w-full">
+        <header class="bg-white shadow w-full mb-4">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png"/>
+                <a href="home.jsp">
+                    <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png" />
+                </a>
                 <div class="flex items-center space-x-4">
                     <a href="login.jsp" class="text-orange-600 font-semibold hover:underline">Login</a>
                     <a href="home.jsp" class="text-orange-600 font-semibold hover:underline">Home</a>
@@ -116,9 +118,12 @@
                     </button>
                 </form>
 
-                <!-- Display Error Message -->
+
+                <c:if test="${not empty errorMessage}">
+                    <p class="text-red-600 text-center mt-4">${errorMessage}</p>
+                </c:if>
                 <c:if test="${not empty message}">
-                    <p class="text-red-600 text-center mt-4">${message}</p>
+                    <p class="text-green-600 text-center mt-4">${message}</p>
                 </c:if>
             </div>
         </main>
@@ -130,7 +135,7 @@
             </div>
         </footer>
 
-       
+
         <script>
             function togglePassword(inputId, iconId) {
                 const input = document.getElementById(inputId);
