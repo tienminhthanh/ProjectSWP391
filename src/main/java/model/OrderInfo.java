@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class OrderInfo {
     private String deliveryAddress;
     private int deliveryOptionID;
     private int customerID;
-    private int preVoucherAmount;
+    private Double preVoucherAmount;
     private Integer voucherID;  // Đổi từ int → Integer
     private int staffID;
     private int shipperID;
@@ -46,7 +47,7 @@ public class OrderInfo {
 
     // Constructor đầy đủ
     public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, 
-                     int preVoucherAmount, Integer voucherID, int staffID, int shipperID, 
+                     Double preVoucherAmount, Integer voucherID, int staffID, int shipperID, 
                      String deliveryStatus, String orderStatus, int adminID, Date deliveredAt, 
                      String paymentMethod, int paymentExpiredTime, String paymentStatus) {
         this.orderID = orderID;
@@ -107,11 +108,11 @@ public class OrderInfo {
         this.customerID = customerID;
     }
 
-    public int getPreVoucherAmount() {
+    public Double getPreVoucherAmount() {
         return preVoucherAmount;
     }
 
-    public void setPreVoucherAmount(int preVoucherAmount) {
+    public void setPreVoucherAmount(Double preVoucherAmount) {
         this.preVoucherAmount = preVoucherAmount;
     }
 

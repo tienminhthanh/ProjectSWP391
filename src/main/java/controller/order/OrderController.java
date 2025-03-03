@@ -75,7 +75,7 @@ public class OrderController extends HttpServlet {
                 return;
             }
 
-            double subtotal = 0;
+            double subtotal = 0.0;
             for (CartItem item : cartItems) {
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 item.setPriceWithQuantity(priceWithQuantity);
@@ -128,7 +128,7 @@ public class OrderController extends HttpServlet {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            int sum = (int) (product.getPrice() * quantity);
+            Double sum =  (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
@@ -174,8 +174,8 @@ public class OrderController extends HttpServlet {
             return;
         }
 
-        int subtotal = 0;
-        int preOrderPrice = 0;
+        Double subtotal = 0.0;
+        Double preOrderPrice = 0.0;
         for (CartItem item : cartItems) {
             subtotal += item.getPriceWithQuantity().doubleValue();
             preOrderPrice = subtotal;

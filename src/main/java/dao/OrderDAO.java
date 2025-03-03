@@ -284,7 +284,7 @@ public class OrderDAO {
                 rs.getString("deliveryAddress"),
                 rs.getInt("deliveryOptionID"),
                 rs.getInt("customerID"),
-                rs.getInt("preVoucherAmount"),
+                rs.getDouble("preVoucherAmount"),
                 rs.getInt("voucherID"),
                 rs.getInt("staffID"),
                 rs.getInt("shipperID"),
