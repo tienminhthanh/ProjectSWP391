@@ -503,6 +503,15 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
+    public boolean updateTotalDeliveries(int shipperID) throws SQLException {
+        String sql = "UPDATE Shipper \n"
+                + "SET totalDeliveries = totalDeliveries + 1 \n"
+                + "WHERE shipperID = ?;";
+        Object[] params = {shipperID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
+//
     public void restoreProductStockByOrderID(int orderID) throws SQLException {
         // Lấy dữ liệu từ Order_Product, nhưng không ép kiểu trực tiếp
         String selectSQL = "SELECT productID, quantity FROM Order_Product WHERE orderID = ?";
