@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.CartItem;
+import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
 import model.Product;
@@ -70,9 +71,18 @@ public class OrderController extends HttpServlet {
 
         if ("checkOut".equals(action)) {
             List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
+
             if (cartItems == null || cartItems.isEmpty()) {
                 response.sendRedirect("home");
                 return;
+            }
+            List<DeliveryOption> deliveryOptions = new ArrayList<>();
+
+            try {
+                OrderDAO OrderDAO = new OrderDAO();
+                deliveryOptions = OrderDAO.getAllDeliveryOptions();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
             double subtotal = 0.0;
@@ -100,7 +110,7 @@ public class OrderController extends HttpServlet {
                 request.setAttribute("phone", account.getPhoneNumber());
                 request.setAttribute("email", account.getEmail());
             }
-
+            request.setAttribute("deliveryOptions", deliveryOptions);
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
         } else if ("buyNow".equals(action)) {
@@ -127,8 +137,15 @@ public class OrderController extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
+            List<DeliveryOption> deliveryOptions = new ArrayList<>();
 
-            Double sum =  (product.getPrice() * quantity);
+            try {
+                OrderDAO OrderDAO = new OrderDAO();
+                deliveryOptions = OrderDAO.getAllDeliveryOptions();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            Double sum = (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
@@ -146,6 +163,8 @@ public class OrderController extends HttpServlet {
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
             session.setAttribute("cartItems", cartItems);
+            request.setAttribute("deliveryOptions", deliveryOptions);
+
         }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("OrderSummaryView.jsp");
@@ -181,11 +200,21 @@ public class OrderController extends HttpServlet {
             preOrderPrice = subtotal;
 
         }
+        OrderDAO orderDAO = new OrderDAO();
+        String deliveryOptionID = request.getParameter("shippingOption");
 
-        if ("1".equals(request.getParameter("shippingOption"))) {
-            subtotal += 50000;
-        } else {
-            subtotal += 30000;
+        if (deliveryOptionID != null) {
+            try {
+                int ID = Integer.parseInt(deliveryOptionID);
+                DeliveryOption delivery = orderDAO.getDeliveryOption(ID);
+                if (delivery != null && delivery.getDeliveryOptionID() == ID) {
+                    subtotal += delivery.getOptionCost(); // Cộng phí giao hàng vào tổng tiền
+                } else {
+                    System.out.println("Không tìm thấy phương thức giao hàng với ID: " + ID);
+                }
+            } catch (SQLException | NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
         String voucherIDParam = request.getParameter("voucherID");
@@ -194,7 +223,7 @@ public class OrderController extends HttpServlet {
 
         Integer voucherID = null; // Mặc định là null nếu không chọn voucher
 
-        if (tempVoucherID >0 && !voucherIDParam.trim().isEmpty()) {
+        if (tempVoucherID > 0 && !voucherIDParam.trim().isEmpty()) {
             try {
 
                 Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
@@ -227,7 +256,6 @@ public class OrderController extends HttpServlet {
             }
             orderInfo.setOrderProductList(orderProductList);
 
-            OrderDAO orderDAO = new OrderDAO();
             orderDAO.insertOrderInfo(orderInfo);
             session.removeAttribute("cartItems");
             response.sendRedirect("OrderListController");

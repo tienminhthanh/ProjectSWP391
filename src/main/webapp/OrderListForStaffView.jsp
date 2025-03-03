@@ -172,9 +172,7 @@
             <!-- Main Content -->
             <div class="flex-1 p-6 overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-semibold">
-                        Order List
-                    </h1>
+
                     <div class="flex items-center space-x-4">
                         <button class="bg-orange-500 text-white px-4 py-2 rounded">
                             + Add Chart
@@ -192,86 +190,80 @@
 
                     </div>
                 </div>
-                <!-- Lặp danh sách đơn hàng -->
-                <div class="card">
-                    <div class="order-info">
-                        <div class="order-details">
-                            <h2 class="font-semibold">Order ID: #001</h2>
-                            <p>User Name: Sample Product</p>
-                            <p>Address: 123 Main St, City</p>
-                            <p>Status: Pending</p>
-                            <p>Created Date: 2025-02-17</p>
-                            <p>Payment method: COD</p>
+                <!-- Thanh Navbar trạng thái -->
+                <div class="flex justify-between items-center mb-6 bg-white p-4 shadow rounded-lg">
+                    <h1 class="text-xl font-semibold">Order List</h1>
+                    <div class="flex space-x-4">
+                        <!-- Nút hiển thị tất cả đơn hàng -->
 
-                        </div>
-                        <div class="update-section">
-                            <!-- Update Shipper -->
-                            <div class="flex items-center mb-2">
-                                <select class="select">
-                                    <option value="" disabled selected>Choose Shipper</option>
-                                    <option value="1">Shipper A</option>
-                                    <option value="2">Shipper B</option>
-                                    <option value="3">Shipper C</option>
-                                </select>
-                                <button class="button">Update</button>
-                            </div>
+                        <p>OrderStatus</p>
+                        <a href="OrderListForStaffController" class="px-4 py-2 rounded-lg text-white
+                           ${empty param.status ? 'bg-blue-600' : 'bg-gray-400'}">All</a>
 
-                            <!-- Update Status -->
-                            <div class="flex items-center">
-                                <select class="select">
-                                    <option value="Pending">Pending</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                </select>
-                                <button class="button">Update</button>
-                            </div>
-                        </div>
+                        <a href="OrderListForStaffController?status=Pending" class="px-4 py-2 rounded-lg text-white
+                           ${param.status == 'Pending' ? 'bg-blue-600' : 'bg-gray-400'}">Pending</a>
+
+                        <a href="OrderListForStaffController?status=Shipped" class="px-4 py-2 rounded-lg text-white
+                           ${param.status == 'Shipped' ? 'bg-blue-600' : 'bg-gray-400'}">Shipped</a>
+
+                        <a href="OrderListForStaffController?status=Completed" class="px-4 py-2 rounded-lg text-white
+                           ${param.status == 'Completed' ? 'bg-blue-600' : 'bg-gray-400'}">Completed</a>
+
+                        <a href="OrderListForStaffController?status=Canceled" class="px-4 py-2 rounded-lg text-white
+                           ${param.status == 'Canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
                     </div>
-                    <a href="orderDetail?id=001" class="button mt-4">View Details</a>
                 </div>
 
+
+                <!-- Lặp danh sách đơn hàng -->         
                 <c:forEach var="order" items="${orderList}">
                     <div class="card">
                         <div class="order-info">
                             <div class="order-details">
-                                <h2 class="font-semibold">Order ID: #${order.id}</h2>
-                                <p>User Name: ${order.productName}</p>
-                                <p>Address: ${order.address}</p>
-                                <p>Status: ${order.status}</p>
-                                <p>Created Date: ${order.createdDate}</p>
-                                <p>Payment Method: ${order.createdDate}</p>
+                                <h2 class="font-semibold">Order ID: ${order.orderID}</h2>
+                                <p>User Name: ${customerMap[order.orderID].firstName} ${customerMap[order.orderID].lastName}</p>
+                                <p>Address: ${order.deliveryAddress}</p>
+                                <p>Status: ${order.orderStatus}</p>
+                                <p>Created Date: ${order.orderDate}</p>
+                                <p>Total: ${order.preVoucherAmount}</p>
+                                <p>Payment Method: ${order.paymentMethod}</p>
+                                <p>Delivery Status: ${order.deliveryStatus}</p>
+                                <p>Order Status: ${order.orderStatus}</p>
+
+
 
 
                             </div>
                             <div class="update-section">
                                 <!-- Update Shipper -->
-                                <div class="flex items-center mb-2">
-                                    <select class="select">
-                                        <option value="" disabled selected>Choose Shipper</option>
+                                <form action="OrderListForStaffController" method="POST" class="flex items-center mb-2">
+                                    <input type="hidden" name="orderID" value="${order.orderID}">
+                                    <select name="shipperID" class="select" required>
+                                        <option value="">Choose Shipper</option> <!-- Không có "disabled selected" -->
                                         <c:forEach var="shipper" items="${shipperList}">
-                                            <option value="${shipper.id}">${shipper.name}</option>
+                                            <option value="${shipper.shipperID}">${shipper.account.username} ${shipper.totalDeliveries}</option>
                                         </c:forEach>
                                     </select>
-                                    <button class="button">Update</button>
-                                </div>
 
-                                <!-- Update Status -->
-                                <div class="flex items-center">
-                                    <select class="select">
-                                        <option value="Pending">Pending</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="Cancelled">Cancelled</option>
-                                    </select>
-                                    <button class="button">Update</button>
-                                </div>
+                                    <button type="submit" class="button">Update</button>
+                                </form>
+
+
+                                <!--                                 Update Status 
+                                                                <div class="flex items-center">
+                                                                    <select class="select">
+                                                                        <option value="Pending">Pending</option>
+                                                                        <option value="In Progress">In Progress</option>
+                                                                        <option value="Completed">Completed</option>
+                                                                        <option value="Cancelled">Cancelled</option>
+                                                                    </select>
+                                                                    <button class="button">Update</button>
+                                                                </div>-->
                             </div>
                         </div>
-                        <a href="orderDetail?id=${order.id}" class="button mt-4">View Details</a>
+                        <a href="OrderDetailForStaff?id=${order.orderID}" class="button mt-4">View Details</a>
                     </div>
                 </c:forEach>
-
             </div>
         </div>
     </body>

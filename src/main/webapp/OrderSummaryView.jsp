@@ -143,10 +143,18 @@
 
                             <div class="payment-method">
                                 <h2>Delivery Method</h2>
-                                <label><input type="radio" name="shippingOption" value="1" data-cost="50000" checked/> Express Delivery (50,000 VND)</label><br>
-                                <label><input type="radio" name="shippingOption" value="2" data-cost="20000"/> Economy Delivery (20,000 VND)</label><br>  
-
+                                <c:forEach var="option" items="${deliveryOptions}">
+                                    <label>
+                                        <input type="radio" name="shippingOption" 
+                                               value="${option.deliveryOptionID}" 
+                                               data-cost="${option.optionCost}"
+                                               onclick="updateShippingCost(${option.optionCost})"
+                                               ${option.deliveryOptionID == 1 ? 'checked' : ''} />
+                                        ${option.optionName} (${option.optionCost} VND)
+                                    </label><br>
+                                </c:forEach>
                             </div> <hr>
+
 
                             <!-- Hidden fields to send shipping fee, discount, etc. -->
                             <input type="hidden" name="shippingFee" value="${optionCost}">

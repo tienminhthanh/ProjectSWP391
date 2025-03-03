@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
+
 //document.addEventListener("DOMContentLoaded", function () {
 //    let currentURLs = document.querySelectorAll(".currentURL");
 //

@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Chuyển đổi giá trị từ chuỗi thành số
     let subtotal = parseFloat(subtotalElement.innerText.replace(/,/g, "")) || 0;
     let discount = 0;
-    let shippingFee = 50000; // Mặc định Express Delivery (30,000 VND)
 
     // Hàm cập nhật tổng tiền
     function updateTotal() {
