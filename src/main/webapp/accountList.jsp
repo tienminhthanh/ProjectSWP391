@@ -13,7 +13,7 @@
     <body class="bg-gray-50 min-h-screen flex">
 
         <div class="w-64 bg-orange-400 text-white min-h-screen">
-             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
+            <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <!-- Main Content -->
@@ -80,25 +80,26 @@
                                         </c:choose>
                                     </td>
                                     <td class="px-6 py-3 border-b text-left">
-                                        <a href="updateAccount?username=${acc.username}" class="text-blue-500 hover:text-blue-700">
-                                            <i class="fas fa-edit"></i> Update
-                                        </a>
+                                        <c:if test="${acc.role != 'admin'}">
+                                            <a href="updateAccount?username=${acc.username}" class="text-blue-500 hover:text-blue-700">
+                                                <i class="fas fa-edit"></i> Update
+                                            </a>
 
-                                        <br>
+                                            <br>
 
-                                        <c:choose>
-                                            <c:when test="${acc.isActive}">
-                                                <a class="text-red-500 hover:text-red-700 mr-3 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
-                                                    <i class="fas fa-trash-alt"></i> Delete
-                                                </a>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a class="text-green-500 hover:text-green-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this account?', 'unlockAccount?username=${acc.username}')">
-                                                    <i class="fas fa-unlock"></i> Unlock
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
-
+                                            <c:choose>
+                                                <c:when test="${acc.isActive}">
+                                                    <a class="text-red-500 hover:text-red-700 mr-3 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
+                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                    </a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a class="text-green-500 hover:text-green-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this account?', 'unlockAccount?username=${acc.username}')">
+                                                        <i class="fas fa-unlock"></i> Unlock
+                                                    </a>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:if>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -113,7 +114,7 @@
             </div>
         </div>
 
-       
+
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
                                                     function confirmAction(message, url) {
@@ -133,5 +134,5 @@
                                                     }
         </script>
 
-</body>
+    </body>
 </html>

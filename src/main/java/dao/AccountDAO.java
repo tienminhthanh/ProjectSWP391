@@ -94,7 +94,7 @@ public class AccountDAO {
             params.add(firstName);
         }
         if (lastName != null) {
-            sql.append("lastName = ?, ");
+                sql.append("lastName = ?, ");
             params.add(lastName);
         }
         if (email != null) {

@@ -19,8 +19,7 @@ public class DeleteAccountServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        Account account = new Account();
-        account = (Account) session.getAttribute("account");
+        Account account = (Account) session.getAttribute("account");
 
         String username = request.getParameter("username");
         AccountDAO accountDAO = new AccountDAO();
@@ -28,6 +27,14 @@ public class DeleteAccountServlet extends HttpServlet {
         try {
             Account account2 = accountDAO.getAccountByUsername(username);
             if (account2 != null) {
+                // Check if the account to delete is an admin account
+                if ("admin".equals(account2.getRole())) {
+                    request.setAttribute("errorMessage", "Cannot deactivate admin account.");
+                    request.getRequestDispatcher("listAccount").forward(request, response);
+                    return;
+                }
+
+                // Proceed with deactivation for non-admin accounts
                 boolean success = accountDAO.updateAccountStatus(username, false);
                 if (success) {
                     if ("admin".equals(account.getRole())) {
