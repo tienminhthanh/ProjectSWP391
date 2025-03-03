@@ -132,7 +132,7 @@
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" oninput="validity.valid || (value = ${item.product.stockCount})" class="quantity-input" required/>
+                                    <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" class="quantity-input" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>

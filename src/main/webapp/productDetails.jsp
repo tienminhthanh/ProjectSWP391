@@ -135,7 +135,7 @@
                                     </div>
                                     <div class="purchase-form">
                                         <p class="stock-count">In Stock: ${product.stockCount}</p>
-                                        <input type="number" name="purchaseQuantity" id="quantityInput" value="1" min="1" oninput="validity.valid || (value = ${product.stockCount})"/>
+                                        <input type="number" name="purchaseQuantity" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
                                         <c:choose>
                                             <c:when test="${product.specialFilter == 'pre-order'}">
                                                 <form action="preorder" method="post">
@@ -184,35 +184,44 @@
 
             <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
             <script>
-                document.getElementById("quantityInput").max = "${product.stockCount}";
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                                                            let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                document.addEventListener("DOMContentLoaded", function () {
-                    let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                                                            // Loop through all hidden inputs and update their values
+                                                            hiddenInputs.forEach(function (hiddenInput) {
+                                                                hiddenInput.value = numberValue.value;
+                                                            });
 
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue.value;
-                    });
+                                                            // Optional: Display the values for verification
+                                                            let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                                                            console.log("quantity:", displayValues);
+                                                        });
 
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:", displayValues);
-                });
+                                                        document.getElementById("quantityInput").addEventListener("input", function (event) {
+                                                            const inputElement = document.getElementById("quantityInput");
+                                                            let numberValue = event.target.value; // Get the value from the number input
+                                                            let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                document.getElementById("quantityInput").addEventListener("input", function (event) {
-                    let numberValue = event.target.value; // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                                                            if (!numberValue) {
+                                                                return;
+                                                            }
+                                                            if (numberValue < 1 || numberValue > ${product.stockCount}) {
+                                                                alert("Purchase quantity must be at least 1 and at most ${product.stockCount}!");
+                                                                inputElement.value = numberValue = 1;
+                                                            }
 
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue;
-                    });
 
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:", displayValues);
-                });
+                                                            // Loop through all hidden inputs and update their values
+                                                            hiddenInputs.forEach(function (hiddenInput) {
+                                                                hiddenInput.value = numberValue;
+                                                            });
+
+                                                            // Optional: Display the values for verification
+                                                            let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                                                            console.log("quantity:", displayValues);
+                                                        });
+
             </script>
             <!--Header script-->
             <script src="js/scriptHeader.js"></script>
