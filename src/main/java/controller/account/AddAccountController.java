@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 @WebServlet(name = "AddAccountServlet", urlPatterns = {"/addAccount"})
-public class AddAccountSevlet extends HttpServlet {
+public class AddAccountController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
