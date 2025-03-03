@@ -192,15 +192,6 @@
                                                     <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
                                                 </p>
                                             </div>
-                                            <div flex-4>
-                                                <!-- Form to update notification -->
-                                                <form action="updatenotification" method="get">
-                                                    <input type="hidden" name="notificationID" value="${notification.notificationID}">
-                                                    <button type="submit" class="btn btn-secondary">
-                                                        <i class="fas fa-edit mr-1"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                     </div>
                                 </c:forEach>

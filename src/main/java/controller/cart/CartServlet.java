@@ -163,7 +163,7 @@ public class CartServlet extends HttpServlet {
             cartItemDAO.updateCartItem(updatedCartItem);
 
             // Update the item in the session list
-            for (int i = 0; i < updatedCartItem.getQuantity(); i++) {
+            for (int i = 0; i < cartItems.size(); i++) {
                 if (cartItems.get(i).getItemID() == existingCartItem.getItemID()) {
                     cartItems.set(i, updatedCartItem);
                     break;
