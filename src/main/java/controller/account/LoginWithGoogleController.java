@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet(name = "LoginWithGoogleServlet", urlPatterns = {"/loginGoogle"})
-public class LoginWithGoogleServlet extends HttpServlet {
+public class LoginWithGoogleController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,7 +39,7 @@ public class LoginWithGoogleServlet extends HttpServlet {
             accessToken = gg.getToken(code);
             googleAccount = gg.getUserInfo(accessToken);
         } catch (IOException | InterruptedException ex) {
-            Logger.getLogger(LoginWithGoogleServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginWithGoogleController.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("errorMessage", "Error during Google authentication.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
@@ -52,7 +52,7 @@ public class LoginWithGoogleServlet extends HttpServlet {
         try {
             existingAccount = accountDAO.getAccountByEmail(googleAccount.getEmail());
         } catch (SQLException ex) {
-            Logger.getLogger(LoginWithGoogleServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginWithGoogleController.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("errorMessage", "Database error while checking account.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;

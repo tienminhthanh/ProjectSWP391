@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import model.Account;
 
 @WebServlet(name = "ListAccountSevlet", urlPatterns = {"/listAccount"})
-public class ListAccountSevlet extends HttpServlet {
+public class ListAccountController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -50,7 +50,7 @@ public class ListAccountSevlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("accountList.jsp");
             dispatcher.forward(request, response);
         } catch (SQLException ex) {
-            Logger.getLogger(ListAccountSevlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ListAccountController.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("errorMessage", "An error occurred while fetching the accounts.");
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }

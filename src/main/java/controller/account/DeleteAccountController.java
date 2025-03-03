@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "DeleteAccountServlet", urlPatterns = {"/deleteAccount"})
-public class DeleteAccountServlet extends HttpServlet {
+public class DeleteAccountController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

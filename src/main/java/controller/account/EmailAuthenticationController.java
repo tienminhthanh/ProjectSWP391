@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Random;
 
 @WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
-public class EmailAuthenticationServlet extends HttpServlet {
+public class EmailAuthenticationController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
