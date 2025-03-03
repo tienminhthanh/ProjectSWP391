@@ -132,7 +132,7 @@
                 <!--Random Pick-->
                 <div class="bg-white">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center border-t-4 border-orange-300">
-                        Random Pick
+                        Lucky Books
                     </h2>
                     <!--Loop through product list-->
                     <div class="w-full">

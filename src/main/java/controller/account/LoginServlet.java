@@ -68,10 +68,10 @@ public class LoginServlet extends HttpServlet {
                                 }
                                 break;
                             case "staff":
-                                response.sendRedirect("dashboard.jsp");
+                                response.sendRedirect("listAccount");
                                 break;
                             case "shipper":
-                                response.sendRedirect("shipperDashboard.jsp");
+                                response.sendRedirect("OrderListForShipperController");
                                 break;
                             default:
                                 session.invalidate();

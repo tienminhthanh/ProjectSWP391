@@ -25,12 +25,13 @@ public class ProductDAO {
     public ProductDAO() {
         this.context = new utils.DBContext();
     }
-    
+
     /**
      * For add, update cart
+     *
      * @param productID
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public Product getProductById(int productID) throws SQLException {
         String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
@@ -44,55 +45,41 @@ public class ProductDAO {
         ResultSet rs = context.exeQuery(sql, params);
 
         if (rs.next()) {
-            // Create Category
-            Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
+            return mapResultSetToProduct(rs);
 
-            // Create and return Product object
-            return new Product(
-                    rs.getInt("productID"),
-                    rs.getString("productName"),
-                    rs.getDouble("price"),
-                    rs.getInt("stockCount"),
-                    category,
-                    rs.getString("description"),
-                    rs.getDate("releaseDate").toLocalDate(),
-                    rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
-                    rs.getDouble("averageRating"),
-                    rs.getInt("numberOfRating"),
-                    rs.getString("specialFilter"),
-                    rs.getInt("adminID"),
-                    rs.getString("keywords"),
-                    rs.getString("generalCategory"),
-                    rs.getBoolean("isActive"),
-                    rs.getString("imageURL")
-            );
         }
 
         return null;
     }
-    
+
     /**
      * For view product details
+     *
      * @param productID
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public Book getBookById(int productID) throws SQLException {
-        String sql = "SELECT\n"
+        StringBuilder sql = getCTEProductDiscount().append("SELECT\n"
                 + "P.*, C.categoryName, B.publisherID, B.duration,\n"
-                + "Pub.publisherName, EP.discountPercentage, EP.eventID, E.isActive as isActiveEvent\n"
+                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.eventDuration\n"
                 + "FROM Product AS P\n"
                 + "JOIN Book AS B ON P.productID = B.bookID\n"
+                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
                 + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
-                + "LEFT JOIN Event_Product AS EP ON P.productID = EP.productID\n"
-                + "LEFT JOIN Event AS E ON EP.eventID = E.eventID\n"
-                + "WHERE P.isActive = 1 AND P.productID = ?";
+                + "WHERE P.isActive = 1 AND P.productID = ?");
 
         Object[] params = {productID};
-        ResultSet rs = context.exeQuery(sql, params);
+        ResultSet rs = context.exeQuery(sql.toString(), params);
 
         if (rs.next()) {
+            //Get eventEndDate
+            LocalDate eventEndDate = null;
+            java.sql.Date sqlDateStarted = rs.getDate("dateStarted");
+            if (sqlDateStarted != null) {
+                eventEndDate = sqlDateStarted.toLocalDate().plusDays(rs.getInt("eventDuration"));
+            }
 
             // Create Category
             Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
@@ -119,7 +106,9 @@ public class ProductDAO {
                     rs.getString("keywords"),
                     rs.getString("generalCategory"),
                     rs.getBoolean("isActive"),
-                    rs.getString("imageURL")
+                    rs.getString("imageURL"),
+                    rs.getInt("discountPercentage"),
+                    eventEndDate
             );
         }
 
@@ -159,20 +148,44 @@ public class ProductDAO {
 
         return genreList;
     }
-    
-    public List<Product> get10RandomActiveProducts(String type) throws SQLException {
-        String sql = "SELECT top 10 P.*, C.categoryName, EP.eventID, EP.discountPercentage,\n"
-                + "E.isActive AS isActiveEvent\n"
-                + "FROM Product AS P\n"
-                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-                + "LEFT JOIN Event_Product AS EP ON P.productID = EP.productID\n"
-                + "LEFT JOIN Event AS E ON EP.eventID = E.eventID\n"
-                + "WHERE P.isActive = 1 and generalCategory = ?\n"
-                + "ORDER BY NEWID()";
 
-        Object[] params = {type};
+    public List<Product> get10RandomActiveProducts(String type) throws SQLException {
+
+        StringBuilder sql = getCTEProductDiscount();
+        if (type.equals("book")) {
+            sql.append("SELECT TOP 10 P.*, \n"
+                    + "       C.categoryName, \n"
+                    + "       PD.discountPercentage, \n"
+                    + "       PD.dateStarted,\n"
+                    + "	   PD.eventDuration\n"
+                    + "FROM Product AS P\n"
+                    + "JOIN Book B \n"
+                    + "    ON B.bookID = P.productID\n"
+                    + "LEFT JOIN ProductDiscount PD \n"
+                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+                    + "LEFT JOIN Category AS C \n"
+                    + "    ON C.categoryID = P.categoryID\n"
+                    + "WHERE P.isActive = 1\n"
+                    + "ORDER BY NEWID()");
+        } else if (type.equals("merch")) {
+            sql.append("SELECT TOP 10 P.*, \n"
+                    + "       C.categoryName, \n"
+                    + "       PD.discountPercentage, \n"
+                    + "       PD.dateStarted,\n"
+                    + "	   PD.eventDuration\n"
+                    + "FROM Product AS P\n"
+                    + "JOIN Merchandise M \n"
+                    + "    ON M.merchandiseID = P.productID\n"
+                    + "LEFT JOIN ProductDiscount PD \n"
+                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+                    + "LEFT JOIN Category AS C \n"
+                    + "    ON C.categoryID = P.categoryID\n"
+                    + "WHERE P.isActive = 1\n"
+                    + "ORDER BY NEWID()");
+        }
+
         List<Product> bookList = new ArrayList<>();
-        ResultSet rs = context.exeQuery(sql, params);
+        ResultSet rs = context.exeQuery(sql.toString(), null);
         while (rs.next()) {
             bookList.add(mapResultSetToProduct(rs));
 
@@ -180,28 +193,51 @@ public class ProductDAO {
         return bookList;
 
     }
-    
+
     /**
      * When user does not enter anything in the search bar
+     *
      * @param type
      * @param sortCriteria
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public List<Product> getAllActiveProducts(String type, String sortCriteria) throws SQLException {
-        String sql = "SELECT P.*, C.categoryName, EP.eventID, EP.discountPercentage,\n"
-                + "E.isActive AS isActiveEvent\n"
-                + "FROM Product AS P\n"
-                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-                + "LEFT JOIN Event_Product AS EP ON P.productID = EP.productID\n"
-                + "LEFT JOIN Event AS E ON EP.eventID = E.eventID\n"
-                + "WHERE P.isActive = 1 and generalCategory = ?\n"
-                + "ORDER BY ";
+        StringBuilder sql = getCTEProductDiscount();
+        if (type.equals("book")) {
+            sql.append("SELECT P.*, \n"
+                    + "       C.categoryName, \n"
+                    + "       PD.discountPercentage, \n"
+                    + "       PD.dateStarted,\n"
+                    + "	   PD.eventDuration\n"
+                    + "FROM Product AS P\n"
+                    + "JOIN Book B \n"
+                    + "    ON B.bookID = P.productID\n"
+                    + "LEFT JOIN ProductDiscount PD \n"
+                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+                    + "LEFT JOIN Category AS C \n"
+                    + "    ON C.categoryID = P.categoryID\n"
+                    + "WHERE P.isActive = 1\n");
+        } else if (type.equals("merch")) {
+            sql.append("SELECT P.*, \n"
+                    + "       C.categoryName, \n"
+                    + "       PD.discountPercentage, \n"
+                    + "       PD.dateStarted,\n"
+                    + "	   PD.eventDuration\n"
+                    + "FROM Product AS P\n"
+                    + "JOIN Merchandise M \n"
+                    + "    ON M.merchandiseID = P.productID\n"
+                    + "LEFT JOIN ProductDiscount PD \n"
+                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+                    + "LEFT JOIN Category AS C \n"
+                    + "    ON C.categoryID = P.categoryID\n"
+                    + "WHERE P.isActive = 1\n");
+        }
 
-        sql += getSortOrder(sortCriteria);
+        sql.append("ORDER BY ");
+        sql.append(getSortOrder(sortCriteria));
 
-        Object[] params = {type};
-        ResultSet rs = context.exeQuery(sql, params);
+        ResultSet rs = context.exeQuery(sql.toString(), null);
 
         List<Product> productList = new ArrayList<>();
         while (rs.next()) {
@@ -210,30 +246,53 @@ public class ProductDAO {
         return productList;
 
     }
-    
-    
+
     public List<Product> getSearchResult(String query, String type, String sortCriteria) throws SQLException {
-        String sql = "SELECT P.*, C.categoryName, EP.discountPercentage, EP.eventID, E.isActive AS isActiveEvent, KEY_TBL.RANK AS relevance_score \n"
-                + "FROM Product AS P \n"
-                + "    JOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY] \n"
-                + "	LEFT JOIN Category AS C  ON C.categoryID = P.categoryID \n"
-                + "    LEFT JOIN Event_Product AS EP ON EP.productID = P.productID\n"
-                + "	LEFT JOIN Event AS E ON E.eventID = EP.eventID\n"
-                + "WHERE P.isActive = 1 AND P.generalCategory = ? \n"
-                + "ORDER BY ";
 
+        //Prepare the query with CTE first
+        StringBuilder sql = getCTEProductDiscount();
+
+        // Base SELECT clause
+        sql.append("SELECT P.*,");
+        sql.append("\n       C.categoryName,");
+        sql.append("\n       PD.discountPercentage,");
+        sql.append("\n       PD.dateStarted,");
+        sql.append("\n       PD.eventDuration,");
+        sql.append("\n       KEY_TBL.RANK AS relevance_score");
+        sql.append("\nFROM Product AS P");
+        sql.append("\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL");
+        sql.append("\n    ON P.productID = KEY_TBL.[KEY]");
+
+        // Type-specific JOIN
+        if (type.equals("book")) {
+            sql.append("\nJOIN Book B");
+            sql.append("\n    ON B.bookID = P.productID");
+        } else if (type.equals("merch")) {
+            sql.append("\nJOIN Merchandise M");
+            sql.append("\n    ON M.merchandiseID = P.productID");
+        }
+
+        // Common LEFT JOINs and WHERE clause
+        sql.append("\nLEFT JOIN ProductDiscount PD");
+        sql.append("\n    ON P.productID = PD.productID AND PD.rn = 1");
+        sql.append("\nLEFT JOIN Category AS C");
+        sql.append("\n    ON C.categoryID = P.categoryID");
+        sql.append("\nWHERE P.isActive = 1");
+
+        // Append sorting
+        sql.append("\nORDER BY ");
         String formattedQuery = formatQuery(query);
-        sql += getSortOrder(sortCriteria);
+        sql.append(getSortOrder(sortCriteria));
 
-        Object[] params = {formattedQuery, type};
-        ResultSet rs = context.exeQuery(sql, params);
+        // Execute query
+        Object[] params = {formattedQuery};
+        ResultSet rs = context.exeQuery(sql.toString(), params);
 
         List<Product> productList = new ArrayList<>();
         while (rs.next()) {
             productList.add(mapResultSetToProduct(rs));
         }
         return productList;
-
     }
 
     private String formatQuery(String query) {
@@ -251,8 +310,14 @@ public class ProductDAO {
                 return "KEY_TBL.RANK DESC, P.productName ASC";
             case "name":
                 return "P.productName ASC";
-            case "hotDeal":
-            case "rank":
+            case "hotDeal": 
+                return "PD.discountPercentage DESC";
+            case "priceLowToHigh": 
+                return "P.price ASC";
+            case "priceHighToLow": 
+                return "P.price DESC";
+            case "rating": 
+                return "P.averageRating DESC";
             case "releaseDate":
             default:
                 return "P.releaseDate DESC";
@@ -260,8 +325,31 @@ public class ProductDAO {
         }
     }
 
+    private StringBuilder getCTEProductDiscount() {
+
+        return new StringBuilder("WITH ProductDiscount AS (\n"
+                + "SELECT ep.productID,\n"
+                + "e.dateStarted,\n"
+                + "e.duration as eventDuration,\n"
+                + "ep.discountPercentage,\n"
+                + "ROW_NUMBER() OVER (PARTITION BY ep.productID ORDER BY e.dateStarted DESC, ep.eventID DESC) AS rn\n"
+                + "FROM Event e\n"
+                + "JOIN Event_Product ep ON e.eventID = ep.eventID\n"
+                + "WHERE e.isActive = 1\n"
+                + "AND GETDATE() <= DATEADD(day, e.duration, e.dateStarted)\n"
+                + "AND GETDATE() >= e.dateStarted\n"
+                + ")\n");
+    }
+
     private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
+
+        LocalDate eventEndDate = null;
+        java.sql.Date sqlDateStarted = rs.getDate("dateStarted");
+        if (sqlDateStarted != null) {
+            eventEndDate = sqlDateStarted.toLocalDate().plusDays(rs.getInt("eventDuration"));
+        }
+
         return new Product(rs.getInt("productID"),
                 rs.getString("productName"),
                 rs.getDouble("price"),
@@ -277,18 +365,22 @@ public class ProductDAO {
                 rs.getString("keywords"),
                 rs.getString("generalCategory"),
                 rs.getBoolean("isActive"),
-                rs.getString("imageURL"));
+                rs.getString("imageURL"),
+                rs.getInt("discountPercentage"),
+                eventEndDate);
     }
 
     public static void main(String[] args) {
-        String sql = "SELECT P.*, C.categoryName, EP.discountPercentage, EP.eventID, E.isActive AS isActiveEvent, KEY_TBL.RANK AS relevance_score \n"
-                + "FROM Product AS P \n"
-                + "    JOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY] \n"
-                + "	LEFT JOIN Category AS C  ON C.categoryID = P.categoryID \n"
-                + "    LEFT JOIN Event_Product AS EP ON EP.productID = P.productID\n"
-                + "	LEFT JOIN Event AS E ON E.eventID = EP.eventID\n"
-                + "WHERE P.isActive = 1 AND P.generalCategory = ? \n"
-                + "ORDER BY ";
+        ProductDAO myDAO = new ProductDAO();
+        StringBuilder sql = myDAO.getCTEProductDiscount().append("SELECT\n"
+                + "P.*, C.categoryName, B.publisherID, B.duration,\n"
+                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.duration\n"
+                + "FROM Product AS P\n"
+                + "JOIN Book AS B ON P.productID = B.bookID\n"
+                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
+                + "WHERE P.isActive = 1 AND P.productID = ?");
         System.out.println(sql);
     }
 

@@ -16,6 +16,25 @@ document.addEventListener("DOMContentLoaded", function () {
             priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
         }
     });
+
+    const dateElements = document.querySelectorAll('.fomo-info>span');
+    if (!dateElements) {
+        console.log("date elements not found!");
+        return;
+    }
+
+    dateElements.forEach(function (dateEl) {
+        const date = new Date(dateEl.innerText);
+
+        if (date === null) {
+            console.log("invalid date format");
+            return;
+        }
+
+        dateEl.innerText = date.toLocaleDateString("vi-VN");
+        console.log(dateEl.innerText);
+    });
+
 });
 
 

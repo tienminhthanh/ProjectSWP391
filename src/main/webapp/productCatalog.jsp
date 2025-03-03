@@ -69,8 +69,10 @@
                                             </c:if>
                                             <option value="releaseDate">Release Date</option>
                                             <option value="hotDeal">Hot Deal</option>
-                                            <option value="name">Name (A-Z)</option>
-                                            <option value="rank">Rank</option>
+                                            <option value="name">Name(A-Z)</option>
+                                            <option value="priceLowToHigh">Price(Low to High)</option>
+                                            <option value="priceHighToLow">Price(High to Low)</option>
+                                            <option value="rating">Rating</option>
                                         </select>
                                     </label>
                                 </form>

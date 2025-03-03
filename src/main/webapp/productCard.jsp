@@ -4,9 +4,8 @@
 
     <!-- Sale Label (Shown only if on sale) -->
     <!--Event related-->
-    <%--<c:if test="${onSale}">--%>
-    <c:if test="${empty currentProduct.specialFilter}">
-        <div class="sale-label">SALE</div>
+    <c:if test="${currentProduct.discountPercentage != 0}">
+        <div class="sale-label">${currentProduct.discountPercentage}%</div>
     </c:if>
 
     <!-- New / Pre-order Ribbon -->
@@ -15,7 +14,7 @@
         <c:when test="${currentProduct.specialFilter == 'new'}">
             <div class="ribbon ribbon-new">NEW</div>
         </c:when>
-        <c:when test="${currentProduct.specialFilter == 'pre-order'}">
+        <c:when test="${currentProduct.specialFilter == 'pre-order' && currentProduct.discountPercentage == 0}">
             <div class="ribbon ribbon-pre">PRE-ORDER</div>
         </c:when>
     </c:choose>
@@ -26,7 +25,7 @@
         <div class="hover-name">${currentProduct.productName}</div>
     </a>
 
-    <!-- Category / Brand -->
+    <!-- Category-->
     <c:choose>
         <c:when test="${not empty brandName}">
             <p class="product-category">Brand</p>
@@ -50,9 +49,8 @@
     <!-- Price Section -->
     <p class="product-price">
         <c:choose>
-            <%--<c:when test="${onSale}">--%>
-            <c:when test="${empty currentProduct.specialFilter}">
-                <span class="discount-price">${currentProduct.price * 0.7}</span>
+            <c:when test="${currentProduct.discountPercentage != 0}">
+                <span class="discount-price">${currentProduct.price * (100-currentProduct.discountPercentage)/100}</span>
                 <span class="original-price">${currentProduct.price}</span>
             </c:when>
             <c:otherwise>
@@ -62,17 +60,16 @@
     </p>
     
     <!-- Sale Expiry Date or Release Date -->
-    <%--<c:if test="${onSale}">--%>
     <c:choose>
         
-    <c:when test="${empty currentProduct.specialFilter}">
-        <p class="fomo-info sale-expiry">Sale ends on: 2025-01-01</p>
+    <c:when test="${currentProduct.discountPercentage != 0}">
+        <p class="fomo-info sale-expiry">Sale ends on: <span>${currentProduct.eventEndDate}</span></p>
     </c:when>
     <c:when test="${currentProduct.specialFilter == 'pre-order'}">
-        <p class="fomo-info release-date">Release on: ${currentProduct.releaseDate}</p>
+        <p class="fomo-info release-date">Release on: <span>${currentProduct.releaseDate}</span></p>
     </c:when>
     <c:otherwise>
-        <p class="fomo-info release-date hidden">Release on: ${currentProduct.releaseDate}</p>
+        <p class="fomo-info release-date hidden">Release on: <span>${currentProduct.releaseDate}</span></p>
     </c:otherwise>
     </c:choose>
 

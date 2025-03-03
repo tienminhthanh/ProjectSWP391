@@ -108,24 +108,28 @@
                                     <div class="business-info mt-4 w-full md:w-full mx-auto bg-white rounded-t-lg">
 
                                         <!--Fomo info-->
-                                        <c:if test="${product.specialFilter == 'pre-order'}">
-                                            <h4 class="fomo-info pre p-2 w-full text-center ">Release Date: ${product.releaseDate}</h4>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${product.specialFilter == 'pre-order'}">
+                                                <h4 class="fomo-info pre p-2 w-full text-center ">Release Date: <span>${product.releaseDate}</span></h4>
+                                            </c:when>
 
-                                        <c:if test="${empty product.specialFilter}">
-                                            <h4 class="fomo-info sale p-2  w-full text-center ">Sale Ends Date: ${todayDate}</h4>
-                                        </c:if>
+                                            <c:when test="${product.discountPercentage != 0}">
+                                                <h4 class="fomo-info sale p-2  w-full text-center ">Sale Ends Date: <span>${product.eventEndDate}</span></h4>
+                                            </c:when>
+                                        </c:choose>
                                         <div class="purchase-inner">
 
                                             <!--Price-->
                                             <div class="price-area flex flex-row justify-center md:justify-start items-center font-bold pl-2 mt-4">
-                                                <c:if test="${empty product.specialFilter}">
-                                                    <p class="final-price w-full text-orange-500 text-3xl">${product.price}</p>
-                                                </c:if>
-                                                <c:if test="${not empty product.specialFilter}">
-                                                    <p class="final-price w-3/10 text-orange-500 text-3xl md:text-base lg:text-3xl">${product.price * 0.7}</p>
-                                                    <p class="initial-price w-2/10 text-base md:text-xs lg:text-base">${product.price}</p>
-                                                </c:if>
+                                                <c:choose>
+                                                    <c:when test="${product.discountPercentage == 0}">
+                                                        <p class="final-price w-full text-orange-500 text-3xl">${product.price}</p>
+                                                    </c:when>
+                                                    <c:when test="${product.specialFilter != 'pre-order'}">
+                                                        <p class="final-price w-3/10 text-orange-500 text-3xl md:text-base lg:text-3xl">${product.price * (100-product.discountPercentage)/100}</p>
+                                                        <p class="initial-price w-2/10 text-base md:text-xs lg:text-base">${product.price}</p>
+                                                    </c:when>
+                                                </c:choose>
                                             </div>
 
                                             <!--Ratings-->
@@ -142,14 +146,14 @@
                                     <div class="purchase-form w-90% md:w-full bg-white mx-auto">
                                         <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
                                             <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
-                                            <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}" oninput="validity.valid || (value = ${product.stockCount})"/>
+                                            <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
                                         </div>
                                         <c:choose>
                                             <c:when test="${product.specialFilter == 'pre-order'}">
                                                 <form action="preorder" method="post">
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                    <input type="hidden" name="priceWithQuantity"/>
                                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                     <input type="hidden" name="quantity" class="quantity"/>
                                                     <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
@@ -159,7 +163,7 @@
                                                 <form action="cart" method="post">
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                    <input type="hidden" name="priceWithQuantity"/>
                                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                     <input type="hidden" name="quantity" class="quantity"/>
                                                     <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
@@ -167,7 +171,7 @@
                                                 <form action="OrderController" method="get">
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity" value="${product.price}"/>
+                                                    <input type="hidden" name="priceWithQuantity"/>
                                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                     <input type="hidden" name="quantity" class="quantity"/>
                                                     <button name="action" value="buyNow" onclick="openLoginPopup()" class="buy-now">Buy Now</button>
@@ -215,6 +219,7 @@
                                                         </c:forEach>
                                                     </td>
                                                 </tr>
+
                                                 <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
                                                 <c:if test="${not empty product.duration}">
                                                     <tr><td>Duration</td><td>${product.duration}</td></tr>
@@ -224,11 +229,11 @@
                                                 </c:if>
                                             </table>
                                         </c:when>
-                                        
+
                                         <c:when test= "${type=='merch'}">
                                             <table class="m-2">
                                                 <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                                 <c:if test="${not empty creatorMap.sculptor}">
+                                                <c:if test="${not empty creatorMap.sculptor}">
                                                     <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
                                                 </c:if>
                                                 <c:if test="${not empty creatorMap.artist}">
@@ -237,8 +242,7 @@
                                                 <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
                                                 <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
                                                 <tr><td>Character</td><td>${product.character.characterName}</td></tr>
-                                                
-                                                
+
                                                 <tr>
                                                     <td>Specification</td>
                                                     <td>
@@ -248,11 +252,11 @@
                                                             <li>Size: ${product.size}</li>
                                                             <li>Material: ${product.material}</li>
                                                         </ul>
-                                                        
+
                                                     </td>
                                                 </tr>
-                                                
-                                                
+
+
                                                 <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
                                                 <c:if test="${not empty ranking}">
                                                     <tr><td>Ranking</td><td>${ranking}</td></tr>
@@ -278,6 +282,7 @@
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
+
         <!--Icon-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
@@ -289,8 +294,6 @@
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
 
-        <!--Product details-->
-        <script src="js/scriptProductDetails.js"></script>
 
         <!--customer sidebar-->
         <script src="js/scriptCusSidebar.js"></script>
@@ -300,6 +303,47 @@
         </script>
         <script>
 
+//                Get purchase quant on load
+            document.addEventListener("DOMContentLoaded", function () {
+                let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                    hiddenInput.value = numberValue.value;
+                });
+
+                // Optional: Display the values for verification
+                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                console.log("quantity:", displayValues);
+            });
+
+//                Get purchase quant on input
+            document.getElementById("quantityInput").addEventListener("input", function (event) {
+                const inputElement = document.getElementById("quantityInput");
+                let numberValue = event.target.value; // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                if (!numberValue) {
+                    return;
+                }
+                if (numberValue < 1 || numberValue > ${product.stockCount}) {
+                    alert("Purchase quantity must be at least 1 and at most ${product.stockCount}!");
+                    inputElement.value = numberValue = 1;
+                }
+
+
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                    hiddenInput.value = numberValue;
+                });
+
+                // Optional: Display the values for verification
+                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                console.log("quantity:", displayValues);
+            });
+
+//            Adjust layout based product type
             document.addEventListener("DOMContentLoaded", function () {
                 const type = "${requestScope.type}";
                 const purchase = document.querySelector(".purchase-area");
@@ -322,18 +366,90 @@
 
                 }
 
-//                if (type === 'book') {
-//                    overview.classList.add('md:w-2/3');
-//                    purchase.classList.add('md:w-1/3');
-//
-//                } else if (type === 'merch') {
-//                    overview.classList.add('md:w-3/4');
-//                    image.classList.add('md:w-1/3');
-//                    purchase.classList.add('md:w-1/4');
-//                    desc.classList.add('md:hidden');
-//
-//                }
+                //                if (type === 'book') {
+                //                    overview.classList.add('md:w-2/3');
+                //                    purchase.classList.add('md:w-1/3');
+                //
+                //                } else if (type === 'merch') {
+                //                    overview.classList.add('md:w-3/4');
+                //                    image.classList.add('md:w-1/3');
+                //                    purchase.classList.add('md:w-1/4');
+                //                    desc.classList.add('md:hidden');
+                //
+                //                }
             });
+
+
+            //Format price display
+            document.addEventListener("DOMContentLoaded", function () {
+                // Select all elements with prices
+                let priceElements = document.querySelectorAll(".price-area p");
+
+                priceElements.forEach(priceEl => {
+                    let priceText = priceEl.innerText.trim(); // Get the text inside span
+                    let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
+                    console.log("formatted price: ", price);
+                    price = Math.round(price);
+                    console.log("Rounded price: ", price);
+
+                    if (!isNaN(price)) {
+                        // Format price with commas (e.g., 4,400 VND)
+                        priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
+                    }
+                });
+            });
+
+
+            //Map final price to forms
+            document.addEventListener("DOMContentLoaded", function () {
+                const finalPriceElement = document.querySelector(".final-price");
+                let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
+
+                if (!finalPriceElement) {
+                    alert("Cannot retrieve product price!");
+                    return;
+                }
+
+                let priceText = finalPriceElement.innerText;
+                let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
+
+                if (isNaN(priceNumber)) {
+                    console.log("Price is not a number");
+                    return;
+                }
+
+                pricesToSubmit.forEach(function (price) {
+                    price.value = priceNumber;
+                    console.log('Price is', price.value);
+                });
+            });
+
+            //Format date
+            document.addEventListener("DOMContentLoaded", function () {
+                const dateElement = document.querySelector('.fomo-info>span');
+                if (!dateElement) {
+                    console.log("date elements not found!");
+                    return;
+                }
+
+                    const date = new Date(dateElement.innerText);
+
+                    if (date === null) {
+                        console.log("invalid date format");
+                        return;
+                    }
+
+                    dateElement.innerText = date.toLocaleDateString("vi-VN");
+                    console.log(dateElement.innerText);
+            });
+
+////Close sidebar on resize
+//window.addEventListener('resize', () => {
+//    const clientWidth = document.documentElement.clientWidth;
+//    const sidebar = document.getElementById('cus-sidebar');
+//    sidebar.style.display = 'none';
+//});
+
 
 
         </script>

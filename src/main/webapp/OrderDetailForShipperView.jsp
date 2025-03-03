@@ -1,5 +1,5 @@
 <%-- 
-    Document   : dashboardShipper
+    Document   : OrderDetailForShipper
     Created on : 27 Feb 2025, 11:14:28
     Author     : Admin
 --%>
@@ -37,7 +37,7 @@
         <div class="p-4">
             <div class="bg-white p-4 rounded shadow">
                 <div class="flex justify-between items-center border-b pb-2 mb-4">
-                    <h2 class="text-xl font-bold">Thông tin giao hàng / P00013</h2>
+                    <h2 class="text-xl font-bold">Thông tin giao hàng / <p> ${orderInfo.orderID}</p></h2>
                     <div class="space-x-2">
                         <button class="bg-orange-500 text-white px-4 py-2 rounded">CẬP NHẬT TRẠNG THÁI</button>
                         <button class="bg-gray-200 text-black px-4 py-2 rounded">HỦY ĐƠN</button>
@@ -46,9 +46,9 @@
                 <div class="flex justify-between items-center mb-4">
                     <div class="space-y-2">
                         <h3 class="text-lg font-bold">Thông tin giao hàng</h3>
-                        <p class="text-xl font-bold">P00013</p>
-                        <p>Nhà cung cấp: <span class="font-bold">AFA</span></p>
-                        <p>Địa chỉ giao hàng: <span class="font-bold">123 Đường ABC, Quận 1, TP.HCM</span></p>
+                        <p class="text-xl font-bold"> ${orderInfo.orderID}</p>
+                      
+                        <p>Địa chỉ giao hàng: <span class="font-bold"> ${orderInfo.deliveryAddress}</span></p>
                         <p>Người nhận: <span class="font-bold">Nguyễn Văn A</span></p>
                     </div>
                     <div class="space-y-2 text-right">
@@ -71,7 +71,10 @@
                             <th class="py-2">Số lượng</th>
                             <th class="py-2">Đơn vị</th>
                             <th class="py-2">Đơn giá</th>
-                            <th class="py-2">Thành tiền</th>
+                              <th class="py-2">Sản phẩm</th>
+                            <th class="py-2">Mô tả</th>
+                            <th class="py-2">Số lượng</th>
+                            <th class <th class="py-2">Thành tiền</th>
                         </tr>
                     </thead>
                     <tbody>
