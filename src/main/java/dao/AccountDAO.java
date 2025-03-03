@@ -94,7 +94,7 @@ public class AccountDAO {
             params.add(firstName);
         }
         if (lastName != null) {
-                sql.append("lastName = ?, ");
+            sql.append("lastName = ?, ");
             params.add(lastName);
         }
         if (email != null) {
@@ -124,6 +124,9 @@ public class AccountDAO {
         return context.exeNonQuery(sql.toString(), params.toArray()) > 0;
     }
 
+   
+
+   
     public boolean updatePassword(String username, String newPassword) throws SQLException {
         String sql = "UPDATE Account SET password = ? WHERE username = ? AND isActive = 1"; // Check if account is active
         Object[] params = {newPassword, username}; // Parameters to pass into the query
@@ -135,13 +138,21 @@ public class AccountDAO {
     /**
      * Lấy danh sách tất cả tài khoản
      */
-    public List<Account> getAllAccounts() throws SQLException {
+    public List<Account> getAllAccounts(String roleFilter) throws SQLException {
         List<Account> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM Account";
-        ResultSet rs = context.exeQuery(sql, null);
+        StringBuilder sql = new StringBuilder("SELECT * FROM Account");
+
+        // If a role is selected, filter the accounts by role
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" WHERE role = ?");
+        }
+
+        ResultSet rs = context.exeQuery(sql.toString(), roleFilter != null && !roleFilter.isEmpty() ? new Object[]{roleFilter} : null);
+
         while (rs.next()) {
             accounts.add(mapResultSetToAccount(rs));
         }
+
         return accounts;
     }
 

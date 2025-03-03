@@ -89,11 +89,14 @@
                        class="bg-green-600 text-white p-3 rounded hover:bg-green-700 flex items-center">
                         <i class="fas fa-key mr-2"></i> Change Password
                     </a>
-                    <a href="deleteAccount?username=${account.username}" 
-                       class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
-                       onclick="return confirm('Are you sure you want to delete this account?');">
-                        <i class="fas fa-trash mr-2"></i> Delete Account
-                    </a>
+                    <c:if test="${sessionScope.account.role != 'admin'}">
+                        <a href="deleteAccount?username=${account.username}" 
+                           class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
+                           onclick="return confirm('Are you sure you want to delete this account?');">
+                            <i class="fas fa-trash mr-2"></i> Delete Account
+                        </a>
+                    </c:if>
+
                 </div>
 
                 <!-- Role-Specific Navigation -->

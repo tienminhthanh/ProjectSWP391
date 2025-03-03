@@ -25,3 +25,31 @@
 [33md1ba833[m[33m ([m[1;31morigin/master[m[33m)[m HEAD@{24}: merge origin/master: Fast-forward
 [33m7e1ee50[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{25}: commit: Merge origin/master
 [33m2e26ec9[m HEAD@{26}: commit: Fix register anf interface login.jsp,...
+[33md96f9e4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mThanhMoi2[m[33m, [m[1;31morigin/ThanhMoi2[m[33m)[m HEAD@{0}: commit: fix list account not delete for admin
+[33m786d63f[m HEAD@{1}: commit: fix navbar of admin
+[33m4bd6dd3[m HEAD@{2}: commit: Merge origin/ThanhMoi2 into ThanhMoi2
+[33m2f61fcc[m HEAD@{3}: commit: fix interface information of account
+[33m928aabc[m HEAD@{4}: merge origin/ThanhMoi2: Merge made by recursive.
+[33m76e1807[m HEAD@{5}: commit (amend): fix login with google api
+[33mdacc100[m HEAD@{6}: commit: fix interface and function fogot pass
+[33mde96f4f[m HEAD@{7}: commit: Fix inteface header
+[33m333d3e4[m HEAD@{8}: commit: Fix register update mail nul if not vetify
+[33m00131bf[m HEAD@{9}: reset: moving to HEAD@{1}
+[33m6c3c14d[m HEAD@{10}: commit: Add function forgot password
+[33m00131bf[m HEAD@{11}: commit: Merge origin/ThanhMoi2 into ThanhMoi2
+[33m9f5b08f[m HEAD@{12}: commit: Merge origin/ThanhMoi2 into ThanhMoi2
+[33ma368198[m HEAD@{13}: commit: Remove sensitive credentials from Iconstant.java
+[33m69778a4[m HEAD@{14}: reset: moving to HEAD~1
+[33m100156e[m HEAD@{15}: commit: Merge origin/ThanhMoi2 into ThanhMoi2
+[33m69778a4[m HEAD@{16}: commit (amend): Login with google
+[33m064e419[m HEAD@{17}: commit: Login with google
+[33m54cebc7[m HEAD@{18}: commit: fix function change password
+[33mf66e818[m HEAD@{19}: commit (amend): add function change password
+[33md1a9095[m HEAD@{20}: commit: Merge origin/master
+[33m8e43330[m HEAD@{21}: commit: Merge origin/master
+[33m93c9b55[m HEAD@{22}: commit: Merge origin/master
+[33m7e1ee50[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{23}: checkout: moving from master to ThanhMoi2
+[33m7e1ee50[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{24}: reset: moving to HEAD@{1}
+[33md1ba833[m[33m ([m[1;31morigin/master[m[33m)[m HEAD@{25}: merge origin/master: Fast-forward
+[33m7e1ee50[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{26}: commit: Merge origin/master
+[33m2e26ec9[m HEAD@{27}: commit: Fix register anf interface login.jsp,...
