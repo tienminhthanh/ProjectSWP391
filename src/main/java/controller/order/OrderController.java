@@ -77,7 +77,10 @@ public class OrderController extends HttpServlet {
 
             double subtotal = 0;
             for (CartItem item : cartItems) {
-                subtotal += item.getPriceWithQuantity().doubleValue() * item.getQuantity();
+                BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
+                item.setPriceWithQuantity(priceWithQuantity);
+
+                subtotal += item.getPriceWithQuantity().doubleValue();
             }
 
             VoucherDAO vDao = new VoucherDAO();
@@ -124,7 +127,7 @@ public class OrderController extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             int sum = (int) (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
@@ -139,7 +142,7 @@ public class OrderController extends HttpServlet {
 
             request.setAttribute("listVoucher", validVouchers);
 
-            cartItems.add(new CartItem(account.getAccountID(), product, 1, subtotal));
+            cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
             session.setAttribute("cartItems", cartItems);
@@ -172,8 +175,10 @@ public class OrderController extends HttpServlet {
         }
 
         int subtotal = 0;
+        int preOrderPrice = 0;
         for (CartItem item : cartItems) {
-            subtotal += item.getPriceWithQuantity().doubleValue()* item.getQuantity();
+            subtotal += item.getPriceWithQuantity().doubleValue();
+            preOrderPrice = subtotal;
 
         }
 
@@ -185,16 +190,17 @@ public class OrderController extends HttpServlet {
 
         String voucherIDParam = request.getParameter("voucherID");
         VoucherDAO voucherDAO = new VoucherDAO();
+        int tempVoucherID = Integer.parseInt(voucherIDParam);
 
         Integer voucherID = null; // Mặc định là null nếu không chọn voucher
 
-        if (voucherIDParam != null && !voucherIDParam.trim().isEmpty()) {
+        if (tempVoucherID >0 && !voucherIDParam.trim().isEmpty()) {
             try {
-                int tempVoucherID = Integer.parseInt(voucherIDParam);
-                Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
-               
 
-                if (voucherID!=null &&  voucher.isIsActive() && subtotal >= voucher.getMinimumPurchaseAmount()) {
+                Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
+                voucherID = voucher.getVoucherID();
+
+                if (voucherID != null && voucher.isIsActive() && preOrderPrice >= voucher.getMinimumPurchaseAmount()) {
                     subtotal -= voucher.getVoucherValue();
                     voucherID = tempVoucherID; // Chỉ gán khi voucher hợp lệ
                     voucher.setQuantity(voucher.getQuantity() - 1);

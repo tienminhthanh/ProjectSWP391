@@ -125,7 +125,7 @@
 
                             <div class="payment-custom">
                                 <h2>Payment Method</h2>
-                                <label><input type="radio" name="paymentMethod" value="cod" checked/> Cash on Delivery (COD)</label><br>  
+                                <label><input type="radio" name="paymentMethod" value="COD" checked/> Cash on Delivery (COD)</label><br>  
                                 <!--                        <label><input type="radio" name="paymentMethod" value="online" checked/> Cash on Delivery (COD)</label><br>  -->
 
                             </div> <hr>
@@ -170,7 +170,7 @@
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
-                                    <span class="product-price"> ${item.priceWithQuantity} VND</span><br>
+                                    <span class="product-price"> ${item.product.price} VND</span><br>
 
                                 </div>
                                 <span clas="product-quantity">Quantity: ${item.quantity}</span>
