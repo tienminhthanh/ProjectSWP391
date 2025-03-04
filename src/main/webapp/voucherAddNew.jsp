@@ -20,6 +20,9 @@
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
                 <h1 class="text-2xl font-semibold mb-4">Add New Voucher</h1>
                 <hr class="mb-6"/>
+                <c:if test="${not empty message}">
+                    <p class="text-red-600 text-center mb-4">${message}</p>
+                </c:if>
                 <form action="voucherAddNew" method="post">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="mb-4">

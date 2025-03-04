@@ -109,6 +109,9 @@ public class VoucherAddNewServlet extends HttpServlet {
         boolean add = vDao.addVoucher(voucher);
         if (add) {
             response.sendRedirect(VOUCHER_LIST_PAGE);
+        } else {
+            request.setAttribute("message", "Failed to add voucher. Please try again.");
+            request.getRequestDispatcher("add_voucher.jsp").forward(request, response);
         }
     }
 

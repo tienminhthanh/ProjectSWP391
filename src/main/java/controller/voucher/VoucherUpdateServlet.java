@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import model.Voucher;
 
@@ -81,27 +82,47 @@ public class VoucherUpdateServlet extends HttpServlet {
         String url = VOUCHER_LIST_PAGE;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         VoucherDAO vDao = new VoucherDAO();
-        int id = Integer.parseInt(request.getParameter("voucherID"));
-        String name = request.getParameter("voucherName");
-        String type = request.getParameter("voucherType");
-        double value = Double.parseDouble(request.getParameter("voucherValue"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
-        String dateCreated = vDao.getVoucherByID(id).getDateCreated();
-        int duration = Integer.parseInt(request.getParameter("duration"));
-        int adminID = vDao.getVoucherByID(id).getAdminID();
-        Double maxDiscountAmount = null;
-        if ("PERCENTAGE".equals(type)) {
-            String maxDiscountStr = request.getParameter("maxDiscountAmount");
-            if (maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
-                maxDiscountAmount = Double.parseDouble(maxDiscountStr);
+
+        try {
+            int id = Integer.parseInt(request.getParameter("voucherID"));
+            String name = request.getParameter("voucherName");
+            String type = request.getParameter("voucherType");
+            double value = Double.parseDouble(request.getParameter("voucherValue"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
+            String dateCreated = vDao.getVoucherByID(id).getDateCreated();
+            int duration = Integer.parseInt(request.getParameter("duration"));
+            int adminID = vDao.getVoucherByID(id).getAdminID();
+            Double maxDiscountAmount = null;
+
+            if ("PERCENTAGE".equals(type)) {
+                String maxDiscountStr = request.getParameter("maxDiscountAmount");
+                if (maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
+                    maxDiscountAmount = Double.parseDouble(maxDiscountStr);
+                }
             }
-        }
-        String dateStarted_raw = request.getParameter("dateStarted");
-        LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
-        Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, true, vDao.getVoucherByID(id).isIsActive(), type, maxDiscountAmount, dateStarted.toString());
-        if (vDao.updateVoucher(voucher)) {
-            response.sendRedirect(url);
+
+            String dateStarted_raw = request.getParameter("dateStarted");
+            LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
+
+            Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID,
+                    true, vDao.getVoucherByID(id).isIsActive(), type, maxDiscountAmount, dateStarted.toString());
+
+            if (vDao.updateVoucher(voucher)) {
+                response.sendRedirect(url);
+            } else {
+                request.setAttribute("message", "Failed to update voucher. Please try again.");
+                request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "Invalid number format. Please check your inputs.");
+            request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
+        } catch (DateTimeParseException e) {
+            request.setAttribute("message", "Invalid date format. Please use YYYY-MM-DD.");
+            request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("message", "An unexpected error occurred: " + e.getMessage());
+            request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
         }
     }
 

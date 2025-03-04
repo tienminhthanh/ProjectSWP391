@@ -34,14 +34,24 @@ public class VoucherDeleteServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            String url = VOUCHER_LIST_PAGE;
+        String url = VOUCHER_LIST_PAGE;
+
+        try {
             int id = Integer.parseInt(request.getParameter("id"));
             VoucherDAO vDao = new VoucherDAO();
+
             if (vDao.deleteVoucher(id)) {
                 response.sendRedirect(url);
+            } else {
+                request.setAttribute("message", "Failed to delete voucher. Please try again.");
+                request.getRequestDispatcher("voucher_list.jsp").forward(request, response);
             }
+        } catch (NumberFormatException e) {
+            request.setAttribute("message", "Invalid voucher ID format.");
+            request.getRequestDispatcher("voucher_list.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("message", "An unexpected error occurred: " + e.getMessage());
+            request.getRequestDispatcher("voucher_list.jsp").forward(request, response);
         }
     }
 
