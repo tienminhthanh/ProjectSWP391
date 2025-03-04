@@ -42,9 +42,13 @@ public class VoucherDAO {
                 String dateCreated = rs.getString(6);
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
                 LocalDate createDate = LocalDate.parse(dateCreated, formatter);
                 LocalDate expiryDate = createDate.plusDays(duration);
-                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, !LocalDate.now().isAfter(expiryDate));
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                String dateStarted = rs.getString(12);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
 
                 listVoucher.add(voucher);
             }
@@ -70,10 +74,13 @@ public class VoucherDAO {
                 String dateCreated = rs.getString(6);
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
-
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
+                boolean isActive = rs.getBoolean(9);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
                 LocalDate expiryDate = createDate.plusDays(duration);
-                return new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, !LocalDate.now().isAfter(expiryDate));
+                return new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -89,12 +96,20 @@ public class VoucherDAO {
                     + "      ,[quantity] = ?\n"
                     + "      ,[minimumPurchaseAmount] = ?\n"
                     + "      ,[duration] = ?\n"
+                    + "      ,[isActive] = ?\n"
+                    + "      ,[voucherType] = ?\n"
+                    + "      ,[maxDiscountAmount] = ?\n"
+                    + "      ,[dateStarted] = ?\n"
                     + "      WHERE [voucherID] = ?";
             Object[] params = {voucher.getVoucherName(),
                 voucher.getVoucherValue(),
                 voucher.getQuantity(),
                 voucher.getMinimumPurchaseAmount(),
                 voucher.getDuration(),
+                voucher.isIsActive(),
+                voucher.getVoucherType(),
+                voucher.getMaxDiscountAmount(),
+                voucher.getDateStarted(),
                 voucher.getVoucherID()};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
@@ -105,34 +120,51 @@ public class VoucherDAO {
     }
 
     public boolean deleteVoucher(int id) {
-        String sql = "DELETE FROM [dbo].[Voucher]\n"
-                + "      WHERE [voucherID] = ?";
         try {
-            Object[] params = {id};
+            Voucher voucher = getVoucherByID(id);
+            String sql = "UPDATE [dbo].[Voucher]\n"
+                    + "   SET [isActive] = ?\n"
+                    + " WHERE [voucherID] = ?";
+            Object[] params = {!voucher.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
-    public boolean addVoucher(String name, double value, int quantity, int minumum, String dateCreated, int duration, int adminID) {
-        String sql = "INSERT INTO [dbo].[Voucher]\n"
-                + "           ([voucherName]\n"
-                + "           ,[voucherValue]\n"
-                + "           ,[quantity]\n"
-                + "           ,[minimumPurchaseAmount]\n"
-                + "           ,[dateCreated]\n"
-                + "           ,[duration]\n"
-                + "           ,[adminID])\n"
-                + "     VALUES (?, ?, ?, ?, ?, ?, ?)\n";
+    public boolean addVoucher(Voucher voucher) {
         try {
-            Object[] params = {name, value, quantity, minumum, dateCreated, duration, adminID};
+            String sql = "INSERT INTO [dbo].[Voucher]"
+                    + "([voucherName], [voucherValue], [quantity], [minimumPurchaseAmount],"
+                    + "[dateCreated], [duration], [adminID], [isActive], [voucherType], [maxDiscountAmount], [dateStarted]) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            Object[] params = {
+                voucher.getVoucherName(),
+                voucher.getVoucherValue(),
+                voucher.getQuantity(),
+                voucher.getMinimumPurchaseAmount(),
+                voucher.getDateCreated(),
+                voucher.getDuration(),
+                voucher.getAdminID(),
+                voucher.isIsActive(),
+                voucher.getVoucherType(),
+                voucher.getMaxDiscountAmount(),
+                voucher.getDateStarted(),};
+
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
-        } catch (Exception e) {
+        } catch (SQLException ex) {
+            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
+    public static void main(String[] args) {
+        VoucherDAO vd = new VoucherDAO();
+        Voucher v = vd.getVoucherByID(60);
+        System.out.println(v.toString());
+    }
 }

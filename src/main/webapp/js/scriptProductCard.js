@@ -39,4 +39,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+//Map final price to forms
+document.addEventListener("DOMContentLoaded", function () {
+    const finalPriceElements = document.querySelectorAll(".discount-price");
+    let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
 
+    if (!finalPriceElements) {
+        console.log("Cannot retrieve product price!");
+        return;
+    }
+    
+    if(!pricesToSubmit){
+        console.log("Fail to retrieve hidden price input!");
+        return;
+        
+    }
+
+    for (var i = 0; i < finalPriceElements.length; i++) {
+        let priceText = finalPriceElements[i].innerText;
+        let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
+        if (isNaN(priceNumber)) {
+            console.log("Price is not a number");
+            return;
+        }
+        pricesToSubmit[i].value = priceNumber;
+        console.log('Price is', pricesToSubmit[i].value);
+    }
+
+
+});

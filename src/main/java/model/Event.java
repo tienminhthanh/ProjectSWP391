@@ -4,7 +4,6 @@
  */
 package model;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -12,21 +11,21 @@ import java.util.List;
  * @author ADMIN
  */
 public class Event {
+
     private int eventID;
     private String eventName;
-    private LocalDate dateCreated;
+    private String dateCreated;
     private int duration;
     private String banner;
     private String description;
     private int adminID;
     private boolean isActive;
-    private LocalDate dateStarted;
-    private List<EventProduct> eventProductList;
 
     public Event() {
     }
 
-    public Event(int eventID, String eventName, LocalDate dateCreated, int duration, String banner, String description, int adminID, boolean isActive, LocalDate dateStarted, List<EventProduct> eventProductList) {
+
+    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
         this.eventID = eventID;
         this.eventName = eventName;
         this.dateCreated = dateCreated;
@@ -35,10 +34,8 @@ public class Event {
         this.description = description;
         this.adminID = adminID;
         this.isActive = isActive;
-        this.dateStarted = dateStarted;
-        this.eventProductList = eventProductList;
     }
-
+    
     
 
     public int getEventID() {
@@ -57,11 +54,11 @@ public class Event {
         this.eventName = eventName;
     }
 
-    public LocalDate getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -105,21 +102,6 @@ public class Event {
         this.isActive = isActive;
     }
 
-    public LocalDate getDateStarted() {
-        return dateStarted;
-    }
-
-    public void setDateStarted(LocalDate dateStarted) {
-        this.dateStarted = dateStarted;
-    }
-
-    public List<EventProduct> getEventProductList() {
-        return eventProductList;
-    }
-
-    public void setEventProductList(List<EventProduct> eventProductList) {
-        this.eventProductList = eventProductList;
-    }
 
    
     

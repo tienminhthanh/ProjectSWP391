@@ -76,16 +76,16 @@
 
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
 
-    <c:if test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
         <form action="cart" method="post">
             <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
             <input type="hidden" name="productID" value="${currentProduct.productID}">
             <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
             <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
-            <input type="hidden" name="priceWithQuantity" value="${currentProduct.price}">
+            <input type="hidden" name="priceWithQuantity">
+    <c:if test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
             <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
-        </form>
     </c:if>
+        </form>
 
     <!-- If out of stock -> overlay -->
     <c:if test="${currentProduct.stockCount == 0}">

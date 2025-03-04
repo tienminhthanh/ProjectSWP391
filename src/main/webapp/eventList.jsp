@@ -38,6 +38,70 @@
                     <i class="fas fa-comments mr-2"></i>
                     Dialogue List
                 </a>
+                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                    <i class="fas fa-box mr-2"></i>
+                    Order List
+                </a>
+
+                <a class="flex items-center p-2 hover:bg-blue-800"href="voucherList">
+                    <i class="fas fa-gift mr-2"></i>
+                    Voucher List
+                </a>
+
+                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                    <i class="fas fa-bell mr-2"></i>
+                    Notification List
+                </a>
+                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                    <i class="fas fa-comment-dots mr-2"></i>
+                    Chat
+                </a>
+                <div class="mt-4">
+                    <h3 class="px-2 text-sm font-semibold"> SETTINGS </h3>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-cogs mr-2"></i>
+                        Configuration
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-users-cog mr-2"></i>
+                        Management
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
+                        <i class="fas fa-sign-out-alt mr-2"></i> 
+                        Logout
+                    </a>
+                </div>
+                <div class="mt-4">
+                    <h3 class="px-2 text-sm font-semibold"> REPORTS </h3>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-phone-alt mr-2"></i>
+                        Call history
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-headset mr-2"></i>
+                        Call queue
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-users mr-2"></i>
+                        Agents performance
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i>
+                        Commission report
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-calendar mr-2"></i>
+                        Scheduled report
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-history mr-2"></i>
+                        Chat history
+                    </a>
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        Performance report
+                    </a>
+                </div>
             </nav>
         </div>
 
@@ -64,8 +128,9 @@
                             <tr>
                                 <th class="px-4 py-3 border border-b">No.</th>
                                 <th class="px-4 py-3 border border-b">Event Name</th>
-                                <th class="px-4 py-3 border border-b">Banner</th>
-                                <th class="px-6 py-3 border border-b">Status</th>
+                                <th class="px-4 py-3 border border-b w-48">Banner</th>
+                                <th class="px-4 py-3 border border-b">Desciption</th>
+                                <th class="px-4 py-3 border border-b">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,9 +139,11 @@
                                     onclick="navigateToUpdate(${event.eventID})">
                                     <td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>
                                     <td class="px-4 py-3 border border-b text-left">${event.eventName}</td>
-                                    <td class="px-4 py-3 border border-b text-right">${event.dateCreated}</td>
-                                    <td class="px-4 py-3 border border-b text-right">${event.description}</td>
-                                    <td class="px-6 py-3 border border-b text-center">
+                                    <td class="px-4 py-3 border border-b text-center w-48">
+                                        <img src="${event.banner}" alt="Banner" class="w-full h-auto max-h-24 object-contain mx-auto">
+                                    </td>
+                                    <td class="px-4 py-3 border border-b text-left">${event.description}</td>
+                                    <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
                                             <c:when test="${event.isActive}">
                                                 <span class="text-green-700">Available</span>
