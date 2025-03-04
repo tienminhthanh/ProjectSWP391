@@ -185,8 +185,6 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-
-
                                 </tr>
                             </c:forEach>
                             <c:if test="${empty LIST_VOUCHER}">
@@ -194,9 +192,43 @@
                                     <td class="px-4 py-3 border-b text-center text-gray-500 italic" colspan="10">No voucher found.</td>
                                 </tr>
                             </c:if>
+
                         </tbody>
+
                     </table>
+                    <!-- Phân trang -->
+                    
+
                 </div>
+                <c:if test="${totalPage> 1}">
+                        <div class="flex justify-center mt-6">
+                            <nav class="flex space-x-2">
+                                <!-- Nút Previous -->
+                                <c:if test="${currentPage> 1}">
+                                    <a href="voucherList?page=${currentPage - 1}"
+                                       class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                        &laquo; Previous
+                                    </a>
+                                </c:if>
+
+                                <!-- Hiển thị các trang -->
+                                <c:forEach var="i" begin="1" end="${totalPage}">
+                                    <a href="voucherList?page=${i}"
+                                       class="px-4 py-2 rounded ${i == currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
+                                        ${i}
+                                    </a>
+                                </c:forEach>
+
+                                <!-- Nút Next -->
+                                <c:if test="${currentPage < totalPage}">
+                                    <a href="voucherList?page=${currentPage + 1}"
+                                       class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                        Next &raquo;
+                                    </a>
+                                </c:if>
+                            </nav>
+                        </div>
+                    </c:if>
             </div>
         </main>
 
@@ -229,6 +261,25 @@
                                             window.location = 'voucherDetails?voucherId=' + voucherID;
                                         }
         </script>
+        <c:if test="${not empty sessionScope.message}">
+            <div id="popupMessage" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
+                <strong>${sessionScope.message}</strong>
+            </div>
+            <c:remove var="message" scope="session"/>
+            <c:remove var="messageType" scope="session"/>
+
+            <script>
+                // Tự động biến mất sau 3 giây
+                setTimeout(() => {
+                    let popup = document.getElementById("popupMessage");
+                    if (popup) {
+                        popup.style.opacity = "0";
+                        setTimeout(() => popup.remove(), 500); // Xóa khỏi DOM sau khi animation kết thúc
+                    }
+                }, 3000);
+            </script>
+        </c:if>
+
 
 </body>
 </html>

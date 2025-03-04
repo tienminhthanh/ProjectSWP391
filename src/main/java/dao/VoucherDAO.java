@@ -26,6 +26,51 @@ public class VoucherDAO {
         context = new utils.DBContext();
     }
 
+    public List<Voucher> getVoucherByPage(int page, int pageSize) {
+        List<Voucher> list = new ArrayList<>();
+        String sql = "SELECT * FROM Voucher ORDER BY voucherID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            ResultSet rs = context.exeQuery(sql, new Object[]{(page - 1) * pageSize, pageSize});
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double value = rs.getDouble(3);
+                int quantity = rs.getInt(4);
+                int minimum = rs.getInt(5);
+                String dateCreated = rs.getString(6);
+                int duration = rs.getInt(7);
+                int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
+                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                String dateStarted = rs.getString(12);
+                Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, isActive,
+                        !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+                list.add(voucher);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return list;
+    }
+
+    public int getTotalVoucher() {
+        String sql = "SELECT COUNT(*) FROM Voucher";
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return 0;
+    }
+
     public List<Voucher> getListVoucher() {
         List<Voucher> listVoucher = new ArrayList<>();
 
@@ -164,7 +209,10 @@ public class VoucherDAO {
 
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
-        Voucher v = vd.getVoucherByID(60);
-        System.out.println(v.toString());
+        List<Voucher> list = vd.getVoucherByPage(1, 10);
+//        List<Voucher> list = vd.getListVoucher();
+        for (Voucher voucher : list) {
+            System.out.println(voucher.getDuration());
+        }
     }
 }

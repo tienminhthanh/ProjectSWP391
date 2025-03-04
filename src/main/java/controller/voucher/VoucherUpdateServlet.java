@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -80,6 +81,7 @@ public class VoucherUpdateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = VOUCHER_LIST_PAGE;
+        HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         VoucherDAO vDao = new VoucherDAO();
 
@@ -109,21 +111,18 @@ public class VoucherUpdateServlet extends HttpServlet {
                     true, vDao.getVoucherByID(id).isIsActive(), type, maxDiscountAmount, dateStarted.toString());
 
             if (vDao.updateVoucher(voucher)) {
-                response.sendRedirect(url);
+                session.setAttribute("message", "Voucher updated successfully!");
+                session.setAttribute("messageType", "success");
             } else {
-                request.setAttribute("message", "Failed to update voucher. Please try again.");
-                request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
+                session.setAttribute("message", "Failed to update voucher.");
+                session.setAttribute("messageType", "error");
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("message", "Invalid number format. Please check your inputs.");
-            request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
-        } catch (DateTimeParseException e) {
-            request.setAttribute("message", "Invalid date format. Please use YYYY-MM-DD.");
-            request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("message", "An unexpected error occurred: " + e.getMessage());
-            request.getRequestDispatcher("voucher_update.jsp").forward(request, response);
+            session.setAttribute("message", "Error: " + e.getMessage());
+            session.setAttribute("messageType", "error");
         }
+
+        response.sendRedirect(url);
     }
 
     /**

@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -35,24 +36,24 @@ public class VoucherDeleteServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = VOUCHER_LIST_PAGE;
+        HttpSession session = request.getSession();
 
         try {
             int id = Integer.parseInt(request.getParameter("id"));
             VoucherDAO vDao = new VoucherDAO();
 
             if (vDao.deleteVoucher(id)) {
-                response.sendRedirect(url);
+                session.setAttribute("message", "Voucher deleted successfully!");
+                session.setAttribute("messageType", "success");
             } else {
-                request.setAttribute("message", "Failed to delete voucher. Please try again.");
-                request.getRequestDispatcher("voucher_list.jsp").forward(request, response);
+                session.setAttribute("message", "Failed to update voucher.");
+                session.setAttribute("messageType", "error");
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("message", "Invalid voucher ID format.");
-            request.getRequestDispatcher("voucher_list.jsp").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("message", "An unexpected error occurred: " + e.getMessage());
-            request.getRequestDispatcher("voucher_list.jsp").forward(request, response);
+            session.setAttribute("message", "Error: " + e.getMessage());
+            session.setAttribute("messageType", "error");
         }
+        response.sendRedirect(url);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -22,9 +22,6 @@
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
                 <h1 class="text-2xl font-semibold mb-4">Update Voucher</h1>
                 <hr class="mb-6"/>
-                <c:if test="${not empty message}">
-                    <p class="text-red-600 text-center mb-4">${message}</p>
-                </c:if>
                 <form action="voucherUpdate" method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white shadow-lg rounded-lg">
                     <!-- Voucher ID (Readonly) -->
                     <div class="mb-4">

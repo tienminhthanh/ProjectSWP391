@@ -128,7 +128,7 @@
                                 <div class="voucher-card bg-white rounded-lg p-6 ">
                                     <h2 id="voucherName" class="text-2xl font-bold mb-4 uppercase text-center">
                                         ${VOUCHER_DETAILS.voucherName}
-                                    </h2> <br>
+                                    </h2>
                                     <div class="voucher-info text-gray-700 text-left space-y-3">
                                         <p><strong>Voucher ID:</strong> <span id="voucherID">${VOUCHER_DETAILS.voucherID}</span></p>
                                         <p><strong>Voucher Type:</strong> <span id="voucherType">${VOUCHER_DETAILS.voucherType}</span></p>
