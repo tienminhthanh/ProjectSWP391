@@ -202,6 +202,7 @@
                         <div class="customer-list-container">
                             <label class="form-label" onclick="toggleCustomerList()">Receivers <i class="fas fa-caret-down ml-2"></i></label>
                             <div class="customer-list" id="customerList">
+                                <button type="button" class="btn btn-success mt-2" onclick="selectAll()">Select All</button> 
                                 <c:forEach var="customer" items="${customers}">
                                     <div class="customer-row" onclick="toggleCheckbox(this)">
                                         <input type="checkbox" name="receiverID" value="${customer.accountID}" 
@@ -210,7 +211,7 @@
                                     </div>
                                 </c:forEach>
                             </div>
-                            <button type="button" class="btn btn-success mt-2" onclick="selectAll()">Select All</button>
+
                         </div>
                         <div>
                             <label for="notificationTitle" class="form-label">Notification Title</label>
@@ -236,22 +237,22 @@
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <script src="/js/scriptHeader.js"></script>
         <script>
-                                function toggleCheckbox(row) {
-                                    const checkbox = row.querySelector('input[type="checkbox"]');
-                                    if (event.target !== checkbox) { // Avoid double toggle if clicking checkbox directly
-                                        checkbox.checked = !checkbox.checked;
-                                    }
-                                }
+                                        function toggleCheckbox(row) {
+                                            const checkbox = row.querySelector('input[type="checkbox"]');
+                                            if (event.target !== checkbox) { // Avoid double toggle if clicking checkbox directly
+                                                checkbox.checked = !checkbox.checked;
+                                            }
+                                        }
 
-                                function toggleCustomerList() {
-                                    const customerList = document.getElementById('customerList');
-                                    customerList.classList.toggle('expanded');
-                                }
+                                        function toggleCustomerList() {
+                                            const customerList = document.getElementById('customerList');
+                                            customerList.classList.toggle('expanded');
+                                        }
 
-                                function selectAll() {
-                                    const checkboxes = document.querySelectorAll('input[name="receiverID"]');
-                                    checkboxes.forEach(checkbox => checkbox.checked = true);
-                                }
+                                        function selectAll() {
+                                            const checkboxes = document.querySelectorAll('input[name="receiverID"]');
+                                            checkboxes.forEach(checkbox => checkbox.checked = true);
+                                        }
         </script>
     </body>
 </html>

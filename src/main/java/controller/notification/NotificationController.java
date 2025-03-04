@@ -8,6 +8,7 @@ import dao.NotificationDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ import model.Notification;
  *
  * @author ADMIN
  */
+@WebServlet(name = "NotificationController", urlPatterns = {"/notification"})
 public class NotificationController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
