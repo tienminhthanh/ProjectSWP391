@@ -15,6 +15,10 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
         <link href="css/styleFooter.css" rel="stylesheet">
+        <!--Footer css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link href="css/styleFooter.css" rel="stylesheet">
         <style>
             .logo {
                 display: flex;
@@ -105,7 +109,7 @@
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" oninput="validity.valid || (value = ${item.product.stockCount})" class="quantity-input" required/>
+                                    <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" class="quantity-input" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
 
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
@@ -157,6 +161,14 @@
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
+        <!--Header script-->
+        <script src="js/scriptHeader.js"></script>
+
+        <!--Footer script-->
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
         <script>
                         document.addEventListener("DOMContentLoaded", function () {
                             updateQuantityValues();
