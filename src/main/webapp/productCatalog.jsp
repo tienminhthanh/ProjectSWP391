@@ -99,7 +99,8 @@
                 </div>
                 <!--Popup unauthorized users-->
                 <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-                    <jsp:include page="popuplogin.jsp" />
+                    <c:set var="currentURL" value="${currentURL}" scope="request"/>
+                    <jsp:include page="popuplogin.jsp"/>
                 </c:if>
             </main>
         </div>
