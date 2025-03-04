@@ -34,15 +34,23 @@ public class ProductDAO {
      * @throws SQLException
      */
     public Product getProductById(int productID) throws SQLException {
-        String sql = "SELECT Product.productID, Product.productName, Product.price, Product.stockCount, Product.categoryID, Product.description, Product.releaseDate, Product.lastModifiedTime, Product.averageRating, Product.numberOfRating, "
-                + "       Product.specialFilter, Product.adminID, Product.keywords, Product.generalCategory, Product.isActive, Product.imageURL, "
-                + "       Category.categoryName "
-                + "FROM Product "
-                + "INNER JOIN Category ON Product.categoryID = Category.categoryID "
-                + "WHERE Product.productID = ?";
+        StringBuilder sql = getCTEProductDiscount().append("SELECT P.*, \n"
+                    + "       C.categoryName, \n"
+                    + "       PD.discountPercentage, \n"
+                    + "       PD.dateStarted,\n"
+                    + "	   PD.eventDuration\n"
+                    + "FROM Product AS P\n"
+                    + "JOIN Book B \n"
+                    + "    ON B.bookID = P.productID\n"
+                    + "LEFT JOIN ProductDiscount PD \n"
+                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+                    + "LEFT JOIN Category AS C \n"
+                    + "    ON C.categoryID = P.categoryID\n"
+                    + "WHERE P.isActive = 1 AND P.productID = ?\n");
+
 
         Object[] params = {productID};
-        ResultSet rs = context.exeQuery(sql, params);
+        ResultSet rs = context.exeQuery(sql.toString(), params);
 
         if (rs.next()) {
             return mapResultSetToProduct(rs);
