@@ -12,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import model.Voucher;
 
@@ -37,11 +39,18 @@ public class VoucherDetailsServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = VOUCHER_DETAILS_PAGE;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             int id = Integer.parseInt(request.getParameter("voucherId"));
             VoucherDAO vDao = new VoucherDAO();
             Voucher voucherDetails = vDao.getVoucherByID(id);
             request.setAttribute("VOUCHER_DETAILS", voucherDetails);
+
+            String dateStarted = voucherDetails.getDateStarted();
+            LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+            LocalDate dateEnd = createDate.plusDays(voucherDetails.getDuration());
+            request.setAttribute("dateEnd", dateEnd);
+
         } catch (Exception ex) {
             log("VoucherDetailsServlet error:" + ex.getMessage());
         } finally {

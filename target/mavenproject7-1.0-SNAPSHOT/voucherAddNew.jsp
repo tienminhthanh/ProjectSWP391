@@ -27,6 +27,13 @@
                             <input class="w-full p-3 border border-gray-300 rounded" name="voucherName" placeholder="Enter voucher name" required type="text"/>
                         </div>
                         <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Voucher Type</label>
+                            <select class="w-full p-3 border border-gray-300 rounded" name="voucherType" id="voucherType" required onchange="toggleMaxDiscount()">
+                                <option value="PERCENTAGE">Percentage Discount</option>
+                                <option value="FIXED_AMOUNT">Fixed Amount Discount</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Voucher Value</label>
                             <input class="w-full p-3 border border-gray-300 rounded" name="voucherValue" placeholder="Enter value" required type="number" step="0.01"/>
                         </div>
@@ -34,9 +41,17 @@
                             <label class="block text-sm font-medium text-gray-700">Quantity</label>
                             <input class="w-full p-3 border border-gray-300 rounded" name="quantity" placeholder="Enter quantity" required type="number"/>
                         </div>
+                        <div class="mb-4" id="maxDiscountDiv">
+                            <label class="block text-sm font-medium text-gray-700">Max Discount Amount (if percentage)</label>
+                            <input class="w-full p-3 border border-gray-300 rounded" name="maxDiscountAmount" placeholder="Enter max discount amount" type="number" step="0.01"/>
+                        </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Minimum Purchase Amount</label>
                             <input class="w-full p-3 border border-gray-300 rounded" name="minimumPurchaseAmount" placeholder="Enter minimum purchase" required type="number"/>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Date Started</label>
+                            <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" placeholder="Enter Date Started" required type="date"/>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
@@ -59,5 +74,12 @@
                 <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
             </div>
         </footer>
+        <script>
+            function toggleMaxDiscount() {
+                let type = document.getElementById("voucherType").value;
+                document.getElementById("maxDiscountDiv").style.display = (type === "PERCENTAGE") ? "block" : "none";
+            }
+            toggleMaxDiscount();
+        </script>
     </body>
 </html>

@@ -80,12 +80,21 @@ public class VoucherAddNewServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String name = request.getParameter("voucherName");
+        String type = request.getParameter("voucherType");
         double value = Double.parseDouble(request.getParameter("voucherValue"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
         int duration = Integer.parseInt(request.getParameter("duration"));
+        Double maxDiscountAmount = null;
+        if ("PERCENTAGE".equals(type)) {
+            String maxDiscountStr = request.getParameter("maxDiscountAmount");
+            if (maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
+                maxDiscountAmount = Double.parseDouble(maxDiscountStr);
+            }
+        }
 
         LocalDate dateCreated = LocalDate.now();
+        String dateStarted = request.getParameter("dateStarted");
 
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
@@ -96,7 +105,7 @@ public class VoucherAddNewServlet extends HttpServlet {
         int adminID = account.getAccountID();
 
         VoucherDAO vDao = new VoucherDAO();
-        Voucher voucher = new Voucher(adminID, name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true);
+        Voucher voucher = new Voucher(adminID, name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true, type, maxDiscountAmount, dateStarted);
         boolean add = vDao.addVoucher(voucher);
         if (add) {
             response.sendRedirect(VOUCHER_LIST_PAGE);

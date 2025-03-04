@@ -12,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import model.Voucher;
 
@@ -77,17 +79,27 @@ public class VoucherUpdateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = VOUCHER_LIST_PAGE;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         VoucherDAO vDao = new VoucherDAO();
         int id = Integer.parseInt(request.getParameter("voucherID"));
         String name = request.getParameter("voucherName");
+        String type = request.getParameter("voucherType");
         double value = Double.parseDouble(request.getParameter("voucherValue"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
         String dateCreated = vDao.getVoucherByID(id).getDateCreated();
-//        LocalDate today = LocalDate.now();
         int duration = Integer.parseInt(request.getParameter("duration"));
         int adminID = vDao.getVoucherByID(id).getAdminID();
-        Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, true, vDao.getVoucherByID(id).isIsActive());
+        Double maxDiscountAmount = null;
+        if ("PERCENTAGE".equals(type)) {
+            String maxDiscountStr = request.getParameter("maxDiscountAmount");
+            if (maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
+                maxDiscountAmount = Double.parseDouble(maxDiscountStr);
+            }
+        }
+        String dateStarted_raw = request.getParameter("dateStarted");
+        LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
+        Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, true, vDao.getVoucherByID(id).isIsActive(), type, maxDiscountAmount, dateStarted.toString());
         if (vDao.updateVoucher(voucher)) {
             response.sendRedirect(url);
         }

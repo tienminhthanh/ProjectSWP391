@@ -25,61 +25,79 @@
                 <c:if test="${not empty message}">
                     <p class="text-red-600 text-center mb-4">${message}</p>
                 </c:if>
-                <form action="voucherUpdate" method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Voucher ID (Không chỉnh sửa) -->
+                <form action="voucherUpdate" method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white shadow-lg rounded-lg">
+                    <!-- Voucher ID (Readonly) -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Voucher ID</label>
+                        <label class="block text-lg font-semibold text-gray-700">Voucher ID</label>
                         <input type="text" name="voucherID" value="${VOUCHER_DETAILS.voucherID}" 
                                class="w-full p-3 border border-gray-300 rounded bg-gray-100" readonly>
                     </div>
 
                     <!-- Voucher Name -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Voucher Name</label>
+                        <label class="block text-lg font-semibold text-gray-700">Voucher Name</label>
                         <input type="text" name="voucherName" value="${VOUCHER_DETAILS.voucherName}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
 
+                    <!-- Voucher Type (Dropdown) -->
+                    <div class="mb-4">
+                        <label class="block text-lg font-semibold text-gray-700">Voucher Type</label>
+                        <select name="voucherType" id="voucherType" class="w-full p-3 border border-gray-300 rounded" required>
+                            <option value="PERCENTAGE" ${VOUCHER_DETAILS.voucherType == 'PERCENTAGE' ? 'selected' : ''}>Percentage</option>
+                            <option value="FIXED_AMOUNT" ${VOUCHER_DETAILS.voucherType == 'FIXED_AMOUNT' ? 'selected' : ''}>Fixed Amount</option>
+                        </select>
+                    </div>
+
                     <!-- Voucher Value -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Voucher Value</label>
+                        <label class="block text-lg font-semibold text-gray-700">Voucher Value</label>
                         <input type="number" step="0.01" name="voucherValue" value="${VOUCHER_DETAILS.voucherValue}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
 
+                    <!-- Max Discount Amount (Only for Percentage) -->
+                    <div class="mb-4" id="maxDiscountDiv" style="display: none;">
+                        <label class="block text-lg font-semibold text-gray-700">Max Discount Amount</label>
+                        <input type="number" step="0.01" name="maxDiscountAmount" value="${VOUCHER_DETAILS.maxDiscountAmount}" 
+                               class="w-full p-3 border border-gray-300 rounded">
+                    </div>
+                               
+                    <!-- Minimum Purchase Amount -->
+                    <div class="mb-4">
+                        <label class="block text-lg font-semibold text-gray-700">Minimum Purchase</label>
+                        <input type="number" name="minimumPurchaseAmount" value="${VOUCHER_DETAILS.minimumPurchaseAmount}" 
+                               class="w-full p-3 border border-gray-300 rounded" required>
+                    </div>
+                               
                     <!-- Quantity -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Quantity</label>
+                        <label class="block text-lg font-semibold text-gray-700">Quantity</label>
                         <input type="number" name="quantity" value="${VOUCHER_DETAILS.quantity}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
 
-                    <!-- Minimum Purchase Amount -->
+                    <!-- Date Started -->    
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Minimum Purchase</label>
-                        <input type="number" name="minimumPurchaseAmount" value="${VOUCHER_DETAILS.minimumPurchaseAmount}" 
+                        <label class="block text-lg font-semibold text-gray-700">Date Started</label>
+                        <input type="date" name="dateStarted" value="${VOUCHER_DETAILS.dateStarted}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
-
+                               
                     <!-- Duration -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
+                        <label class="block text-lg font-semibold text-gray-700">Duration (days)</label>
                         <input type="number" name="duration" value="${VOUCHER_DETAILS.duration}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="col-span-3">
-                        <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
+                    <div class="col-span-3 text-center">
+                        <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded text-lg hover:bg-blue-700">
                             Update Voucher
                         </button>
                     </div>
                 </form>
-
-
-
-
-
                 <div class="mt-6">
                     <a class="text-blue-600 hover:underline" href="voucherList">
                         <i class="fas fa-arrow-left mr-2"></i> Back to Voucher List
@@ -94,5 +112,19 @@
                 <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
             </div>
         </footer>
+        <script>
+// Show/Hide Max Discount Amount based on Voucher Type
+            document.getElementById('voucherType').addEventListener('change', function () {
+                document.getElementById('maxDiscountDiv').style.display =
+                        this.value === 'PERCENTAGE' ? 'block' : 'none';
+            });
+
+// Initialize visibility on page load
+            window.onload = function () {
+                if (document.getElementById('voucherType').value === 'PERCENTAGE') {
+                    document.getElementById('maxDiscountDiv').style.display = 'block';
+                }
+            };
+        </script>
     </body>
 </html>

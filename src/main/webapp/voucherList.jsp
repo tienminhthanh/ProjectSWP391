@@ -1,5 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -130,6 +132,7 @@
                                 <th class="px-4 py-3 border border-b">No.</th>
                                 <th class="px-4 py-3 border border-b">ID</th>
                                 <th class="px-4 py-3 border border-b">Voucher Name</th>
+                                <th class="px-4 py-3 border border-b">Voucher Type</th>
                                 <th class="px-4 py-3 border border-b">Value</th>
                                 <th class="px-4 py-3 border border-b">Quantity</th>
                                 <th class="px-4 py-3 border border-b">Expiry</th>
@@ -143,7 +146,16 @@
                                     <td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>
                                     <td class="px-4 py-3 border border-b text-center">${voucher.voucherID}</td>
                                     <td class="px-4 py-3 border border-b text-left">${voucher.voucherName}</td>
-                                    <td class="px-4 py-3 border border-b text-right">${voucher.voucherValue}</td>
+                                    <td class="px-4 py-3 border border-b text-left">${voucher.voucherType}</td>
+                                    <td class="px-4 py-3 border border-b text-right">
+                                        <c:choose>
+                                            <c:when test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                                ${voucher.voucherValue} %
+                                            </c:when>
+                                            <c:otherwise>
+                                                <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> VND
+                                            </c:otherwise>
+                                        </c:choose></td>
                                     <td class="px-4 py-3 border border-b text-right">${voucher.quantity}</td>
                                     <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
