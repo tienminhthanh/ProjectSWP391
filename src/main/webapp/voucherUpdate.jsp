@@ -11,12 +11,12 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="Book Walker Logo" class="h-10" height="50" src="https://storage.googleapis.com/a1aa/image/eqONjY2PAhJPB-SS1k-WJ6Cn3CmR-ITt6O9vKa2fKhk.jpg" width="150"/>
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+                <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
@@ -102,14 +102,14 @@
 
                     <!-- Submit Button -->
                     <div class="col-span-3 text-center">
-                        <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded text-lg hover:bg-blue-700">
+                        <button type="submit" class="w-full bg-orange-400 text-white p-3 rounded text-lg hover:bg-orange-500">
                             Update Voucher
                         </button>
                     </div>
                 </form>
                 <div class="mt-6">
-                    <a class="text-blue-600 hover:underline" href="voucherList">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to Voucher List
+                    <a class="text-orange-400 hover:underline" href="voucherList">
+                        <i class="fas fa-arrow-left mr-2"></i> <strong>Back to Voucher List</strong>
                     </a>
                 </div>
             </div>
