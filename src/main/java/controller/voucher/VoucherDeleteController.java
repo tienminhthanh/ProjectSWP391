@@ -12,17 +12,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.Voucher;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "VoucherListServlet", urlPatterns = {"/voucherList"})
-public class VoucherListServlet extends HttpServlet {
+@WebServlet(name = "VoucherDeleteServlet", urlPatterns = {"/voucherDelete"})
+public class VoucherDeleteController extends HttpServlet {
 
-    private final String VOUCHER_LIST_PAGE = "voucherList.jsp";
+    private final String VOUCHER_LIST_PAGE = "voucherList";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,30 +36,24 @@ public class VoucherListServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = VOUCHER_LIST_PAGE;
-        int page = 1;
-        int pageSize = 5;
-        String pageStr = request.getParameter("page");
-        if (pageStr != null) {
-            try {
-                page = Integer.parseInt(pageStr);
-            } catch (Exception e) {
-                page = 1;
-            }
-        }
+        HttpSession session = request.getSession();
 
         try {
+            int id = Integer.parseInt(request.getParameter("id"));
             VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getVoucherByPage(page, pageSize);
-            int totalVouchers = vDao.getTotalVoucher();
-            int totalPages = (int) Math.ceil((double) totalVouchers / pageSize);
-            request.setAttribute("LIST_VOUCHER", listVoucher);
-            request.setAttribute("currentPage", page);
-            request.setAttribute("totalPage", totalPages);
-        } catch (Exception ex) {
-            log("VoucherListServlet error:" + ex.getMessage());
-        } finally {
-            request.getRequestDispatcher(url).forward(request, response);
+
+            if (vDao.deleteVoucher(id)) {
+                session.setAttribute("message", "Voucher deleted successfully!");
+                session.setAttribute("messageType", "success");
+            } else {
+                session.setAttribute("message", "Failed to update voucher.");
+                session.setAttribute("messageType", "error");
+            }
+        } catch (Exception e) {
+            session.setAttribute("message", "Error: " + e.getMessage());
+            session.setAttribute("messageType", "error");
         }
+        response.sendRedirect(url);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

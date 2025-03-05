@@ -22,7 +22,7 @@ import model.Voucher;
  * @author ADMIN
  */
 @WebServlet(name = "VoucherAddNewServlet", urlPatterns = {"/voucherAddNew"})
-public class VoucherAddNewServlet extends HttpServlet {
+public class VoucherAddNewController extends HttpServlet {
 
     private final String VOUCHER_ADDNEW_PAGE = "voucherAddNew.jsp";
     private final String VOUCHER_LIST_PAGE = "voucherList";

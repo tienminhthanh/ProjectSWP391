@@ -24,7 +24,7 @@ import model.Voucher;
  * @author ADMIN
  */
 @WebServlet(name = "VoucherUpdateServlet", urlPatterns = {"/voucherUpdate"})
-public class VoucherUpdateServlet extends HttpServlet {
+public class VoucherUpdateController extends HttpServlet {
 
     private final String VOUCHER_UPDATE_PAGE = "voucherUpdate.jsp";
     private final String VOUCHER_LIST_PAGE = "voucherList";
