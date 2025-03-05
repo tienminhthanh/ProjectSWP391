@@ -1,0 +1,20 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 19, 2025, 10:16:56 AM
+    Author     : anhkc
+*/
+body{
+    font-family: Arial, sans-serif;
+}
+.popular-search-area, .voucher-area{
+    order:0;
+}
+
+@media (max-width:768px){
+    .popular-search-area, .voucher-area{
+        order:999;
+    }
+}

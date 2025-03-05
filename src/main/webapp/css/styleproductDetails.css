@@ -1,0 +1,257 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 23, 2025, 4:04:53 AM
+    Author     : anhkc
+*/
+
+html{
+    font-size:13px;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/*#cus-sidebar{
+    display: none;
+}*/
+
+.root-container {
+    padding: 20px;
+    padding-top: 0;
+}
+
+.bread-crumb-area a:hover{
+    color:orange;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.big-product-name-inner h2{
+    font-size:2em;
+    font-weight: bold;
+}
+.big-product-name-inner>p{
+    margin-bottom: 0;
+    font-size: 1em;
+}
+
+.creator-top {
+    font-size: 0.8rem;
+    font-style: italic;
+    margin: 5px 0 0;
+}
+
+.main-area {
+    display: flex;
+    align-items: flex-start;
+    /* Ensure items align at the top */
+    flex-wrap: wrap;
+}
+
+
+.image-area {
+    /*flex: 0 0 100%;*/
+    /* Keeps it at 30% width */
+    min-width: 300px;
+}
+
+.image-area img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+
+.description-area {
+        text-align: left;
+        background: white;
+    flex: 1 1 auto;
+    overflow-wrap: break-word;
+    white-space: normal;
+    /* Allow text wrapping */
+    /* Allows it to take up remaining space */
+    min-width: 0;
+    /* Prevents overflow issues */
+}
+
+.description-content{
+    margin-top: 10px;
+}
+.tags{
+    margin-top: 20px;
+    font-size: 0.8em;
+}
+
+.details-area {
+    max-width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow-wrap: break-word;
+    white-space: normal;
+    /* Allow text wrapping */
+    /* Allows it to take up remaining space */
+    min-width: 0;
+    /* Prevents overflow issues */
+    background-color:white;
+}
+
+.details-area table td{
+    padding: 10px;
+}
+
+
+
+.initial-price {
+    text-decoration: line-through;
+    color: gray;
+    margin-left: 10px;
+}
+
+.purchase-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.purchase-form button {
+    padding: 15px;
+    border: none;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.purchase-form button:hover{
+    opacity: 0.8;
+}
+
+.info-area h3 {
+    font-size: 1.2rem;
+}
+
+.description-title{
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1); /* Low-opacity line */
+    border-left: 10px solid orange;
+    padding: 10px;
+}
+
+
+
+.fomo-info {
+    font-weight: bold;
+    display: inline-block;
+}
+
+.fomo-info.pre{
+    color: blue;
+    border: 2px solid blue;
+}
+
+.fomo-info.sale{
+    color:red;
+    border: 2px solid red;
+}
+
+
+
+.stock-count{
+    margin-bottom: 0;
+    font-size:1.2em;
+}
+
+
+.purchase-form form {
+    padding: 10px;
+    padding-top: 0px;
+}
+
+#quantityInput{
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+button.add-to-cart{
+    background: orange;
+}
+
+button.buy-now{
+    background: #2be2b2;
+}
+
+.fa-star{
+    color:rgb(248, 208, 12);
+}
+
+
+
+@media (max-width: 768px) {
+    .overview-area{
+        width:40%;
+        min-height: fit-content;
+    }
+    .overview-inner{
+        width: 100%;
+        padding: 0;
+        gap:0;
+    }
+
+    .image-area{
+        flex: none;
+        max-width: 100%;
+        min-width: 200px;
+        text-align: center;
+    }
+    
+    .image-area img{
+        max-width: 100%;
+    }
+
+    
+
+
+    .main-area {
+        flex-direction: column;
+    }
+
+
+    .info-area,
+    .purchase-area {
+        flex: 100%;
+        flex: none;
+        width: 100%;
+    }
+
+    .info-area {
+        max-width: 100%;
+    }
+
+    .purchase-area{
+        text-align: center;
+    }
+   
+
+    .purchase-form form {
+        padding: 0px;
+    }
+
+    .purchase-form button {
+        display: block;
+        width: 90%;
+        margin: 10px auto;
+    }
+    
+    .details-area {
+        min-width: 100%
+    }
+
+}

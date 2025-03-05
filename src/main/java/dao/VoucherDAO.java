@@ -93,7 +93,7 @@ public class VoucherDAO {
                 String type = rs.getString(10);
                 Double maximum = rs.getDouble(11);
                 String dateStarted = rs.getString(12);
-                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateCreated);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
 
                 listVoucher.add(voucher);
             }

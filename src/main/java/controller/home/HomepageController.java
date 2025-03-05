@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.*;
 import dao.*;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,18 +62,38 @@ public class HomepageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("account") != null) {
+            Account account = (Account) session.getAttribute("account");
+            switch (account.getRole()) {
+                case "staff":
+                    response.sendRedirect("dashboard.jsp");
+                    break;
+                case "shipper":
+                    response.sendRedirect("shipperDashboard.jsp");
+                    break;
+                case "admin":
+                    response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                    break;
+            }
+            if (!account.getRole().equals("customer")) {
+                return;
+            }
+        }
+
         try {
             ProductDAO productDAO = new ProductDAO();
             List<Product> productList = productDAO.get10RandomActiveProducts("book");
 
-            VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
-            if (productList.isEmpty() || listVoucher.isEmpty()) {
+            if (productList.isEmpty()) {
                 throw new Exception("Found no products in the catalog!");
             }
+            
+            VoucherDAO vDao = new VoucherDAO();
+            List<Voucher> listVoucher = vDao.getListVoucher();
+            request.setAttribute("listVoucher", listVoucher);
 
             request.setAttribute("productList", productList);
-            request.setAttribute("listVoucher", listVoucher);
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.getMessage());

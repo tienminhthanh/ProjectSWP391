@@ -25,16 +25,17 @@ public class Product {
     private String generalCategory;
     private boolean isActive;
     private String imageURL;
+    private int discountPercentage;
+    private LocalDate eventEndDate;
 
     /**
      * EMPTY - Set attributes later
      */
     public Product() {
     }
-
+    
     /**
-     * FULL - For retrieve data from Product join Category
-     *
+     * FULL - FOR SELECT
      * @param productID
      * @param productName
      * @param price
@@ -51,8 +52,10 @@ public class Product {
      * @param generalCategory
      * @param isActive
      * @param imageURL
+     * @param discountPercentage
+     * @param eventEndDate 
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -69,12 +72,12 @@ public class Product {
         this.generalCategory = generalCategory;
         this.isActive = isActive;
         this.imageURL = imageURL;
+        this.discountPercentage = discountPercentage;
+        this.eventEndDate = eventEndDate;
     }
-
+    
     /**
-     * Omit lastModifiedTime, averageRating, numberOfRating - For Add/Update
-     *
-     *
+     * Omit lastModifiedTime, averageRating, numberOfRating, discountPercentage, eventEndDate - For Add/Update
      * @param productID
      * @param productName
      * @param price
@@ -82,15 +85,14 @@ public class Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
-     * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
      * @param generalCategory
      * @param isActive
-     * @param imageURL
+     * @param imageURL 
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -98,7 +100,6 @@ public class Product {
         this.specificCategory = specificCategory;
         this.description = description;
         this.releaseDate = releaseDate;
-        this.numberOfRating = numberOfRating;
         this.specialFilter = specialFilter;
         this.adminID = adminID;
         this.keywords = keywords;
@@ -106,6 +107,21 @@ public class Product {
         this.isActive = isActive;
         this.imageURL = imageURL;
     }
+    
+   
+    
+    
+    
+    
+    
+    
+   
+
+    
+
+
+    
+    
 
     public int getProductID() {
         return productID;
@@ -227,6 +243,7 @@ public class Product {
         this.isActive = isActive;
     }
 
+
     public String getImageURL() {
         return imageURL;
     }
@@ -235,5 +252,23 @@ public class Product {
         this.imageURL = imageURL;
     }
 
+    public int getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(int discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
+
+    public LocalDate getEventEndDate() {
+        return eventEndDate;
+    }
+
+    public void setEventEndDate(LocalDate eventEndDate) {
+        this.eventEndDate = eventEndDate;
+    }
+
+
+    
     
 }

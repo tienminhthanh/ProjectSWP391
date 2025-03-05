@@ -1,7 +1,7 @@
 <%-- 
     Document   : index
-    Created on : Feb 24, 2025, 2:15:55 PM
-    Author     : ADMIN
+    Created on : Feb 20, 2025, 10:44:47 PM
+    Author     : anhkc
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,6 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
+
         <%response.sendRedirect("home");%>
     </body>
 </html>

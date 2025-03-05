@@ -7,20 +7,30 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import model.Account;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("register.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
+        // Retrieve form data
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String conformPassword = request.getParameter("conformPassword");
+        String confirmPassword = request.getParameter("confirmPassword");
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
@@ -29,39 +39,72 @@ public class RegisterServlet extends HttpServlet {
 
         try {
             AccountDAO accountDAO = new AccountDAO();
+            String message = null;
+
+            // Check if the email exists in the system
+            Account accountByEmail = accountDAO.getAccountByEmail(email);
+
+            if (accountByEmail != null && !"admin".equals(accountByEmail.getRole())) {
+                // If email exists, check if the account is active or locked
+                if (accountByEmail.getIsActive()) {
+                    // If account is active, deny registration
+                    message = "Email already exists!";
+                } else {
+                    request.getSession().setAttribute("tempEmail", email);
+                    // If account is locked, redirect to unlock/re-register page
+                    request.setAttribute("lockedAccount", accountByEmail);
+                    request.setAttribute("message", "This email is associated with a locked account. Do you want to unlock it or remove the email?");
+                    request.getRequestDispatcher("unlockOrRegister.jsp").forward(request, response);
+                    return;
+                }
+            }
+
+            // Check if username already exists
             if (accountDAO.getAccountByUsername(username) != null) {
-                request.setAttribute("message", "Username already exists!");
-                return;
-            }
-            if (!password.equals(conformPassword)) {
-                request.setAttribute("message", "Password and re-enter password are not the same!");
-                return;
+                message = "Username already exists!";
+            } // Check if passwords match
+            else if (!password.equals(confirmPassword)) {
+                message = "Passwords do not match!";
+            } // Proceed with registration
+            else {
+                AccountLib lib = new AccountLib();
+                password = lib.hashMD5(confirmPassword);
+                boolean success = accountDAO.register(username, password, firstName, lastName, null, phoneNumber, birthDate);
+                if (success) {
+                    // Store temporary email for verification
+                    request.getSession().setAttribute("tempEmail", email);
+                    request.getSession().setAttribute("tempUsername", username);
+                    response.sendRedirect("emailAuthentication");
+                    return;
+                } else {
+                    message = "Registration failed. Please try again.";
+                }
             }
 
-            if (accountDAO.isEmailExistForEmail(email)) {
-                request.setAttribute("message", "The email address is already in use by another account.");
-                return;
+            // If there is an error, return to the registration page
+            if (message != null) {
+                request.setAttribute("message", message);
+                forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate);
             }
-
-            boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate, "customer");
-
-            if (success) {
-                request.setAttribute("message", "Registration successful! Please log in.");
-            } else {
-                request.setAttribute("message", "Username or email is already in use.");
-            }
-
-            RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
-            dispatcher.forward(request, response);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Database error: " + e.getMessage());
+            forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate);
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    // Forward request to register page and keep entered data
+    private void forwardToRegisterPage(HttpServletRequest request, HttpServletResponse response,
+            String username, String firstName, String lastName,
+            String email, String phoneNumber, String birthDate)
             throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
-        dispatcher.forward(request, response);
+        request.setAttribute("username", username);
+        request.setAttribute("firstName", firstName);
+        request.setAttribute("lastName", lastName);
+        request.setAttribute("email", email);
+        request.setAttribute("phoneNumber", phoneNumber);
+        request.setAttribute("birthDate", birthDate);
+        request.getRequestDispatcher("register.jsp").forward(request, response);
     }
+
 }

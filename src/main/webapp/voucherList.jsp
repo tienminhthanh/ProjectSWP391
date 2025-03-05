@@ -51,7 +51,7 @@
                 </a>
 
 
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                <a class="flex items-center p-2 hover:bg-blue-800" href="listnotification">
                     <i class="fas fa-bell mr-2"></i>
                     Notification List
                 </a>

@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
+
 
 /**
  *
@@ -36,6 +33,7 @@ public class Voucher {
         this.dateCreated = dateCreated;
         this.duration = duration;
         this.adminID = adminID;
+
         this.isActive = isActive;
         this.expiry = expiry;
         this.voucherType = voucherType;
@@ -67,6 +65,7 @@ public class Voucher {
         this.voucherName = voucherName;
     }
 
+
     public double getVoucherValue() {
         return voucherValue;
     }
@@ -91,6 +90,7 @@ public class Voucher {
         this.minimumPurchaseAmount = minimumPurchaseAmount;
     }
 
+
     public String getDateCreated() {
         return dateCreated;
     }
@@ -114,6 +114,7 @@ public class Voucher {
     public void setAdminID(int adminID) {
         this.adminID = adminID;
     }
+
 
     public boolean isIsActive() {
         return isActive;

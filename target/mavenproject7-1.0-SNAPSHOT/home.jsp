@@ -1,65 +1,51 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
         <title>
-            Book Walker
+            WIBOOKS - More Than Just Books
         </title>
-        <script src="https://cdn.tailwindcss.com">
-        </script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
+
+        <!--Unknown import-->
+        <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>-->
+
+        <link rel="stylesheet" href="css/styleHome.css"/>
+        <!--Header css-->
+        <link href="css/styleHeader.css" rel="stylesheet">
+
+        <!--Footer css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link href="css/styleFooter.css" rel="stylesheet">
+
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
+
+        <!--Product card css-->
+        <link rel="stylesheet" href="css/styleProductCard.css"/>
+
+        <!--Banner carousel-->
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     </head>
     <body class="bg-gray-100">
-        <header class="bg-blue-600 p-4 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
+        <div class="header-container">
+            <jsp:include page="header.jsp" flush="true"/> 
+        </div>
 
-                <form action="search">
-                    <input class="p-2 rounded w-96" placeholder="title, author or keywords" type="search"/>
-                </form>
-                <button class="bg-blue-700 text-white p-2 rounded">
-                    Merch
-                </button>
-                <button class="bg-blue-700 text-white p-2 rounded">
-                    Books
-                </button>
-                <button class="bg-blue-700 text-white p-2 rounded">
-                    All Products
-                </button>
-            </div>
-            <div class="flex items-center space-x-4">
-                <c:choose>
-                    <c:when test="${not empty sessionScope.account}">
-                        <a href="readAccount" class="bg-green-500 text-white p-2 rounded hover:bg-green-600">
-                            <i class="fas fa-user mr-2"></i> View Profile
-                        </a>
-                        <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="login.jsp" class="text-white bg-blue-500 p-2 rounded hover:bg-blue-600">
-                            Sign In
-                        </a>
-                        <a href="register.jsp" class="bg-orange-500 text-white p-2 rounded hover:bg-orange-600">
-                            Register
-                        </a>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
-        </header>
-        <!-- Import Alpine.js -->
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
         <div x-data="{ 
              current: 0, 
              banners: [
-             '/mavenproject7/img/banner_event/banner1.jpg',
-             '/mavenproject7/img/banner_event/banner2.jpg',
-             '/mavenproject7/img/banner_event/banner3.jpg',
-             '/mavenproject7/img/banner_event/banner4.jpg'
+             '/img/banner_event/banner1.jpg',
+             '/img/banner_event/banner2.jpg',
+             '/img/banner_event/banner3.jpg',
+             '/img/banner_event/banner4.jpg'
              ],
              next() {
              this.current = (this.current + 1) % this.banners.length;
@@ -92,95 +78,42 @@
             </div>
         </div>
 
+        <div class="flex flex-col md:flex-row">
+            <jsp:include page="customerSidebar.jsp"/>
 
-
-
-        <div class="flex">
-            <aside class="w-1/4 p-4 bg-gray-200">
-                <div class="bg-orange-500 text-white p-4 rounded mb-4">
-                    <h2>
-                        New to BOOK☆WALKER?
-                    </h2>
-                    <button class="bg-orange-600 text-white p-2 rounded mt-2">
-                        <a href="register.jsp">Create Account</a>
-                    </button>
-                </div>
-                <div class="mb-4">
-                    <button class="text-blue-600">
-                        <a href="login.jsp">Sign In</a>
-                    </button>
-                </div>
-                <div class="mb-4">
-                    <h3 class="font-bold">
-                        Get Started
-                    </h3>
-                    <ul class="list-disc list-inside">
-                        <li>
-                            50% Point-Back for Newcomers
-                        </li>
-                        <li>
-                            About BOOK☆WALKER
-                        </li>
-                        <li>
-                            Redeem Coupons
-                        </li>
-                        <li>
-                            Redeem Gifted eBooks
-                        </li>
-                        <li>
-                            FAQ
-                        </li>
-                        <li>
-                            Point Affiliate Program
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold">
-                        Start Reading On
-                    </h3>
-                    <ul class="list-disc list-inside">
-                        <li>
-                            PC
-                        </li>
-                        <li>
-                            Android
-                        </li>
-                        <li>
-                            iOS
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-            <main class="w-3/4 p-4">
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold">
+            <!--Main section-->
+            <main class="w-full md:w-5/6 p-3 flex flex-col">
+                <!--Div1-->
+                <div class="mb-4 bg-white popular-search-area">
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Popular Searches
                     </h2>
-                    <div class="flex space-x-4">
-                        <button class="bg-blue-500 text-white p-2 rounded">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
+                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
                             On Sale Merch
                         </button>
-                        <button class="bg-blue-500 text-white p-2 rounded">
+                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
                             Top Merch
                         </button>
-                        <button class="bg-blue-500 text-white p-2 rounded">
+                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
                             On Sale Books
                         </button>
-                        <button class="bg-blue-500 text-white p-2 rounded">
+                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
                             Top Books
                         </button>
-                        <button class="bg-blue-500 text-white p-2 rounded">
+                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
                             Seasonal Anime - Merch
                         </button>
-                        <button class="bg-blue-500 text-white p-2 rounded">
+                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
                             Seasonal Anime - Books
                         </button>
                     </div>
                 </div>
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold">
-                        Voucher List
+
+                <!--Div2-->
+                <div class="mb-4 bg-white voucher-area">
+                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Vouchers
                     </h2>
                     <div class="flex flex-wrap gap-4">
                         <c:forEach var="voucher" items="${listVoucher}">
@@ -195,172 +128,87 @@
                         </c:if>
                     </div>
                 </div>
-                <!--
-                <script>
-                    function navigateToUpdate(voucherID) {
-                        window.location = 'voucherDetails?voucherId=' + voucherID;
-                    }
-                </script>-->
 
-                <div>
-                    <h2 class="text-xl font-bold mb-4">
-                        New Releases (Volumes)
+                <!--Random Pick-->
+                <div class="bg-white">
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center border-t-4 border-orange-300">
+                        Lucky Books
                     </h2>
-                    <div class="flex space-x-4 overflow-x-auto">
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 1" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+1" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                The Eminence in Shadow, Vol. 6 (light novel)
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $7.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 2" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+2" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                Crossplay Love: Otaku x Punk Vol. 11
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $9.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 3" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+3" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                The Too-Perfect Saint: Tossed Aside by My...
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $9.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 4" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+4" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                A Cozy Life in the Woods with the White Witch...
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $7.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 5" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+5" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                Even Though We're Adults Vol. 10
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $9.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 6" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+6" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                A Certain Scientific Railgun Vol. 19
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $9.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 7" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+7" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                Kurokiya-san Wants to Lead Him Around by the...
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $13.95
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 8" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+8" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                Pass the Monster Meat, Milady! 7
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $10.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 9" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+9" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                Lycoris Recoil: Ordinary Days
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $8.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
-                        </div>
-                        <div class="bg-white p-4 rounded shadow w-48">
-                            <img alt="Book 10" class="mb-2" height="150" src="https://placehold.co/100x150?text=Book+10" width="100"/>
-                            <h3 class="text-sm font-bold">
-                                I Have a Crush at Work 8
-                            </h3>
-                            <p class="text-orange-500 font-bold">
-                                US $10.99
-                            </p>
-                            <button class="bg-blue-500 text-white p-2 rounded mt-2">
-                                Preview
-                            </button>
-                            <button class="bg-orange-500 text-white p-2 rounded mt-2">
-                                Cart
-                            </button>
+                    <!--Loop through product list-->
+                    <div class="w-full">
+                        <div class="gap-4 w-full overflow-x-auto">
+                            <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                <c:forEach var="currentProduct" items="${productList}">
+                                    <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                    <jsp:include page="productCard.jsp"/>
+                                </c:forEach>
+                            </div>
                         </div>
                     </div>
+
                 </div>
+                <!--Popup unauthorized users-->
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                    <jsp:include page="popuplogin.jsp"/>
+                </c:if>
             </main>
         </div>
-    </body>
+        <jsp:include page="footer.jsp"/>
+        <jsp:include page="chat.jsp"/>
 
+
+
+
+        <!--Header script-->
+        <script src="js/scriptHeader.js"></script>
+
+        <!--Footer script-->
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script>
+        
+        <!--Unknown import-->
+        <!--        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+                        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+                crossorigin="anonymous"></script>-->
+
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com">
+        </script>
+
+        <!--Product Card-->
+        <script src="js/scriptProductCard.js"></script>
+
+
+
+
+    </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
