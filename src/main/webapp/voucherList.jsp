@@ -37,24 +37,22 @@
 
                 <!-- TABLE -->
                 <div class="overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full bg-white border border-gray-200">
+                    <table class="table-fixed min-w-full bg-white border border-gray-200">
                         <thead class="bg-orange-400 text-white">
                             <tr>
-                                <!--<th class="px-4 py-3 border border-b">No.</th>-->
-                                <th class="px-4 py-3 border border-b">ID</th>
-                                <th class="px-4 py-3 border border-b">Voucher Name</th>
-                                <th class="px-4 py-3 border border-b">Voucher Type</th>
-                                <th class="px-4 py-3 border border-b">Value</th>
-                                <th class="px-4 py-3 border border-b">Quantity</th>
-                                <th class="px-4 py-3 border border-b">Expiry</th>
-                                <th class="px-2 py-3 border border-b">Voucher Status</th>
+                                <th class="px-4 py-3 border border-b w-[80px]">ID</th>
+                                <th class="px-4 py-3 border border-b w-[200px]">Voucher Name</th>
+                                <th class="px-4 py-3 border border-b w-[150px]">Voucher Type</th>
+                                <th class="px-4 py-3 border border-b w-[100px]">Value</th>
+                                <th class="px-4 py-3 border border-b w-[100px]">Quantity</th>
+                                <th class="px-4 py-3 border border-b w-[120px]">Expiry</th>
+                                <th class="px-2 py-3 border border-b w-[150px]">Voucher Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:forEach var="voucher" items="${LIST_VOUCHER}" varStatus="status">
                                 <tr class="hover:bg-gray-100 transition duration-300 cursor-pointer"
                                     onclick="navigateToUpdate(${voucher.voucherID})">
-                                    <!--<td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>-->
                                     <td class="px-4 py-3 border border-b text-center">${voucher.voucherID}</td>
                                     <td class="px-4 py-3 border border-b text-left">${voucher.voucherName}</td>
                                     <td class="px-4 py-3 border border-b text-left">${voucher.voucherType}</td>
@@ -107,10 +105,9 @@
                         </tbody>
 
                     </table>
-                    <!-- Phân trang -->
-
-
                 </div>
+
+                <!-- Phân trang -->
                 <c:if test="${totalPage> 1}">
                     <div class="flex justify-center mt-6">
                         <nav class="flex space-x-2">
