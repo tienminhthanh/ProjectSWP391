@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -112,16 +113,50 @@
 
                 <!--Div2-->
                 <div class="mb-4 bg-white voucher-area">
-                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Vouchers
                     </h2>
                     <div class="flex flex-wrap gap-4">
                         <c:forEach var="voucher" items="${listVoucher}">
-                            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-                                    onclick="navigateToUpdate(${voucher.voucherID})">
-                                ${voucher.voucherName} - ${voucher.voucherValue}
-                            </button>
+                            <div class="voucher-card border rounded-lg p-4 shadow-md bg-white">
+                                <!-- Tên Voucher -->
+                                <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+
+                                <!-- Giá trị giảm -->
+                                <p>Sale
+                                    <span>
+                                        <c:choose>
+                                            <c:when test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                                ${voucher.voucherValue} %
+                                            </c:when>
+                                            <c:otherwise>
+                                                <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> VND
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </p>
+
+                                <!-- Hiển thị Max Discount nếu là Percentage -->
+                                <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                    <p>Up to
+                                        <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> VND</span>
+                                    </p>
+                                </c:if>
+
+                                <!-- Điều kiện sử dụng -->
+                                <p>For orders from
+                                    <span>
+                                        <fmt:formatNumber value="${voucher.minimumPurchaseAmount}" type="number" groupingUsed="true"/> VND
+                                    </span>
+                                </p>
+
+                                <!-- Hạn sử dụng -->
+                                <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
+                                    <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                </div>
+                            </div>
                         </c:forEach>
+
 
                         <c:if test="${empty listVoucher}">
                             <p class="text-gray-500 italic">No vouchers available.</p>
@@ -171,7 +206,7 @@
         <!--Customer sidebar script-->
         <script src="js/scriptCusSidebar.js"></script>
         <script src="js/scriptCusSideBarNOTDetails.js"></script>
-        
+
         <!--Unknown import-->
         <!--        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
                         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -183,7 +218,18 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelectorAll(".voucher").forEach(function (voucher) {
+                    let startDate = new Date(voucher.dataset.start);
+                    let duration = parseInt(voucher.dataset.duration);
+                    let dateEnd = new Date(startDate);
+                    dateEnd.setDate(startDate.getDate() + duration);
 
+                    voucher.querySelector(".date-end").textContent = dateEnd.toISOString().split("T")[0];
+                });
+            });
+        </script>
 
 
 
