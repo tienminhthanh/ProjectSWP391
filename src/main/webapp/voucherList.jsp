@@ -129,7 +129,7 @@
                     <table class="min-w-full bg-white border border-gray-200">
                         <thead class="bg-blue-600 text-white">
                             <tr>
-                                <th class="px-4 py-3 border border-b">No.</th>
+                                <!--<th class="px-4 py-3 border border-b">No.</th>-->
                                 <th class="px-4 py-3 border border-b">ID</th>
                                 <th class="px-4 py-3 border border-b">Voucher Name</th>
                                 <th class="px-4 py-3 border border-b">Voucher Type</th>
@@ -143,7 +143,7 @@
                             <c:forEach var="voucher" items="${LIST_VOUCHER}" varStatus="status">
                                 <tr class="hover:bg-gray-100 transition duration-300 cursor-pointer"
                                     onclick="navigateToUpdate(${voucher.voucherID})">
-                                    <td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>
+                                    <!--<td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>-->
                                     <td class="px-4 py-3 border border-b text-center">${voucher.voucherID}</td>
                                     <td class="px-4 py-3 border border-b text-left">${voucher.voucherName}</td>
                                     <td class="px-4 py-3 border border-b text-left">${voucher.voucherType}</td>

@@ -49,24 +49,36 @@
                     <!-- Voucher Value -->
                     <div class="mb-4">
                         <label class="block text-lg font-semibold text-gray-700">Voucher Value</label>
-                        <input type="number" step="0.01" name="voucherValue" value="${VOUCHER_DETAILS.voucherValue}" 
-                               class="w-full p-3 border border-gray-300 rounded" required>
+                        <div class="relative">
+                            <input type="number" step="0.01" name="voucherValue" value="${VOUCHER_DETAILS.voucherValue}" 
+                                   class="w-full p-3 border border-gray-300 rounded pr-7" required>
+                            <span id="unit" class="absolute inset-y-0 right-3 flex items-center text-gray-500"></span>
+                        </div>
                     </div>
 
                     <!-- Max Discount Amount (Only for Percentage) -->
                     <div class="mb-4" id="maxDiscountDiv" style="display: none;">
                         <label class="block text-lg font-semibold text-gray-700">Max Discount Amount</label>
-                        <input type="number" step="0.01" name="maxDiscountAmount" value="${VOUCHER_DETAILS.maxDiscountAmount}" 
-                               class="w-full p-3 border border-gray-300 rounded">
+                        <div class="relative">
+                            <input type="number" step="0.01" name="maxDiscountAmount" id="maxDiscountAmount"
+                                   value="${VOUCHER_DETAILS.maxDiscountAmount}" 
+                                   class="w-full p-3 border border-gray-300 rounded pr-12">
+                            <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">VND</span>
+                        </div>
                     </div>
-                               
+
                     <!-- Minimum Purchase Amount -->
                     <div class="mb-4">
                         <label class="block text-lg font-semibold text-gray-700">Minimum Purchase</label>
-                        <input type="number" name="minimumPurchaseAmount" value="${VOUCHER_DETAILS.minimumPurchaseAmount}" 
-                               class="w-full p-3 border border-gray-300 rounded" required>
+                        <div class="relative">
+                            <input type="number" name="minimumPurchaseAmount" id="minimumPurchaseAmount"
+                                   value="${VOUCHER_DETAILS.minimumPurchaseAmount}" 
+                                   class="w-full p-3 border border-gray-300 rounded pr-12" required>
+                            <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">VND</span>
+                        </div>
                     </div>
-                               
+
+
                     <!-- Quantity -->
                     <div class="mb-4">
                         <label class="block text-lg font-semibold text-gray-700">Quantity</label>
@@ -80,7 +92,7 @@
                         <input type="date" name="dateStarted" value="${VOUCHER_DETAILS.dateStarted}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
-                               
+
                     <!-- Duration -->
                     <div class="mb-4">
                         <label class="block text-lg font-semibold text-gray-700">Duration (days)</label>
@@ -123,5 +135,45 @@
                 }
             };
         </script>
+        <script>
+            function validateForm(event) {
+                let voucherType = document.getElementById("voucherType").value;
+                let voucherValue = document.querySelector("[name='voucherValue']").value;
+
+                if (voucherType === "PERCENTAGE") {
+                    let value = parseFloat(voucherValue);
+                    if (value <= 0 || value > 100) {
+                        alert("Percentage discount must be between 1% and 100%.");
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function toggleMaxDiscount() {
+                let voucherType = document.getElementById("voucherType").value;
+                let maxDiscountDiv = document.getElementById("maxDiscountDiv");
+                maxDiscountDiv.style.display = voucherType === "PERCENTAGE" ? "block" : "none";
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector("form").addEventListener("submit", validateForm);
+                toggleMaxDiscount();
+            });
+        </script>
+        <script>
+            function updateUnit() {
+                let voucherType = document.getElementById("voucherType").value;
+                let unitSpan = document.getElementById("unit");
+                unitSpan.textContent = (voucherType === "PERCENTAGE") ? "%" : "VND";
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("voucherType").addEventListener("change", updateUnit);
+                updateUnit(); // Cập nhật ngay khi trang tải xong
+            });
+        </script>
+
     </body>
 </html>
