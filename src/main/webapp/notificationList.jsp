@@ -46,6 +46,10 @@
                 padding: 16px;
                 margin-bottom: 10px;
                 background-color: #334155;
+                cursor: pointer;
+            }
+            .notification-item:hover {
+                background-color: #475569;
             }
             .btn-primary {
                 background-color: #3b82f6;
@@ -54,20 +58,15 @@
             .btn-primary:hover {
                 background-color: #2563eb;
             }
-            .btn-secondary {
-                background-color: #64748b;
-                border: none;
-            }
-            .btn-secondary:hover {
-                background-color: #475569;
-            }
         </style>
     </head>
-    <body>
+    <body class="bg-gray-50 min-h-screen flex">
         <div class="w-64 bg-orange-400 text-white min-h-screen">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
-        </div> 
-        <main class="flex-1 p-16">
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
             <div class="admin-container">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-bold">
@@ -77,7 +76,6 @@
                     </h2>
                     <div class="space-x-4">
                         <c:set var="notification" value="${notifications[0]}" />
-                        <!-- Form to create a new notification -->
                         <form action="createnotification" method="get">
                             <input type="hidden" name="senderID" value="${notification.senderID}">
                             <button type="submit" class="btn btn-primary">Create Notification</button>
@@ -85,9 +83,9 @@
                     </div>
                 </div>
                 <!-- Display error message if present -->
-                <% if (request.getAttribute("error") != null) {%>
-                <p class="text-red-400"><%= request.getAttribute("error")%></p>
-                <% }%>
+                <c:if test="${not empty error}">
+                    <p class="text-red-400">${error}</p>
+                </c:if>
                 <div class="notification-scroll">
                     <c:choose>
                         <c:when test="${empty notifications}">
@@ -95,30 +93,33 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="notification" items="${notifications}">
-                                <div class="notification-item">
-                                    <div class="flex items-start">
-                                        <img alt="Notification icon" class="mr-4" 
-                                             src="https://icon-library.com/images/icon-notification/icon-notification-3.jpg" 
-                                             width="80" height="80"/>
-                                        <div class="flex-1">
-                                            <h3 class="font-bold text-white">${notification.notificationTitle}</h3>
-                                            <p class="text-gray-300">${notification.notificationDetails}</p>
-                                            <p class="text-gray-400 text-sm">
-                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
-                                            </p>
+                                <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
+                                   style="text-decoration: none;">
+                                    <div class="notification-item">
+                                        <div class="flex items-start">
+                                            <img alt="Notification icon" class="mr-4" 
+                                                 src="https://icon-library.com/images/icon-notification/icon-notification-3.jpg" 
+                                                 width="80" height="80"/>
+                                            <div class="flex-1">
+                                                <h2 class="font-bold text-white">${notification.notificationTitle}</h2>
+                                                <p class="text-gray-300">Click to see details.</p>
+                                                <p class="text-gray-400 text-sm">
+                                                    <fmt:formatDate value="${notification.dateCreated}" pattern="dd-MM-yyyy"/>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </c:forEach>
                         </c:otherwise>
                     </c:choose>
                 </div>
             </div>
-        </main>
+        </div>
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <script src="/js/scriptHeader.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
+                crossorigin="anonymous"></script>
     </body>
 </html>

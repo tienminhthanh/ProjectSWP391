@@ -13,6 +13,9 @@
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
         <link href="/css/styleFooter.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
+
         <style>
             .chat-container {
                 width: 60%;
@@ -136,5 +139,9 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script>
+
     </body>
 </html>

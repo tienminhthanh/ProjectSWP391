@@ -7,6 +7,10 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Notification Details</title>
+        
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
+
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="/css/styleHeader.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -100,6 +104,10 @@
         <jsp:include page="chat.jsp"/>
         <c:import url="footer.jsp"/>
 
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script><!-- comment -->
+        
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <script src="/js/scriptHeader.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"

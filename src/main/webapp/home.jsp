@@ -184,31 +184,5 @@
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
 
-
-
-
     </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

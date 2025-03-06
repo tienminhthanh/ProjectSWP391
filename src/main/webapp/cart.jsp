@@ -39,7 +39,7 @@
 
             .items-in-cart {
                 text-align: center;
-                background-color: #1e3a8a;
+                background-color: rgb(249, 115, 22);
                 color: white;
                 padding: 10px;
                 border-radius: 8px 8px 0 0;
