@@ -119,6 +119,9 @@
                         Vouchers
                     </h2>
                     <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
+                        <h3 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                            Vouchers
+                        </h3>
                         <c:forEach var="voucher" items="${listVoucher}">
                             <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
                                  style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
@@ -163,6 +166,57 @@
                         </c:forEach>
 
                         <c:if test="${empty listVoucher}">
+                            <p class="text-gray-500 italic">No vouchers available.</p>
+                        </c:if>
+                    </div>
+                    <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
+                        <h3 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                            Coming Soon
+                        </h3>
+                        <c:forEach var="voucherComeSoon" items="${listVoucherComeSoon}">
+                            <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
+                                 style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
+                                <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+                                    <!-- Tên Voucher -->
+                                    <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+
+                                    <!-- Giá trị giảm -->
+                                    <p>Sale
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${voucherComeSoon.voucherType eq 'PERCENTAGE'}">
+                                                    ${voucherComeSoon.voucherValue} %
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${voucherComeSoon.voucherValue}" type="number" groupingUsed="true"/> đ
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </p>
+
+                                    <!-- Hiển thị Max Discount nếu là Percentage -->
+                                    <c:if test="${voucherComeSoon.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to
+                                            <span><fmt:formatNumber value="${voucherComeSoon.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span>
+                                        </p>
+                                    </c:if>
+
+                                    <!-- Điều kiện sử dụng -->
+                                    <p>For orders from
+                                        <span>
+                                            <fmt:formatNumber value="${voucherComeSoon.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </p>
+
+                                    <!-- Hạn sử dụng -->
+                                    <div class="voucher" data-start="${voucherComeSoon.dateStarted}" data-duration="${voucherComeSoon.duration}">
+                                        <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+
+                        <c:if test="${empty listVoucherComeSoon}">
                             <p class="text-gray-500 italic">No vouchers available.</p>
                         </c:if>
                     </div>

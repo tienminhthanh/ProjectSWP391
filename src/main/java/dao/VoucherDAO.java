@@ -104,6 +104,43 @@ public class VoucherDAO {
         return listVoucher;
     }
 
+    public List<Voucher> getListVoucherComeSoon() {
+        List<Voucher> listVoucher = new ArrayList<>();
+        String sql = "SELECT * FROM [dbo].[Voucher] WHERE dateStarted BETWEEN ? AND ?";
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate today = LocalDate.now();
+            LocalDate threeDaysLater = today.plusDays(3);
+            Object[] params = {today, threeDaysLater};
+            ResultSet rs = context.exeQuery(sql, params);
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double value = rs.getDouble(3);
+                int quantity = rs.getInt(4);
+                int mminimum = rs.getInt(5);
+                String dateCreated = rs.getString(6);
+                int duration = rs.getInt(7);
+                int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
+                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                String dateStarted = rs.getString(12);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+
+                listVoucher.add(voucher);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return listVoucher;
+    }
+
     public Voucher getVoucherByID(int voucherID) {
         try {
             String sql = "SELECT * FROM [dbo].[Voucher] WHERE [voucherID] = ?";
@@ -209,10 +246,10 @@ public class VoucherDAO {
 
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
-        List<Voucher> list = vd.getVoucherByPage(1, 10);
+        List<Voucher> list = vd.getListVoucherComeSoon();
 //        List<Voucher> list = vd.getListVoucher();
         for (Voucher voucher : list) {
-            System.out.println(voucher.getDuration());
+            System.out.println(voucher.getVoucherName());
         }
     }
 }

@@ -88,10 +88,12 @@ public class HomepageController extends HttpServlet {
             if (productList.isEmpty()) {
                 throw new Exception("Found no products in the catalog!");
             }
-            
+
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             request.setAttribute("listVoucher", listVoucher);
+            List<Voucher> listVoucherComeSoon = vDao.getListVoucherComeSoon();
+            request.setAttribute("listVoucherComeSoon", listVoucherComeSoon);
 
             request.setAttribute("productList", productList);
             request.getRequestDispatcher("home.jsp").forward(request, response);
