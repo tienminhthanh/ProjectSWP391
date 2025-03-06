@@ -57,7 +57,7 @@
     <body class="bg-gray-100">
         <c:import url="header.jsp"/>
 
-        <div class="flex mt-4 mx-0">
+        <div class="flex flex-col md:flex-row">
             <jsp:include page="customerSidebar.jsp"/>
 
             <main class="flex-1 bg-white p-4">

@@ -102,7 +102,7 @@
                                     </a>
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
-                                <p><fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> VND</p>
+                                <p><fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ</p>
                                 <!-- Form cập nhật CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="update" />
@@ -140,7 +140,7 @@
                             <c:forEach var="item" items="${sessionScope.cartItems}">
                                 <c:set var="total" value="${total + item.priceWithQuantity * item.quantity}" />
                             </c:forEach>
-                            <fmt:formatNumber value="${total}" type="number" groupingUsed="true"/> VND
+                            <fmt:formatNumber value="${total}" type="number" groupingUsed="true"/> đ
                         </span>
                     </div>
                     <form action="OrderController" method="get">
@@ -169,45 +169,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
-        <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                            updateQuantityValues();
-                        });
 
-                        document.querySelectorAll(".quantity-input").forEach(input => {
-                            input.addEventListener("input", function () {
-                                updateQuantityValues();
-                            });
-                        });
-
-                        function updateQuantityValues() {
-                            let total = 0;
-
-                            document.querySelectorAll(".quantity-input").forEach(input => {
-                                let quantity = parseInt(input.value) || 1;
-                                let priceElement = input.closest(".flex").querySelector("p");
-                                let priceText = priceElement.textContent.replace(" VND", "").replace(/,/g, ""); // Xóa dấu phẩy
-
-                                let price = parseFloat(priceText) || 0;
-                                let totalItemPrice = quantity * price;
-
-                                total += totalItemPrice;
-
-                                // Cập nhật giá trị hiển thị từng sản phẩm
-                                priceElement.textContent = formatCurrency(totalItemPrice);
-                            });
-
-                            // Cập nhật tổng tiền
-                            let totalElement = document.querySelector(".text-red-500");
-                            if (totalElement) {
-                                totalElement.innerHTML = `<c:out value="\${fn:length(sessionScope.cartItems)}"/> Item(s) - ${formatCurrency(total)}`;
-                                        }
-                                    }
-
-                                    function formatCurrency(amount) {
-                                        return amount.toLocaleString("en-US") + " VND";
-                                    }
-
-        </script>
     </body>
 </html>
