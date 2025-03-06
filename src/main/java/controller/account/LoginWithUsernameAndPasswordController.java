@@ -16,7 +16,7 @@ import java.sql.SQLException;
  * Servlet responsible for handling user login.
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
-public class LoginController extends HttpServlet {
+public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
     private AccountDAO accountDAO;
 
