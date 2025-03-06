@@ -63,7 +63,7 @@
                             <input type="number" step="0.01" name="maxDiscountAmount" id="maxDiscountAmount"
                                    value="${VOUCHER_DETAILS.maxDiscountAmount}" 
                                    class="w-full p-3 border border-gray-300 rounded pr-12">
-                            <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">VND</span>
+                            <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">đ</span>
                         </div>
                     </div>
 
@@ -74,7 +74,7 @@
                             <input type="number" name="minimumPurchaseAmount" id="minimumPurchaseAmount"
                                    value="${VOUCHER_DETAILS.minimumPurchaseAmount}" 
                                    class="w-full p-3 border border-gray-300 rounded pr-12" required>
-                            <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">VND</span>
+                            <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">đ</span>
                         </div>
                     </div>
 

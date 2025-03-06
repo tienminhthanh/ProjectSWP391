@@ -51,14 +51,14 @@
                             <label class="block text-sm font-medium text-gray-700">Max Discount Amount</label>
                             <div class="relative">
                                 <input class="w-full p-3 border border-gray-300 rounded pr-12" name="maxDiscountAmount" placeholder="Enter max discount amount" type="number" step="0.01"/>
-                                <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">VND</span>
+                                <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">?</span>
                             </div>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Minimum Purchase Amount</label>
                             <div class="relative">
                                 <input class="w-full p-3 border border-gray-300 rounded pr-12" name="minimumPurchaseAmount" placeholder="Enter minimum purchase" required type="number"/>
-                                <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">VND</span>
+                                <span class="absolute inset-y-0 right-3 flex items-center text-gray-500">?</span>
                             </div>
                         </div>
                         <div class="mb-4">

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="en_US"/>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,7 +63,7 @@
                                                 ${voucher.voucherValue} %
                                             </c:when>
                                             <c:otherwise>
-                                                <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> VND
+                                                <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> đ
                                             </c:otherwise>
                                         </c:choose></td>
                                     <td class="px-4 py-3 border border-b text-right">${voucher.quantity}</td>

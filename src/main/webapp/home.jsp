@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
+<fmt:setLocale value="en_US"/>
+
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -43,10 +45,10 @@
         <div x-data="{ 
              current: 0, 
              banners: [
-             '/img/banner_event/banner1.jpg',
-             '/img/banner_event/banner2.jpg',
-             '/img/banner_event/banner3.jpg',
-             '/img/banner_event/banner4.jpg'
+             '/img/banner_event/voucher1.jpg',
+             '/img/banner_event/voucher2.jpg',
+             '/img/banner_event/voucher3.jpg',
+             '/img/banner_event/voucher4.jpg'
              ],
              next() {
              this.current = (this.current + 1) % this.banners.length;
@@ -116,47 +118,49 @@
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Vouchers
                     </h2>
-                    <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
                         <c:forEach var="voucher" items="${listVoucher}">
-                            <div class="voucher-card border rounded-lg p-4 shadow-md bg-white">
-                                <!-- Tên Voucher -->
-                                <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+                            <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
+                                 style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
+                                <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+                                    <!-- Tên Voucher -->
+                                    <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
 
-                                <!-- Giá trị giảm -->
-                                <p>Sale
-                                    <span>
-                                        <c:choose>
-                                            <c:when test="${voucher.voucherType eq 'PERCENTAGE'}">
-                                                ${voucher.voucherValue} %
-                                            </c:when>
-                                            <c:otherwise>
-                                                <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> VND
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </p>
-
-                                <!-- Hiển thị Max Discount nếu là Percentage -->
-                                <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
-                                    <p>Up to
-                                        <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> VND</span>
+                                    <!-- Giá trị giảm -->
+                                    <p>Sale
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                                    ${voucher.voucherValue} %
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> đ
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
                                     </p>
-                                </c:if>
 
-                                <!-- Điều kiện sử dụng -->
-                                <p>For orders from
-                                    <span>
-                                        <fmt:formatNumber value="${voucher.minimumPurchaseAmount}" type="number" groupingUsed="true"/> VND
-                                    </span>
-                                </p>
+                                    <!-- Hiển thị Max Discount nếu là Percentage -->
+                                    <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to
+                                            <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span>
+                                        </p>
+                                    </c:if>
 
-                                <!-- Hạn sử dụng -->
-                                <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
-                                    <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                    <!-- Điều kiện sử dụng -->
+                                    <p>For orders from
+                                        <span>
+                                            <fmt:formatNumber value="${voucher.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </p>
+
+                                    <!-- Hạn sử dụng -->
+                                    <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
+                                        <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                    </div>
                                 </div>
                             </div>
                         </c:forEach>
-
 
                         <c:if test="${empty listVoucher}">
                             <p class="text-gray-500 italic">No vouchers available.</p>

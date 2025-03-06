@@ -1,6 +1,8 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="en_US"/>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -50,7 +52,7 @@
                                                         ${VOUCHER_DETAILS.voucherValue} %
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <fmt:formatNumber value="${VOUCHER_DETAILS.voucherValue}" type="number" groupingUsed="true"/> VND
+                                                        <fmt:formatNumber value="${VOUCHER_DETAILS.voucherValue}" type="number" groupingUsed="true"/> đ
                                                     </c:otherwise>
                                                 </c:choose>
                                             </span>
@@ -58,12 +60,12 @@
                                         <p><strong>Quantity Available:</strong> <span id="quantity">${VOUCHER_DETAILS.quantity}</span></p>
                                         <p><strong>Minimum Purchase Amount:</strong> 
                                             <span id="minimumPurchaseAmount">
-                                                <fmt:formatNumber value="${VOUCHER_DETAILS.minimumPurchaseAmount}" type="number" groupingUsed="true"/> VND
+                                                <fmt:formatNumber value="${VOUCHER_DETAILS.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
                                             </span>
                                         </p>
                                         <c:if test="${VOUCHER_DETAILS.voucherType eq 'PERCENTAGE'}">
                                             <p><strong>Max Discount Amount:</strong> 
-                                                <span id="maxDiscountAmount"><fmt:formatNumber value="${VOUCHER_DETAILS.maxDiscountAmount}" type="number" groupingUsed="true"/> VND</span>
+                                                <span id="maxDiscountAmount"><fmt:formatNumber value="${VOUCHER_DETAILS.maxDiscountAmount}" type="number" groupingUsed="true" pattern="#,##0"/> đ</span>
                                             </p>
                                         </c:if>
                                         <p><strong>Date Created:</strong> <span id="dateCreated">${VOUCHER_DETAILS.dateCreated}</span></p>
