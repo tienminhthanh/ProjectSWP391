@@ -4,21 +4,30 @@
  */
 package model;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
  *
  * @author ADMIN
  */
 public class Event {
-
+    private int eventID;
     private String eventName;
-    private String dateCreated;
+    private LocalDate dateCreated;
     private int duration;
     private String banner;
     private String description;
     private int adminID;
     private boolean isActive;
+    private LocalDate dateStarted;
+    private List<EventProduct> eventProductList;
 
-    public Event(String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
+    public Event() {
+    }
+
+    public Event(int eventID, String eventName, LocalDate dateCreated, int duration, String banner, String description, int adminID, boolean isActive, LocalDate dateStarted, List<EventProduct> eventProductList) {
+        this.eventID = eventID;
         this.eventName = eventName;
         this.dateCreated = dateCreated;
         this.duration = duration;
@@ -26,17 +35,18 @@ public class Event {
         this.description = description;
         this.adminID = adminID;
         this.isActive = isActive;
+        this.dateStarted = dateStarted;
+        this.eventProductList = eventProductList;
     }
 
-    public Event() {
+    
+
+    public int getEventID() {
+        return eventID;
     }
 
-    public boolean isIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 
     public String getEventName() {
@@ -47,11 +57,11 @@ public class Event {
         this.eventName = eventName;
     }
 
-    public String getDateCreated() {
+    public LocalDate getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -86,5 +96,34 @@ public class Event {
     public void setAdminID(int adminID) {
         this.adminID = adminID;
     }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public LocalDate getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(LocalDate dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
+    public List<EventProduct> getEventProductList() {
+        return eventProductList;
+    }
+
+    public void setEventProductList(List<EventProduct> eventProductList) {
+        this.eventProductList = eventProductList;
+    }
+
+   
+    
+   
+
 
 }

@@ -11,99 +11,9 @@
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
     </head>
     <body class="bg-gray-50 min-h-screen flex">
-
-        <!-- Sidebar -->
-        <div class="w-64 bg-blue-900 text-white min-h-screen">
-            <div class="p-4">
-                <img alt="Company Logo" class="mb-4" height="50" src="./img/logo.png" width="220"/>
-            </div>
-            <nav class="space-y-2">
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-tachometer-alt mr-2"></i>
-                    Dashboard
-                </a>
-                <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg"  href="listAccount">
-                    <i class="fas fa-users mr-2"></i>
-                    Account List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    Event List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-cogs mr-2"></i>
-                    Product List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comments mr-2"></i>
-                    Dialogue List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-box mr-2"></i>
-                    Order List
-                </a>
-
-                <a class="flex items-center p-2 hover:bg-blue-800" href="voucherList">
-                    <i class="fas fa-gift mr-2"></i>
-                    Voucher List
-                </a>
-
-
-                <a class="flex items-center p-2 hover:bg-blue-800" href="listnotification">
-                    <i class="fas fa-bell mr-2"></i>
-                    Notification List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="chat.jsp">
-                    <i class="fas fa-comment-dots mr-2"></i>
-                    Chat
-                </a>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold"> SETTINGS </h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-cogs mr-2"></i>
-                        Configuration
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users-cog mr-2"></i>
-                        Management
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
-                        <i class="fas fa-sign-out-alt mr-2"></i> 
-                        Logout
-                    </a>
-                </div>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold"> REPORTS </h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-phone-alt mr-2"></i>
-                        Call history
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-headset mr-2"></i>
-                        Call queue
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users mr-2"></i>
-                        Agents performance
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-file-invoice-dollar mr-2"></i>
-                        Commission report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-calendar mr-2"></i>
-                        Scheduled report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-history mr-2"></i>
-                        Chat history
-                    </a>
-                    <a class="flex items-center p-2 bg-blue-800" href="#">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        Performance report
-                    </a>
-                </div>
-            </nav>
+       
+        <div class="w-64 bg-orange-400 text-white min-h-screen">
+             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <!-- Main Content -->
@@ -112,7 +22,7 @@
                 <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Account List</h1>
                 <hr class="mb-6 border-gray-300"/>
                 <div class="mt-6 flex flex-col items-start"> 
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="accountAddNew.jsp">
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="accountAddNew.jsp">
                         <i class="fas fa-plus mr-2"></i> Add New Account
                     </a>
                     <c:if test="${not empty errorMessage}">
@@ -125,7 +35,7 @@
                 <!-- TABLE -->
                 <div class="overflow-x-auto rounded-lg shadow-md">
                     <table class="min-w-full bg-white border border-gray-200">
-                        <thead class="bg-blue-600 text-white">
+                        <thead class="bg-orange-400 text-white">
                             <tr>
                                 <th class="px-4 py-3 border-b">#</th>
                                 <th class="px-4 py-3 border-b">Username</th>

@@ -71,32 +71,50 @@ public class SearchController extends HttpServlet {
         String type = request.getParameter("type");
         String query = request.getParameter("query");
         String sortCriteria = request.getParameter("sortCriteria");
+
+         //For redirecting to original page
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
-        
         try {
 
+//            Get initial sort order on first page load
             if (sortCriteria == null) {
                 sortCriteria = getDefaultSortCriteria(sortCriteria, query);
             }
 
+//            Set up breadCrumb
+            String breadCrumb = "<a href='home'>Home</a>";
+
             List<Product> productList;
             if (query == null || query.trim().isEmpty()) {
+                //No keywords entered
                 productList = productDAO.getAllActiveProducts(type, sortCriteria);
+                breadCrumb += String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type));
+
+                request.setAttribute("pageTitle", getDisplayTextBasedOnType(type));
+
             } else {
                 productList = productDAO.getSearchResult(query, type, sortCriteria);
+                breadCrumb += String.format(" > <a href='search?type=%s&query=%s'>Search Result: %s</a>", type, query, query);
+
                 request.setAttribute("query", query);
+                request.setAttribute("pageTitle", "Search Result: " + query);
+
             }
 
             if (productList.isEmpty()) {
+                //No result found
                 request.setAttribute("message", getNoResultMessage(type));
             } else {
                 request.setAttribute("productList", productList);
+//                For displaying current sort criteria
                 request.setAttribute("sortCriteria", sortCriteria);
             }
 
+            request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("currentURL", currentURL);
+//            For displaying current product type
             request.setAttribute("type", type);
-            request.getRequestDispatcher("searchResult.jsp").forward(request, response);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -104,6 +122,17 @@ public class SearchController extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
+    }
+
+    private String getDisplayTextBasedOnType(String type) {
+        switch (type) {
+            case "book":
+                return "Books";
+            case "merch":
+                return "Merchandises";
+            default:
+                return "";
+        }
     }
 
     private String getDefaultSortCriteria(String sortCriteria, String query) {

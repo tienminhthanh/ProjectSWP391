@@ -13,9 +13,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!isNaN(price)) {
             // Format price with commas (e.g., 4,400 VND)
-            priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " VND";
+            priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
         }
     });
+
+    const dateElements = document.querySelectorAll('.fomo-info>span');
+    if (!dateElements) {
+        console.log("date elements not found!");
+        return;
+    }
+
+    dateElements.forEach(function (dateEl) {
+        const date = new Date(dateEl.innerText);
+
+        if (date === null) {
+            console.log("invalid date format");
+            return;
+        }
+
+        dateEl.innerText = date.toLocaleDateString("vi-VN");
+        console.log(dateEl.innerText);
+    });
+
 });
 
 

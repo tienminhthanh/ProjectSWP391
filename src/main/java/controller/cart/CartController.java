@@ -114,8 +114,12 @@ public class CartController extends HttpServlet {
                 List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID); // Lấy lại danh sách mới
                 session.setAttribute("cartItems", cartItems); // Cập nhật session
             }
-
-            response.sendRedirect("cart?customerID=" + request.getParameter("customerID"));
+            if (currentURL == null || currentURL.trim().isEmpty()) {
+                currentURL = "cart?customerID=" + request.getParameter("customerID");
+            }
+            response.sendRedirect(currentURL);
+            return;
+//            response.sendRedirect("cart?customerID=" + request.getParameter("customerID"));
 
         } catch (Exception e) {
             e.printStackTrace();

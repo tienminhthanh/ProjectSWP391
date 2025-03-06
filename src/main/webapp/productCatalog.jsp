@@ -11,17 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>
-            <c:choose>
-                <c:when test="${not empty query}">
-                    Search Result: ${query} - WIBOOKS
-                </c:when>
-                <c:when test="${type == 'book'}">
-                    Books - WIBOOKS
-                </c:when>
-                <c:when test="${type == 'merch'}">
-                    Merchandises - WIBOOKS
-                </c:when>
-            </c:choose>
+            ${pageTitle} - WIBOOKS
         </title>
 
         <!--Header css-->
@@ -36,31 +26,22 @@
         <link rel="stylesheet" href="css/styleProductCard.css"/>
 
         <!--Search css-->
-        <link rel="stylesheet" href="css/styleSearch.css"/>
+        <link rel="stylesheet" href="css/styleCatalog.css"/>
+
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
     </head>
     <body>
         <!--Header-->
         <jsp:include page="header.jsp"/>
 
         <!--Breadcrumb-->
-        <div class="bread-crumb-area">
-            <a href="home">Home</a>
-            <span> > </span>
-            <c:choose>
-                <c:when test="${not empty query}">
-                    <a href="search?query=${query}&type=${type}">Search Result: ${query}</a>
-                </c:when>
-                <c:when test="${type == 'book'}">
-                    <a href="search?type=${type}">Books</a>
-                </c:when>
-                <c:when test="${type == 'merch'}">
-                    <a href="search?type=${type}">Merchandises</a>
-                </c:when>
-            </c:choose>
-
+        <div class="bread-crumb-area pt-2 pl-4 pb-2 text-sm text-yellow-500 bg-gray-100">
+            ${breadCrumb}
         </div>
-
-        <div class="flex flex-col md:flex-row">
+        
+        <!--Sidebar-->
+        <div class="flex flex-col md:flex-row pt-4 bg-gray-50">
             <jsp:include page="customerSidebar.jsp"/>
 
             <!--Main section-->
@@ -70,17 +51,7 @@
                     <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
                         <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
                         <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                        <c:choose>
-                            <c:when test="${not empty query}">
-                                Search Result: ${query}
-                            </c:when>
-                            <c:when test="${type == 'book'}">
-                                Books
-                            </c:when>
-                            <c:when test="${type == 'merch'}">
-                                Merchandises
-                            </c:when>
-                        </c:choose>
+                        ${pageTitle}
                     </h2>
 
 
@@ -98,8 +69,10 @@
                                             </c:if>
                                             <option value="releaseDate">Release Date</option>
                                             <option value="hotDeal">Hot Deal</option>
-                                            <option value="name">Name (A-Z)</option>
-                                            <option value="rank">Rank</option>
+                                            <option value="name">Name(A-Z)</option>
+                                            <option value="priceLowToHigh">Price(Low to High)</option>
+                                            <option value="priceHighToLow">Price(High to Low)</option>
+                                            <option value="rating">Rating</option>
                                         </select>
                                     </label>
                                 </form>
@@ -114,8 +87,6 @@
                     </div>
 
                     <div class="w-full">
-                        <p>Debug: Main page URI = ${pageContext.request.requestURI}</p>
-                        <p>Debug: Full URL = ${currentURL}</p>
                         <c:set var="currentURL" value="${currentURL}" scope="request"/>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-5">
                             <c:forEach var="currentProduct" items="${productList}">
@@ -125,12 +96,11 @@
                         </div>
                     </div>
 
-                    <!--Popup unauthorized users-->
-                    <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-                        
-                        <jsp:include page="popuplogin.jsp" />
-                    </c:if>
                 </div>
+                <!--Popup unauthorized users-->
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                    <jsp:include page="popuplogin.jsp" />
+                </c:if>
             </main>
         </div>
 
@@ -173,5 +143,10 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script>
+
     </body>
 </html>

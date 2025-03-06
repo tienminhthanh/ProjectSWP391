@@ -43,7 +43,7 @@
                         <i class="fas fa-comments mr-2"></i> <!-- Cập nhật icon đây -->
                         Dialogue List
                     </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="OrderListForStaffController">
                         <i class="fas fa-box mr-2"></i> <!-- Cập nhật icon đây -->
                         Order List
                     </a>
@@ -55,7 +55,7 @@
                         <i class="fas fa-bell mr-2"></i> <!-- Cập nhật icon đây -->
                         Notification List
                     </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
+                    <a class="flex items-center p-2 hover:bg-blue-800" href="chat">
                         <i class="fas fa-comment-dots mr-2"></i> <!-- Cập nhật icon đây -->
                         Chat
                     </a>

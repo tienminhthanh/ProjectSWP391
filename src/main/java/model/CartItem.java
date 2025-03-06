@@ -1,4 +1,3 @@
-
 package model;
 
 import java.math.BigDecimal;
@@ -16,7 +15,14 @@ public class CartItem {
 
     public CartItem() {
     }
-
+//them vo de lay khi mua mot product, mylinh them
+    public CartItem(int customerID, Product product, int quantity, BigDecimal priceWithQuantity) {
+        this.customerID = customerID;
+        this.product = product;  // Lưu thông tin sản phẩm
+        this.productID = product.getProductID();
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
+    }
 
     public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.itemID = itemID;
@@ -26,14 +32,12 @@ public class CartItem {
         this.priceWithQuantity = priceWithQuantity;
     }
 
-
     public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.customerID = customerID;
         this.productID = productID;
         this.quantity = quantity;
         this.priceWithQuantity = priceWithQuantity;
     }
-
 
 //    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
 //        this.customerID = customerID;

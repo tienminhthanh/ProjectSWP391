@@ -89,9 +89,10 @@ public class ProductDetailsController extends HttpServlet {
             HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
             List<Genre> genreList = productDAO.getGenresOfThisBook(id);
             
-            String breadCrumb = String.format("<a href='home'>Home</a> > <a href='catalog?type=book'>Books</a> > <a href='catalog?category=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
+            String breadCrumb = String.format("<a href='home'>Home</a> > <a href='search?type=book'>Books</a> > <a href='catalog?category=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
                     requestedBook.getSpecificCategory().getCategoryID(), requestedBook.getSpecificCategory().getCategoryName(), id, requestedBook.getGeneralCategory(), requestedBook.getProductName());
             
+            request.setAttribute("type", requestedBook.getGeneralCategory());
             request.setAttribute("currentURL", currentURL);
             request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("product", requestedBook);

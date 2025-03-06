@@ -111,7 +111,7 @@
                                     <input type="hidden" name="productID" value="${item.productID}" />
                                     <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" class="quantity-input" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
-
+                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
@@ -145,7 +145,7 @@
                     </div>
                     <form action="OrderController" method="get">
                         <input type="hidden" name="totalAmount" value="${total}" />
-                        <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
+                        <button type="submit" name="action" value="checkOut"  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
                             <i class="fas fa-credit-card"></i> Checkout
                         </button>
                     </form>

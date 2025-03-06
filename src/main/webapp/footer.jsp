@@ -46,7 +46,7 @@
                 </ul>
             </div>
 
-            <div class="customer-service col-6 col-lg-2">
+            <div class="customer-service col-12 col-lg-2 mt-2">
                 <p class="policy-service-title">
                     CUSTOMER SUPPORT
                 </p>
@@ -59,7 +59,7 @@
                     </a>
                 </div>
             </div>
-            <div class="policy col-6 col-lg-2">
+            <div class="policy col-12 col-lg-2 mt-2">
                 <p class="policy-service-title">
                     POLICIES
                 </p>
@@ -75,7 +75,7 @@
                     </a>
                 </div>
             </div>
-            <div class="social-media col-12 col-lg-4">
+            <div class="social-media col-12 col-lg-4 mt-2">
                 <p class="social-media-title">
                     CONNECT WITH US
                 </p>

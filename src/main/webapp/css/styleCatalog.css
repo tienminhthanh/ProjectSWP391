@@ -7,11 +7,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : anhkc
 */
 
-.bread-crumb-area{
-    margin: 20px;
-    color: orange;
-    font-size: 13px;
-}
-.bread-crumb-area a{
+
+.bread-crumb-area a:hover{
     color:orange;
+    font-weight: bold;
+    text-decoration: underline;
 }

@@ -3,10 +3,6 @@ package model;
 import java.sql.Date;
 import java.util.List;
 
-/**
- *
- * @author Macbook
- */
 public class OrderInfo {
 
     private int orderID;
@@ -15,7 +11,7 @@ public class OrderInfo {
     private int deliveryOptionID;
     private int customerID;
     private int preVoucherAmount;
-    private int voucherID;
+    private Integer voucherID;  // Đổi từ int → Integer
     private int staffID;
     private int shipperID;
     private String deliveryStatus;
@@ -27,16 +23,16 @@ public class OrderInfo {
     private String paymentStatus;
     private List<OrderProduct> orderProductList;
     private DeliveryOption deliveryOption;
-            
+
     public OrderInfo() {
         this.paymentStatus = "pending";
         this.orderStatus = "pending";
         this.deliveryStatus = "pending";
     }
-// orderInfo khi tao new order
 
+    // Constructor tạo đơn hàng mới
     public OrderInfo(String deliveryAddress, int deliveryOptionID, int customerID,
-            String paymentMethod, List<OrderProduct> orderProductList) {
+                     String paymentMethod, List<OrderProduct> orderProductList, Integer voucherID) {
         this.deliveryAddress = deliveryAddress;
         this.deliveryOptionID = deliveryOptionID;
         this.customerID = customerID;
@@ -45,16 +41,21 @@ public class OrderInfo {
         this.orderStatus = "pending";
         this.deliveryStatus = "pending";
         this.orderProductList = orderProductList;
+        this.voucherID = voucherID;  // Giữ nguyên nếu có, nếu không thì null
     }
 
-    public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, int preVoucherAmount, int voucherID, int staffID, int shipperID, String deliveryStatus, String orderStatus, int adminID, Date deliveredAt, String paymentMethod, int paymentExpiredTime, String paymentStatus) {
+    // Constructor đầy đủ
+    public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, 
+                     int preVoucherAmount, Integer voucherID, int staffID, int shipperID, 
+                     String deliveryStatus, String orderStatus, int adminID, Date deliveredAt, 
+                     String paymentMethod, int paymentExpiredTime, String paymentStatus) {
         this.orderID = orderID;
         this.orderDate = orderDate;
         this.deliveryAddress = deliveryAddress;
         this.deliveryOptionID = deliveryOptionID;
         this.customerID = customerID;
         this.preVoucherAmount = preVoucherAmount;
-        this.voucherID = voucherID;
+        this.voucherID = voucherID;  // Hỗ trợ null
         this.staffID = staffID;
         this.shipperID = shipperID;
         this.deliveryStatus = deliveryStatus;
@@ -64,25 +65,6 @@ public class OrderInfo {
         this.paymentMethod = paymentMethod;
         this.paymentExpiredTime = paymentExpiredTime;
         this.paymentStatus = paymentStatus;
-    }
-
-    
-    
-// dung de insert 
-    public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, int preVoucherAmount, int voucherID, String deliveryStatus, String orderStatus) {
-        this.orderID = orderID;
-        this.orderDate = orderDate;
-        this.deliveryAddress = deliveryAddress;
-        this.deliveryOptionID = deliveryOptionID;
-        this.customerID = customerID;
-        this.preVoucherAmount = preVoucherAmount;
-        this.voucherID = voucherID;
-        this.deliveryStatus = deliveryStatus;
-        this.orderStatus = orderStatus;
-    }
-
-    public OrderInfo(int i, Date orderDate, String deliveryAddress, int deliveryOptionID, int parseInt, int preVoucherAmount, int voucherID, int i0, int i1, String deliveryStatus, String orderStatus, int i2, Object object, String cod, int i3, String unpaid, List<OrderProduct> orderProducts) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public int getOrderID() {
@@ -131,14 +113,6 @@ public class OrderInfo {
 
     public void setPreVoucherAmount(int preVoucherAmount) {
         this.preVoucherAmount = preVoucherAmount;
-    }
-
-    public int getVoucherID() {
-        return voucherID;
-    }
-
-    public void setVoucherID(int voucherID) {
-        this.voucherID = voucherID;
     }
 
     public int getStaffID() {
@@ -229,9 +203,34 @@ public class OrderInfo {
         this.deliveryOption = deliveryOption;
     }
 
-    @Override
-    public String toString() {
-        return "OrderInfo{" + "orderID=" + orderID + ", orderDate=" + orderDate + ", deliveryAddress=" + deliveryAddress + ", deliveryOptionID=" + deliveryOptionID + ", customerID=" + customerID + ", preVoucherAmount=" + preVoucherAmount + ", voucherID=" + voucherID + ", staffID=" + staffID + ", shipperID=" + shipperID + ", deliveryStatus=" + deliveryStatus + ", orderStatus=" + orderStatus + ", adminID=" + adminID + ", deliveredAt=" + deliveredAt + ", paymentMethod=" + paymentMethod + ", paymentExpiredTime=" + paymentExpiredTime + ", paymentStatus=" + paymentStatus + '}';
+
+    public Integer getVoucherID() {
+        return voucherID;
     }
 
+    public void setVoucherID(Integer voucherID) {
+        this.voucherID = voucherID;  // Hỗ trợ null
+    }
+
+    @Override
+    public String toString() {
+        return "OrderInfo{" +
+                "orderID=" + orderID +
+                ", orderDate=" + orderDate +
+                ", deliveryAddress='" + deliveryAddress + '\'' +
+                ", deliveryOptionID=" + deliveryOptionID +
+                ", customerID=" + customerID +
+                ", preVoucherAmount=" + preVoucherAmount +
+                ", voucherID=" + (voucherID != null ? voucherID : "null") +  // Tránh lỗi null pointer
+                ", staffID=" + staffID +
+                ", shipperID=" + shipperID +
+                ", deliveryStatus='" + deliveryStatus + '\'' +
+                ", orderStatus='" + orderStatus + '\'' +
+                ", adminID=" + adminID +
+                ", deliveredAt=" + deliveredAt +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                ", paymentExpiredTime=" + paymentExpiredTime +
+                ", paymentStatus='" + paymentStatus + '\'' +
+                '}';
+    }
 }

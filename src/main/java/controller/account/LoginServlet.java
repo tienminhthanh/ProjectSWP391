@@ -9,9 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
@@ -24,25 +21,44 @@ public class LoginServlet extends HttpServlet {
         accountDAO = new AccountDAO();
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("login.jsp").forward(request, response);
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        AccountLib lib = new AccountLib();
+
         String username = request.getParameter("username");
-        String password = hashMD5(request.getParameter("password"));
+        String password = lib.hashMD5(request.getParameter("password"));
+        HttpSession session = request.getSession();
         String currentURL = request.getParameter("currentURL");
+
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
             if (account != null) {
                 if (account.getIsActive()) {
+                    Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
+                    if (failedAttempts == null) {
+                        failedAttempts = 0;
+                    }
+
+                    if (failedAttempts >= 5) {
+                        response.sendRedirect("deleteAccount?username=" + username);
+                        return;
+                    }
+
                     if (account.getPassword().equals(password)) {
-                        HttpSession session = request.getSession();
                         session.setAttribute("account", account);
-                        session.setMaxInactiveInterval(30 * 60); // 30 phút
+                        session.setMaxInactiveInterval(30 * 60); // 30 minutes
+                        session.removeAttribute("failedAttempts");
 
                         switch (account.getRole()) {
                             case "admin":
-                                response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                                response.sendRedirect("listAccount");
                                 break;
                             case "customer":
                                 if (currentURL == null || currentURL.isEmpty()) {
@@ -52,76 +68,45 @@ public class LoginServlet extends HttpServlet {
                                 }
                                 break;
                             case "staff":
-                                response.sendRedirect("dashboard.jsp");
+                                response.sendRedirect("listAccount");
                                 break;
                             case "shipper":
-                                response.sendRedirect("shipperDashboard.jsp");
+                                response.sendRedirect("OrderListForShipperController");
                                 break;
                             default:
                                 session.invalidate();
                                 request.setAttribute("errorMessage", "Invalid access!");
-                                request.getRequestDispatcher("login.jsp").forward(request, response);
+                                forwardToLoginPage(request, response, username);
                                 break;
                         }
                     } else {
-                        request.setAttribute("errorMessage", "Wrong password!");
-                        request.getRequestDispatcher("login.jsp").forward(request, response);
+                        failedAttempts++;
+                        session.setAttribute("failedAttempts", failedAttempts);
+
+                        if (failedAttempts >= 5) {
+                            response.sendRedirect("deleteAccount?username=" + username);
+                            return;
+                        }
+
+                        request.setAttribute("errorMessage", "Wrong password! You have " + (5 - failedAttempts) + " attempts left.");
+                        forwardToLoginPage(request, response, username);
                     }
                 } else {
                     request.setAttribute("errorMessage", "Your account is deactivated or locked!");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    forwardToLoginPage(request, response, username);
                 }
             } else {
                 request.setAttribute("errorMessage", "Account not found!");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                forwardToLoginPage(request, response, username);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    private void forwardToLoginPage(HttpServletRequest request, HttpServletResponse response, String username)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("account") != null) {
-            Account account = (Account) session.getAttribute("account");
-            switch (account.getRole()) {
-                case "staff":
-                    response.sendRedirect("dashboard.jsp");
-                    break;
-                case "shipper":
-                    response.sendRedirect("shipperDashboard.jsp");
-                    break;
-                case "admin":
-                    response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
-                    break;
-                case "customer":
-                default:
-                    response.sendRedirect("home");
-            }
-        } else {
-            String currentURL = request.getParameter("currentURL");
-            if (currentURL != null) {
-                request.setAttribute("currentURL", currentURL);
-            }
-            request.getRequestDispatcher("login.jsp").forward(request, response);  // Redirect to login if not logged in
-        }
-    }
-
-  
-    public  String hashMD5(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] inputBytes = input.getBytes(StandardCharsets.UTF_16LE);
-            byte[] hashBytes = md.digest(inputBytes);
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                hexString.append(String.format("%02X", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Lỗi khi mã hóa MD5", e);
-        }
+        request.setAttribute("username", username);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 }

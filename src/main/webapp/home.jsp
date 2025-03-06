@@ -8,6 +8,9 @@
             WIBOOKS - More Than Just Books
         </title>
 
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
 
         <!--Unknown import-->
         <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>-->
@@ -21,9 +24,13 @@
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
         <link href="css/styleFooter.css" rel="stylesheet">
 
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
+
         <!--Product card css-->
         <link rel="stylesheet" href="css/styleProductCard.css"/>
 
+        <!--Banner carousel-->
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     </head>
     <body class="bg-gray-100">
@@ -75,11 +82,10 @@
             <jsp:include page="customerSidebar.jsp"/>
 
             <!--Main section-->
-            <main class="w-full md:w-5/6 p-3">
-                <div class="mb-4 bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+            <main class="w-full md:w-5/6 p-3 flex flex-col">
+                <!--Div1-->
+                <div class="mb-4 bg-white popular-search-area">
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Popular Searches
                     </h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
@@ -104,10 +110,9 @@
                     </div>
                 </div>
 
-                <div class="mb-4 bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                <!--Div2-->
+                <div class="mb-4 bg-white voucher-area">
+                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Vouchers
                     </h2>
                     <div class="flex flex-wrap gap-4">
@@ -124,24 +129,14 @@
                     </div>
                 </div>
 
-                <!--Loopppppppppppppppppppppppppppppp-->
+                <!--Random Pick-->
                 <div class="bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                        Random Pick
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center border-t-4 border-orange-300">
+                        Lucky Books
                     </h2>
-                    <!--<div class="flex space-x-4 overflow-x-auto">-->
+                    <!--Loop through product list-->
                     <div class="w-full">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:hidden">
-                            <c:forEach var="currentProduct" items="${productList}">
-                                <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
-                                <jsp:include page="productCard.jsp"/>
-                            </c:forEach>
-                        </div>
-
-                        <!-- Horizontal scrolling at lg (1024px+) -->
-                        <div class="hidden lg:block w-full overflow-x-auto">
+                        <div class="gap-4 w-full overflow-x-auto">
                             <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
                                 <c:forEach var="currentProduct" items="${productList}">
                                     <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
@@ -151,20 +146,18 @@
                         </div>
                     </div>
 
-                    <!--Popup unauthorized users-->
-                    <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-                        <jsp:include page="popuplogin.jsp"/>
-                    </c:if>
-
                 </div>
+                <!--Popup unauthorized users-->
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                    <jsp:include page="popuplogin.jsp"/>
+                </c:if>
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
 
-        <!--Script for include icons-->
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
 
         <!--Header script-->
         <script src="js/scriptHeader.js"></script>
@@ -175,6 +168,10 @@
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
 
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script>
+        
         <!--Unknown import-->
         <!--        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
                         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -186,6 +183,9 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
+
+
 
     </body>
 </html>
