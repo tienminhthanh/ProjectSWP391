@@ -116,19 +116,15 @@
                 <!--Div2-->
                 <div class="mb-4 bg-white voucher-area">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                        Vouchers
+                        Available Now
                     </h2>
                     <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
-                        <h3 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                            Vouchers
-                        </h3>
                         <c:forEach var="voucher" items="${listVoucher}">
                             <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
                                  style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
                                 <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
                                     <!-- Tên Voucher -->
                                     <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
-
                                     <!-- Giá trị giảm -->
                                     <p>Sale
                                         <span>
@@ -159,26 +155,30 @@
 
                                     <!-- Hạn sử dụng -->
                                     <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
-                                        <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                        <p><strong>EXP:</strong> <span class="date-end"></span></p>
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
 
                         <c:if test="${empty listVoucher}">
-                            <p class="text-gray-500 italic">No vouchers available.</p>
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
                         </c:if>
                     </div>
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Coming Soon
+                    </h2>
                     <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
-                        <h3 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                            Coming Soon
-                        </h3>
+
                         <c:forEach var="voucherComeSoon" items="${listVoucherComeSoon}">
                             <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
                                  style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
                                 <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+
                                     <!-- Tên Voucher -->
-                                    <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+                                    <p class="font-bold text-lg text-orange-600">${voucherComeSoon.voucherName}</p>
 
                                     <!-- Giá trị giảm -->
                                     <p>Sale
@@ -210,14 +210,16 @@
 
                                     <!-- Hạn sử dụng -->
                                     <div class="voucher" data-start="${voucherComeSoon.dateStarted}" data-duration="${voucherComeSoon.duration}">
-                                        <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                        <p><strong>Started on: </strong>${voucherComeSoon.dateStarted}</p>
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
 
                         <c:if test="${empty listVoucherComeSoon}">
-                            <p class="text-gray-500 italic">No vouchers available.</p>
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
                         </c:if>
                     </div>
                 </div>
@@ -289,30 +291,5 @@
             });
         </script>
 
-
-
     </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -90,7 +90,7 @@ public class HomepageController extends HttpServlet {
             }
 
             VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
+            List<Voucher> listVoucher = vDao.getListVoucherAvailableNow();
             request.setAttribute("listVoucher", listVoucher);
             List<Voucher> listVoucherComeSoon = vDao.getListVoucherComeSoon();
             request.setAttribute("listVoucherComeSoon", listVoucherComeSoon);
