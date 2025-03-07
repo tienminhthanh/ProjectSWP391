@@ -13,8 +13,11 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+
 import java.sql.SQLException;
+
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,7 +88,7 @@ public class OrderController extends HttpServlet {
                 e.printStackTrace();
             }
 
-            double subtotal = 0.0;
+            double subtotal = 0;
             for (CartItem item : cartItems) {
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 item.setPriceWithQuantity(priceWithQuantity);
@@ -183,6 +186,8 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
+        DeliveryOption delivery = new DeliveryOption();
+        int estimatedTime = 0;
         if (cartItems == null) {
             cartItems = new ArrayList<>();
         }
@@ -206,9 +211,11 @@ public class OrderController extends HttpServlet {
         if (deliveryOptionID != null) {
             try {
                 int ID = Integer.parseInt(deliveryOptionID);
-                DeliveryOption delivery = orderDAO.getDeliveryOption(ID);
+                delivery = orderDAO.getDeliveryOption(ID);
+
                 if (delivery != null && delivery.getDeliveryOptionID() == ID) {
                     subtotal += delivery.getOptionCost(); // Cộng phí giao hàng vào tổng tiền
+                 
                 } else {
                     System.out.println("Không tìm thấy phương thức giao hàng với ID: " + ID);
                 }
@@ -248,8 +255,9 @@ public class OrderController extends HttpServlet {
             orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
             orderInfo.setPreVoucherAmount(subtotal);
             orderInfo.setVoucherID(voucherID);
+         
 
-            List<OrderProduct> orderProductList = new ArrayList<>();
+            List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
                 OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
                 orderProductList.add(orderProduct);

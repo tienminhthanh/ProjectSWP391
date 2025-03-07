@@ -8,6 +8,7 @@ public class OrderInfo {
 
     private int orderID;
     private Date orderDate;
+    private Date expectedDeliveryDate;
     private String deliveryAddress;
     private int deliveryOptionID;
     private int customerID;
@@ -213,25 +214,18 @@ public class OrderInfo {
         this.voucherID = voucherID;  // Hỗ trợ null
     }
 
+    public Date getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
     @Override
     public String toString() {
-        return "OrderInfo{" +
-                "orderID=" + orderID +
-                ", orderDate=" + orderDate +
-                ", deliveryAddress='" + deliveryAddress + '\'' +
-                ", deliveryOptionID=" + deliveryOptionID +
-                ", customerID=" + customerID +
-                ", preVoucherAmount=" + preVoucherAmount +
-                ", voucherID=" + (voucherID != null ? voucherID : "null") +  // Tránh lỗi null pointer
-                ", staffID=" + staffID +
-                ", shipperID=" + shipperID +
-                ", deliveryStatus='" + deliveryStatus + '\'' +
-                ", orderStatus='" + orderStatus + '\'' +
-                ", adminID=" + adminID +
-                ", deliveredAt=" + deliveredAt +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", paymentExpiredTime=" + paymentExpiredTime +
-                ", paymentStatus='" + paymentStatus + '\'' +
-                '}';
+        return "OrderInfo{" + "orderID=" + orderID + ", orderDate=" + orderDate + ", expectedDeliveryDate=" + expectedDeliveryDate + ", deliveryAddress=" + deliveryAddress + ", deliveryOptionID=" + deliveryOptionID + ", customerID=" + customerID + ", preVoucherAmount=" + preVoucherAmount + ", voucherID=" + voucherID + ", staffID=" + staffID + ", shipperID=" + shipperID + ", deliveryStatus=" + deliveryStatus + ", orderStatus=" + orderStatus + ", adminID=" + adminID + ", deliveredAt=" + deliveredAt + ", paymentMethod=" + paymentMethod + ", paymentExpiredTime=" + paymentExpiredTime + ", paymentStatus=" + paymentStatus + ", orderProductList=" + orderProductList + ", deliveryOption=" + deliveryOption + '}';
     }
+
+
 }

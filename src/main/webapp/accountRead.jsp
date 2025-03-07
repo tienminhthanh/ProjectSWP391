@@ -47,10 +47,15 @@
                     </a>
                     <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="changePassword.jsp">
                         <i class="fas fa-edit mr-2"></i> Change password
-                    </a>
-                    <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="OrderListController">
-                        <i class="fas fa-edit mr-2"></i> Order List
-                    </a>
+                    </a> 
+                        <!--thêm điều kiện để cus mới hiện giỏ hàng-->
+                    <c:choose>
+                        <c:when test="${sessionScope.account.role eq 'customer'}">
+                            <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="OrderListController">
+                                <i class="fas fa-shopping-cart mr-2"></i> Order List
+                            </a>
+                        </c:when>
+                    </c:choose>
                     <a class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
                        href="deleteAccount?username=${account.username}" 
                        onclick="return confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${account.username}')">
@@ -73,8 +78,9 @@
                                 <i class="fas fa-list mr-2"></i> Back to Account List
                             </a>
                         </c:when>
+                        <!--cho trả về home-->
                         <c:otherwise>
-                            <a class="text-blue-600 hover:underline" href="home.jsp">
+                            <a class="text-blue-600 hover:underline" href="home">
                                 <i class="fas fa-arrow-left mr-2"></i> Back to Home
                             </a>
                         </c:otherwise>

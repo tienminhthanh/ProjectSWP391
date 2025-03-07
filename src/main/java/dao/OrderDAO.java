@@ -127,19 +127,7 @@ public class OrderDAO {
         return orderList;
     }
 
-    // lay thong tin product cho orderdetail
-    public List<OrderProduct> getProductsByOrderID(int orderID) throws SQLException {
-        List<OrderProduct> productList = new ArrayList<>();
-        String sql = "SELECT * FROM OrderProducts WHERE orderID = ?";
-        Object[] params = {orderID};
-
-        try ( ResultSet rs = context.exeQuery(sql, params)) {
-            while (rs.next()) {
-                productList.add(mapResultSetToOrderProduct(rs));
-            }
-        }
-        return productList;
-    }
+  
 
     //dung truy van khi ng dung hoac admin xoa order thi an di
     public OrderInfo getOrderByOrderID(int orderID) throws SQLException {
@@ -212,6 +200,16 @@ public class OrderDAO {
                 + "                    a.accountID = o.shipperID OR \n"
                 + "                    a.accountID = o.staffID OR \n"
                 + "                    a.accountID = o.adminID\n"
+                + "WHERE o.orderID = ?";
+        Object[] params = {orderID};
+        ResultSet rs = context.exeQuery(sql, params);
+        return rs.next() ? mapResultSetToAccount(rs) : null;
+    }
+
+    public Account getCustomerByOrderID(int orderID) throws SQLException {
+        String sql = "SELECT a.*\n"
+                + "FROM Account a\n"
+                + "JOIN OrderInfo o ON a.accountID = o.customerID\n"
                 + "WHERE o.orderID = ?";
         Object[] params = {orderID};
         ResultSet rs = context.exeQuery(sql, params);
@@ -332,7 +330,7 @@ public class OrderDAO {
         Object[] params = {deliveryOptionID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
-            if (rs.next()) {  // Dùng `if` vì chỉ có 1 dòng dữ liệu
+            if (rs.next()) {
                 return new DeliveryOption(
                         rs.getInt("deliveryOptionID"),
                         rs.getString("optionName"),
@@ -512,6 +510,7 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 //
+
     public void restoreProductStockByOrderID(int orderID) throws SQLException {
         // Lấy dữ liệu từ Order_Product, nhưng không ép kiểu trực tiếp
         String selectSQL = "SELECT productID, quantity FROM Order_Product WHERE orderID = ?";

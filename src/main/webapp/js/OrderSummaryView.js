@@ -1,48 +1,51 @@
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
- */
-
-
 document.addEventListener("DOMContentLoaded", function () {
-    // Lấy các phần tử cần thao tác
-    const voucherSelect = document.getElementById("voucherSelect");
-    const shippingOptions = document.querySelectorAll("input[name='shippingOption']");
-    const subtotalElement = document.getElementById("subtotal");
-    const discountElement = document.getElementById("discount");
-    const shippingFeeElement = document.getElementById("shippingFee");
-    const totalAmountElement = document.getElementById("totalAmount");
+    const voucherSelect = document.getElementById("voucherSelect"),
+            discountElement = document.getElementById("discount"),
+            totalAmountElement = document.getElementById("totalAmount"),
+            subtotalElement = document.getElementById("subtotal"),
+            shippingFeeElement = document.getElementById("shippingFee"),
+            shippingOptions = document.querySelectorAll("input[name='shippingOption']");
 
-    // Chuyển đổi giá trị từ chuỗi thành số
-    let subtotal = parseFloat(subtotalElement.innerText.replace(/,/g, "")) || 0;
-    let discount = 0;
-
-    // Hàm cập nhật tổng tiền
-    function updateTotal() {
-        let total = subtotal - discount + shippingFee;
-        if (total < 0)
-            total = 0; // Không cho tổng tiền âm
-
-        // Cập nhật giao diện
-        discountElement.innerText = discount.toLocaleString();
-        shippingFeeElement.innerText = shippingFee.toLocaleString();
-        totalAmountElement.innerText = total.toLocaleString();
+    function getNumberFromElement(element) {
+        return element
+                ? parseFloat(element.innerText.replace(/[^\d]/g, "")) || 0
+                : 0;
     }
 
-    // Sự kiện khi chọn voucher
-    voucherSelect.addEventListener("change", function () {
-        discount = parseFloat(this.options[this.selectedIndex].dataset.discount) || 0;
-        updateTotal();
-    });
 
-    // Sự kiện khi chọn phương thức vận chuyển
+    function formatCurrency(value) {
+        return value.toLocaleString("vi-VN", {minimumFractionDigits: 0}).replace(/\./g, ",") + " đ";
+    }
+
+    function updateTotalAmount() {
+        let subtotal = getNumberFromElement(subtotalElement),
+                selectedVoucher = voucherSelect.options[voucherSelect.selectedIndex],
+                discount = (selectedVoucher && selectedVoucher.value !== "0")
+                ? parseFloat(selectedVoucher.dataset.discount) || 0
+                : 0,
+                selectedShipping = document.querySelector("input[name='shippingOption']:checked"),
+                shippingFee = selectedShipping ? parseFloat(selectedShipping.dataset.cost) || 0 : 0,
+                total = Math.max(0, subtotal + shippingFee - discount);
+
+        if (discountElement)
+            discountElement.innerText = formatCurrency(discount);
+        if (shippingFeeElement)
+            shippingFeeElement.innerText = formatCurrency(shippingFee);
+        if (totalAmountElement)
+            totalAmountElement.innerText = formatCurrency(total);
+    }
+
+    if (voucherSelect)
+        voucherSelect.addEventListener("change", updateTotalAmount);
+
     shippingOptions.forEach(option => {
-        option.addEventListener("change", function () {
-            shippingFee = parseFloat(this.dataset.cost) || 0;
-            updateTotal();
-        });
+        option.addEventListener("change", updateTotalAmount);
     });
 
-    // Cập nhật tổng tiền lần đầu khi trang tải
-    updateTotal();
+    const defaultShippingOption = document.querySelector("input[name='shippingOption'][value='1']");
+    if (defaultShippingOption) {
+        defaultShippingOption.checked = true;
+    }
+
+    updateTotalAmount();
 });

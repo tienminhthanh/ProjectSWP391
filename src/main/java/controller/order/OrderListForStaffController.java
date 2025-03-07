@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.OrderInfo;
+import model.OrderProduct;
 import model.Shipper;
 
 /**
@@ -72,16 +73,20 @@ public class OrderListForStaffController extends HttpServlet {
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
         List<OrderInfo> orderList = null;
+        OrderInfo orderInfo = new OrderInfo();
         Map<Integer, Account> customerMap = new HashMap<>(); // Lưu orderID -> Account
         List<Shipper> shipperList = new ArrayList<>();
         String status = request.getParameter("status");
         try {
             orderList = orderDAO.getAllOrders();
+            
             for (OrderInfo order : orderList) {
                 Account customer = orderDAO.getInfoCustomerByOrderID(order.getOrderID());
                 if (customer != null) {
                     customerMap.put(order.getOrderID(), customer); // Lưu vào Map
                 }
+                orderInfo = orderDAO.getOrderByID(order.getOrderID(), customer.getAccountID());
+    
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
@@ -99,6 +104,8 @@ public class OrderListForStaffController extends HttpServlet {
         request.setAttribute("status", status);
         request.setAttribute("shipperList", shipperList);
         request.setAttribute("orderList", orderList);
+        request.setAttribute("orderInfo", orderList);
+
         request.setAttribute("customerMap", customerMap); // Gửi Map sang JSP
         request.getRequestDispatcher("OrderListForStaffView.jsp").forward(request, response);
     }

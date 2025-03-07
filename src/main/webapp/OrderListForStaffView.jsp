@@ -8,14 +8,15 @@
         <title>Performance Report</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <style>
             body {
                 height: 100vh;
                 font-family: 'Arial', sans-serif;
-                background-color: #f3f4f6;
+                background-color: #f3f4f6; /* Màu nền sáng */
             }
             .sidebar {
-                background-color: #1E3A8A;
+                background-color: #4CAF50; /* Xanh lá */
                 color: white;
                 padding: 16px;
                 min-height: 100vh;
@@ -39,7 +40,7 @@
                 margin-bottom: 16px;
             }
             .button {
-                background-color: #3B82F6;
+                background-color: #FF9800; /* Cam */
                 color: white;
                 padding: 12px 20px;
                 border-radius: 8px;
@@ -58,7 +59,7 @@
                 margin-right: 8px;
             }
             .input:focus, .select:focus {
-                border-color: #3B82F6;
+                border-color: #4CAF50; /* Xanh lá */
                 outline: none;
             }
             .order-info {
@@ -81,7 +82,7 @@
             <!-- Sidebar -->
             <div class="w-64 sidebar">
                 <div class="p-4">
-                    <img alt="Company Logo" class="mb-4" height="50" src="https://storage.googleapis.com/a1aa/image/E7a1IopinJdFFD1b8uBNgeve-ZYaN4NirThMMa4AP40.jpg" width="150"/>
+                    <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
                 </div>
                 <nav class="space-y-2">
                     <a class="flex items-center p-2 hover:bg-blue-800" href="#">
@@ -172,33 +173,31 @@
             <!-- Main Content -->
             <div class="flex-1 p-6 overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
-
                     <div class="flex items-center space-x-4">
-                        <button class="bg-orange-500 text-white px-4 py-2 rounded">
-                            + Add Chart
-                        </button>
-                        <div class="flex items-center space-x-2">
-                            <span>
-                                Period
-                            </span>
-                            <input class="border rounded px-2 py-1" type="text" value="03/27/21 - 04/07/21"/>
+                        <div class="flex-1 p-6 overflow-y-auto">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center space-x-4">                     
+                                    <div class="flex items-center space-x-2">
+                                        <span>lọc</span>
+                                        <input id="dateRangePicker" class="border rounded px-2 py-1" type="text" placeholder="Select date range" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <a href="readAccount" class="relative block">
-                            <img alt="User Avatar" class="rounded-full" height="40" src="https://storage.googleapis.com/a1aa/image/4V1-2KXMxoMa82g0Th8dvxQbS2qGQlXogtCiodNcjgE.jpg" width="40"/>
+                            <img alt="User  Avatar" class="rounded-full" height="40" src="https://storage.googleapis.com/a1aa/image/4V1-2KXMxoMa82g0Th8dvxQbS2qGQlXogtCiodNcjgE.jpg" width="40"/>
                             <span class="absolute bottom-0 right-0 bg-green-500 rounded-full w-3 h-3"></span>
                         </a>
-
                     </div>
                 </div>
+
                 <!-- Thanh Navbar trạng thái -->
                 <div class="flex justify-between items-center mb-6 bg-white p-4 shadow rounded-lg">
                     <h1 class="text-xl font-semibold">Order List</h1>
                     <div class="flex space-x-4">
-                        <!-- Nút hiển thị tất cả đơn hàng -->
-
-                        <p>OrderStatus</p>
+                        <p>Order Status:</p>
                         <a href="OrderListForStaffController" class="px-4 py-2 rounded-lg text-white
-                           ${empty param.status ? 'bg-blue-600' : 'bg-gray-400'}">All</a>
+                           ${empty                       param.status ? 'bg-blue-600' : 'bg-gray-400'}">All</a>
 
                         <a href="OrderListForStaffController?status=Pending" class="px-4 py-2 rounded-lg text-white
                            ${param.status == 'Pending' ? 'bg-blue-600' : 'bg-gray-400'}">Pending</a>
@@ -213,58 +212,59 @@
                            ${param.status == 'Canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
                     </div>
                 </div>
-
-
+                
                 <!-- Lặp danh sách đơn hàng -->         
                 <c:forEach var="order" items="${orderList}">
                     <div class="card">
-                        <div class="order-info">
-                            <div class="order-details">
+                        <div class="order-info flex">
+                            <div class="order-details flex-1">
                                 <h2 class="font-semibold">Order ID: ${order.orderID}</h2>
                                 <p>User Name: ${customerMap[order.orderID].firstName} ${customerMap[order.orderID].lastName}</p>
                                 <p>Address: ${order.deliveryAddress}</p>
                                 <p>Status: ${order.orderStatus}</p>
                                 <p>Created Date: ${order.orderDate}</p>
-                                <p>Total: ${order.preVoucherAmount}</p>
+                                <p>Total: <fmt:formatNumber value="${order.preVoucherAmount}" pattern="#,##0"/> đ</p>
                                 <p>Payment Method: ${order.paymentMethod}</p>
                                 <p>Delivery Status: ${order.deliveryStatus}</p>
                                 <p>Order Status: ${order.orderStatus}</p>
-
-
-
-
                             </div>
-                            <div class="update-section">
+
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <a href="OrderDetailForStaffController?id=${order.orderID}" class="button">View Details</a>
+                            <div class="update-section flex items-center">
                                 <!-- Update Shipper -->
-                                <form action="OrderListForStaffController" method="POST" class="flex items-center mb-2">
-                                    <input type="hidden" name="orderID" value="${order.orderID}">
-                                    <select name="shipperID" class="select" required>
-                                        <option value="">Choose Shipper</option> <!-- Không có "disabled selected" -->
-                                        <c:forEach var="shipper" items="${shipperList}">
-                                            <option value="${shipper.shipperID}">${shipper.account.username} ${shipper.totalDeliveries}</option>
-                                        </c:forEach>
-                                    </select>
+                                <c:if test="${order.orderStatus ne 'Shipped'}">
+                                    <form action="OrderListForStaffController" method="POST" class="flex items-center mb-2">
+                                        <input type="hidden" name="orderID" value="${order.orderID}">
+                                        <select name="shipperID" class="select" required>
+                                            <option value="">Choose Shipper</option>
+                                            <c:forEach var="shipper" items="${shipperList}">
+                                                <option value="${shipper.shipperID}">${shipper.account.username} (${shipper.totalDeliveries})</option>
+                                            </c:forEach>
+                                        </select>
+                                        <button type="submit" class="button">Update</button>
+                                    </form>
+                                </c:if>
 
-                                    <button type="submit" class="button">Update</button>
-                                </form>
-
-
-                                <!--                                 Update Status 
-                                                                <div class="flex items-center">
-                                                                    <select class="select">
-                                                                        <option value="Pending">Pending</option>
-                                                                        <option value="In Progress">In Progress</option>
-                                                                        <option value="Completed">Completed</option>
-                                                                        <option value="Cancelled">Cancelled</option>
-                                                                    </select>
-                                                                    <button class="button">Update</button>
-                                                                </div>-->
                             </div>
                         </div>
-                        <a href="OrderDetailForStaff?id=${order.orderID}" class="button mt-4">View Details</a>
                     </div>
                 </c:forEach>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                flatpickr("#dateRangePicker", {
+                    mode: "range",
+                    dateFormat: "d/m/Y", // Định dạng ngày/tháng/năm
+                    defaultDate: new Date(),
+                    onClose: function (selectedDates, dateStr) {
+                        console.log("Selected Date Range:", dateStr);
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

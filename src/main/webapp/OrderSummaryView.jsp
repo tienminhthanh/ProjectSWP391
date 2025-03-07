@@ -136,7 +136,7 @@
                                 <option value="0" data-discount="0">-- Select voucher --</option>
                                 <c:forEach var="voucher" items="${listVoucher}">
                                     <option value="${voucher.voucherID}" data-discount="${voucher.voucherValue}">
-                                        ${voucher.voucherName} - Discount <fmt:formatNumber value="${voucher.voucherValue}" type="number"/>₫
+                                        ${voucher.voucherName}
                                     </option>
                                 </c:forEach>
                             </select>
@@ -150,7 +150,7 @@
                                                data-cost="${option.optionCost}"
                                                onclick="updateShippingCost(${option.optionCost})"
                                                ${option.deliveryOptionID == 1 ? 'checked' : ''} />
-                                        ${option.optionName} (${option.optionCost} VND)
+                                        ${option.optionName} (<fmt:formatNumber value="${option.optionCost}" pattern="#,##0"/> đ)
                                     </label><br>
                                 </c:forEach>
                             </div> <hr>
@@ -178,7 +178,7 @@
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
-                                    <span class="product-price"> ${item.product.price} VND</span><br>
+                                    <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
 
                                 </div>
                                 <span clas="product-quantity">Quantity: ${item.quantity}</span>
@@ -189,17 +189,31 @@
                             <div class="price">
                                 <div class="price-custom">
                                     <div class="price-item">
-                                        <p>Subtotal: <span id="subtotal">${priceWithQuantity}</span> VND</p>
+                                        <p>Subtotal: 
+                                            <span id="subtotal">
+                                                <fmt:formatNumber value="${priceWithQuantity}" type="number" pattern="#,##0 đ"/>
+                                            </span>
+                                        </p>
                                     </div> 
+                                    <div class="price-item">
+                                        <p>Shipping Fee: 
+                                            <span id="shippingFee">
+                                                <c:forEach var="option" items="${deliveryOptions}">
+                                                    <c:if test="${option.deliveryOptionID == 1}">
+                                                        <fmt:formatNumber value="${option.optionCost}" pattern="#,##0 đ"/>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </span> 
+
+                                        </p>
+                                    </div>
 
                                     <div class="price-item">
-                                        <p>Shipping Fee: <span id="shippingFee">50,000</span> VND</p>
+                                        <p>Discount: <span id="discount"><fmt:formatNumber value="${voucherValue}" pattern="#,##0 đ"/></span></p>
+
                                     </div>
                                     <div class="price-item">
-                                        <p>Discount: <span id="discount">0</span> VND</p>
-                                    </div>
-                                    <div class="price-item">
-                                        <p>Total: <span id="totalAmount">${orderTotalAmount}</span> VND</p>
+                                        <p>Total: <span id="totalAmount"><fmt:formatNumber value="${orderTotalAmount}" pattern="#,##0 đ"/></span></p>
                                     </div>
                                 </div>
                             </div>
