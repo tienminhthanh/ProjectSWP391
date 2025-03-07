@@ -31,6 +31,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
     /**
      * Handles GET requests by forwarding users to the login page.
      */
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -49,8 +50,16 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         String password = lib.hashMD5(request.getParameter("password")); // Hash the password using MD5
         HttpSession session = request.getSession();
 
+        // Retrieve previous attempted username from session
+        String previousUsername = (String) session.getAttribute("previousUsername");
+
+        // If username changes, reset failed attempts
+        if (previousUsername == null || !previousUsername.equals(username)) {
+            session.setAttribute("failedAttempts", 0);
+        }
+        session.setAttribute("previousUsername", username);
+
         try {
-            // Retrieve the account from the database using the provided username
             Account account = accountDAO.getAccountByUsername(username);
 
             if (account != null) { // If account exists
@@ -68,9 +77,10 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
                     // Verify the password
                     if (account.getPassword().equals(password)) {
-                        session.setAttribute("account", account); // Store the account in session
+                        session.setAttribute("account", account);
                         session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                         session.removeAttribute("failedAttempts"); // Reset failed attempts counter
+                        session.removeAttribute("previousUsername"); // Reset username tracking
 
                         // Redirect based on user role
                         switch (account.getRole()) {
@@ -87,7 +97,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 response.sendRedirect("dashboardShipper.jsp");
                                 break;
                             default:
-                                session.invalidate(); // Invalidate session for invalid roles
+                                session.invalidate();
                                 request.setAttribute("errorMessage", "Invalid access!");
                                 forwardToLoginPage(request, response, username);
                                 break;
@@ -103,7 +113,11 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                         }
 
                         // Display remaining attempts
-                        request.setAttribute("errorMessage", "Wrong password! You have " + (5 - failedAttempts) + " attempts left.");
+                        if (!"admin".equals(account.getRole())) {
+                            request.setAttribute("errorMessage", "Wrong password! You have " + (5 - failedAttempts) + " attempts left.");
+                        } else {
+                            request.setAttribute("errorMessage", "Wrong password!");
+                        }
                         forwardToLoginPage(request, response, username);
                     }
                 } else { // Account is locked or deactivated

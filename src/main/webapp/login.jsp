@@ -68,10 +68,13 @@
                                 <script>resetFailedAttempts();</script>
                                 <p class="text-green-600 text-center mt-4">${message}</p>
                             </c:if>
-
                             <div class="mt-4 text-right">
+                                <a href="emailUnlock" class="text-blue-600 text-sm mr-4">
+                                    Unlock Account
+                                </a>
                                 <a class="text-blue-600 text-sm" href="forgotPassword.jsp">Forgot your password?</a>
                             </div>
+
                         </form>
                     </div>
 
@@ -83,7 +86,7 @@
                                class="w-full bg-red-600 text-white p-3 rounded flex items-center justify-center hover:bg-red-700">
                                 <i class="fab fa-google mr-2"></i> Login with Google
                             </a>
-                           
+
                         </div>
                     </div>
                 </div>

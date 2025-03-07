@@ -3,7 +3,9 @@ package dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Account;
 
 public class AccountDAO {
@@ -124,9 +126,6 @@ public class AccountDAO {
         return context.exeNonQuery(sql.toString(), params.toArray()) > 0;
     }
 
-   
-
-   
     public boolean updatePassword(String username, String newPassword) throws SQLException {
         String sql = "UPDATE Account SET password = ? WHERE username = ? AND isActive = 1"; // Check if account is active
         Object[] params = {newPassword, username}; // Parameters to pass into the query
@@ -160,6 +159,99 @@ public class AccountDAO {
         String sql = "UPDATE Account SET email = ? WHERE username = ?";
         Object[] params = {"", username};  // Đặt email thành rỗng
         return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public List<Account> getAccountsPaginated(String roleFilter, int page, int pageSize) throws SQLException {
+        List<Account> accounts = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Account");
+
+        // Thêm điều kiện WHERE nếu có roleFilter
+        Object[] params;
+        int offset = (page - 1) * pageSize;
+
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" WHERE role = ?");
+            sql.append(" ORDER BY accountID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            params = new Object[]{roleFilter, offset, pageSize};
+        } else {
+            sql.append(" ORDER BY accountID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            params = new Object[]{offset, pageSize};
+        }
+
+        ResultSet rs = context.exeQuery(sql.toString(), params);
+
+        while (rs.next()) {
+            accounts.add(mapResultSetToAccount(rs));
+        }
+
+        return accounts;
+    }
+
+    // Thêm phương thức đếm tổng số tài khoản
+    public int getTotalAccounts(String roleFilter) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Account");
+        Object[] params = null;
+
+        // Thêm điều kiện lọc theo role nếu có
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" WHERE role = ?");
+            params = new Object[]{roleFilter};
+        }
+
+        ResultSet rs = context.exeQuery(sql.toString(), params);
+        return rs.next() ? rs.getInt(1) : 0;
+    }
+
+    public int getTotalActiveAccounts() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Account WHERE isActive = 1";
+        ResultSet rs = context.exeQuery(sql, null);
+        return rs.next() ? rs.getInt(1) : 0;
+    }
+
+    // Lấy số tài khoản mới theo khoảng thời gian (day, week, month)
+    public int getNewAccountsByPeriod(String period) throws SQLException {
+        String sql;
+        switch (period.toLowerCase()) {
+            case "day":
+                sql = "SELECT COUNT(*) FROM Account WHERE dateAdded >= DATEADD(day, -1, GETDATE())";
+                break;
+            case "week":
+                sql = "SELECT COUNT(*) FROM Account WHERE dateAdded >= DATEADD(week, -1, GETDATE())";
+                break;
+            case "month":
+                sql = "SELECT COUNT(*) FROM Account WHERE dateAdded >= DATEADD(month, -1, GETDATE())";
+                break;
+            default:
+                return 0;
+        }
+        ResultSet rs = context.exeQuery(sql, null);
+        return rs.next() ? rs.getInt(1) : 0;
+    }
+
+    public Map<String, Integer> getAccountsByRole() throws SQLException {
+        Map<String, Integer> roleStats = new HashMap<>();
+        String sql = "SELECT role, COUNT(*) as count FROM Account GROUP BY role";
+        ResultSet rs = context.exeQuery(sql, null);
+
+        while (rs.next()) {
+            roleStats.put(rs.getString("role"), rs.getInt("count"));
+        }
+        return roleStats;
+    }
+
+    public Map<String, Integer> getMonthlyAccountGrowth() throws SQLException {
+        Map<String, Integer> monthlyGrowth = new HashMap<>();
+        String sql = "SELECT FORMAT(dateAdded, 'yyyy-MM') as month, COUNT(*) as count "
+                + "FROM Account "
+                + "WHERE dateAdded >= DATEADD(month, -1, GETDATE()) "
+                + "GROUP BY FORMAT(dateAdded, 'yyyy-MM') "
+                + "ORDER BY month";
+        ResultSet rs = context.exeQuery(sql, null);
+
+        while (rs.next()) {
+            monthlyGrowth.put(rs.getString("month"), rs.getInt("count"));
+        }
+        return monthlyGrowth;
     }
 
     /**

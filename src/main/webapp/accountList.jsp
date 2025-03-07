@@ -40,7 +40,14 @@
                             </select>
                         </div>
                     </form>
+                  
+
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="accountStatic">
+                         <i class="fas fa-tachometer-alt"></i> View Account Dashboard
+                    </a>
+
                 </div>
+
 
                 <!-- Display Error Message if Any -->
                 <c:if test="${not empty errorMessage}">
@@ -70,7 +77,7 @@
                     <tbody>
                         <c:forEach var="acc" items="${accounts}" varStatus="status">
                             <tr class="hover:bg-gray-100 transition duration-300">
-                                <td class="px-4 py-3 border-b text-center">${status.index + 1}</td>
+                                <td class="px-4 py-3 border-b text-center">${(currentPage - 1) * 3 + status.index + 1}</td>
                                 <td class="px-4 py-3 border-b text-center">${acc.username}</td>
                                 <td class="px-4 py-3 border-b text-center">${acc.firstName}</td>
                                 <td class="px-4 py-3 border-b text-center">${acc.lastName}</td>
@@ -102,9 +109,7 @@
                                         <a href="updateAccount?username=${acc.username}" class="text-blue-500 hover:text-blue-700">
                                             <i class="fas fa-edit"></i> Update
                                         </a>
-
                                         <br>
-
                                         <c:choose>
                                             <c:when test="${acc.isActive}">
                                                 <a class="text-red-500 hover:text-red-700 mr-3 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
@@ -135,41 +140,54 @@
                 <nav aria-label="Page navigation">
                     <ul class="flex space-x-2">
                         <c:if test="${currentPage > 1}">
-                            <li><a href="listAccount?role=${roleFilter}&page=1" class="px-4 py-2 bg-blue-500 text-white rounded">First</a></li>
-                            <li><a href="listAccount?role=${roleFilter}&page=${currentPage - 1}" class="px-4 py-2 bg-blue-500 text-white rounded">Previous</a></li>
-                        </c:if>
+                            <li><a href="listAccount?role=${roleFilter}&page=1" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">First</a></li>
+                            <li><a href="listAccount?role=${roleFilter}&page=${currentPage - 1}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Previous</a></li>
+                            </c:if>
 
-                        <c:forEach begin="1" end="${totalPages}" var="i">
-                            <li><a href="listAccount?role=${roleFilter}&page=${i}" class="px-4 py-2 bg-blue-500 text-white rounded ${i == currentPage ? 'bg-blue-700' : ''}">${i}</a></li>
-                        </c:forEach>
+                        <c:forEach begin="${currentPage - 2 > 0 ? currentPage - 2 : 1}" 
+                                   end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}" 
+                                   var="i">
+                            <c:if test="${i > 0 && i <= totalPages}">
+                                <li><a href="listAccount?role=${roleFilter}&page=${i}" 
+                                       class="px-4 py-2 ${i == currentPage ? 'bg-blue-700' : 'bg-blue-500'} text-white rounded hover:bg-blue-600">${i}</a></li>
+                                </c:if>
+                            </c:forEach>
 
                         <c:if test="${currentPage < totalPages}">
-                            <li><a href="listAccount?role=${roleFilter}&page=${currentPage + 1}" class="px-4 py-2 bg-blue-500 text-white rounded">Next</a></li>
-                            <li><a href="listAccount?role=${roleFilter}&page=${totalPages}" class="px-4 py-2 bg-blue-500 text-white rounded">Last</a></li>
-                        </c:if>
+                            <li><a href="listAccount?role=${roleFilter}&page=${currentPage + 1}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next</a></li>
+                            <li><a href="listAccount?role=${roleFilter}&page=${totalPages}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Last</a></li>
+                            </c:if>
                     </ul>
                 </nav>
+            </div>
+
+            <!-- Hiển thị thông tin phân trang -->
+            <div class="text-center mt-4 text-gray-600">
+                Page ${currentPage} of ${totalPages} 
+                <c:if test="${not empty accounts}">
+                    (Showing ${(currentPage - 1) * 3 + 1} - ${currentPage * 3 > totalAccounts ? totalAccounts : currentPage * 3} of ${totalAccounts} accounts)
+                </c:if>
             </div>
 
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-            function confirmAction(message, url) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: message,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, do it!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = url;
-                    }
-                });
-            }
+                                                    function confirmAction(message, url) {
+                                                        Swal.fire({
+                                                            title: 'Are you sure?',
+                                                            text: message,
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes, do it!',
+                                                            cancelButtonText: 'Cancel',
+                                                            reverseButtons: true
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                window.location.href = url;
+                                                            }
+                                                        });
+                                                    }
         </script>
     </body>
 </html>

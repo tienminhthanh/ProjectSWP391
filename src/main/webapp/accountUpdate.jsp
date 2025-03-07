@@ -73,8 +73,8 @@
                 </form>
 
                 <div class="mt-6">
-                    <a class="text-blue-600 hover:underline" href="readAccount">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to Profile
+                    <a class="text-blue-600 hover:underline" href="listAccount">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to list
                     </a>
                 </div>
             </div>
