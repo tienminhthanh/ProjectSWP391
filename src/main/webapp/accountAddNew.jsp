@@ -29,11 +29,17 @@
                 <hr class="mb-6 border-gray-300"/>
 
                 <!-- Hiển thị thông báo lỗi nếu có -->
-                <c:if test="${not empty message}">
+                <c:if test="${not empty erorrMessage}">
                     <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                        <i class="fas fa-exclamation-circle mr-2"></i>${message}
+                        <i class="fas fa-exclamation-circle mr-2"></i>${erorrMessage}
                     </p>
                 </c:if>
+                <c:if test="${not empty message}">
+                    <p class="text-green-600 text-center mt-4 text-sm font-semibold p-2 border border-green-500 rounded bg-green-100 w-full">
+                        <i class="fas fa-check-circle mr-2"></i>${message}
+                    </p>
+                </c:if>
+
 
                 <!-- Form nhập thông tin tài khoản -->
                 <form action="addAccount" method="post" class="space-y-6">

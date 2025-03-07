@@ -73,10 +73,20 @@
                 </form>
 
                 <div class="mt-6">
-                    <a class="text-blue-600 hover:underline" href="listAccount">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to list
-                    </a>
+                    <c:choose>
+                        <c:when test="${account != null && account.role == 'admin'}">
+                            <a class="text-blue-600 hover:underline" href="listAccount">
+                                <i class="fas fa-arrow-left mr-2"></i> Back to list
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <a class="text-blue-600 hover:underline" href="readAccount?username=${account.username}">
+                                <i class="fas fa-arrow-left mr-2"></i> Back to account details
+                            </a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
+
             </div>
         </main>
         <footer class="bg-gray-200 py-4 mt-8 w-full">
