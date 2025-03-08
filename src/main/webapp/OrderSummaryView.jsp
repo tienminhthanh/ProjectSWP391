@@ -168,7 +168,7 @@
                             <input type="hidden" name="orderTotalAmount" value="${orderTotalAmount}">
 
                             <div class="d-flex justify-content-between mt-4">
-                                <button class="btn btn-secondary" onclick="history.back();">Back to Cart</button>
+                                <button type="button" class="btn btn-secondary" onclick="history.back();">Back to Cart</button>
                                 <button type="submit" class="btn btn-primary">Place Order</button>
                             </div>
                         </form>

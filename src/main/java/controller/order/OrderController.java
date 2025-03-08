@@ -80,7 +80,6 @@ public class OrderController extends HttpServlet {
 
         if ("checkOut".equals(action)) {
 
-
 //            if (cartItems == null || cartItems.isEmpty()) {
 //                response.sendRedirect("home");
 //                return;
@@ -152,10 +151,7 @@ public class OrderController extends HttpServlet {
             request.setAttribute("priceWithQuantity", subtotal);
         } else if ("buyNow".equals(action)) {
 
-            if (cartItems == null || cartItems.isEmpty()) {
-                cartItems = new ArrayList<>();
-
-            }
+            cartItems = new ArrayList<>();
 
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
@@ -215,7 +211,7 @@ public class OrderController extends HttpServlet {
                     bestValueVoucher = value;
                 }
             }
-            
+
             for (Map.Entry<Integer, Double> entry : computedValues.entrySet()) {
                 if (entry.getValue().equals(bestValueVoucher)) {
                     bestVoucherID = entry.getKey();
@@ -227,7 +223,7 @@ public class OrderController extends HttpServlet {
             request.setAttribute("listVoucher", validVouchers);
             cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
             request.setAttribute("cartItems", cartItems);
-             session.setAttribute("cartItems", cartItems);
+            session.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
             request.setAttribute("deliveryOptions", deliveryOptions);
 
