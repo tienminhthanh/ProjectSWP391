@@ -52,25 +52,8 @@
             <jsp:include page="header.jsp" flush="true"/> 
         </div>
 
-        <div class="relative w-full h-64 overflow-hidden">
-            <!-- Hiển thị banner -->
-            <form id="banner-form" action="#" method="GET">
-                <input type="hidden" name="action" value="home">
-                <a id="banner-link" href="eventDetails">
-                    <img id="banner-img" class="w-full h-full object-cover transition-opacity duration-500 cursor-pointer">
-                </a>
-            </form>
-
-            <!-- Nút điều hướng -->
-            <button id="prev-btn" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ⬅
-            </button>
-            <button id="next-btn" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ➡
-            </button>
-
-            <!-- Chỉ số trạng thái (dot indicators) -->
-            <div id="dots-container" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2"></div>
+        <div class="banner-container">
+            <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -271,18 +254,10 @@
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelectorAll(".voucher").forEach(function (voucher) {
-                    let startDate = new Date(voucher.dataset.start);
-                    let duration = parseInt(voucher.dataset.duration);
-                    let dateEnd = new Date(startDate);
-                    dateEnd.setDate(startDate.getDate() + duration);
+        <!--Voucher Date End-->
+        <script src="js/scriptVoucherDateEnd.js"></script>
 
-                    voucher.querySelector(".date-end").textContent = dateEnd.toISOString().split("T")[0];
-                });
-            });
-        </script>
+
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {

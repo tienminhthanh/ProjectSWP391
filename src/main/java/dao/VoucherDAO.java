@@ -38,18 +38,18 @@ public class VoucherDAO {
                 String name = rs.getString(2);
                 double value = rs.getDouble(3);
                 int quantity = rs.getInt(4);
-                int minimum = rs.getInt(5);
+                int mminimum = rs.getInt(5);
                 String dateCreated = rs.getString(6);
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
                 boolean isActive = rs.getBoolean(9);
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
-                LocalDate expiryDate = createDate.plusDays(duration);
                 String type = rs.getString(10);
                 Double maximum = rs.getDouble(11);
                 String dateStarted = rs.getString(12);
-                Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, isActive,
-                        !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+
                 list.add(voucher);
             }
         } catch (Exception e) {
@@ -71,6 +71,35 @@ public class VoucherDAO {
         return 0;
     }
 
+    public Voucher getVoucherByID(int voucherID) {
+        try {
+            String sql = "SELECT * FROM [dbo].[Voucher] WHERE [voucherID] = ?";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            Object[] params = {voucherID};
+            ResultSet rs = context.exeQuery(sql, params);
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double value = rs.getDouble(3);
+                int quantity = rs.getInt(4);
+                int mminimum = rs.getInt(5);
+                String dateCreated = rs.getString(6);
+                int duration = rs.getInt(7);
+                int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                return new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
     public List<Voucher> getListVoucher() {
         List<Voucher> listVoucher = new ArrayList<>();
 
@@ -88,11 +117,11 @@ public class VoucherDAO {
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
                 boolean isActive = rs.getBoolean(9);
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
-                LocalDate expiryDate = createDate.plusDays(duration);
                 String type = rs.getString(10);
                 Double maximum = rs.getDouble(11);
                 String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
                 Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
 
                 listVoucher.add(voucher);
@@ -181,35 +210,6 @@ public class VoucherDAO {
         return listVoucher;
     }
 
-    public Voucher getVoucherByID(int voucherID) {
-        try {
-            String sql = "SELECT * FROM [dbo].[Voucher] WHERE [voucherID] = ?";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            Object[] params = {voucherID};
-            ResultSet rs = context.exeQuery(sql, params);
-            if (rs.next()) {
-                int id = rs.getInt(1);
-                String name = rs.getString(2);
-                double value = rs.getDouble(3);
-                int quantity = rs.getInt(4);
-                int mminimum = rs.getInt(5);
-                String dateCreated = rs.getString(6);
-                int duration = rs.getInt(7);
-                int adminID = rs.getInt(8);
-                boolean isActive = rs.getBoolean(9);
-                String type = rs.getString(10);
-                Double maximum = rs.getDouble(11);
-                String dateStarted = rs.getString(12);
-                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-                LocalDate expiryDate = createDate.plusDays(duration);
-                return new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
-            }
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-        }
-        return null;
-    }
-
     public boolean updateVoucher(Voucher voucher) {
         try {
             String sql = "UPDATE [dbo].[Voucher]\n"
@@ -286,9 +286,13 @@ public class VoucherDAO {
 
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
-        List<Voucher> list = vd.getListVoucherAvailableNow();
+        List<Voucher> list = vd.getListVoucher();
         for (Voucher voucher : list) {
-            System.out.println(voucher.toString());
+            if (voucher.getVoucherID() == 65) {
+                System.out.println(voucher.toString());
+            }
         }
+//        Voucher v = new Voucher();
+        System.out.println(vd.getVoucherByID(65));
     }
 }

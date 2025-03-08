@@ -70,10 +70,10 @@
                                     <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
                                             <c:when test="${voucher.expiry}">
-                                                <span>Available</span>
+                                                <span class="text-green-600">Available</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span>Expired</span>
+                                                <span class="text-red-600">Expired</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
