@@ -12,13 +12,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
  * @author ADMIN
  */
 @WebServlet(name = "VoucherDeleteServlet", urlPatterns = {"/voucherDelete"})
-public class VoucherDeleteServlet extends HttpServlet {
+public class VoucherDeleteController extends HttpServlet {
 
     private final String VOUCHER_LIST_PAGE = "voucherList";
 
@@ -34,15 +35,25 @@ public class VoucherDeleteServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            String url = VOUCHER_LIST_PAGE;
+        String url = VOUCHER_LIST_PAGE;
+        HttpSession session = request.getSession();
+
+        try {
             int id = Integer.parseInt(request.getParameter("id"));
             VoucherDAO vDao = new VoucherDAO();
+
             if (vDao.deleteVoucher(id)) {
-                response.sendRedirect(url);
+                session.setAttribute("message", "Voucher deleted successfully!");
+                session.setAttribute("messageType", "success");
+            } else {
+                session.setAttribute("message", "Failed to update voucher.");
+                session.setAttribute("messageType", "error");
             }
+        } catch (Exception e) {
+            session.setAttribute("message", "Error: " + e.getMessage());
+            session.setAttribute("messageType", "error");
         }
+        response.sendRedirect(url);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

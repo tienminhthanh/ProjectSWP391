@@ -26,13 +26,13 @@ public class VoucherDAO {
         context = new utils.DBContext();
     }
 
-    public List<Voucher> getListVoucher() {
-        List<Voucher> listVoucher = new ArrayList<>();
+    public List<Voucher> getVoucherByPage(int page, int pageSize) {
+        List<Voucher> list = new ArrayList<>();
+        String sql = "SELECT * FROM Voucher ORDER BY voucherID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         try {
-            String sql = "SELECT * FROM [dbo].[Voucher]";
-            ResultSet rs = context.exeQuery(sql, null);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            ResultSet rs = context.exeQuery(sql, new Object[]{(page - 1) * pageSize, pageSize});
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
@@ -43,20 +43,32 @@ public class VoucherDAO {
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
                 boolean isActive = rs.getBoolean(9);
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
-                LocalDate expiryDate = createDate.plusDays(duration);
                 String type = rs.getString(10);
                 Double maximum = rs.getDouble(11);
                 String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
                 Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
 
-                listVoucher.add(voucher);
+                list.add(voucher);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+        return list;
+    }
 
-        return listVoucher;
+    public int getTotalVoucher() {
+        String sql = "SELECT COUNT(*) FROM Voucher";
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return 0;
     }
 
     public Voucher getVoucherByID(int voucherID) {
@@ -86,6 +98,116 @@ public class VoucherDAO {
             System.err.println(e.getMessage());
         }
         return null;
+    }
+
+    public List<Voucher> getListVoucher() {
+        List<Voucher> listVoucher = new ArrayList<>();
+
+        try {
+            String sql = "SELECT * FROM [dbo].[Voucher]";
+            ResultSet rs = context.exeQuery(sql, null);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double value = rs.getDouble(3);
+                int quantity = rs.getInt(4);
+                int mminimum = rs.getInt(5);
+                String dateCreated = rs.getString(6);
+                int duration = rs.getInt(7);
+                int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+
+                listVoucher.add(voucher);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return listVoucher;
+    }
+
+    public List<Voucher> getListVoucherComeSoon() {
+        List<Voucher> listVoucher = new ArrayList<>();
+        String sql = "SELECT * FROM [dbo].[Voucher]  \n"
+                + "WHERE dateStarted BETWEEN ? AND ?  \n"
+                + "ORDER BY dateStarted ASC;";
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate tomorrow = LocalDate.now().plusDays(1);
+            LocalDate threeDaysLater = LocalDate.now().plusDays(3);
+            Object[] params = {tomorrow, threeDaysLater};
+            ResultSet rs = context.exeQuery(sql, params);
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double value = rs.getDouble(3);
+                int quantity = rs.getInt(4);
+                int mminimum = rs.getInt(5);
+                String dateCreated = rs.getString(6);
+                int duration = rs.getInt(7);
+                int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+
+                listVoucher.add(voucher);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return listVoucher;
+    }
+
+    public List<Voucher> getListVoucherAvailableNow() {
+        List<Voucher> listVoucher = new ArrayList<>();
+        String sql = "SELECT * FROM Voucher \n"
+                + "WHERE dateStarted <= ? \n"
+                + "AND DATEADD(DAY, duration, dateStarted) >= ?";
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate today = LocalDate.now();
+            Object[] params = {today, today};
+            ResultSet rs = context.exeQuery(sql, params);
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                double value = rs.getDouble(3);
+                int quantity = rs.getInt(4);
+                int mminimum = rs.getInt(5);
+                String dateCreated = rs.getString(6);
+                int duration = rs.getInt(7);
+                int adminID = rs.getInt(8);
+                boolean isActive = rs.getBoolean(9);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                String type = rs.getString(10);
+                Double maximum = rs.getDouble(11);
+                Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
+
+                listVoucher.add(voucher);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return listVoucher;
     }
 
     public boolean updateVoucher(Voucher voucher) {
@@ -122,6 +244,11 @@ public class VoucherDAO {
     public boolean deleteVoucher(int id) {
         try {
             Voucher voucher = getVoucherByID(id);
+
+            if (!voucher.isExpiry() && !voucher.isIsActive()) {
+                return false;
+            }
+
             String sql = "UPDATE [dbo].[Voucher]\n"
                     + "   SET [isActive] = ?\n"
                     + " WHERE [voucherID] = ?";
@@ -164,7 +291,13 @@ public class VoucherDAO {
 
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
-        Voucher v = vd.getVoucherByID(60);
-        System.out.println(v.toString());
+        List<Voucher> list = vd.getListVoucher();
+        for (Voucher voucher : list) {
+            if (voucher.getVoucherID() == 65) {
+                System.out.println(voucher.toString());
+            }
+        }
+//        Voucher v = new Voucher();
+        System.out.println(vd.getVoucherByID(65));
     }
 }

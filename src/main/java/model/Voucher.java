@@ -33,7 +33,6 @@ public class Voucher {
         this.dateCreated = dateCreated;
         this.duration = duration;
         this.adminID = adminID;
-
         this.isActive = isActive;
         this.expiry = expiry;
         this.voucherType = voucherType;
@@ -146,6 +145,11 @@ public class Voucher {
 
     public void setMaxDiscountAmount(Double maxDiscountAmount) {
         this.maxDiscountAmount = maxDiscountAmount;
+    }
+
+    @Override
+    public String toString() {
+        return "Voucher{" + "voucherID=" + voucherID + ", voucherName=" + voucherName + ", voucherValue=" + voucherValue + ", quantity=" + quantity + ", minimumPurchaseAmount=" + minimumPurchaseAmount + ", dateCreated=" + dateCreated + ", duration=" + duration + ", adminID=" + adminID + ", isActive=" + isActive + ", expiry=" + expiry + ", voucherType=" + voucherType + ", maxDiscountAmount=" + maxDiscountAmount + ", dateStarted=" + dateStarted + '}';
     }
 
 }

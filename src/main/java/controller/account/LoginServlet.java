@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
             Account account = accountDAO.getAccountByUsername(username);
 
             if (account != null) {
-                if (account.getIsActive()) {
+                if (account.getIsActive()) {    
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
                     if (failedAttempts == null) {
                         failedAttempts = 0;
