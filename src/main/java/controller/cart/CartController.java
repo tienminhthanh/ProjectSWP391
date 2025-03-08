@@ -154,9 +154,9 @@ public class CartController extends HttpServlet {
         if (existingCartItem != null) {
             // Update quantity if product exists
             int newQuantity = existingCartItem.getQuantity() + quantity;
-            if (newQuantity > product.getStockCount()) {
-                throw new Exception("Total quantity exceeds available stock! Available: " + product.getStockCount());
-            }
+//            if (newQuantity > product.getStockCount()) {
+//                throw new Exception("Total quantity exceeds available stock! Available: " + product.getStockCount());
+//            }
             // Update existing item using the constructor with itemID
             CartItem updatedCartItem = new CartItem(existingCartItem.getItemID(),
                     customerID,

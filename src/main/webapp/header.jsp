@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <header>
     <div class="logo">
         <a href="home">
@@ -43,16 +44,26 @@
 
         <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
             <div class="customer-icons">
-                
-
-                <!--Notification button-->
-                <a href="notification?action=list&receiverID=${sessionScope.account.accountID}">
+                <!--Notification button with unread count-->
+                <a href="notification?action=list&receiverID=${sessionScope.account.accountID}" class="relative">
                     <i class="fa-regular fa-bell"></i>
+                    <c:set var="unreadCount" value="0" />
+                    <c:forEach var="notification" items="${sessionScope.notifications}">
+                        <c:if test="${!notification.isRead}">
+                            <c:set var="unreadCount" value="${unreadCount + 1}" />
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${unreadCount > 0}">
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${unreadCount}</span>
+                    </c:if>
                 </a>
 
-                <!--Cart button-->
-                <a href="cart?customerID=${sessionScope.account.accountID}">
+                <!--Cart button with unique item count-->
+                <a href="cart?customerID=${sessionScope.account.accountID}" class="relative">
                     <i class="fa-solid fa-cart-shopping"></i>
+                    <c:if test="${not empty sessionScope.cartItems}">
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${fn:length(sessionScope.cartItems)}</span>
+                    </c:if>
                 </a>
 
                 <!--My Account-->
@@ -64,7 +75,6 @@
                 <a href="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </a>
-
             </div>
 
             <!--Toggle customer mobile menu-->
@@ -89,16 +99,20 @@
                             <a href="notification.jsp">
                                 <i class="fa-regular fa-bell"></i>
                                 <span>Notification</span>
+                                <c:if test="${unreadCount > 0}">
+                                    <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 inline-flex items-center justify-center ml-2">${unreadCount}</span>
+                                </c:if>
                             </a>
-
                         </li>
                         <li>
                             <!--Cart button-->
                             <a href="cart?customerID=${sessionScope.account.accountID}">
                                 <i class="fa-solid fa-cart-shopping"></i>
                                 <span>Cart</span>
+                                <c:if test="${not empty sessionScope.cartItems}">
+                                    <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 inline-flex items-center justify-center ml-2">${fn:length(sessionScope.cartItems)}</span>
+                                </c:if>
                             </a>
-
                         </li>
                         <li>
                             <!--My Account-->
@@ -116,14 +130,11 @@
                         </li>
                     </ul>
                 </div>
-
             </div>
-
         </c:if>
 
         <c:if test="${empty sessionScope.account}">
             <div class="auth-buttons">
-
                 <a href="login" class="loginLinks">
                     <button class="sign-in"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
                 </a>
@@ -151,5 +162,21 @@
         if (selectElement) {
             selectElement.value = type;
         }
+
+        // Fetch notifications if not already in session
+    <c:if test="${empty sessionScope.notifications && not empty sessionScope.account}">
+        fetch('notification?action=list&receiverID=${sessionScope.account.accountID}')
+                .then(response => response.text())
+                .then(data => {
+                    // Assuming the JSP sets sessionScope.notifications
+                    console.log("Notifications fetched");
+                });
+    </c:if>
     });
 </script>
+
+<style>
+    .relative {
+        position: relative;
+    }
+</style>
