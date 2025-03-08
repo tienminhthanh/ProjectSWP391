@@ -250,4 +250,3 @@ window.addEventListener('resize', () => {
         sidebar.style.display = 'none';
     }
 });
-
