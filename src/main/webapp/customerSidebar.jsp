@@ -130,7 +130,7 @@
     </div>
 
     <!--Start Books-->
-    <c:if test="${requestScope.type == 'book' || pageContext.request.requestURL.endsWith('home') or pageContext.request.requestURL.endsWith('home/')}">
+    <c:if test="${(not empty requestScope.type and requestScope.type == 'book')  or (pageContext.request.servletPath == '/home' or pageContext.request.servletPath == '/ranking' or pageContext.request.servletPath == '/productDetails')}">
 
         <div class="mb-4 bg-white">
             <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1">
