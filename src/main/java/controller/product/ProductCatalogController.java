@@ -419,7 +419,70 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleCreator(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for creator functionality
+        String creatorID = request.getParameter("id");
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    filterMap.put(name, values[0]);
+                }
+
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+            //Parse id string to integer
+            int id = Integer.parseInt(creatorID);
+
+            //            Set up breadCrumb and page title
+            String breadCrumb = "<a href='home'>Home</a>";
+            Creator selectedCreator = productDAO.getCreatorById(id);
+            String creatorName = selectedCreator.getCreatorName();
+            breadCrumb += String.format(" > <a href='creator?id=%s'>%s</a>", id, creatorName);
+            request.setAttribute("pageTitle", creatorName);
+            request.setAttribute("breadCrumb", breadCrumb);
+
+            //Get product list
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "crt", selectedCreator.getGeneralCategory());
+            if (productList.isEmpty()) {
+                //No result found
+                request.setAttribute("message", "No result found! Please deselect some filter if any.");
+            } else {
+                request.setAttribute("productList", productList);
+                //For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            request.setAttribute("type", selectedCreator.getGeneralCategory());
+            request.setAttribute("currentURL", currentURL);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleSeries(HttpServletRequest request, HttpServletResponse response)
