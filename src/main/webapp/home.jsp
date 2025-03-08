@@ -1,8 +1,19 @@
+<%@page import="java.io.FilenameFilter"%>
+<%@page import="java.io.File"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
 <fmt:setLocale value="en_US"/>
-
+<%
+    String bannerPath = application.getRealPath("/img/banner_event/");
+    File folder = new File(bannerPath);
+    String[] files = folder.list(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.matches(".*\\.(jpg|jpeg|png|gif)");
+        }
+    });
+%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -41,44 +52,25 @@
             <jsp:include page="header.jsp" flush="true"/> 
         </div>
 
+        <div class="relative w-full h-64 overflow-hidden">
+            <!-- Hiển thị banner -->
+            <form id="banner-form" action="#" method="GET">
+                <input type="hidden" name="action" value="home">
+                <a id="banner-link" href="eventDetails">
+                    <img id="banner-img" class="w-full h-full object-cover transition-opacity duration-500 cursor-pointer">
+                </a>
+            </form>
 
-        <div x-data="{ 
-             current: 0, 
-             banners: [
-             '/img/banner_event/voucher1.jpg',
-             '/img/banner_event/voucher2.jpg',
-             '/img/banner_event/voucher3.jpg',
-             '/img/banner_event/voucher4.jpg'
-             ],
-             next() {
-             this.current = (this.current + 1) % this.banners.length;
-             },
-             prev() {
-             this.current = (this.current - 1 + this.banners.length) % this.banners.length;
-             },
-             autoSlide() {
-             setInterval(() => { this.next(); }, 3000);
-             }
-             }" x-init="autoSlide()" class="relative w-full h-64 overflow-hidden">
-
-            <!-- banner hiển thị -->
-            <img :src="banners[current]" class="w-full h-full object-cover transition-opacity duration-500">
-
-            <!-- nút điều hướng -->
-            <button @click="prev()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+            <!-- Nút điều hướng -->
+            <button id="prev-btn" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
                 ⬅
             </button>
-            <button @click="next()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
+            <button id="next-btn" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
                 ➡
             </button>
 
-            <!-- chỉ số -->
-            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                <template x-for="(banner, index) in banners" :key="index">
-                    <div @click="current = index" :class="current === index ? 'bg-blue-500' : 'bg-gray-300'"
-                          class="w-3 h-3 rounded-full cursor-pointer"></div>
-                </template>
-            </div>
+            <!-- Chỉ số trạng thái (dot indicators) -->
+            <div id="dots-container" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2"></div>
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -278,6 +270,7 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".voucher").forEach(function (voucher) {
@@ -289,6 +282,55 @@
                     voucher.querySelector(".date-end").textContent = dateEnd.toISOString().split("T")[0];
                 });
             });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let banners = [
+            <% for (String file : files) {%>
+                    {img: "/img/banner_event/<%= file%>"},
+            <% }%>
+                ];
+
+                let current = 0;
+                const bannerImg = document.getElementById("banner-img");
+                const bannerLink = document.getElementById("banner-link");
+                const dotsContainer = document.getElementById("dots-container");
+
+                function updateBanner() {
+                    bannerImg.src = banners[current].img;
+                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
+
+                    dotsContainer.innerHTML = "";
+                    banners.forEach((_, index) => {
+                        const dot = document.createElement("div");
+                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
+                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
+                        dot.onclick = () => {
+                            current = index;
+                            updateBanner();
+                        };
+                        dotsContainer.appendChild(dot);
+                    });
+                }
+
+                function next() {
+                    current = (current + 1) % banners.length;
+                    updateBanner();
+                }
+
+                function prev() {
+                    current = (current - 1 + banners.length) % banners.length;
+                    updateBanner();
+                }
+
+                document.getElementById("prev-btn").addEventListener("click", prev);
+                document.getElementById("next-btn").addEventListener("click", next);
+
+                setInterval(next, 3000);
+                updateBanner();
+            });
+
         </script>
 
     </body>
