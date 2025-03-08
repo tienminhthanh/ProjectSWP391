@@ -22,9 +22,6 @@ footer {
     margin-bottom: 5vh;
 }
 
-.footer-detail {
-    padding-top: 3%;
-}
 
 footer a:hover {
     color: #ecc942;
@@ -44,18 +41,19 @@ footer a>p:hover {
 .contact-text {
     padding-left: 3%;
     color: rgba(0, 0, 0, 0.8);
-    font-size: small;
+    font-size: 1em;
 }
 
 .policy-service-title {
-    font-size: small;
+    font-size: 1em;
+    font-weight: bold;
 }
 
 .policy-service-text {
-    font-size: xx-small;
+    font-size: 0.8em;
     color: rgba(0, 0, 0, 0.8);
-    line-height: 10vh;
     display: block;
+    margin-top: 5px;
 }
 
 .footer-logo img {
@@ -64,7 +62,9 @@ footer a>p:hover {
 }
 
 
-
+.social-media-title{
+    font-weight: bold;
+}
 
 @media only screen and (min-width: 768px) {
     .policy-service-text {

@@ -1,5 +1,19 @@
+<%@page import="java.io.FilenameFilter"%>
+<%@page import="java.io.File"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
+<fmt:setLocale value="en_US"/>
+<%
+    String bannerPath = application.getRealPath("/img/banner_event/");
+    File folder = new File(bannerPath);
+    String[] files = folder.list(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.matches(".*\\.(jpg|jpeg|png|gif)");
+        }
+    });
+%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -7,6 +21,10 @@
         <title>
             WIBOOKS - More Than Just Books
         </title>
+
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
 
         <!--Unknown import-->
         <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>-->
@@ -20,9 +38,13 @@
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
         <link href="css/styleFooter.css" rel="stylesheet">
 
+        <!--Customer Sidebar-->
+        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
+
         <!--Product card css-->
         <link rel="stylesheet" href="css/styleProductCard.css"/>
 
+        <!--Banner carousel-->
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     </head>
     <body class="bg-gray-100">
@@ -30,55 +52,18 @@
             <jsp:include page="header.jsp" flush="true"/> 
         </div>
 
-
-        <div x-data="{ 
-             current: 0, 
-             banners: [
-             '/img/banner_event/banner1.jpg',
-             '/img/banner_event/banner2.jpg',
-             '/img/banner_event/banner3.jpg',
-             '/img/banner_event/banner4.jpg'
-             ],
-             next() {
-             this.current = (this.current + 1) % this.banners.length;
-             },
-             prev() {
-             this.current = (this.current - 1 + this.banners.length) % this.banners.length;
-             },
-             autoSlide() {
-             setInterval(() => { this.next(); }, 3000);
-             }
-             }" x-init="autoSlide()" class="relative w-full h-64 overflow-hidden">
-
-            <!-- banner hiển thị -->
-            <img :src="banners[current]" class="w-full h-full object-cover transition-opacity duration-500">
-
-            <!-- nút điều hướng -->
-            <button @click="prev()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ⬅
-            </button>
-            <button @click="next()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ➡
-            </button>
-
-            <!-- chỉ số -->
-            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                <template x-for="(banner, index) in banners" :key="index">
-                    <div @click="current = index" :class="current === index ? 'bg-blue-500' : 'bg-gray-300'"
-                          class="w-3 h-3 rounded-full cursor-pointer"></div>
-                </template>
-            </div>
+        <div class="banner-container">
+            <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
             <jsp:include page="customerSidebar.jsp"/>
 
             <!--Main section-->
-            <main class="w-full md:w-5/6 p-3">
-                <div class="mb-4 bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+            <main class="w-full md:w-5/6 p-3 flex flex-col">
+                <!--Div1-->
+                <div class="mb-4 bg-white popular-search-area">
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Popular Searches
                     </h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
@@ -103,44 +88,125 @@
                     </div>
                 </div>
 
-                <div class="mb-4 bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                        Vouchers
+                <!--Div2-->
+                <div class="mb-4 bg-white voucher-area">
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Available Now
                     </h2>
-                    <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
                         <c:forEach var="voucher" items="${listVoucher}">
-                            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-                                    onclick="navigateToUpdate(${voucher.voucherID})">
-                                ${voucher.voucherName} - ${voucher.voucherValue}
-                            </button>
+                            <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
+                                 style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
+                                <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+                                    <!-- Tên Voucher -->
+                                    <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+                                    <!-- Giá trị giảm -->
+                                    <p>Sale
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                                    ${voucher.voucherValue} %
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> đ
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </p>
+
+                                    <!-- Hiển thị Max Discount nếu là Percentage -->
+                                    <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to
+                                            <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span>
+                                        </p>
+                                    </c:if>
+
+                                    <!-- Điều kiện sử dụng -->
+                                    <p>For orders from
+                                        <span>
+                                            <fmt:formatNumber value="${voucher.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </p>
+
+                                    <!-- Hạn sử dụng -->
+                                    <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
+                                        <p><strong>EXP:</strong> <span class="date-end"></span></p>
+                                    </div>
+                                </div>
+                            </div>
                         </c:forEach>
 
                         <c:if test="${empty listVoucher}">
-                            <p class="text-gray-500 italic">No vouchers available.</p>
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
+                        </c:if>
+                    </div>
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Coming Soon
+                    </h2>
+                    <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
+
+                        <c:forEach var="voucherComeSoon" items="${listVoucherComeSoon}">
+                            <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
+                                 style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
+                                <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+
+                                    <!-- Tên Voucher -->
+                                    <p class="font-bold text-lg text-orange-600">${voucherComeSoon.voucherName}</p>
+
+                                    <!-- Giá trị giảm -->
+                                    <p>Sale
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${voucherComeSoon.voucherType eq 'PERCENTAGE'}">
+                                                    ${voucherComeSoon.voucherValue} %
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${voucherComeSoon.voucherValue}" type="number" groupingUsed="true"/> đ
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </p>
+
+                                    <!-- Hiển thị Max Discount nếu là Percentage -->
+                                    <c:if test="${voucherComeSoon.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to
+                                            <span><fmt:formatNumber value="${voucherComeSoon.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span>
+                                        </p>
+                                    </c:if>
+
+                                    <!-- Điều kiện sử dụng -->
+                                    <p>For orders from
+                                        <span>
+                                            <fmt:formatNumber value="${voucherComeSoon.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </p>
+
+                                    <!-- Hạn sử dụng -->
+                                    <div class="voucher" data-start="${voucherComeSoon.dateStarted}" data-duration="${voucherComeSoon.duration}">
+                                        <p><strong>Started on: </strong>${voucherComeSoon.dateStarted}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+
+                        <c:if test="${empty listVoucherComeSoon}">
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
                         </c:if>
                     </div>
                 </div>
 
-                <!--Loopppppppppppppppppppppppppppppp-->
+                <!--Random Pick-->
                 <div class="bg-white">
-                    <h2 class="text-xl font-bold relative pl-5 mb-3 pb-1">
-                        <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                        <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                        Random Pick
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center border-t-4 border-orange-300">
+                        Lucky Books
                     </h2>
-                    <!--<div class="flex space-x-4 overflow-x-auto">-->
+                    <!--Loop through product list-->
                     <div class="w-full">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:hidden">
-                            <c:forEach var="currentProduct" items="${productList}">
-                                <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
-                                <jsp:include page="productCard.jsp"/>
-                            </c:forEach>
-                        </div>
-
-                        <!-- Horizontal scrolling at lg (1024px+) -->
-                        <div class="hidden lg:block w-full overflow-x-auto">
+                        <div class="gap-4 w-full overflow-x-auto">
                             <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
                                 <c:forEach var="currentProduct" items="${productList}">
                                     <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
@@ -150,13 +216,15 @@
                         </div>
                     </div>
 
-                    <!--Popup unauthorized users-->
-                    <jsp:include page="popuplogin.jsp"/>
-
                 </div>
+                <!--Popup unauthorized users-->
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                    <jsp:include page="popuplogin.jsp"/>
+                </c:if>
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
+        <jsp:include page="chat.jsp"/>
 
         <script>
             document.getElementById("chatbot-icon").addEventListener("click", function () {
@@ -196,9 +264,14 @@
         <script src="js/scriptHeader.js"></script>
 
         <!--Footer script-->
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
+
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js"></script>
+        <script src="js/scriptCusSideBarNOTDetails.js"></script>
 
         <!--Unknown import-->
         <!--        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -212,28 +285,68 @@
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
 
+        <!--Voucher Date End-->
+        <script src="js/scriptVoucherDateEnd.js"></script>
+
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let banners = [
+            <% for (String file : files) {%>
+                    {img: "/img/banner_event/<%= file%>"},
+            <% }%>
+                ];
+
+                let current = 0;
+                const bannerImg = document.getElementById("banner-img");
+                const bannerLink = document.getElementById("banner-link");
+                const dotsContainer = document.getElementById("dots-container");
+
+                function updateBanner() {
+                    bannerImg.src = banners[current].img;
+                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
+
+                    dotsContainer.innerHTML = "";
+                    banners.forEach((_, index) => {
+                        const dot = document.createElement("div");
+                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
+                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
+                        dot.onclick = () => {
+                            current = index;
+                            updateBanner();
+                        };
+                        dotsContainer.appendChild(dot);
+                    });
+                }
+
+                function next() {
+                    current = (current + 1) % banners.length;
+                    updateBanner();
+                }
+
+                function prev() {
+                    current = (current - 1 + banners.length) % banners.length;
+                    updateBanner();
+                }
+
+                const prev_btn = document.getElementById("prev-btn");
+                if (prev_btn !== null) {
+                    prev_btn.addEventListener("click", prev);
+
+                    setInterval(next, 3000);
+                }
+                const next_btn = document.getElementById("next-btn");
+                if (next_btn !== null) {
+                    next_btn.addEventListener("click", next);
+
+                    setInterval(next, 3000);
+                }
+
+                updateBanner();
+            });
+
+        </script>
+
     </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

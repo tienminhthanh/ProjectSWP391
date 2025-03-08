@@ -89,6 +89,13 @@
                        class="bg-green-600 text-white p-3 rounded hover:bg-green-700 flex items-center">
                         <i class="fas fa-key mr-2"></i> Change Password
                     </a>
+                    <c:choose>
+                        <c:when test="${sessionScope.account.role eq 'customer'}">
+                            <a class="bg-green-600 text-white p-3 rounded hover:bg-blue-700 flex items-center" href="OrderListController">
+                                <i class="fas fa-shopping-cart mr-2"></i> Order List
+                            </a>
+                        </c:when>
+                    </c:choose>
                     <c:if test="${sessionScope.account.role != 'admin'}">
                         <a href="deleteAccount?username=${account.username}" 
                            class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 

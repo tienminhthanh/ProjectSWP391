@@ -6,19 +6,28 @@ package model;
 
 /**
  *
- * @author Admin
+ * @author Macbook
  */
-public class Shipper extends Account{
+public class Shipper {
+    private int shipperID;
     private String deliveryAreas;
     private int totalDeliveries;
-
+    private Account Account;
     public Shipper() {
     }
 
-    public Shipper(String deliveryAreas, int totalDeliveries, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+    public Shipper(int shipperID, String deliveryAreas, int totalDeliveries) {
+        this.shipperID = shipperID;
         this.deliveryAreas = deliveryAreas;
         this.totalDeliveries = totalDeliveries;
+    }
+
+    public int getShipperID() {
+        return shipperID;
+    }
+
+    public void setShipperID(int shipperID) {
+        this.shipperID = shipperID;
     }
 
     public String getDeliveryAreas() {
@@ -36,7 +45,19 @@ public class Shipper extends Account{
     public void setTotalDeliveries(int totalDeliveries) {
         this.totalDeliveries = totalDeliveries;
     }
-    
+
+    public Account getAccount() {
+        return Account;
+    }
+
+    public void setAccount(Account Account) {
+        this.Account = Account;
+    }
+
+    @Override
+    public String toString() {
+        return "Shipper{" + "shipperID=" + shipperID + ", deliveryAreas=" + deliveryAreas + ", totalDeliveries=" + totalDeliveries + '}';
+    }
     
     
 }

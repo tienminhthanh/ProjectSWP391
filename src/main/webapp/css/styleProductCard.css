@@ -1,7 +1,6 @@
 
-/* CSS của bạn */
+
 .product-card {
-    width: 220px;
     border: 1px solid #ddd;
     border-radius: 10px;
     overflow: hidden;
@@ -13,6 +12,7 @@
     padding-bottom: 0px;
     height: 90%; /* Ensuring a fixed card height */
 }
+
 
 .product-card:hover {
     transform: scale(1.05);
@@ -58,11 +58,12 @@
     font-size: 10px;
 }
 
+
 /* Product Image */
 .product-image {
     display: block;
     position: relative;
-    height: 60%; /* Ensure images take up exactly half the card */
+    height: 60%; /* Ensure images take up exactly 60% the card */
     overflow: hidden;
 }
 
@@ -89,16 +90,17 @@
     display: block;
 }
 
-/* Category/Brand */
+/* Category */
 .product-category {
-    font-size: 12px;
+    font-size: 11px;
     color: #555;
-    margin: 5px 0;
+    margin: 0;
+    margin-top: 5px;
 }
 
-/* Product Name (Spanning 2 lines max) */
+/* Product Name*/
 .product-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     color: #333;
     text-decoration: none;
@@ -116,6 +118,8 @@
     margin: 5px 0;
 }
 
+
+
 .sale-expiry {
     color: red;
 }
@@ -124,20 +128,21 @@
     color: blue;
 }
 
+.stock-count{
+    font-size:13px;
+}
+
 /* Price */
 .product-price {
-    font-size: 14px; /* Reduce size slightly */
-    color: red;
-    font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .discount-price {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
-    color: red;
+    color: #f97316;
 }
 
 .original-price {
@@ -166,6 +171,7 @@
 .product-card:hover .add-to-cart {
     display: block;
 }
+
 .inline-form {
     display: inline-block;
     margin: 0;
@@ -189,4 +195,39 @@
     z-index: 3;
     /*Allows clicks to go through*/
     pointer-events: none;
+}
+
+@media (max-width:768px){
+    .product-card{
+        height: 97%;
+    }
+    .sale-label{
+        padding: 5px 7px;
+        font-size: 10px;
+    }
+    .ribbon-pre{
+        padding: 8px 26px;
+    }
+
+    .ribbon-new{
+        top: 8px;
+        right: -33px;
+        padding: 8px 40px;
+        font-size: 10px;
+    }
+
+    .fomo-info {
+        font-size: 10px;
+    }
+
+    .stock-count{
+        font-size:13px;
+    }
+    .discount-price{
+        font-size:14px;
+    }
+
+    .original-price{
+        font-size:10px;
+    }
 }

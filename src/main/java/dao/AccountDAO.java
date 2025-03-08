@@ -271,4 +271,30 @@ public class AccountDAO {
                 rs.getBoolean("isActive")
         );
     }
+
+    public List<Account> getAllCustomers() throws SQLException {
+        String sql = "SELECT * FROM Account WHERE role = 'customer' AND isActive = 1";
+        ResultSet rs = context.exeQuery(sql, new Object[]{});
+        List<Account> customers = new ArrayList<>();
+
+        try {
+            while (rs.next()) {
+                Account account = new Account();
+                account.setAccountID(rs.getInt("accountID"));
+                account.setUsername(rs.getString("username"));
+                account.setPassword(rs.getString("password"));
+                account.setRole(rs.getString("role"));
+                account.setFirstName(rs.getString("firstName"));
+                account.setLastName(rs.getString("lastName"));
+                account.setEmail(rs.getString("email"));
+                account.setPhoneNumber(rs.getString("phoneNumber"));
+                account.setBirthDate(rs.getString("birthDate"));
+                account.setIsActive(rs.getBoolean("isActive"));
+                customers.add(account);
+            }
+        } finally {
+            rs.close();
+        }
+        return customers;
+    }
 }

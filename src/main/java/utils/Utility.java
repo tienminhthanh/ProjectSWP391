@@ -9,27 +9,42 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author anhkc
  */
 public class Utility {
-    
+
     // Convert LocalDate to String
     public String formatLocalDate(LocalDate date) {
-        if (date == null) return null;
+        if (date == null) {
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return date.format(formatter);
     }
 
     // Convert LocalDateTime to String
     public String formatLocalDateTime(LocalDateTime dateTime) {
-        if (dateTime == null) return null;
+        if (dateTime == null) {
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
     }
@@ -39,23 +54,24 @@ public class Utility {
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
         return normalized.replaceAll("\\p{M}", "");
     }
-    
-    public String generateKeywordsFromProductName(String productName){
-        if (productName == null) return null;
+
+    public String generateKeywordsFromProductName(String productName) {
+        if (productName == null) {
+            return null;
+        }
         ArrayList<String> keywords = new ArrayList<>();
-        
+
         keywords.add(productName);
         keywords.add(productName.toLowerCase());
         keywords.add(removeAccents(productName));
         keywords.add(removeAccents(productName).toLowerCase());
-        
+
         return String.join(",", keywords);
     }
 
     public void processFile(String inputFilePath, String outputFilePath) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
-            
+        try ( BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));  BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+
             String line;
             while ((line = reader.readLine()) != null) {
                 writer.write(generateKeywordsFromProductName(line));
@@ -68,11 +84,9 @@ public class Utility {
         }
     }
 
+
     public static void main(String[] args) {
         Utility main = new Utility();
-        String inputFile = "C:\\Users\\anhkc\\Desktop\\book_title.txt";  // Change this to your file path
-        String outputFile = "C:\\Users\\anhkc\\Desktop\\keyword_title.txt"; // Processed output file
         
-        main.processFile(inputFile, outputFile);
     }
 }

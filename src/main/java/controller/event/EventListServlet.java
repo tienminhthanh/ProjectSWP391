@@ -36,22 +36,19 @@ public class EventListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            String url = EVENT_LIST_PAGE;
-            try {
-                EventDAO eDao = new EventDAO();
-//                List<Event> listEvent = eDao.getListEvent();
-//                request.setAttribute("LIST_EVENT", listEvent);
-            } catch (Exception ex) {
-                log("VoucherListServlet error:" + ex.getMessage());
-            } finally {
-                request.getRequestDispatcher(url).forward(request, response);
-            }
+        String url = EVENT_LIST_PAGE;
+        try {
+            EventDAO eDao = new EventDAO();
+            List<Event> listEvent = eDao.getListEvent();
+            request.setAttribute("LIST_EVENT", listEvent);
+        } catch (Exception ex) {
+            log("VoucherListServlet error:" + ex.getMessage());
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

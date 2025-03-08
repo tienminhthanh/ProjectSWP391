@@ -9,10 +9,19 @@ public class CartItem {
     private int customerID;
     private int productID;
     private int quantity;
+
     private BigDecimal priceWithQuantity;
     private Product product;
 
     public CartItem() {
+    }
+//them vo de lay khi mua mot product, mylinh them
+    public CartItem(int customerID, Product product, int quantity, BigDecimal priceWithQuantity) {
+        this.customerID = customerID;
+        this.product = product;  // Lưu thông tin sản phẩm
+        this.productID = product.getProductID();
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
     }
 
     public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
@@ -29,7 +38,6 @@ public class CartItem {
         this.quantity = quantity;
         this.priceWithQuantity = priceWithQuantity;
     }
-
 
 //    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
 //        this.customerID = customerID;
