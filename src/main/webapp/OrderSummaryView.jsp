@@ -133,20 +133,33 @@
                             <!-- Voucher Selection -->
                             <label class="form-label fw-bold">Select voucher:</label>
                             <select class="form-select border-2 border-primary" id="voucherSelect" name="voucherID">
-                                <option value="0" data-discount="0">-- Select voucher --</option>
+                                <option value="" data-discount="0">-- Select voucher --</option>  
                                 <c:forEach var="voucher" items="${listVoucher}">
-                                    <option value="${voucher.voucherID}" data-discount="${voucher.voucherValue}">
-                                        ${voucher.voucherName} - Discount <fmt:formatNumber value="${voucher.voucherValue}" type="number"/>₫
+                                    <option value="${voucher.voucherID}" 
+                                            data-discount="${computedValues[voucher.voucherID]}" 
+                                            ${voucher.voucherID eq bestVoucherID ? 'selected' : ''}>  
+                                        ${voucher.voucherName}  
+                                        <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span></p>
+                                    </c:if>
                                     </option>
                                 </c:forEach>
                             </select>
 
                             <div class="payment-method">
                                 <h2>Delivery Method</h2>
-                                <label><input type="radio" name="shippingOption" value="1" data-cost="50000" checked/> Express Delivery (50,000 VND)</label><br>
-                                <label><input type="radio" name="shippingOption" value="2" data-cost="20000"/> Economy Delivery (20,000 VND)</label><br>  
-
+                                <c:forEach var="option" items="${deliveryOptions}">
+                                    <label>
+                                        <input type="radio" name="shippingOption" 
+                                               value="${option.deliveryOptionID}" 
+                                               data-cost="${option.optionCost}"
+                                               onclick="updateShippingCost(${option.optionCost})"
+                                               ${option.deliveryOptionID == 1 ? 'checked' : ''} />
+                                        ${option.optionName} (<fmt:formatNumber value="${option.optionCost}" pattern="#,##0"/> đ)
+                                    </label><br>
+                                </c:forEach>
                             </div> <hr>
+
 
                             <!-- Hidden fields to send shipping fee, discount, etc. -->
                             <input type="hidden" name="shippingFee" value="${optionCost}">
@@ -155,7 +168,7 @@
                             <input type="hidden" name="orderTotalAmount" value="${orderTotalAmount}">
 
                             <div class="d-flex justify-content-between mt-4">
-                                <button class="btn btn-secondary" onclick="history.back();">Back to Cart</button>
+                                <button type="button" class="btn btn-secondary" onclick="history.back();">Back to Cart</button>
                                 <button type="submit" class="btn btn-primary">Place Order</button>
                             </div>
                         </form>
@@ -170,7 +183,7 @@
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
-                                    <span class="product-price"> ${item.product.price} VND</span><br>
+                                    <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
 
                                 </div>
                                 <span class="product-quantity">Quantity: ${item.quantity}</span>
@@ -181,17 +194,31 @@
                             <div class="price">
                                 <div class="price-custom">
                                     <div class="price-item">
-                                        <p>Subtotal: <span id="subtotal">${priceWithQuantity}</span> VND</p>
+                                        <p>Subtotal: 
+                                            <span id="subtotal">
+                                                <fmt:formatNumber value="${priceWithQuantity}" type="number" pattern="#,##0 đ"/>
+                                            </span>
+                                        </p>
                                     </div> 
+                                    <div class="price-item">
+                                        <p>Shipping Fee: 
+                                            <span id="shippingFee">
+                                                <c:forEach var="option" items="${deliveryOptions}">
+                                                    <c:if test="${option.deliveryOptionID == 1}">
+                                                        <fmt:formatNumber value="${option.optionCost}" pattern="#,##0 đ"/>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </span> 
+
+                                        </p>
+                                    </div>
 
                                     <div class="price-item">
-                                        <p>Shipping Fee: <span id="shippingFee">50,000</span> VND</p>
+                                        <p>Discount: <span id="discount"><fmt:formatNumber value="${voucherValue}" pattern="#,##0 đ"/></span></p>
+
                                     </div>
                                     <div class="price-item">
-                                        <p>Discount: <span id="discount">0</span> VND</p>
-                                    </div>
-                                    <div class="price-item">
-                                        <p>Total: <span id="totalAmount">${orderTotalAmount}</span> VND</p>
+                                        <p>Total: <span id="totalAmount"><fmt:formatNumber value="${orderTotalAmount}" pattern="#,##0 đ"/></span></p>
                                     </div>
                                 </div>
                             </div>

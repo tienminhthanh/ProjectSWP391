@@ -13,22 +13,26 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.OrderInfo;
+import model.OrderProduct;
+import model.Product;
 import model.Shipper;
 
 /**
  *
  * @author Macbook
  */
-@WebServlet(name = "OrderDetailForShipperController", urlPatterns = {"/OrderDetailForShipperController"})
-public class OrderDetailForShipperController extends HttpServlet {
+@WebServlet(name = "OrderDetailForStaffController", urlPatterns = {"/OrderDetailForStaffController"})
+public class OrderDetailForStaffController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +51,10 @@ public class OrderDetailForShipperController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet OrderDetailForShipper</title>");
+            out.println("<title>Servlet OrderDetailForStaff</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet OrderDetailForShipper at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet OrderDetailForStaff at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -69,7 +73,7 @@ public class OrderDetailForShipperController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
-        ProductDAO productDAO = new ProductDAO();
+     
         List<OrderInfo> orderList = null;
         List<Shipper> shipperList = new ArrayList<>();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
@@ -87,7 +91,6 @@ public class OrderDetailForShipperController extends HttpServlet {
                     int idcus = customer.getAccountID();
                     orderInfo = orderDAO.getOrderByID(id, idcus);
                     valueVoucher = orderDAO.getVoucherValueByOrderID(id);
-
                 }
             }
         } catch (SQLException | NumberFormatException ex) {
@@ -101,7 +104,7 @@ public class OrderDetailForShipperController extends HttpServlet {
         request.setAttribute("orderList", orderList);
         request.setAttribute("valueVoucher", valueVoucher);
 
-        request.getRequestDispatcher("OrderDetailForShipperView.jsp").forward(request, response);
+        request.getRequestDispatcher("OrderDetailForStaffView.jsp").forward(request, response);
     }
 
     /**

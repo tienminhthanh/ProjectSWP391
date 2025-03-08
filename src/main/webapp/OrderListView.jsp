@@ -158,7 +158,7 @@
                             <div>
                                 <p class="text-xs text-gray-500">Total amount</p>
                                 <p class="text-xl font-bold text-gray-800">
-                                    <fmt:formatNumber value="${c.preVoucherAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                                    <fmt:formatNumber value="${c.preVoucherAmount}" type="number" groupingUsed="true"/> đ
                                 </p>
                             </div>
                             <a href="OrderDetailController?id=${id}" 

@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import model.Account;
+import model.DeliveryOption;
 import model.OrderInfo;
 
 /**
@@ -69,7 +70,12 @@ public class OrderDetailController extends HttpServlet {
         try {
             String orderID = request.getParameter("id");
             OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
+            DeliveryOption delivery = new DeliveryOption();
+            int voucher = orderDAO.getVoucherValueByOrderID(Integer.parseInt(orderID));
+            delivery = (DeliveryOption) orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
             request.setAttribute("orderInfo", orderInfo); // Đặt dữ liệu vào requestScope
+            request.setAttribute("delivery", delivery);
+            request.setAttribute("voucher", voucher);
 
             // Chuyển hướng đến OrderListView.jsp
             request.getRequestDispatcher("OrderDetailView.jsp").forward(request, response);
