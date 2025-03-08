@@ -4,14 +4,7 @@
         <description>ServletContextListener</description>
         <listener-class>controller.listener.DataCacheListener</listener-class>
     </listener>
-    <servlet>
-        <servlet-name>NotificationController</servlet-name>
-        <servlet-class>controller.notification.NotificationController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>NotificationController</servlet-name>
-        <url-pattern>/notification</url-pattern>
-    </servlet-mapping>
+   
     <session-config>
         <session-timeout>
             30

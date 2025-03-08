@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import dao.NotificationDAO;
+import jakarta.servlet.http.HttpSession;
 import model.Notification;
 import java.sql.SQLException;
 
@@ -29,11 +30,11 @@ public class NotificationDetailController extends HttpServlet {
 
             // Fetch notification
             Notification notification = notificationDAO.getNotificationById(notificationID);
-            if (notification == null || (receiverID != null && notification.getReceiverID() != Integer.parseInt(receiverID))) {
-                request.setAttribute("error", "Không tìm thấy thông báo hoặc bạn không có quyền xem.");
-                request.getRequestDispatcher("/notificationDetail.jsp").forward(request, response);
-                return;
-            }
+//            if (notification == null || (receiverID != null && notification.getReceiverID() != Integer.parseInt(receiverID))) {
+//                request.setAttribute("error", "Không tìm thấy thông báo hoặc bạn không có quyền xem.");
+//                request.getRequestDispatcher("/notificationDetail.jsp").forward(request, response);
+//                return;
+//            }
 
             // Mark as read if not already read
             if (!notification.isRead()) {
@@ -41,8 +42,21 @@ public class NotificationDetailController extends HttpServlet {
                 notification.setRead(true); // Update local object to reflect change
             }
 
+            // Kiểm tra vai trò người dùng từ session
+            HttpSession session = request.getSession();
+            String role = (String) session.getAttribute("role");
+
+            // Chuyển hướng dựa trên vai trò
+            String destinationPage;
+            if ((receiverID != null && notification.getReceiverID() != Integer.parseInt(receiverID))) {
+                destinationPage = "/notificationDetailForAdmin.jsp";
+            } else {
+                destinationPage = "/notificationDetail.jsp";
+            }
+
             request.setAttribute("notification", notification);
-            request.getRequestDispatcher("/notificationDetail.jsp").forward(request, response);
+            request.getRequestDispatcher(destinationPage).forward(request, response);
+
         } catch (NumberFormatException e) {
             request.setAttribute("error", "ID thông báo không hợp lệ.");
             request.getRequestDispatcher("/notificationDetail.jsp").forward(request, response);
@@ -64,7 +78,7 @@ public class NotificationDetailController extends HttpServlet {
                 // Delete notification
                 boolean success = notificationDAO.deleteNotification(notificationID);
                 if (success) {
-                    response.sendRedirect("notification?action=list&receiverID=" + receiverID);
+                    response.sendRedirect("listnotification" + (receiverID != null ? "?receiverID=" + receiverID : ""));
                 } else {
                     request.setAttribute("error", "Không thể xóa thông báo.");
                     doGet(request, response); // Reload the detail page with error
