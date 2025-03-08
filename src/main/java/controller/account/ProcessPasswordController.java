@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "ProcessPasswordServlet", urlPatterns = {"/processPassword"})
-public class ProcessPasswordServlet extends HttpServlet {
+public class ProcessPasswordController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "ChangePasswordServlet", urlPatterns = {"/changePassword"})
-public class ChangePasswordServlet extends HttpServlet {
+public class ChangePasswordController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -8,27 +8,18 @@ package model;
  *
  * @author Admin
  */
-public class Staff {
+public class Staff extends Account {
 
-    private int staffID;
     private String workShift;
     private int totalOrders;
 
     public Staff() {
     }
 
-    public Staff(int staffID, String workShift, int totalOrders) {
-        this.staffID = staffID;
+    public Staff(String workShift, int totalOrders, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
         this.workShift = workShift;
         this.totalOrders = totalOrders;
-    }
-
-    public int getStaffID() {
-        return staffID;
-    }
-
-    public void setStaffID(int staffID) {
-        this.staffID = staffID;
     }
 
     public String getWorkShift() {
@@ -46,7 +37,5 @@ public class Staff {
     public void setTotalOrders(int totalOrders) {
         this.totalOrders = totalOrders;
     }
-    
-    
 
 }
