@@ -12,6 +12,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import model.*;
 
 /**
@@ -35,19 +40,45 @@ public class EventDetailsServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            String url = EVENT_DETAILS_PAGE;
-            try {
+        /* TODO output your page here. You may use following sample code. */
+        String url = EVENT_DETAILS_PAGE;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            String action = request.getParameter("action");
+            if (action == null) {
                 int id = Integer.parseInt(request.getParameter("eventId"));
                 EventDAO eDao = new EventDAO();
                 Event eventDetails = eDao.getEventByID(id);
                 request.setAttribute("EVENT_DETAILS", eventDetails);
-            } catch (Exception ex) {
-                log("VoucherDetailsServlet error:" + ex.getMessage());
-            } finally {
-                request.getRequestDispatcher(url).forward(request, response);
+
+                String dateStarted = eventDetails.getDateStarted();
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate dateEnd = createDate.plusDays(eventDetails.getDuration());
+                request.setAttribute("dateEnd", dateEnd);
+            } else if (action.equals("home")) {
+                ProductDAO productDAO = new ProductDAO();
+                List<Product> productList = productDAO.get10RandomActiveProducts("book");
+                request.setAttribute("productList", productList);
+
+                String banner = request.getParameter("banner");
+                if (banner != null) {
+                    banner = URLDecoder.decode(banner, StandardCharsets.UTF_8);
+                }
+                request.setAttribute("banner", banner);
+                EventDAO eDao = new EventDAO();;
+                Event event = eDao.getEventByBanner(banner);
+                request.setAttribute("eventDetails", event);
+
+                String dateStarted = event.getDateStarted();
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate dateEnd = createDate.plusDays(event.getDuration());
+                request.setAttribute("dateEnd", dateEnd);
             }
+
+        } catch (Exception ex) {
+            log("VoucherDetailsServlet error:" + ex.getMessage());
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
     }
 

@@ -1,8 +1,19 @@
+<%@page import="java.io.FilenameFilter"%>
+<%@page import="java.io.File"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
 <fmt:setLocale value="en_US"/>
-
+<%
+    String bannerPath = application.getRealPath("/img/banner_event/");
+    File folder = new File(bannerPath);
+    String[] files = folder.list(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.matches(".*\\.(jpg|jpeg|png|gif)");
+        }
+    });
+%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -41,44 +52,8 @@
             <jsp:include page="header.jsp" flush="true"/> 
         </div>
 
-
-        <div x-data="{ 
-             current: 0, 
-             banners: [
-             '/img/banner_event/voucher1.jpg',
-             '/img/banner_event/voucher2.jpg',
-             '/img/banner_event/voucher3.jpg',
-             '/img/banner_event/voucher4.jpg'
-             ],
-             next() {
-             this.current = (this.current + 1) % this.banners.length;
-             },
-             prev() {
-             this.current = (this.current - 1 + this.banners.length) % this.banners.length;
-             },
-             autoSlide() {
-             setInterval(() => { this.next(); }, 3000);
-             }
-             }" x-init="autoSlide()" class="relative w-full h-64 overflow-hidden">
-
-            <!-- banner hiển thị -->
-            <img :src="banners[current]" class="w-full h-full object-cover transition-opacity duration-500">
-
-            <!-- nút điều hướng -->
-            <button @click="prev()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ⬅
-            </button>
-            <button @click="next()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ➡
-            </button>
-
-            <!-- chỉ số -->
-            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                <template x-for="(banner, index) in banners" :key="index">
-                    <div @click="current = index" :class="current === index ? 'bg-blue-500' : 'bg-gray-300'"
-                          class="w-3 h-3 rounded-full cursor-pointer"></div>
-                </template>
-            </div>
+        <div class="banner-container">
+            <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -116,19 +91,15 @@
                 <!--Div2-->
                 <div class="mb-4 bg-white voucher-area">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                        Vouchers
+                        Available Now
                     </h2>
                     <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
-                        <h3 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                            Vouchers
-                        </h3>
                         <c:forEach var="voucher" items="${listVoucher}">
                             <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
                                  style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
                                 <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
                                     <!-- Tên Voucher -->
                                     <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
-
                                     <!-- Giá trị giảm -->
                                     <p>Sale
                                         <span>
@@ -159,26 +130,30 @@
 
                                     <!-- Hạn sử dụng -->
                                     <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
-                                        <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                        <p><strong>EXP:</strong> <span class="date-end"></span></p>
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
 
                         <c:if test="${empty listVoucher}">
-                            <p class="text-gray-500 italic">No vouchers available.</p>
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
                         </c:if>
                     </div>
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Coming Soon
+                    </h2>
                     <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
-                        <h3 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                            Coming Soon
-                        </h3>
+
                         <c:forEach var="voucherComeSoon" items="${listVoucherComeSoon}">
                             <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
                                  style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
                                 <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+
                                     <!-- Tên Voucher -->
-                                    <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+                                    <p class="font-bold text-lg text-orange-600">${voucherComeSoon.voucherName}</p>
 
                                     <!-- Giá trị giảm -->
                                     <p>Sale
@@ -210,14 +185,16 @@
 
                                     <!-- Hạn sử dụng -->
                                     <div class="voucher" data-start="${voucherComeSoon.dateStarted}" data-duration="${voucherComeSoon.duration}">
-                                        <p><strong>Expiration Date:</strong> <span class="date-end"></span></p>
+                                        <p><strong>Started on: </strong>${voucherComeSoon.dateStarted}</p>
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
 
                         <c:if test="${empty listVoucherComeSoon}">
-                            <p class="text-gray-500 italic">No vouchers available.</p>
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
                         </c:if>
                     </div>
                 </div>
@@ -276,43 +253,69 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
+        <!--Voucher Date End-->
+        <script src="js/scriptVoucherDateEnd.js"></script>
+
+
+
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                document.querySelectorAll(".voucher").forEach(function (voucher) {
-                    let startDate = new Date(voucher.dataset.start);
-                    let duration = parseInt(voucher.dataset.duration);
-                    let dateEnd = new Date(startDate);
-                    dateEnd.setDate(startDate.getDate() + duration);
+                let banners = [
+            <% for (String file : files) {%>
+                    {img: "/img/banner_event/<%= file%>"},
+            <% }%>
+                ];
 
-                    voucher.querySelector(".date-end").textContent = dateEnd.toISOString().split("T")[0];
-                });
+                let current = 0;
+                const bannerImg = document.getElementById("banner-img");
+                const bannerLink = document.getElementById("banner-link");
+                const dotsContainer = document.getElementById("dots-container");
+
+                function updateBanner() {
+                    bannerImg.src = banners[current].img;
+                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
+
+                    dotsContainer.innerHTML = "";
+                    banners.forEach((_, index) => {
+                        const dot = document.createElement("div");
+                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
+                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
+                        dot.onclick = () => {
+                            current = index;
+                            updateBanner();
+                        };
+                        dotsContainer.appendChild(dot);
+                    });
+                }
+
+                function next() {
+                    current = (current + 1) % banners.length;
+                    updateBanner();
+                }
+
+                function prev() {
+                    current = (current - 1 + banners.length) % banners.length;
+                    updateBanner();
+                }
+
+                const prev_btn = document.getElementById("prev-btn");
+                if (prev_btn !== null) {
+                    prev_btn.addEventListener("click", prev);
+
+                    setInterval(next, 3000);
+                }
+                const next_btn = document.getElementById("next-btn");
+                if (next_btn !== null) {
+                    next_btn.addEventListener("click", next);
+
+                    setInterval(next, 3000);
+                }
+
+                updateBanner();
             });
+
         </script>
-
-
 
     </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

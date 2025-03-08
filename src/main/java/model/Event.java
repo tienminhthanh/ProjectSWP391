@@ -20,12 +20,13 @@ public class Event {
     private String description;
     private int adminID;
     private boolean isActive;
+    private String dateStarted;
+    private boolean expiry;
 
     public Event() {
     }
 
-
-    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
+    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
         this.eventID = eventID;
         this.eventName = eventName;
         this.dateCreated = dateCreated;
@@ -34,9 +35,25 @@ public class Event {
         this.description = description;
         this.adminID = adminID;
         this.isActive = isActive;
+        this.dateStarted = dateStarted;
+        this.expiry = expiry;
     }
-    
-    
+
+    public boolean isExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(boolean expiry) {
+        this.expiry = expiry;
+    }
+
+    public String getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(String dateStarted) {
+        this.dateStarted = dateStarted;
+    }
 
     public int getEventID() {
         return eventID;
@@ -101,11 +118,5 @@ public class Event {
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
-
-
-   
-    
-   
-
 
 }

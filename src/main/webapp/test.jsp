@@ -1,7 +1,7 @@
 <%-- 
-    Document   : index
-    Created on : Feb 20, 2025, 10:44:47 PM
-    Author     : anhkc
+    Document   : test
+    Created on : Mar 8, 2025, 10:30:43 AM
+    Author     : ADMIN
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,7 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <h1>Hello World! <%= request.getAttribute("banner") %></h1>
 
-        <%response.sendRedirect("home");%>
     </body>
 </html>
