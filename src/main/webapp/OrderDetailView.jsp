@@ -44,12 +44,24 @@
                         <c:forEach var="item" items="${orderInfo.orderProductList}">
                             <p><strong>Product Name:</strong> ${item.product.productName}</p>
                             <p><strong>Quantity:</strong> ${item.quantity}</p>
-                            <p><strong>Price:</strong> ${item.priceWithQuantity} VND</p>
+                            <p><strong>Price:</strong> 
+                                <fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ
+                            </p>
+
                             <hr class="my-2">
                         </c:forEach>
+                        <p><strong>Shipping Fee: </strong>  
+                            <fmt:formatNumber value="${delivery.optionCost}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
+                        </p>
 
-                        <p class="mt-4 text-lg font-bold">Total Order: ${orderInfo.preVoucherAmount} VND</p>
-                        <p><strong>Payment Method:</strong> ${methodName}</p>
+                        <p><strong>Discount: </strong>  
+                            <fmt:formatNumber value="${voucher}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
+                        </p>
+                        <p class="mt-4 text-lg font-bold">
+                            Total Order: 
+                            <fmt:formatNumber value="${orderInfo.preVoucherAmount}" type="number" groupingUsed="true"/> đ
+                        </p>
+
                         <div class="flex space-x-2 mt-4">
                             <button type="button" onclick="showUpdateForm()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</button>
                             <form action="DeleteOrderController" method="POST" onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
@@ -79,7 +91,10 @@
                                     <img src="${item.product.imageURL}" alt="${item.product.productName}" class="w-24 h-24 object-cover rounded">
                                     <p class="mt-2 text-center text-sm font-semibold">${item.product.productName}</p>
                                     <p class="text-center text-sm">Quantity: ${item.quantity}</p>
-                                    <p class="text-center text-sm font-bold">${item.priceWithQuantity} VND</p>
+
+                                    <!--                                    <p class="text-center text-sm font-bold">
+                                    <fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ
+                                </p>-->
                                 </div>
                             </c:forEach>
                         </div>

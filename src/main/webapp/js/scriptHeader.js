@@ -39,10 +39,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    let loginLink = document.getElementById("loginLink");
-    if (loginLink) {
-        let currentURL = encodeURIComponent(window.location.href);
-        loginLink.href = "login?currentURL=" + currentURL;
+    let loginLinks = document.querySelectorAll(".loginLinks");
+    if (loginLinks) {
+        loginLinks.forEach(link => {
+            let currentURL = encodeURIComponent(window.location.href);
+            link.href = "login?currentURL=" + currentURL;
+        });
     }
 });
 
+
+function openCustomerMenu() {
+    const customerMobileMenu = document.getElementById('customer-menu-mobile');
+    const menuOverlay = document.getElementById('cus-menu-overlay');
+    customerMobileMenu.style.display = 'block';
+    menuOverlay.style.display = 'block';
+
+
+}
+function closeCustomerMenu() {
+    const customerMobileMenu = document.getElementById('customer-menu-mobile');
+    const menuOverlay = document.getElementById('cus-menu-overlay');
+    customerMobileMenu.style.display = 'none';
+    menuOverlay.style.display = 'none';
+
+}
+
+
+window.addEventListener('resize', () => {
+    const clientWidth = document.documentElement.clientWidth;
+    const menu = document.getElementById('customer-menu-mobile');
+    const overlay1 = document.querySelector('#cus-menu-overlay');
+    const overlay2 = document.querySelector('#cus-sidebar-overlay');
+    if (overlay1) {
+        overlay1.style.display = 'none';
+    }
+    if (overlay2) {
+        overlay2.style.display = 'none';
+    }
+    if (menu) {
+        menu.style.display = 'none';
+
+    }
+});

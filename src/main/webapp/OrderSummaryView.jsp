@@ -133,10 +133,15 @@
                             <!-- Voucher Selection -->
                             <label class="form-label fw-bold">Select voucher:</label>
                             <select class="form-select border-2 border-primary" id="voucherSelect" name="voucherID">
-                                <option value="0" data-discount="0">-- Select voucher --</option>
+                                <option value="" data-discount="0">-- Select voucher --</option>  
                                 <c:forEach var="voucher" items="${listVoucher}">
-                                    <option value="${voucher.voucherID}" data-discount="${voucher.voucherValue}">
-                                        ${voucher.voucherName}
+                                    <option value="${voucher.voucherID}" 
+                                            data-discount="${computedValues[voucher.voucherID]}" 
+                                            ${voucher.voucherID eq bestVoucherID ? 'selected' : ''}>  
+                                        ${voucher.voucherName}  
+                                        <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span></p>
+                                    </c:if>
                                     </option>
                                 </c:forEach>
                             </select>
@@ -181,7 +186,7 @@
                                     <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
 
                                 </div>
-                                <span clas="product-quantity">Quantity: ${item.quantity}</span>
+                                <span class="product-quantity">Quantity: ${item.quantity}</span>
                                 <hr>
                             </c:forEach>
                         </div>

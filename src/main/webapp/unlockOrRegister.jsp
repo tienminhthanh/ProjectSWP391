@@ -10,6 +10,7 @@
     <body class="bg-gray-100 font-sans leading-normal tracking-wider">
 
         <!-- Header -->
+        <!-- Header -->
         <header class="bg-white shadow w-full mb-4">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <a href="home.jsp">

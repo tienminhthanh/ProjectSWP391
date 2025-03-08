@@ -212,7 +212,7 @@
                            ${param.status == 'Canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
                     </div>
                 </div>
-                
+
                 <!-- Lặp danh sách đơn hàng -->         
                 <c:forEach var="order" items="${orderList}">
                     <div class="card">
@@ -233,10 +233,10 @@
                         <div class="flex justify-between items-center mt-4">
                             <a href="OrderDetailForStaffController?id=${order.orderID}" class="button">View Details</a>
                             <div class="update-section flex items-center">
-                                <!-- Update Shipper -->
-                                <c:if test="${order.orderStatus ne 'Shipped'}">
+                                <!-- Chỉ hiển thị khi trạng thái đơn hàng là 'Pending' -->
+                                <c:if test="${order.orderStatus eq 'pending'}">
                                     <form action="OrderListForStaffController" method="POST" class="flex items-center mb-2">
-                                        <input type="hidden" name="orderID" value="${order.orderID}">
+                                        <input type="hidden" name="orderID" value="${order.orderID}"/>
                                         <select name="shipperID" class="select" required>
                                             <option value="">Choose Shipper</option>
                                             <c:forEach var="shipper" items="${shipperList}">
@@ -246,9 +246,9 @@
                                         <button type="submit" class="button">Update</button>
                                     </form>
                                 </c:if>
-
                             </div>
                         </div>
+
                     </div>
                 </c:forEach>
             </div>

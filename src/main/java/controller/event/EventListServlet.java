@@ -41,8 +41,8 @@ public class EventListServlet extends HttpServlet {
             String url = EVENT_LIST_PAGE;
             try {
                 EventDAO eDao = new EventDAO();
-//                List<Event> listEvent = eDao.getListEvent();
-//                request.setAttribute("LIST_EVENT", listEvent);
+                List<Event> listEvent = eDao.getListEvent();
+                request.setAttribute("LIST_EVENT", listEvent);
             } catch (Exception ex) {
                 log("VoucherListServlet error:" + ex.getMessage());
             } finally {

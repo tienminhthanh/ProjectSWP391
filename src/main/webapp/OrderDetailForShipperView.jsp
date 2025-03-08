@@ -70,7 +70,7 @@
                             <th class="py-2">Product</th>
                             <th class="py-2">Description</th>
                             <th class="py-2">Quantity</th>
-                            <th class="py-2">Unit Price</th>
+<!--                            <th class="py-2">Unit Price</th>-->
                             <th class="py-2">Total Price</th>
                         </tr>
                     </thead>
@@ -83,7 +83,7 @@
                                 </td>
                                 <td class="py-2">${item.product.description}</td>
                                 <td class="py-2">${item.quantity}</td>
-                                <td class="py-2"><fmt:formatNumber value="${item.product.price}" pattern="#,##0"/> đ</td>
+<!--                                <td class="py-2"><fmt:formatNumber value="${item.product.price}" pattern="#,##0"/> đ</td>-->
                                 <td class="py-2"><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
                             </tr>
                         </c:forEach>

@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
@@ -71,14 +73,20 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
+        Map<Integer, Double> computedValues = new HashMap<>();
+        List<Double> computedValuesList = new ArrayList<>();
+        int bestVoucherID = 0;
+        List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
 
         if ("checkOut".equals(action)) {
-            List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
 
-            if (cartItems == null || cartItems.isEmpty()) {
-                response.sendRedirect("home");
-                return;
-            }
+
+//            if (cartItems == null || cartItems.isEmpty()) {
+//                response.sendRedirect("home");
+//                return;
+//            }
+            double subtotal = 0;
+
             List<DeliveryOption> deliveryOptions = new ArrayList<>();
 
             try {
@@ -88,7 +96,6 @@ public class OrderController extends HttpServlet {
                 e.printStackTrace();
             }
 
-            double subtotal = 0;
             for (CartItem item : cartItems) {
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 item.setPriceWithQuantity(priceWithQuantity);
@@ -99,13 +106,39 @@ public class OrderController extends HttpServlet {
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             List<Voucher> validVouchers = new ArrayList<>();
-
+            double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
                 if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
                     validVouchers.add(voucher);
+                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                        valueOfVoucher = voucher.getVoucherValue();
+                    } else {
+                        valueOfVoucher = (subtotal * voucher.getVoucherValue()) / 100;
+                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                            valueOfVoucher = voucher.getMaxDiscountAmount();
+                        }
+                    }
+                    computedValues.put(voucher.getVoucherID(), valueOfVoucher); // 
+                    computedValuesList.add(valueOfVoucher);
+                }
+            }
+            double bestValueVoucher = 0;
+
+            for (int i = 0; i < computedValuesList.size(); i++) {
+                double value = computedValuesList.get(i);
+                if (bestValueVoucher <= value) {
+                    bestValueVoucher = value;
                 }
             }
 
+            for (Map.Entry<Integer, Double> entry : computedValues.entrySet()) {
+                if (entry.getValue().equals(bestValueVoucher)) {
+                    bestVoucherID = entry.getKey();
+                    break;
+                }
+            }
+
+            request.setAttribute("bestVoucherID", bestVoucherID);
             request.setAttribute("listVoucher", validVouchers);
             Account account = (Account) session.getAttribute("account");
             if (account != null) {
@@ -113,11 +146,16 @@ public class OrderController extends HttpServlet {
                 request.setAttribute("phone", account.getPhoneNumber());
                 request.setAttribute("email", account.getEmail());
             }
-            request.setAttribute("deliveryOptions", deliveryOptions);
             request.setAttribute("cartItems", cartItems);
+            request.setAttribute("deliveryOptions", deliveryOptions);
+            request.setAttribute("computedValues", computedValues);
             request.setAttribute("priceWithQuantity", subtotal);
         } else if ("buyNow".equals(action)) {
-            List<CartItem> cartItems = new ArrayList<>();
+
+            if (cartItems == null || cartItems.isEmpty()) {
+                cartItems = new ArrayList<>();
+
+            }
 
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
@@ -153,19 +191,44 @@ public class OrderController extends HttpServlet {
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             List<Voucher> validVouchers = new ArrayList<>();
-
+            double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
                 if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
                     validVouchers.add(voucher);
+                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                        valueOfVoucher = voucher.getVoucherValue();
+                    } else {
+                        valueOfVoucher = (sum * voucher.getVoucherValue()) / 100;
+                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                            valueOfVoucher = voucher.getMaxDiscountAmount();
+                        }
+                    }
+                    computedValues.put(voucher.getVoucherID(), valueOfVoucher); // 
+                    computedValuesList.add(valueOfVoucher);
                 }
             }
+            double bestValueVoucher = 0;
 
+            for (int i = 0; i < computedValuesList.size(); i++) {
+                double value = computedValuesList.get(i);
+                if (bestValueVoucher <= value) {
+                    bestValueVoucher = value;
+                }
+            }
+            
+            for (Map.Entry<Integer, Double> entry : computedValues.entrySet()) {
+                if (entry.getValue().equals(bestValueVoucher)) {
+                    bestVoucherID = entry.getKey();
+                    break;
+                }
+            }
+            request.setAttribute("bestVoucherID", bestVoucherID);
+            request.setAttribute("computedValues", computedValues);
             request.setAttribute("listVoucher", validVouchers);
-
             cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
             request.setAttribute("cartItems", cartItems);
+             session.setAttribute("cartItems", cartItems);
             request.setAttribute("priceWithQuantity", subtotal);
-            session.setAttribute("cartItems", cartItems);
             request.setAttribute("deliveryOptions", deliveryOptions);
 
         }
@@ -215,7 +278,7 @@ public class OrderController extends HttpServlet {
 
                 if (delivery != null && delivery.getDeliveryOptionID() == ID) {
                     subtotal += delivery.getOptionCost(); // Cộng phí giao hàng vào tổng tiền
-                 
+
                 } else {
                     System.out.println("Không tìm thấy phương thức giao hàng với ID: " + ID);
                 }
@@ -255,7 +318,6 @@ public class OrderController extends HttpServlet {
             orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
             orderInfo.setPreVoucherAmount(subtotal);
             orderInfo.setVoucherID(voucherID);
-         
 
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {

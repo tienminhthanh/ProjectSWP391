@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%--<fmt:setLocale value="en_US"/>--%>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -25,34 +27,10 @@
                 height: auto;
             }
 
-            /*            @media (max-width: 768px) {
-                            .logo img {
-                                max-width: 140px;
-                            }
-                        }*/
-
-            /* Custom styles for the cart */
-            .status-container {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 20px;
-            }
-
-            .status-item {
-                width: 120px; /* Giảm độ rộng */
-                text-align: center;
-                padding: 10px;
-                border: 2px solid #ddd;
-                border-radius: 8px;
-                margin: 0 10px;
-                font-weight: bold;
-                background-color: #f9fafb;
-            }
-
-            .status-item.active {
-                border-color: #3b82f6;
-                background-color: #3b82f6;
-                color: white;
+            @media (max-width: 768px) {
+                .logo img {
+                    max-width: 140px;
+                }
             }
 
             .items-in-cart {
@@ -89,12 +67,6 @@
             <div class="bg-white shadow rounded-lg p-4">
                 <h2 class="text-2xl font-bold mb-4">Cart</h2>
 
-                <!-- Trạng thái: 1 Cart, 2 Settlement, 3 Complete -->
-                <div class="status-container">
-                    <div class="status-item active">1 Cart</div>
-                    <div class="status-item">2 Settlement</div>
-                    <div class="status-item">3 Complete</div>
-                </div>
 
                 <!-- Kiểm tra nếu giỏ hàng rỗng -->
                 <c:if test="${empty sessionScope.cartItems}">
@@ -106,6 +78,7 @@
                         eBook(s) you are about to purchase can be viewed only on the WIBOOK app (for iOS and Android) or the Browser Viewer. Please check if you can view the eBook with a free title before purchasing.
                     </div>
                 </c:if>
+                <fmt:setLocale value="en_US"/>
 
                 <!-- Nếu có CartItem -->
                 <c:if test="${not empty sessionScope.cartItems}">
@@ -125,7 +98,7 @@
                                     </a>
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
-                                <p> ${item.priceWithQuantity} VND</p>
+                                <p><fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> VND</p>
                                 <!-- Form cập nhật CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="update" />
@@ -134,6 +107,7 @@
                                     <input type="hidden" name="productID" value="${item.productID}" />
                                     <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" class="quantity-input" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
+
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
@@ -162,7 +136,7 @@
                             <c:forEach var="item" items="${sessionScope.cartItems}">
                                 <c:set var="total" value="${total + item.priceWithQuantity * item.quantity}" />
                             </c:forEach>
-                            ${total} VND
+                            <fmt:formatNumber value="${total}" type="number" groupingUsed="true"/> VND
                         </span>
                     </div>
                     <form action="OrderController" method="get">
@@ -175,6 +149,7 @@
             </div>
         </main>
         <jsp:include page="footer.jsp"/>
+        <jsp:include page="chat.jsp"/>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
@@ -182,6 +157,45 @@
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
-        
+        <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            updateQuantityValues();
+                        });
+
+                        document.querySelectorAll(".quantity-input").forEach(input => {
+                            input.addEventListener("input", function () {
+                                updateQuantityValues();
+                            });
+                        });
+
+                        function updateQuantityValues() {
+                            let total = 0;
+
+                            document.querySelectorAll(".quantity-input").forEach(input => {
+                                let quantity = parseInt(input.value) || 1;
+                                let priceElement = input.closest(".flex").querySelector("p");
+                                let priceText = priceElement.textContent.replace(" VND", "").replace(/,/g, ""); // Xóa dấu phẩy
+
+                                let price = parseFloat(priceText) || 0;
+                                let totalItemPrice = quantity * price;
+
+                                total += totalItemPrice;
+
+                                // Cập nhật giá trị hiển thị từng sản phẩm
+                                priceElement.textContent = formatCurrency(totalItemPrice);
+                            });
+
+                            // Cập nhật tổng tiền
+                            let totalElement = document.querySelector(".text-red-500");
+                            if (totalElement) {
+                                totalElement.innerHTML = `<c:out value="\${fn:length(sessionScope.cartItems)}"/> Item(s) - ${formatCurrency(total)}`;
+                                        }
+                                    }
+
+                                    function formatCurrency(amount) {
+                                        return amount.toLocaleString("en-US") + " VND";
+                                    }
+
+        </script>
     </body>
 </html>

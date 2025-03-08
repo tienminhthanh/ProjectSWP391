@@ -4,12 +4,15 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author ADMIN
  */
 public class Event {
 
+    private int eventID;
     private String eventName;
     private String dateCreated;
     private int duration;
@@ -18,7 +21,12 @@ public class Event {
     private int adminID;
     private boolean isActive;
 
-    public Event(String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
+    public Event() {
+    }
+
+
+    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive) {
+        this.eventID = eventID;
         this.eventName = eventName;
         this.dateCreated = dateCreated;
         this.duration = duration;
@@ -27,16 +35,15 @@ public class Event {
         this.adminID = adminID;
         this.isActive = isActive;
     }
+    
+    
 
-    public Event() {
+    public int getEventID() {
+        return eventID;
     }
 
-    public boolean isIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 
     public String getEventName() {
@@ -86,5 +93,19 @@ public class Event {
     public void setAdminID(int adminID) {
         this.adminID = adminID;
     }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+
+   
+    
+   
+
 
 }

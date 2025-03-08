@@ -9,3 +9,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 body{
     font-family: Arial, sans-serif;
 }
+.popular-search-area, .voucher-area{
+    order:0;
+}
+
+@media (max-width:768px){
+    .popular-search-area, .voucher-area{
+        order:999;
+    }
+}

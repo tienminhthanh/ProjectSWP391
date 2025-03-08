@@ -104,20 +104,21 @@ public class OrderDAO {
 
     // for admin with satff manage orderlist
     public List<OrderInfo> getAllOrders() throws SQLException {
-        List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT * from OrderInfo";
+    List<OrderInfo> orderList = new ArrayList<>();
+    String sql = "SELECT * FROM OrderInfo ORDER BY orderID DESC"; // Sắp xếp theo orderID từ lớn đến bé
 
-        try ( ResultSet rs = context.exeQuery(sql, null)) {
-            while (rs.next()) {
-                orderList.add(mapResultSetToOrderInfo(rs));
-            }
+    try (ResultSet rs = context.exeQuery(sql, null)) {
+        while (rs.next()) {
+            orderList.add(mapResultSetToOrderInfo(rs));
         }
-        return orderList;
     }
+    return orderList;
+}
+
 
     public List<OrderInfo> getOrdersByStatus(String orderStatus) throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT * from OrderInfo  where orderStatus =?";
+        String sql = "SELECT * from OrderInfo  where orderStatus =? ORDER BY orderID DESC";
         Object params[] = {orderStatus};
         try ( ResultSet rs = context.exeQuery(sql, params)) {
             while (rs.next()) {

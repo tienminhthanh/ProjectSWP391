@@ -62,8 +62,8 @@
                                 </div>
                             </div>
                             <p class="text-lg">📍 Address: ${order.deliveryAddress}</p>
-                            <p class="text-lg">💰 Fee: ${order.preVoucherAmount} VND</p>
 
+                            <p class="text-lg">💰 Fee: <fmt:formatNumber value="${order.preVoucherAmount}" type="number" groupingUsed="true" pattern="#,###"/> đ</p>
                             <!-- Lấy thông tin khách hàng từ danh sách accountList -->
                             <c:if test="${not empty accountList}">
                                 <c:set var="acc" value="${accountList[loop.index]}" />

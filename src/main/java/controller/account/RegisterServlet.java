@@ -69,7 +69,7 @@ public class RegisterServlet extends HttpServlet {
             else {
                 AccountLib lib = new AccountLib();
                 password = lib.hashMD5(confirmPassword);
-                boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate);
+                boolean success = accountDAO.register(username, password, firstName, lastName, null, phoneNumber, birthDate);
                 if (success) {
                     // Store temporary email for verification
                     request.getSession().setAttribute("tempEmail", email);

@@ -26,36 +26,10 @@ public class Merchandise extends Product {
 
     public Merchandise() {
     }
-
-    /**
-     * Full
-     *
-     * @param series
-     * @param character
-     * @param brand
-     * @param size
-     * @param scaleLevel
-     * @param material
-     * @param productID
-     * @param productName
-     * @param price
-     * @param stockCount
-     * @param specificCategory
-     * @param description
-     * @param releaseDate
-     * @param lastModifiedTime
-     * @param averageRating
-     * @param numberOfRating
-     * @param specialFilter
-     * @param adminID
-     * @param keywords
-     * @param generalCategory
-     * @param isActive
-
-     * @param imageURL
-     */
-    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
+    
+    //Full
+    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, discountPercentage, eventEndDate);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -64,34 +38,8 @@ public class Merchandise extends Product {
         this.material = material;
     }
 
-    /**
-     * Omit some
-     *
-     * @param series
-     * @param character
-     * @param brand
-     * @param size
-     * @param scaleLevel
-     * @param material
-     * @param productID
-     * @param productName
-     * @param price
-     * @param stockCount
-     * @param specificCategory
-     * @param description
-     * @param releaseDate
-
-     * @param numberOfRating
-     * @param specialFilter
-     * @param adminID
-     * @param keywords
-     * @param generalCategory
-     * @param isActive
-
-     * @param imageURL
-     */
-    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
+    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -99,6 +47,10 @@ public class Merchandise extends Product {
         this.scaleLevel = scaleLevel;
         this.material = material;
     }
+    
+  
+    
+    
 
 
     public Series getSeries() {
