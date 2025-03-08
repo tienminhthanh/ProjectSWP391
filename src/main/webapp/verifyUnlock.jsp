@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -11,18 +12,14 @@
     <body class="bg-gray-100">
 
         <!-- Header -->
-        <header class="bg-white shadow w-full mb-4">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <a href="home.jsp">
-                    <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png" />
-                </a>
+        <header class="bg-white shadow w-full">
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+                <img alt="WIBOOKS Logo" class="h-10" src="./img/logoWibooks-removebg-preview.png"/>
                 <div class="flex items-center space-x-4">
-                    <a href="login.jsp" class="text-orange-600 font-semibold hover:underline">Login</a>
-                    <a href="home.jsp" class="text-orange-600 font-semibold hover:underline">Home</a>
+                    <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
-
         <!-- Main Content -->
         <div class="max-w-3xl mx-auto p-6">
             <div class="w-full bg-white p-8 shadow-md rounded-lg">
@@ -30,6 +27,15 @@
                 <h2 class="text-xl font-semibold mb-4 text-center text-gray-700">Enter your verification code</h2>
 
                 <hr class="mb-4"/>
+
+                <!-- Displaying the message -->
+                <div class="text-center mb-4">
+                    <c:if test="${not empty message}">
+                        <div class="text-red-600">
+                            <c:out value="${message}" />
+                        </div>
+                    </c:if>
+                </div>
 
                 <!-- OTP Input Form -->
                 <form action="emailUnlock" method="post" id="otpForm">
@@ -54,7 +60,7 @@
 
                 <!-- Resend OTP -->
                 <div class="text-center mb-4">
-                    <a href="sendEmailOTP" class="text-blue-600 hover:underline">
+                    <a href="emailUnlock" class="text-blue-600 hover:underline">
                         <i class="fas fa-redo-alt"></i> Resend OTP Code
                     </a>
                 </div>
@@ -73,8 +79,8 @@
 
                 <!-- Restart Registration -->
                 <div class="text-center">
-                    <a href="register.jsp" class="bg-white border border-gray-300 text-gray-600 py-2 px-4 rounded-full flex items-center justify-center mx-auto hover:bg-gray-200 transition duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i> Restart the registration
+                    <a href="accountUnlock.jsp" class="bg-white border border-gray-300 text-gray-600 py-2 px-4 rounded-full flex items-center justify-center mx-auto hover:bg-gray-200 transition duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i> Black unlock account
                     </a>
                 </div>
             </div>

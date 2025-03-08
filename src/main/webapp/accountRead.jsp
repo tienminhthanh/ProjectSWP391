@@ -96,7 +96,7 @@
                             </a>
                         </c:when>
                     </c:choose>
-                    <c:if test="${sessionScope.account.role != 'admin'}">
+                    <c:if test="${sessionScope.account.role ne 'admin' or sessionScope.account.role eq 'staff'}">
                         <a href="deleteAccount?username=${account.username}" 
                            class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
                            onclick="return confirm('Are you sure you want to delete this account?');">

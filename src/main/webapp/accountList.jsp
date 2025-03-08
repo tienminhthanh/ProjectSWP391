@@ -113,7 +113,7 @@
                                         <c:choose>
                                             <c:when test="${acc.isActive}">
                                                 <a class="text-red-500 hover:text-red-700 mr-3 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
-                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                    <i class="fas fa-trash-alt"></i> Block
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
