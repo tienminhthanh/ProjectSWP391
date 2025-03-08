@@ -152,10 +152,9 @@ public class OrderController extends HttpServlet {
             request.setAttribute("priceWithQuantity", subtotal);
         } else if ("buyNow".equals(action)) {
 
-            if (cartItems == null || cartItems.isEmpty()) {
                 cartItems = new ArrayList<>();
 
-            }
+            
 
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
