@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
-public class RegisterServlet extends HttpServlet {
+public class RegisterController extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

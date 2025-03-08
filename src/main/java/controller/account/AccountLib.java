@@ -25,7 +25,8 @@ public class AccountLib {
     }
 
     public void sendEmail(String toEmail, String subject, String content) throws MessagingException {
-        final String fromEmail = "systemwibooks@gmail.com";
+        final String fromEmail;
+        fromEmail = "systemwibooks@gmail.com";
         final String password = "lxuh bqye fyce avzb";
         Properties properties = new Properties();
         properties.put("mail.smtp.host", "smtp.gmail.com");

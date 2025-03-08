@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "UnlockAccountServlet", urlPatterns = {"/unlockAccount"})
-public class UnlockAccountServlet extends HttpServlet {
+public class UnlockAccountController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

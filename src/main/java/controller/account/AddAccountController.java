@@ -9,13 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 @WebServlet(name = "AddAccountServlet", urlPatterns = {"/addAccount"})
-public class AddAccountSevlet extends HttpServlet {
+public class AddAccountController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -49,12 +46,12 @@ public class AddAccountSevlet extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
         try {
             if (accountDAO.isEmailExist(email, null)) {
-                request.setAttribute("message", "The email address is already in use.");
+                request.setAttribute("erorrMessage", "The email address is already in use.");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
             if (accountDAO.getAccountByUsername(username) != null) {
-                request.setAttribute("message", "Username already exists!");
+                request.setAttribute("erorrMessage", "Username already exists!");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
@@ -67,7 +64,7 @@ public class AddAccountSevlet extends HttpServlet {
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("message", "An error occurred while processing your request. Please try again later.");
+            request.setAttribute("erorrMessage", "An error occurred while processing your request. Please try again later.");
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
         }
     }

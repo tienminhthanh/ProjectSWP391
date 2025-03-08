@@ -1,29 +1,21 @@
 package model;
 
-public class Admin {
+public class Admin extends Account {
 
-    private int adminID, totalEvents, totalVoucher;
-
-    public Admin(int adminID, int totalEvents, int totalVoucher) {
-        this.adminID = adminID;
-        this.totalEvents = totalEvents;
-        this.totalVoucher = totalVoucher;
-    }
+    private int totalEvents, totalVoucher;
 
     public Admin() {
     }
 
-    public int getAdminID() {
-        return adminID;
-    }
-
-    public void setAdminID(int adminID) {
-        this.adminID = adminID;
+    public Admin(int totalEvents, int totalVoucher, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+        this.totalEvents = totalEvents;
+        this.totalVoucher = totalVoucher;
     }
 
     public int getTotalEvents() {
         return totalEvents;
-    }
+    }   
 
     public void setTotalEvents(int totalEvents) {
         this.totalEvents = totalEvents;
