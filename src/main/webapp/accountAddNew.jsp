@@ -12,97 +12,10 @@
     <body class="bg-gray-100 min-h-screen flex">
 
         <!-- Sidebar -->
-        <div class="w-64 bg-blue-900 text-white min-h-screen">
-            <div class="p-4">
-                <img alt="Company Logo" class="mb-4" height="50" src="./img/logo.png" width="220"/>
+        <div class="w-64 bg-orange-400 text-white min-h-screen">
+            <div class="w-full bg-orange-400 text-white">
+                <jsp:include page="navbarAdmin.jsp" flush="true"/> 
             </div>
-            <nav class="space-y-2">
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-tachometer-alt mr-2"></i>
-                    Dashboard
-                </a>
-                <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg"  href="listAccount">
-                    <i class="fas fa-users mr-2"></i>
-                    Account List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    Event List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-cogs mr-2"></i>
-                    Product List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comments mr-2"></i>
-                    Dialogue List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-box mr-2"></i>
-                    Order List
-                </a>
-
-                <a class="flex items-center p-2 hover:bg-blue-800" href="voucherList">
-                    <i class="fas fa-gift mr-2"></i>
-                    Voucher List
-                </a>
-
-
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-bell mr-2"></i>
-                    Notification List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comment-dots mr-2"></i>
-                    Chat
-                </a>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold"> SETTINGS </h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-cogs mr-2"></i>
-                        Configuration
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users-cog mr-2"></i>
-                        Management
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
-                        <i class="fas fa-sign-out-alt mr-2"></i> 
-                        Logout
-                    </a>
-                </div>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold"> REPORTS </h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-phone-alt mr-2"></i>
-                        Call history
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-headset mr-2"></i>
-                        Call queue
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users mr-2"></i>
-                        Agents performance
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-file-invoice-dollar mr-2"></i>
-                        Commission report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-calendar mr-2"></i>
-                        Scheduled report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-history mr-2"></i>
-                        Chat history
-                    </a>
-                    <a class="flex items-center p-2 bg-blue-800" href="#">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        Performance report
-                    </a>
-                </div>
-            </nav>
         </div>
 
         <!-- Main Content -->
@@ -116,11 +29,17 @@
                 <hr class="mb-6 border-gray-300"/>
 
                 <!-- Hiển thị thông báo lỗi nếu có -->
-                <c:if test="${not empty message}">
+                <c:if test="${not empty erorrMessage}">
                     <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                        <i class="fas fa-exclamation-circle mr-2"></i>${message}
+                        <i class="fas fa-exclamation-circle mr-2"></i>${erorrMessage}
                     </p>
                 </c:if>
+                <c:if test="${not empty message}">
+                    <p class="text-green-600 text-center mt-4 text-sm font-semibold p-2 border border-green-500 rounded bg-green-100 w-full">
+                        <i class="fas fa-check-circle mr-2"></i>${message}
+                    </p>
+                </c:if>
+
 
                 <!-- Form nhập thông tin tài khoản -->
                 <form action="addAccount" method="post" class="space-y-6">
@@ -162,7 +81,6 @@
                         <div class="mb-4">
                             <label class="sr-only" for="role">Role</label>
                             <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role">
-                               
                                 <option value="staff">Staff</option>
                                 <option value="shipper">Shipper</option>
                             </select>
@@ -173,7 +91,6 @@
                         <i class="fas fa-check-circle mr-2"></i> Add Account
                     </button>
                 </form>
-
 
                 <div class="mt-6 flex justify-start">
                     <a class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center transition duration-300 ease-in-out transform hover:scale-105" href="listAccount">

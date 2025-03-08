@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 @WebServlet(name = "EmailForgotServlet", urlPatterns = {"/emailForgot"})
-public class EmailForgotServlet extends HttpServlet {
+public class EmailForgotController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
