@@ -156,11 +156,11 @@ public class VoucherDAO {
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
                 boolean isActive = rs.getBoolean(9);
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
                 LocalDate expiryDate = createDate.plusDays(duration);
                 String type = rs.getString(10);
                 Double maximum = rs.getDouble(11);
-                String dateStarted = rs.getString(12);
                 Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
 
                 listVoucher.add(voucher);
@@ -194,11 +194,11 @@ public class VoucherDAO {
                 int duration = rs.getInt(7);
                 int adminID = rs.getInt(8);
                 boolean isActive = rs.getBoolean(9);
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
+                String dateStarted = rs.getString(12);
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
                 LocalDate expiryDate = createDate.plusDays(duration);
                 String type = rs.getString(10);
                 Double maximum = rs.getDouble(11);
-                String dateStarted = rs.getString(12);
                 Voucher voucher = new Voucher(id, name, value, quantity, mminimum, dateCreated, duration, adminID, isActive, !LocalDate.now().isAfter(expiryDate), type, maximum, dateStarted);
 
                 listVoucher.add(voucher);
@@ -244,6 +244,11 @@ public class VoucherDAO {
     public boolean deleteVoucher(int id) {
         try {
             Voucher voucher = getVoucherByID(id);
+
+            if (!voucher.isExpiry() && !voucher.isIsActive()) {
+                return false;
+            }
+
             String sql = "UPDATE [dbo].[Voucher]\n"
                     + "   SET [isActive] = ?\n"
                     + " WHERE [voucherID] = ?";
