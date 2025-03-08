@@ -62,7 +62,7 @@
         <i class="fas fa-box mr-2"></i>
         Order List
     </a>
-     <a class="flex items-center p-2 hover:bg-orange-800" href="#">
+     <a class="flex items-center p-2 hover:bg-orange-800" href="listnotification">
         <i class="fas fa-bell mr-2"></i>
         Notification List
     </a>

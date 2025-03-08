@@ -23,6 +23,10 @@ public class LoginServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+       String currentURL = request.getParameter("currentURL");
+        if (currentURL != null && !currentURL.trim().isEmpty()) {
+            request.setAttribute("currentURL", currentURL);
+        }
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
