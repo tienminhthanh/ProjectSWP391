@@ -376,74 +376,6 @@ public class ProductDAO {
         }
     }
 
-//    public List<Product> getProductsByCategory(int categoryID, String sortCriteria, Map<String, String> filterMap, String type) throws SQLException {
-//        StringBuilder sql = getCTEProductDiscount();
-//        sql.append("SELECT P.*, \n"
-//                + "       C.categoryName, \n"
-//                + "       PD.discountPercentage, \n"
-//                + "       PD.dateStarted,\n"
-//                + "	   PD.eventDuration\n"
-//                + "FROM Product AS P\n"
-//                + "JOIN Category AS C \n"
-//                + "    ON C.categoryID = P.categoryID\n");
-//
-//        //Type specific join
-//        if (type.equals("book")) {
-//            sql.append("JOIN Book B on B.bookID = P.productID\n");
-//        } else if (type.equals("merch")) {
-//            sql.append("JOIN Merchandise M on M.merchandiseID = P.productID\n");
-//        }
-//
-//        //Discount join
-//        sql.append("LEFT JOIN ProductDiscount PD \n"
-//                + "    ON P.productID = PD.productID AND PD.rn = 1\n"
-//                + "WHERE P.isActive = 1 AND P.categoryID = ?\n"
-//        );
-//
-//        //Initialize the param list
-//        List<Object> paramList = new ArrayList<>();
-//        paramList.add(categoryID);
-//
-//        //Append filter
-//        if (!filterMap.isEmpty()) {
-//            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
-//                String filterOption = entry.getKey();
-//                String filterParam = entry.getValue();
-//
-//                //Split the filter params if there are more than 1
-//                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
-//
-//                //Append filter clause based on filterOption
-//                sql.append(getFilterClause(filterOption, selectedFilters.length));
-//
-//                //Then add filter param to the param list to match with the appended clause
-//                if (filterOption.equals("ftPrc")) {
-//                    //Handle special case with price range
-//                    String[] valParts = filterParam.split("-");
-//                    paramList.add(valParts[0]);
-//                    paramList.add(valParts[1]);
-//                } else {
-//                    //Normal case
-//                    Collections.addAll(paramList, selectedFilters);
-//                }
-//            }
-//        }
-//
-//        //Append order
-//        sql.append("ORDER BY ");
-//        sql.append(getSortOrder(sortCriteria));
-//
-//        //Execute query
-//        Object[] params = paramList.toArray();
-//        ResultSet rs = context.exeQuery(sql.toString(), params);
-//        
-//        List<Product> productList = new ArrayList<>();
-//        while (rs.next()) {
-//            productList.add(mapResultSetToProduct(rs, ""));
-//        }
-//        return productList;
-//        
-//    }
     public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory) throws SQLException {
         StringBuilder sql = getCTEProductDiscount();
         sql.append("SELECT P.*, \n"
@@ -522,7 +454,8 @@ public class ProductDAO {
             case "crt":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
-                joinClause.append("JOIN Product_Creator PC ON PC.productID = P.productID");
+                joinClause.append("JOIN Product_Creator PC ON PC.productID = P.productID\n"
+                        + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
             case "gnr":
                 joinClause.append("JOIN Book AS B ON P.productID = B.bookID\n"
@@ -565,74 +498,6 @@ public class ProductDAO {
 
     }
 
-//    public List<Product> getBooksByGenre(int genreID, String sortCriteria, Map<String, String> filterMap) throws SQLException {
-//        StringBuilder sql = getCTEProductDiscount();
-//        sql.append("SELECT P.*, \n"
-//                + "       C.categoryName, \n"
-//                + "       PD.discountPercentage, \n"
-//                + "       PD.dateStarted,\n"
-//                + "	   PD.eventDuration\n"
-//                + "FROM Product AS P\n"
-//                + "JOIN Category AS C \n"
-//                + "    ON C.categoryID = P.categoryID\n");
-//
-//        //Type specific join
-//        if (type.equals("book")) {
-//            sql.append("JOIN Book B on B.bookID = P.productID\n");
-//        } else if (type.equals("merch")) {
-//            sql.append("JOIN Merchandise M on M.merchandiseID = P.productID\n");
-//        }
-//
-//        //Discount join
-//        sql.append("LEFT JOIN ProductDiscount PD \n"
-//                + "    ON P.productID = PD.productID AND PD.rn = 1\n"
-//                + "WHERE P.isActive = 1 AND P.categoryID = ?\n"
-//        );
-//
-//        //Initialize the param list
-//        List<Object> paramList = new ArrayList<>();
-//        paramList.add(categoryID);
-//
-//        //Append filter
-//        if (!filterMap.isEmpty()) {
-//            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
-//                String filterOption = entry.getKey();
-//                String filterParam = entry.getValue();
-//
-//                //Split the filter params if there are more than 1
-//                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
-//
-//                //Append filter clause based on filterOption
-//                sql.append(getFilterClause(filterOption, selectedFilters.length));
-//
-//                //Then add filter param to the param list to match with the appended clause
-//                if (filterOption.equals("ftPrc")) {
-//                    //Handle special case with price range
-//                    String[] valParts = filterParam.split("-");
-//                    paramList.add(valParts[0]);
-//                    paramList.add(valParts[1]);
-//                } else {
-//                    //Normal case
-//                    Collections.addAll(paramList, selectedFilters);
-//                }
-//            }
-//        }
-//
-//        //Append order
-//        sql.append("ORDER BY ");
-//        sql.append(getSortOrder(sortCriteria));
-//
-//        //Execute query
-//        Object[] params = paramList.toArray();
-//        ResultSet rs = context.exeQuery(sql.toString(), params);
-//        
-//        List<Product> productList = new ArrayList<>();
-//        while (rs.next()) {
-//            productList.add(mapResultSetToProduct(rs, ""));
-//        }
-//        return productList;
-//        
-//    }
     private String getFilterClause(String filterOption, int filterCount) {
         String placeHolder = String.join(",", Collections.nCopies(filterCount, "?"));
         switch (filterOption) {
@@ -661,31 +526,6 @@ public class ProductDAO {
         }
     }
 
-//    private String getFilterClause(String filterOption, int filterCount) {
-//
-//        //Modifying placeholder based on number of filters
-//        String placeHolder = String.join(",", Collections.nCopies(filterCount, "?"));
-//        switch (filterOption) {
-//            case "ftGnr":
-//                return "AND EXISTS (SELECT 1 FROM Book_Genre BG WHERE BG.bookID = B.bookID AND BG.genreID IN (" + placeHolder + ")) \n";
-//            case "ftCrt":
-//                return "AND EXISTS (SELECT 1 FROM Product_Creator PC WHERE PC.productID = P.productID AND PC.creatorID IN (" + placeHolder + ")) \n";
-//            case "ftPbl":
-//                return "AND B.publisherID = ? \n";
-//            case "ftPrc":
-//                return "AND P.price BETWEEN ? AND ? \n";
-//            case "ftCtg":
-//                return "AND P.categoryID = ? \n";
-//            case "ftBrn":
-//                return "AND M.brandID = ? \n";
-//            case "ftChr":
-//                return "AND M.characterID = ? \n";
-//            case "series":
-//                return "AND M.seriesID = ?  \n";
-//            default:
-//                return "";
-//        }
-//    }
     private StringBuilder getCTEProductDiscount() {
 
         return new StringBuilder("WITH ProductDiscount AS (\n"
