@@ -47,6 +47,8 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String currentURL = request.getParameter("currentURL");
+        // String currentURL = request.getParameter("currentURL") != null && !request.getParameter("currentURL").isBlank() ? request.getParameter("currentURL") : "home";
         AccountLib lib = new AccountLib(); // Utility class for password hashing
 
         // Retrieve login details from the request
@@ -92,7 +94,11 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 response.sendRedirect("listAccount");
                                 break;
                             case "customer":
-                                response.sendRedirect("home");
+                                if (currentURL == null || currentURL.isEmpty()) {
+                                    response.sendRedirect("home");
+                                } else {
+                                    response.sendRedirect(currentURL);
+                                }
                                 break;
                             case "staff":
                                 response.sendRedirect("dashboard.jsp");

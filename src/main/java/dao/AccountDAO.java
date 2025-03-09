@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -7,6 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.Account;
+import model.Admin;
+import model.Customer;
+import model.Shipper;
+import model.Staff;
+import utils.DBContext;
 
 public class AccountDAO {
 
@@ -165,7 +171,7 @@ public class AccountDAO {
         List<Account> accounts = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Account");
 
-        // Thêm điều kiện WHERE nếu có roleFilter
+      
         Object[] params;
         int offset = (page - 1) * pageSize;
 
@@ -187,7 +193,7 @@ public class AccountDAO {
         return accounts;
     }
 
-    // Thêm phương thức đếm tổng số tài khoản
+ 
     public int getTotalAccounts(String roleFilter) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Account");
         Object[] params = null;
@@ -258,18 +264,135 @@ public class AccountDAO {
      * Chuyển đổi ResultSet thành đối tượng Account
      */
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
-        return new Account(
-                rs.getInt("accountID"),
-                rs.getString("username"),
-                rs.getString("password"),
-                rs.getString("role"),
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("email"),
-                rs.getString("phoneNumber"),
-                rs.getString("birthDate"),
-                rs.getBoolean("isActive")
-        );
+        String role= rs.getString("role");
+        switch (role) {
+            case "admin":
+                return new Admin(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            case "customer":
+                return new Customer(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            case "staff":
+                return new Staff(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            case "shipper":
+                return new Shipper(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            default:
+                return new Account(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+        }
+    }
+//     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
+//        return new Account(
+//                rs.getInt("accountID"),
+//                rs.getString("username"),
+//                rs.getString("password"),
+//                rs.getString("role"),
+//                rs.getString("firstName"),
+//                rs.getString("lastName"),
+//                rs.getString("email"),
+//                rs.getString("phoneNumber"),
+//                rs.getString("birthDate"),
+//                rs.getBoolean("isActive")
+//        );
+//    }
+
+    public Account getAdditionalInfo(Account account) throws SQLException {
+        String sql = "";
+        switch (account.getRole()) {
+            case "admin":
+                sql = "SELECT * from Admin where adminID = ?";
+                break;
+            case "customer":
+                sql = "SELECT * from Customer where customerID = ?";
+                break;
+            case "staff":
+                sql = "SELECT * from Customer where staffID = ?";
+                break;
+            case "shipper":
+                sql = "SELECT * from Customer where shipperID = ?";
+                break;
+        }
+
+        Object[] params = {account.getAccountID()};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            switch (account.getRole()) {
+                case "customer":
+                    Customer customer = (Customer) account;
+                    customer.setDefaultDeliveryAddress(rs.getString("defaultDeliveryAddress"));
+                    customer.setTotalPurchasePoints(rs.getDouble("totalPurchasePoints"));
+                    return customer;
+                case "admin":
+                    Admin ad = (Admin) account;
+                    ad.setTotalEvents(rs.getInt("totalEvents"));
+                    ad.setTotalVouchers(rs.getInt("totalVouchers"));
+                    return ad;
+                case "shipper":
+                    Shipper shipper = (Shipper) account;
+                    shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
+                    shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
+                    return shipper;
+                case "staff":
+                    Staff staff = (Staff) account;
+                    staff.setTotalOrders(rs.getInt("totalOrders"));
+                    staff.setWorkShift(rs.getString("workShift"));
+                    return staff;
+            }
+        }
+
+        return account;
     }
 
     public List<Account> getAllCustomers() throws SQLException {
@@ -297,4 +420,9 @@ public class AccountDAO {
         }
         return customers;
     }
+
+    public static void main(String[] args) {
+        System.out.println("cúp điện");
+    }
+
 }
