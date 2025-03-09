@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order List</title>      
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">    </head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">  
         <style>
         .order-card {
             position: relative;
@@ -41,7 +41,7 @@
             text-transform: capitalize;
         }
     </style>
-
+  </head>
 
     <body class="bg-gray-50">
         <header class="bg-white shadow">
@@ -158,7 +158,7 @@
                             <div>
                                 <p class="text-xs text-gray-500">Total amount</p>
                                 <p class="text-xl font-bold text-gray-800">
-                                    <fmt:formatNumber value="${c.preVoucherAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                                    <fmt:formatNumber value="${c.preVoucherAmount}" type="number" groupingUsed="true"/> đ
                                 </p>
                             </div>
                             <a href="OrderDetailController?id=${id}" 

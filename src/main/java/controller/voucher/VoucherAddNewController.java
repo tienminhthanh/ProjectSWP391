@@ -22,7 +22,7 @@ import model.Voucher;
  * @author ADMIN
  */
 @WebServlet(name = "VoucherAddNewServlet", urlPatterns = {"/voucherAddNew"})
-public class VoucherAddNewServlet extends HttpServlet {
+public class VoucherAddNewController extends HttpServlet {
 
     private final String VOUCHER_ADDNEW_PAGE = "voucherAddNew.jsp";
     private final String VOUCHER_LIST_PAGE = "voucherList";
@@ -79,27 +79,48 @@ public class VoucherAddNewServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String name = request.getParameter("voucherName");
-        double value = Double.parseDouble(request.getParameter("voucherValue"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
-        int duration = Integer.parseInt(request.getParameter("duration"));
-
-        LocalDate dateCreated = LocalDate.now();
-
         HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
-        if (account == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        int adminID = account.getAccountID();
+        try {
+            String name = request.getParameter("voucherName");
+            String type = request.getParameter("voucherType");
+            double value = Double.parseDouble(request.getParameter("voucherValue"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
+            int duration = Integer.parseInt(request.getParameter("duration"));
+            Double maxDiscountAmount = null;
+            if ("PERCENTAGE".equals(type)) {
+                String maxDiscountStr = request.getParameter("maxDiscountAmount");
+                if (maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
+                    maxDiscountAmount = Double.parseDouble(maxDiscountStr);
+                }
+            }
 
-        VoucherDAO vDao = new VoucherDAO();
-        boolean add = vDao.addVoucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID);
-        if (add) {
-            response.sendRedirect(VOUCHER_LIST_PAGE);
+            LocalDate dateCreated = LocalDate.now();
+            String dateStarted = request.getParameter("dateStarted");
+
+            Account account = (Account) session.getAttribute("account");
+            if (account == null) {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+            int adminID = account.getAccountID();
+
+            VoucherDAO vDao = new VoucherDAO();
+            Voucher voucher = new Voucher(adminID, name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true, type, maxDiscountAmount, dateStarted);
+            boolean add = vDao.addVoucher(voucher);
+            if (add) {
+                session.setAttribute("message", "Voucher created successfully!");
+                session.setAttribute("messageType", "success");
+            } else {
+                session.setAttribute("message", "Failed to create voucher.");
+                session.setAttribute("messageType", "error");
+            }
+        } catch (Exception e) {
+            session.setAttribute("message", "Error: " + e.getMessage());
+            session.setAttribute("messageType", "error");
         }
+        response.sendRedirect(VOUCHER_LIST_PAGE);
+
     }
 
     /**

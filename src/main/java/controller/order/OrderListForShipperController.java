@@ -79,6 +79,8 @@ public class OrderListForShipperController extends HttpServlet {
                 }
             }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
+            session.setAttribute("order", orderList); // Đặt dữ liệu vào requestScope
+             // Đặt dữ liệu vào requestScope
             request.setAttribute("accountList", accountList);
             request.getRequestDispatcher("OrderListForShipperView.jsp").forward(request, response);
         } catch (SQLException e) {

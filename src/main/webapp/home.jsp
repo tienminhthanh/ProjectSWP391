@@ -1,5 +1,19 @@
+<%@page import="java.io.FilenameFilter"%>
+<%@page import="java.io.File"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
+<fmt:setLocale value="en_US"/>
+<%
+    String bannerPath = application.getRealPath("/img/banner_event/");
+    File folder = new File(bannerPath);
+    String[] files = folder.list(new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.matches(".*\\.(jpg|jpeg|png|gif)");
+        }
+    });
+%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -38,44 +52,8 @@
             <jsp:include page="header.jsp" flush="true"/> 
         </div>
 
-
-        <div x-data="{ 
-             current: 0, 
-             banners: [
-             '/img/banner_event/banner1.jpg',
-             '/img/banner_event/banner2.jpg',
-             '/img/banner_event/banner3.jpg',
-             '/img/banner_event/banner4.jpg'
-             ],
-             next() {
-             this.current = (this.current + 1) % this.banners.length;
-             },
-             prev() {
-             this.current = (this.current - 1 + this.banners.length) % this.banners.length;
-             },
-             autoSlide() {
-             setInterval(() => { this.next(); }, 3000);
-             }
-             }" x-init="autoSlide()" class="relative w-full h-64 overflow-hidden">
-
-            <!-- banner hiển thị -->
-            <img :src="banners[current]" class="w-full h-full object-cover transition-opacity duration-500">
-
-            <!-- nút điều hướng -->
-            <button @click="prev()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ⬅
-            </button>
-            <button @click="next()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-                ➡
-            </button>
-
-            <!-- chỉ số -->
-            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                <template x-for="(banner, index) in banners" :key="index">
-                    <div @click="current = index" :class="current === index ? 'bg-blue-500' : 'bg-gray-300'"
-                          class="w-3 h-3 rounded-full cursor-pointer"></div>
-                </template>
-            </div>
+        <div class="banner-container">
+            <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -112,19 +90,111 @@
 
                 <!--Div2-->
                 <div class="mb-4 bg-white voucher-area">
-                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                        Vouchers
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Available Now
                     </h2>
-                    <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
                         <c:forEach var="voucher" items="${listVoucher}">
-                            <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-                                    onclick="navigateToUpdate(${voucher.voucherID})">
-                                ${voucher.voucherName} - ${voucher.voucherValue}
-                            </button>
+                            <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
+                                 style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
+                                <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+                                    <!-- Tên Voucher -->
+                                    <p class="font-bold text-lg text-orange-600">${voucher.voucherName}</p>
+                                    <!-- Giá trị giảm -->
+                                    <p>Sale
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                                    ${voucher.voucherValue} %
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${voucher.voucherValue}" type="number" groupingUsed="true"/> đ
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </p>
+
+                                    <!-- Hiển thị Max Discount nếu là Percentage -->
+                                    <c:if test="${voucher.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to
+                                            <span><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span>
+                                        </p>
+                                    </c:if>
+
+                                    <!-- Điều kiện sử dụng -->
+                                    <p>For orders from
+                                        <span>
+                                            <fmt:formatNumber value="${voucher.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </p>
+
+                                    <!-- Hạn sử dụng -->
+                                    <div class="voucher" data-start="${voucher.dateStarted}" data-duration="${voucher.duration}">
+                                        <p><strong>EXP:</strong> <span class="date-end"></span></p>
+                                    </div>
+                                </div>
+                            </div>
                         </c:forEach>
 
                         <c:if test="${empty listVoucher}">
-                            <p class="text-gray-500 italic">No vouchers available.</p>
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
+                        </c:if>
+                    </div>
+                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
+                        Coming Soon
+                    </h2>
+                    <div class="flex flex-nowrap gap-4 overflow-x-auto pb-4">
+
+                        <c:forEach var="voucherComeSoon" items="${listVoucherComeSoon}">
+                            <div class="voucher-card relative flex-shrink-0 w-[458px] h-[159px] p-4"
+                                 style="background-image: url('/img/background_voucher/discount_voucher.jpg'); background-size: cover; background-position: center;">
+                                <div class="absolute top-0 left-[30%] w-[70%] h-full flex flex-col justify-center px-4">
+
+                                    <!-- Tên Voucher -->
+                                    <p class="font-bold text-lg text-orange-600">${voucherComeSoon.voucherName}</p>
+
+                                    <!-- Giá trị giảm -->
+                                    <p>Sale
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${voucherComeSoon.voucherType eq 'PERCENTAGE'}">
+                                                    ${voucherComeSoon.voucherValue} %
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${voucherComeSoon.voucherValue}" type="number" groupingUsed="true"/> đ
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </p>
+
+                                    <!-- Hiển thị Max Discount nếu là Percentage -->
+                                    <c:if test="${voucherComeSoon.voucherType eq 'PERCENTAGE'}">
+                                        <p>Up to
+                                            <span><fmt:formatNumber value="${voucherComeSoon.maxDiscountAmount}" type="number" groupingUsed="true"/> đ</span>
+                                        </p>
+                                    </c:if>
+
+                                    <!-- Điều kiện sử dụng -->
+                                    <p>For orders from
+                                        <span>
+                                            <fmt:formatNumber value="${voucherComeSoon.minimumPurchaseAmount}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </p>
+
+                                    <!-- Hạn sử dụng -->
+                                    <div class="voucher" data-start="${voucherComeSoon.dateStarted}" data-duration="${voucherComeSoon.duration}">
+                                        <p><strong>Started on: </strong>${voucherComeSoon.dateStarted}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+
+                        <c:if test="${empty listVoucherComeSoon}">
+                            <div class="flex justify-center items-center h-40 w-full">
+                                <p class="text-gray-500 italic">No vouchers available.</p>
+                            </div>
                         </c:if>
                     </div>
                 </div>
@@ -171,7 +241,7 @@
         <!--Customer sidebar script-->
         <script src="js/scriptCusSidebar.js"></script>
         <script src="js/scriptCusSideBarNOTDetails.js"></script>
-        
+
         <!--Unknown import-->
         <!--        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
                         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -183,6 +253,69 @@
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
+
+        <!--Voucher Date End-->
+        <script src="js/scriptVoucherDateEnd.js"></script>
+
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let banners = [
+            <% for (String file : files) {%>
+                    {img: "/img/banner_event/<%= file%>"},
+            <% }%>
+                ];
+
+                let current = 0;
+                const bannerImg = document.getElementById("banner-img");
+                const bannerLink = document.getElementById("banner-link");
+                const dotsContainer = document.getElementById("dots-container");
+
+                function updateBanner() {
+                    bannerImg.src = banners[current].img;
+                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
+
+                    dotsContainer.innerHTML = "";
+                    banners.forEach((_, index) => {
+                        const dot = document.createElement("div");
+                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
+                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
+                        dot.onclick = () => {
+                            current = index;
+                            updateBanner();
+                        };
+                        dotsContainer.appendChild(dot);
+                    });
+                }
+
+                function next() {
+                    current = (current + 1) % banners.length;
+                    updateBanner();
+                }
+
+                function prev() {
+                    current = (current - 1 + banners.length) % banners.length;
+                    updateBanner();
+                }
+
+                const prev_btn = document.getElementById("prev-btn");
+                if (prev_btn !== null) {
+                    prev_btn.addEventListener("click", prev);
+
+                    setInterval(next, 3000);
+                }
+                const next_btn = document.getElementById("next-btn");
+                if (next_btn !== null) {
+                    next_btn.addEventListener("click", next);
+
+                    setInterval(next, 3000);
+                }
+
+                updateBanner();
+            });
+
+        </script>
 
     </body>
 </html>

@@ -34,10 +34,9 @@
             <!--Hide this shit on mobile view bro -->
             <nav> 
                 <ul>
-                    <li><a href="#">Manga</a></li>
-                    <li><a href="#">Light Novel</a></li>
-                    <li><a href="#">Figure</a></li>
-                    <li><a href="#">Nendoroid</a></li>
+                    <c:forEach var="cat" items="${applicationScope.categories.keySet()}">
+                    <li><a href="category?id=${cat.categoryID}">${cat.categoryName}</a></li>
+                    </c:forEach>
                 </ul>
             </nav>
         </div>

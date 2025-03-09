@@ -6,6 +6,7 @@
 
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -39,7 +40,7 @@
         <div class="bread-crumb-area pt-2 pl-4 pb-2 text-sm text-yellow-500 bg-gray-100">
             ${breadCrumb}
         </div>
-        
+
         <!--Sidebar-->
         <div class="flex flex-col md:flex-row pt-4 bg-gray-50">
             <jsp:include page="customerSidebar.jsp"/>
@@ -54,16 +55,14 @@
                         ${pageTitle}
                     </h2>
 
-
                     <div class="overview-area flex mb-4">
                         <c:if test="${not empty productList}">
                             <div class="sort-area w-2/5">
-                                <form action="search" method="get" id="sortFormSearch">
-                                    <input type="hidden" name="query" value="${requestScope.query}">
-                                    <input type="hidden" name="type" value="${requestScope.type}">
+                                <form action="" method="get" id="sortForm">
+                                    <div class="hidden-input-sort"></div>
                                     <label for="sortCriteria" class="inline-flex items-center">
                                         <span class="w-32 pl-3">Sort by</span>
-                                        <select class="form-select text-sm" id="sortCriteria" name="sortCriteria" onchange="submitSort()">
+                                        <select class="form-select text-sm" id="sortCriteria" name="sortCriteria">
                                             <c:if test="${not empty query}">
                                                 <option value="relevance">Relevance</option>
                                             </c:if>
@@ -81,9 +80,6 @@
                                 ${productList.size()} result(s)
                             </div>
                         </c:if>
-                        <c:if test="${empty productList && not empty message}">
-                            ${message}
-                        </c:if>
                     </div>
 
                     <div class="w-full">
@@ -99,7 +95,19 @@
                 </div>
                 <!--Popup unauthorized users-->
                 <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
-                    <jsp:include page="popuplogin.jsp" />
+                    <c:set var="currentURL" value="${currentURL}" scope="request"/>
+                    <jsp:include page="popuplogin.jsp"/>
+                </c:if>
+                
+                <!--Popup message from servlet -->
+                <c:if test="${not empty message}">
+                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
+                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50" id="warning-popup-container">
+                        <p>
+                            ${message}
+                        </p>
+                        <button onclick="closeMessagePopup()" class="mt-2 px-1 py-2 text-white border-0 cursor-pointer bg-gray-300">Close</button>
+                    </div>
                 </c:if>
             </main>
         </div>
@@ -110,20 +118,56 @@
         <jsp:include page="chat.jsp"/>
 
         <script>
-            function submitSort() {
-                document.getElementById("sortFormSearch").submit();
-            }
 
-            window.addEventListener("load", function () {
+            //Display current sort option
+            document.addEventListener("DOMContentLoaded", function () {
+                console.log(window.location.href);
+
                 var sortCriteria = "<%= request.getAttribute("sortCriteria") != null ? request.getAttribute("sortCriteria") : "releaseDate"%>";
 
                 console.log("DEBUG: sort from JSP:", sortCriteria);
 
                 var selectElement = document.getElementById("sortCriteria");
-                if (selectElement) {
-                    selectElement.value = sortCriteria;
+                if (!selectElement) {
+                    return;
                 }
+                selectElement.value = sortCriteria;
+
+                // Get current URL parameters
+                const params = new URLSearchParams(window.location.search);
+                const hiddenInputsContainer = document.querySelector(".hidden-input-sort");
+
+                if (!hiddenInputsContainer) {
+                    return;
+                }
+                // Loop through existing params and create hidden inputs
+                params.forEach((value, key) => {
+                    if (key !== "sortCriteria") {  // Exclude inputs already in the form
+                        const input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = key;
+                        input.value = value;
+                        hiddenInputsContainer.appendChild(input);
+                    }
+                });
+
+                //Submit the sort form on change
+                selectElement.addEventListener("change", function () {
+                    document.getElementById('sortForm').submit();
+                });
+
+                
+
             });
+            
+            function closeMessagePopup() {
+                    document.getElementById('warning-popup-overlay').classList.add("hidden");
+                    document.getElementById('warning-popup-container').classList.add("hidden");
+            }
+
+
+
+
         </script>
 
         <!--Script for include icons-->

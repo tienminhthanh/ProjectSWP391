@@ -12,6 +12,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import model.Voucher;
 
@@ -20,7 +24,7 @@ import model.Voucher;
  * @author ADMIN
  */
 @WebServlet(name = "VoucherUpdateServlet", urlPatterns = {"/voucherUpdate"})
-public class VoucherUpdateServlet extends HttpServlet {
+public class VoucherUpdateController extends HttpServlet {
 
     private final String VOUCHER_UPDATE_PAGE = "voucherUpdate.jsp";
     private final String VOUCHER_LIST_PAGE = "voucherList";
@@ -77,20 +81,48 @@ public class VoucherUpdateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = VOUCHER_LIST_PAGE;
+        HttpSession session = request.getSession();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         VoucherDAO vDao = new VoucherDAO();
-        int id = Integer.parseInt(request.getParameter("voucherID"));
-        String name = request.getParameter("voucherName");
-        double value = Double.parseDouble(request.getParameter("voucherValue"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
-        String dateCreated = vDao.getVoucherByID(id).getDateCreated();
-//        LocalDate today = LocalDate.now();
-        int duration = Integer.parseInt(request.getParameter("duration"));
-        int adminID = vDao.getVoucherByID(id).getAdminID();
-        Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID, vDao.getVoucherByID(id).isIsActive());
-        if (vDao.updateVoucher(voucher)) {
-            response.sendRedirect(url);
+
+        try {
+            int id = Integer.parseInt(request.getParameter("voucherID"));
+            String name = request.getParameter("voucherName");
+            String type = request.getParameter("voucherType");
+            double value = Double.parseDouble(request.getParameter("voucherValue"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
+            String dateCreated = vDao.getVoucherByID(id).getDateCreated();
+            int duration = Integer.parseInt(request.getParameter("duration"));
+            int adminID = vDao.getVoucherByID(id).getAdminID();
+            Double maxDiscountAmount = null;
+
+            if ("PERCENTAGE".equals(type)) {
+                String maxDiscountStr = request.getParameter("maxDiscountAmount");
+                if (maxDiscountStr != null && !maxDiscountStr.isEmpty()) {
+                    maxDiscountAmount = Double.parseDouble(maxDiscountStr);
+                }
+            }
+
+            String dateStarted_raw = request.getParameter("dateStarted");
+            LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
+
+            Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID,
+                    true, vDao.getVoucherByID(id).isIsActive(), type, maxDiscountAmount, dateStarted.toString());
+
+            if (vDao.updateVoucher(voucher)) {
+                session.setAttribute("message", "Voucher updated successfully!");
+                session.setAttribute("messageType", "success");
+            } else {
+                session.setAttribute("message", "Failed to update voucher.");
+                session.setAttribute("messageType", "error");
+            }
+        } catch (Exception e) {
+            session.setAttribute("message", "Error: " + e.getMessage());
+            session.setAttribute("messageType", "error");
         }
+
+        response.sendRedirect(url);
     }
 
     /**

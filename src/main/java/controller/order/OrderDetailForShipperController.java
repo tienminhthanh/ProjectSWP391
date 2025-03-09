@@ -5,6 +5,7 @@
 package controller.order;
 
 import dao.OrderDAO;
+import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,9 +15,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Account;
 import model.OrderInfo;
+import model.Shipper;
 
 /**
  *
@@ -64,23 +69,39 @@ public class OrderDetailForShipperController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("account");
-        try {
-            String orderID = request.getParameter("id");
-            OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
-            Account acc = orderDAO.getAccountByShipperIDAndOrderID(Integer.parseInt(orderID), account.getAccountID());
+        ProductDAO productDAO = new ProductDAO();
+        List<OrderInfo> orderList = null;
+        List<Shipper> shipperList = new ArrayList<>();
+        OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
+        Account customer = null;
 
-         
-            request.setAttribute("acc", acc);
-            request.setAttribute("orderInfo", orderInfo); 
-            // Chuyển hướng đến OrderListView.jsp
-            request.getRequestDispatcher("OrderDetailForShipper.jsp").forward(request, response);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching order list.");
+        String orderID = request.getParameter("id");
+        int valueVoucher = 0;
+        try {
+            if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
+                int id = Integer.parseInt(orderID);
+
+                customer = orderDAO.getCustomerByOrderID(id);
+
+                if (customer != null) {
+                    int idcus = customer.getAccountID();
+                    orderInfo = orderDAO.getOrderByID(id, idcus);
+                    valueVoucher = orderDAO.getVoucherValueByOrderID(id);
+
+                }
+            }
+        } catch (SQLException | NumberFormatException ex) {
+            Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        processRequest(request, response);
+
+        request.setAttribute("orderInfo", orderInfo);
+        request.setAttribute("customer", customer);
+        shipperList = orderDAO.getAllShippers();
+        request.setAttribute("shipperList", shipperList);
+        request.setAttribute("orderList", orderList);
+        request.setAttribute("valueVoucher", valueVoucher);
+
+        request.getRequestDispatcher("OrderDetailForShipperView.jsp").forward(request, response);
     }
 
     /**

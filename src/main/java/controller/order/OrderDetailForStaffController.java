@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.product;
+package controller.order;
 
-import dao.*;
-import model.*;
+import dao.OrderDAO;
+import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,22 +13,26 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Account;
+import model.OrderInfo;
+import model.OrderProduct;
+import model.Product;
+import model.Shipper;
 
 /**
  *
- * @author anhkc
+ * @author Macbook
  */
-@WebServlet(name = "ProductDetailsController", urlPatterns = {"/productDetails"})
-public class ProductDetailsController extends HttpServlet {
-
-    private ProductDAO productDAO;
-
-    @Override
-    public void init() throws ServletException {
-        productDAO = new ProductDAO();
-    }
+@WebServlet(name = "OrderDetailForStaffController", urlPatterns = {"/OrderDetailForStaffController"})
+public class OrderDetailForStaffController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +51,10 @@ public class ProductDetailsController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ProductDetailsController</title>");
+            out.println("<title>Servlet OrderDetailForStaff</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ProductDetailsController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet OrderDetailForStaff at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -68,48 +72,39 @@ public class ProductDetailsController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String generalCategory = request.getParameter("type");
-        if (generalCategory.equals("book")) {
-            getTheBook(request, response);
-        } else if (generalCategory.equals("merch")) {
-            getTheMerch(request, response);
-        }
+        OrderDAO orderDAO = new OrderDAO();
+     
+        List<OrderInfo> orderList = null;
+        List<Shipper> shipperList = new ArrayList<>();
+        OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
+        Account customer = null;
 
-    }
-
-    private void getTheBook(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String productID = request.getParameter("id");
-        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
-        
+        String orderID = request.getParameter("id");
+        int valueVoucher = 0;
         try {
-            int id = Integer.parseInt(productID);
-            
-            Book requestedBook = productDAO.getBookById(id);
-            HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
-            List<Genre> genreList = productDAO.getGenresOfThisBook(id);
-            
-            String breadCrumb = String.format("<a href='home'>Home</a> > <a href='search?type=book'>Books</a> > <a href='catalog?category=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
-                    requestedBook.getSpecificCategory().getCategoryID(), requestedBook.getSpecificCategory().getCategoryName(), id, requestedBook.getGeneralCategory(), requestedBook.getProductName());
-            
-            request.setAttribute("type", requestedBook.getGeneralCategory());
-            request.setAttribute("currentURL", currentURL);
-            request.setAttribute("breadCrumb", breadCrumb);
-            request.setAttribute("product", requestedBook);
-            request.setAttribute("creatorMap", creatorMap);
-            request.setAttribute("genreList", genreList);
-            
-            request.getRequestDispatcher("productDetails.jsp").forward(request, response);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
-        }
-    }
+            if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
+                int id = Integer.parseInt(orderID);
 
-    private void getTheMerch(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-//        WORKING ON PROGRESS
+                customer = orderDAO.getCustomerByOrderID(id);
+
+                if (customer != null) {
+                    int idcus = customer.getAccountID();
+                    orderInfo = orderDAO.getOrderByID(id, idcus);
+                    valueVoucher = orderDAO.getVoucherValueByOrderID(id);
+                }
+            }
+        } catch (SQLException | NumberFormatException ex) {
+            Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        request.setAttribute("orderInfo", orderInfo);
+        request.setAttribute("customer", customer);
+        shipperList = orderDAO.getAllShippers();
+        request.setAttribute("shipperList", shipperList);
+        request.setAttribute("orderList", orderList);
+        request.setAttribute("valueVoucher", valueVoucher);
+
+        request.getRequestDispatcher("OrderDetailForStaffView.jsp").forward(request, response);
     }
 
     /**

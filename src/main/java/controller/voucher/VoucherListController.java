@@ -20,7 +20,7 @@ import model.Voucher;
  * @author ADMIN
  */
 @WebServlet(name = "VoucherListServlet", urlPatterns = {"/voucherList"})
-public class VoucherListServlet extends HttpServlet {
+public class VoucherListController extends HttpServlet {
 
     private final String VOUCHER_LIST_PAGE = "voucherList.jsp";
 
@@ -37,10 +37,25 @@ public class VoucherListServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = VOUCHER_LIST_PAGE;
+        int page = 1;
+        int pageSize = 5;
+        String pageStr = request.getParameter("page");
+        if (pageStr != null) {
+            try {
+                page = Integer.parseInt(pageStr);
+            } catch (Exception e) {
+                page = 1;
+            }
+        }
+
         try {
             VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getListVoucher();
+            List<Voucher> listVoucher = vDao.getVoucherByPage(page, pageSize);
+            int totalVouchers = vDao.getTotalVoucher();
+            int totalPages = (int) Math.ceil((double) totalVouchers / pageSize);
             request.setAttribute("LIST_VOUCHER", listVoucher);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPage", totalPages);
         } catch (Exception ex) {
             log("VoucherListServlet error:" + ex.getMessage());
         } finally {

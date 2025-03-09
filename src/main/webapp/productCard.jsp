@@ -74,17 +74,18 @@
             <c:set var="cartQuantity" value="${cartItem.quantity}" />
         </c:if>
     </c:forEach>
+    
 
-    <c:if test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
-        <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${currentProduct.stockCount}, event)">
-            <input type="hidden" name="customerID" value="${sessionScope.account.accountID}">
-            <input type="hidden" name="productID" value="${currentProduct.productID}">
-            <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
-            <input type="hidden" name="quantity" value="1">
-            <input type="hidden" name="priceWithQuantity" value="${currentProduct.price}">
-            <button name="action" value="add" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
-        </form>
-    </c:if>
+    <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${currentProduct.stockCount}, event)">
+        <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+        <input type="hidden" name="productID" value="${currentProduct.productID}">
+        <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
+        <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
+        <input type="hidden" name="priceWithQuantity">
+        <c:if test="${currentProduct.stockCount > 0 && currentProduct.specialFilter != 'pre-order'}">
+            <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+            </c:if>
+    </form>
 
     <!-- If out of stock -> overlay -->
     <c:if test="${currentProduct.stockCount == 0}">
@@ -93,16 +94,22 @@
 
 </div>
 
-<!-- JavaScript for stock check and popup -->
+<!-- Include SweetAlert2 Library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JavaScript for stock check and SweetAlert2 popup -->
 <script>
-    function checkStock(cartQuantity, stockCount, event) {
-        let quantityToAdd = 1; // Default quantity from the form
-        if (cartQuantity + quantityToAdd > stockCount) {
-            // Show popup error
-            alert("Error: Cannot add to cart. The quantity in your cart (" + cartQuantity + ") plus this addition would exceed the available stock (" + stockCount + ").");
-            event.preventDefault(); // Prevent form submission
-            return false;
-        }
-        return true; // Allow form submission if stock is sufficient
-    }
+                function checkStock(cartQuantity, stockCount, event) {
+                    let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
+                    if (cartQuantity + quantityToAdd > stockCount) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Stock Limit Reached',
+                            text: `The quantity in your cart has reached the stock limit. The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+                        });
+                        event.preventDefault();
+                        return false;
+                    }
+                    return true;
+                }
 </script>

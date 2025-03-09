@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.event;
+package controller.voucher;
 
-import dao.EventDAO;
+import dao.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,17 +12,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import model.Event;
+import model.Voucher;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "EventListServlet", urlPatterns = {"/eventList"})
-public class EventListServlet extends HttpServlet {
+@WebServlet(name = "VoucherDetails", urlPatterns = {"/voucherDetails"})
+public class VoucherDetailsController extends HttpServlet {
 
-    private final String EVENT_LIST_PAGE = "eventList.jsp";
+    private final String VOUCHER_DETAILS_PAGE = "voucherDetails.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,19 +38,27 @@ public class EventListServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = EVENT_LIST_PAGE;
+        String url = VOUCHER_DETAILS_PAGE;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
-            EventDAO eDao = new EventDAO();
-            List<Event> listEvent = eDao.getListEvent();
-            request.setAttribute("LIST_EVENT", listEvent);
+            int id = Integer.parseInt(request.getParameter("voucherId"));
+            VoucherDAO vDao = new VoucherDAO();
+            Voucher voucherDetails = vDao.getVoucherByID(id);
+            request.setAttribute("VOUCHER_DETAILS", voucherDetails);
+
+            String dateStarted = voucherDetails.getDateStarted();
+            LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+            LocalDate dateEnd = createDate.plusDays(voucherDetails.getDuration());
+            request.setAttribute("dateEnd", dateEnd);
+
         } catch (Exception ex) {
-            log("VoucherListServlet error:" + ex.getMessage());
+            log("VoucherDetailsServlet error:" + ex.getMessage());
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

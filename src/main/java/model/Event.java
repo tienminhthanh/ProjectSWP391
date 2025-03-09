@@ -4,7 +4,6 @@
  */
 package model;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -12,21 +11,22 @@ import java.util.List;
  * @author ADMIN
  */
 public class Event {
+
     private int eventID;
     private String eventName;
-    private LocalDate dateCreated;
+    private String dateCreated;
     private int duration;
     private String banner;
     private String description;
     private int adminID;
     private boolean isActive;
-    private LocalDate dateStarted;
-    private List<EventProduct> eventProductList;
+    private String dateStarted;
+    private boolean expiry;
 
     public Event() {
     }
 
-    public Event(int eventID, String eventName, LocalDate dateCreated, int duration, String banner, String description, int adminID, boolean isActive, LocalDate dateStarted, List<EventProduct> eventProductList) {
+    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
         this.eventID = eventID;
         this.eventName = eventName;
         this.dateCreated = dateCreated;
@@ -36,10 +36,24 @@ public class Event {
         this.adminID = adminID;
         this.isActive = isActive;
         this.dateStarted = dateStarted;
-        this.eventProductList = eventProductList;
+        this.expiry = expiry;
     }
 
-    
+    public boolean isExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(boolean expiry) {
+        this.expiry = expiry;
+    }
+
+    public String getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(String dateStarted) {
+        this.dateStarted = dateStarted;
+    }
 
     public int getEventID() {
         return eventID;
@@ -57,11 +71,11 @@ public class Event {
         this.eventName = eventName;
     }
 
-    public LocalDate getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -104,26 +118,5 @@ public class Event {
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
-
-    public LocalDate getDateStarted() {
-        return dateStarted;
-    }
-
-    public void setDateStarted(LocalDate dateStarted) {
-        this.dateStarted = dateStarted;
-    }
-
-    public List<EventProduct> getEventProductList() {
-        return eventProductList;
-    }
-
-    public void setEventProductList(List<EventProduct> eventProductList) {
-        this.eventProductList = eventProductList;
-    }
-
-   
-    
-   
-
 
 }

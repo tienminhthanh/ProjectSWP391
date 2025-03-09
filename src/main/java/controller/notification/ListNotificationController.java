@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import dao.NotificationDAO;
+import model.Account;
 import model.Notification;
 
 @WebServlet(name = "ListNotification", urlPatterns = {"/listnotification"})
@@ -29,9 +30,21 @@ public class ListNotificationController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Account account = (Account) request.getSession().getAttribute("account");
+        if (account == null) {
+            response.sendRedirect("login");
+            return;
+        }
         try {
-            // Lấy tất cả thông báo
-            List<Notification> notifications = notificationDAO.getAllNotifications();
+            String userRole = account.getRole();
+            int userID = account.getAccountID();
+            List<Notification> notifications;
+            if (userRole.equals("staff")|| userID != 1) {
+                notifications = notificationDAO.getAllNotificationsForStaff();
+            } else{
+                // Lấy tất cả thông báo
+                notifications = notificationDAO.getAllNotifications();
+            }
 
             // Đặt danh sách vào request attribute
             request.setAttribute("notifications", notifications);

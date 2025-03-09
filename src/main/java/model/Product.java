@@ -8,12 +8,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Product {
-
+//Maps from categoryID int
     private int productID;
     private String productName;
     private double price;
     private int stockCount;
-    private Category specificCategory; //Maps from categoryID int
+    private Category specificCategory;
     private String description;
     private LocalDate releaseDate;
     private LocalDateTime lastModifiedTime;

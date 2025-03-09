@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller.voucher;
+package controller.event;
 
-import dao.VoucherDAO;
+import dao.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,17 +12,21 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import model.Voucher;
+import model.*;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "VoucherDetails", urlPatterns = {"/voucherDetails"})
-public class VoucherDetailsServlet extends HttpServlet {
+@WebServlet(name = "EventDetailsServlet", urlPatterns = {"/eventDetails"})
+public class EventDetailsServlet extends HttpServlet {
 
-    private final String VOUCHER_DETAILS_PAGE = "voucherDetails.jsp";
+    private final String EVENT_DETAILS_PAGE = "eventDetails.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,12 +40,41 @@ public class VoucherDetailsServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = VOUCHER_DETAILS_PAGE;
+        /* TODO output your page here. You may use following sample code. */
+        String url = EVENT_DETAILS_PAGE;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
-            int id = Integer.parseInt(request.getParameter("voucherId"));
-            VoucherDAO vDao = new VoucherDAO();
-            Voucher voucherDetails = vDao.getVoucherByID(id);
-            request.setAttribute("VOUCHER_DETAILS", voucherDetails);
+            String action = request.getParameter("action");
+            if (action == null) {
+                int id = Integer.parseInt(request.getParameter("eventId"));
+                EventDAO eDao = new EventDAO();
+                Event eventDetails = eDao.getEventByID(id);
+                request.setAttribute("EVENT_DETAILS", eventDetails);
+
+                String dateStarted = eventDetails.getDateStarted();
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate dateEnd = createDate.plusDays(eventDetails.getDuration());
+                request.setAttribute("dateEnd", dateEnd);
+            } else if (action.equals("home")) {
+                ProductDAO productDAO = new ProductDAO();
+                List<Product> productList = productDAO.get10RandomActiveProducts("book");
+                request.setAttribute("productList", productList);
+
+                String banner = request.getParameter("banner");
+                if (banner != null) {
+                    banner = URLDecoder.decode(banner, StandardCharsets.UTF_8);
+                }
+                request.setAttribute("banner", banner);
+                EventDAO eDao = new EventDAO();;
+                Event event = eDao.getEventByBanner(banner);
+                request.setAttribute("eventDetails", event);
+
+                String dateStarted = event.getDateStarted();
+                LocalDate createDate = LocalDate.parse(dateStarted, formatter);
+                LocalDate dateEnd = createDate.plusDays(event.getDuration());
+                request.setAttribute("dateEnd", dateEnd);
+            }
+
         } catch (Exception ex) {
             log("VoucherDetailsServlet error:" + ex.getMessage());
         } finally {

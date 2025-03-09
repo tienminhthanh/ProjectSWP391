@@ -12,33 +12,8 @@
     </head>
     <body class="bg-gray-50 min-h-screen flex">
 
-        <!-- Sidebar -->
-        <div class="w-64 bg-blue-900 text-white min-h-screen">
-            <div class="p-4">
-                <img alt="Company Logo" class="mb-4" height="50" src="https://storage.googleapis.com/a1aa/image/E7a1IopinJdFFD1b8uBNgeve-ZYaN4NirThMMa4AP40.jpg" width="150"/>
-            </div>
-            <nav class="space-y-2">
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-tachometer-alt mr-2"></i>
-                    Dashboard
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800"  href="listAccount">
-                    <i class="fas fa-users mr-2"></i>
-                    Account List
-                </a>
-                <a class="flex items-center p-2 bg-blue-700 text-white hover:bg-blue-800 rounded-lg" href="eventList">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    Event List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-cogs mr-2"></i>
-                    Product List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comments mr-2"></i>
-                    Dialogue List
-                </a>
-            </nav>
+        <div class="w-64 bg-orange-400 text-white min-h-screen">
+            <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <!-- Main Content -->
@@ -47,7 +22,7 @@
                 <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Event List</h1>
                 <hr class="mb-6 border-gray-300"/>
                 <div class="mt-6 flex flex-col items-start"> 
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddNew">
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddEvent">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
                     <c:if test="${not empty errorMessage}">
@@ -59,13 +34,14 @@
 
                 <!-- TABLE -->
                 <div class="overflow-x-auto rounded-lg shadow-md">
-                    <table class="min-w-full bg-white border border-gray-200">
-                        <thead class="bg-blue-600 text-white">
+                    <table class="table-fixed min-w-full bg-white border border-gray-200">
+                        <thead class="bg-orange-400 text-white">
                             <tr>
-                                <th class="px-4 py-3 border border-b">No.</th>
-                                <th class="px-4 py-3 border border-b">Event Name</th>
-                                <th class="px-4 py-3 border border-b">Banner</th>
-                                <th class="px-6 py-3 border border-b">Status</th>
+                                <th class="px-4 py-3 border border-b w-[80px]">No.</th>
+                                <th class="px-4 py-3 border border-b w-[200]">Event Name</th>
+                                <th class="px-4 py-3 border border-b w-[200]">Banner</th>
+                                <th class="px-4 py-3 border border-b w-[200">Desciption</th>
+                                <th class="px-4 py-3 border border-b w-[150]">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,9 +50,11 @@
                                     onclick="navigateToUpdate(${event.eventID})">
                                     <td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>
                                     <td class="px-4 py-3 border border-b text-left">${event.eventName}</td>
-                                    <td class="px-4 py-3 border border-b text-right">${event.dateCreated}</td>
-                                    <td class="px-4 py-3 border border-b text-right">${event.description}</td>
-                                    <td class="px-6 py-3 border border-b text-center">
+                                    <td class="px-4 py-3 border border-b text-center w-48">
+                                        <img src="${event.banner}" alt="Banner" class="w-full h-auto max-h-24 object-contain mx-auto">
+                                    </td>
+                                    <td class="px-4 py-3 border border-b text-left">${event.description}</td>
+                                    <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
                                             <c:when test="${event.isActive}">
                                                 <span class="text-green-700">Available</span>
@@ -96,6 +74,35 @@
                         </tbody>
                     </table>
                 </div>
+                <c:if test="${totalPage> 1}">
+                    <div class="flex justify-center mt-6">
+                        <nav class="flex space-x-2">
+                            <!-- Nút Previous -->
+                            <c:if test="${currentPage> 1}">
+                                <a href="voucherList?page=${currentPage - 1}"
+                                   class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                    &laquo; Previous
+                                </a>
+                            </c:if>
+
+                            <!-- Hiển thị các trang -->
+                            <c:forEach var="i" begin="1" end="${totalPage}">
+                                <a href="voucherList?page=${i}"
+                                   class="px-4 py-2 rounded ${i == currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
+                                    ${i}
+                                </a>
+                            </c:forEach>
+
+                            <!-- Nút Next -->
+                            <c:if test="${currentPage < totalPage}">
+                                <a href="voucherList?page=${currentPage + 1}"
+                                   class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                    Next &raquo;
+                                </a>
+                            </c:if>
+                        </nav>
+                    </div>
+                </c:if>
             </div>
         </main>
 

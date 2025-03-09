@@ -144,10 +144,12 @@
 
                                     <!--Purchase form-->
                                     <div class="purchase-form w-90% md:w-full bg-white mx-auto">
-                                        <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
-                                            <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
-                                            <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
-                                        </div>
+                                        <c:if test="${product.specialFilter != 'pre-order'}">
+                                            <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
+                                                <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
+                                                <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
+                                            </div>
+                                        </c:if>
                                         <c:choose>
                                             <c:when test="${product.specialFilter == 'pre-order'}">
                                                 <form action="preorder" method="post">
@@ -155,13 +157,22 @@
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity"/>
                                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" class="quantity"/>
+                                                    <input type="hidden" name="quantity" value="1"/>
                                                     <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
                                                 </form>
                                             </c:when>
                                             <c:otherwise>
-                                                <form action="cart" method="post">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                <!-- Calculate cart quantity from session -->
+                                                <c:set var="cartQuantity" value="0" />
+                                                <c:forEach var="cartItem" items="${sessionScope.cartItems}">
+                                                    <c:if test="${cartItem.productID == product.productID}">
+                                                        <c:set var="cartQuantity" value="${cartItem.quantity}" />
+                                                    </c:if>
+                                                </c:forEach>
+
+                                                <!-- Add to Cart form with stock check -->
+                                                <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${product.stockCount}, event)">
+                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}">
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity"/>
                                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
@@ -220,8 +231,8 @@
                                                     </td>
                                                 </tr>
 
-                                                <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
-                                                <c:if test="${not empty product.duration}">
+                                                <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
+                                                    <c:if test="${not empty product.duration}">
                                                     <tr><td>Duration</td><td>${product.duration}</td></tr>
                                                 </c:if>
                                                 <c:if test="${not empty ranking}">
@@ -257,8 +268,8 @@
                                                 </tr>
 
 
-                                                <tr><td>Release Date</td><td>${product.releaseDate}</td></tr>
-                                                <c:if test="${not empty ranking}">
+                                                <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
+                                                    <c:if test="${not empty ranking}">
                                                     <tr><td>Ranking</td><td>${ranking}</td></tr>
                                                 </c:if>
                                             </table>
@@ -301,12 +312,34 @@
         <!--Tailwind-->
         <script src="https://cdn.tailwindcss.com">
         </script>
+        
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <script>
-
-//                Get purchase quant on load
+            //Map input quant to purchase quant in forms
             document.addEventListener("DOMContentLoaded", function () {
+                // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
+                if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
+                    document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
+                    const stockOut = document.querySelector('.purchase-form p');
+                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:pr-2', 'bg-gray-100', 'my-16', 'md:mr-4', 'max-w-full');
+                    return;
+                }
+
                 let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
                 let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                if (!hiddenInputs) {
+                    console.log("Hidden quantity not found!");
+                    return;
+                }
+
+                if (!numberValue) {
+                    console.log("Quantity input not found!");
+                    return;
+                }
+
 
                 // Loop through all hidden inputs and update their values
                 hiddenInputs.forEach(function (hiddenInput) {
@@ -316,31 +349,35 @@
                 // Optional: Display the values for verification
                 let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
                 console.log("quantity:", displayValues);
-            });
-
-//                Get purchase quant on input
-            document.getElementById("quantityInput").addEventListener("input", function (event) {
-                const inputElement = document.getElementById("quantityInput");
-                let numberValue = event.target.value; // Get the value from the number input
-                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-
-                if (!numberValue) {
-                    return;
-                }
-                if (numberValue < 1 || numberValue > ${product.stockCount}) {
-                    alert("Purchase quantity must be at least 1 and at most ${product.stockCount}!");
-                    inputElement.value = numberValue = 1;
-                }
 
 
-                // Loop through all hidden inputs and update their values
-                hiddenInputs.forEach(function (hiddenInput) {
-                    hiddenInput.value = numberValue;
+//                Map quant on input
+                document.getElementById("quantityInput").addEventListener("input", function (event) {
+                    const inputElement = document.getElementById("quantityInput");
+                    let numberValue = event.target.value; // Get the value from the number input
+                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                    if (!numberValue) {
+                        return;
+                    }
+                    if (numberValue < 1) {
+                        alert("Purchase quantity must be greater than 0!");
+                        inputElement.value = numberValue = 1;
+                    } else if (numberValue > ${product.stockCount}) {
+                        alert("Purchase quantity cannot exceed ${product.stockCount}!");
+                        inputElement.value = numberValue = 1;
+                    }
+
+
+                    // Loop through all hidden inputs and update their values
+                    hiddenInputs.forEach(function (hiddenInput) {
+                        hiddenInput.value = numberValue;
+                    });
+
+                    // Optional: Display the values for verification
+                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                    console.log("quantity:", displayValues);
                 });
-
-                // Optional: Display the values for verification
-                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                console.log("quantity:", displayValues);
             });
 
 //            Adjust layout based product type
@@ -405,10 +442,16 @@
                 const finalPriceElement = document.querySelector(".final-price");
                 let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
 
+                //Check if the forms are there
+                if (!pricesToSubmit) {
+                    return;
+                }
+
                 if (!finalPriceElement) {
                     alert("Cannot retrieve product price!");
                     return;
                 }
+
 
                 let priceText = finalPriceElement.innerText;
                 let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
@@ -426,21 +469,31 @@
 
             //Format date
             document.addEventListener("DOMContentLoaded", function () {
-                const dateElement = document.querySelector('.fomo-info>span');
-                if (!dateElement) {
-                    console.log("date elements not found!");
+                const fomoDate = document.querySelector('.fomo-info>span');
+                const releaseDate = document.querySelector('.release-date');
+
+                if (!fomoDate) {
+                    console.log("Fomo element not found!");
+                } else {
+                    const fomoText = new Date(fomoDate.innerText);
+                    if (fomoText === null) {
+                        console.log("invalid date format");
+                    }
+                    fomoDate.innerText = fomoText.toLocaleDateString("vi-VN");
+                }
+
+                if (!releaseDate) {
+                    console.log("Date element not found!");
                     return;
                 }
 
-                    const date = new Date(dateElement.innerText);
+                const dateText = new Date(releaseDate.innerText);
+                if (dateText === null) {
+                    console.log("invalid date format");
+                    return;
+                }
 
-                    if (date === null) {
-                        console.log("invalid date format");
-                        return;
-                    }
-
-                    dateElement.innerText = date.toLocaleDateString("vi-VN");
-                    console.log(dateElement.innerText);
+                releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
             });
 
 ////Close sidebar on resize
@@ -450,7 +503,20 @@
 //    sidebar.style.display = 'none';
 //});
 
-
+// Stock check function for Add to Cart
+            function checkStock(cartQuantity, stockCount, event) {
+                let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
+                if (cartQuantity + quantityToAdd > stockCount) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Stock Limit Reached',
+                        text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            }
 
         </script>
     </body>

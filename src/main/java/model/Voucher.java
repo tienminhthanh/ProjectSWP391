@@ -16,8 +16,15 @@ public class Voucher {
     private int duration;
     private int adminID;
     private boolean isActive;
+    private boolean expiry;
+    private String voucherType;
+    private Double maxDiscountAmount;
+    private String dateStarted;
 
-    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive) {
+    public Voucher() {
+    }
+
+    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
         this.voucherID = voucherID;
         this.voucherName = voucherName;
         this.voucherValue = voucherValue;
@@ -26,8 +33,19 @@ public class Voucher {
         this.dateCreated = dateCreated;
         this.duration = duration;
         this.adminID = adminID;
-
         this.isActive = isActive;
+        this.expiry = expiry;
+        this.voucherType = voucherType;
+        this.maxDiscountAmount = maxDiscountAmount;
+        this.dateStarted = dateStarted;
+    }
+
+    public String getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(String dateStarted) {
+        this.dateStarted = dateStarted;
     }
 
     public int getVoucherID() {
@@ -51,7 +69,7 @@ public class Voucher {
         return voucherValue;
     }
 
-    public void setVoucherValue(int voucherValue) {
+    public void setVoucherValue(double voucherValue) {
         this.voucherValue = voucherValue;
     }
 
@@ -105,6 +123,33 @@ public class Voucher {
         this.isActive = isActive;
     }
 
-    public Voucher() {
+    public boolean isExpiry() {
+        return expiry;
     }
+
+    public void setExpiry(boolean expiry) {
+        this.expiry = expiry;
+    }
+
+    public String getVoucherType() {
+        return voucherType;
+    }
+
+    public void setVoucherType(String voucherType) {
+        this.voucherType = voucherType;
+    }
+
+    public Double getMaxDiscountAmount() {
+        return maxDiscountAmount;
+    }
+
+    public void setMaxDiscountAmount(Double maxDiscountAmount) {
+        this.maxDiscountAmount = maxDiscountAmount;
+    }
+
+    @Override
+    public String toString() {
+        return "Voucher{" + "voucherID=" + voucherID + ", voucherName=" + voucherName + ", voucherValue=" + voucherValue + ", quantity=" + quantity + ", minimumPurchaseAmount=" + minimumPurchaseAmount + ", dateCreated=" + dateCreated + ", duration=" + duration + ", adminID=" + adminID + ", isActive=" + isActive + ", expiry=" + expiry + ", voucherType=" + voucherType + ", maxDiscountAmount=" + maxDiscountAmount + ", dateStarted=" + dateStarted + '}';
+    }
+
 }
