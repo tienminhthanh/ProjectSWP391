@@ -225,6 +225,29 @@
         </div>
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
+        <!-- Nút mở chat -->
+        <button id="openChat">💬 Chat với AI</button>
+
+        <!-- Hộp chat (ban đầu ẩn) -->
+        <div id="chatPopup" style="display: none;">
+            <div id="chatHeader">
+              
+                <span id="closeChat" style="cursor: pointer; float: right;">❌</span>
+            </div>
+            <jsp:include page="chatAI.jsp"/>
+        </div>
+
+        <!-- Script xử lý bật/tắt hộp chat -->
+        <script>
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").style.display = "block";
+            });
+
+            document.getElementById("closeChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").style.display = "none";
+            });
+        </script>
+
 
         <script>
             document.getElementById("chatbot-icon").addEventListener("click", function () {

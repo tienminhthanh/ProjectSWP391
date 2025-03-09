@@ -362,11 +362,11 @@ public class OrderDAO {
                 account.setBirthDate(rs.getString("birthDate"));
 
                 Shipper shipper = new Shipper();
-                shipper.setShipperID(rs.getInt("shipperID"));
+               // shipper.setShipperID(rs.getInt("shipperID"));
                 shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                 shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
 
-                shipper.setAccount(account);
+              //  shipper.setAccount(account);
 
                 shipperList.add(shipper);
             }

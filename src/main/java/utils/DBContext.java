@@ -30,7 +30,7 @@
             try {
                 String url = "jdbc:sqlserver://localhost:1433;databaseName=WIBOOKS";
                 String username = "sa";
-                String password = " 123456";
+                String password = "123456";
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 conn = DriverManager.getConnection(url, username, password);
             } catch (ClassNotFoundException | SQLException e) {
