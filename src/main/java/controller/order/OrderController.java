@@ -13,13 +13,19 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+
 import java.sql.SQLException;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.CartItem;
+import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
 import model.Product;
@@ -67,15 +73,28 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
+        Map<Integer, Double> computedValues = new HashMap<>();
+        List<Double> computedValuesList = new ArrayList<>();
+        int bestVoucherID = 0;
+        List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
 
         if ("checkOut".equals(action)) {
-            List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
-            if (cartItems == null || cartItems.isEmpty()) {
-                response.sendRedirect("home");
-                return;
+
+//            if (cartItems == null || cartItems.isEmpty()) {
+//                response.sendRedirect("home");
+//                return;
+//            }
+            double subtotal = 0;
+
+            List<DeliveryOption> deliveryOptions = new ArrayList<>();
+
+            try {
+                OrderDAO OrderDAO = new OrderDAO();
+                deliveryOptions = OrderDAO.getAllDeliveryOptions();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
-            double subtotal = 0;
             for (CartItem item : cartItems) {
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 item.setPriceWithQuantity(priceWithQuantity);
@@ -86,13 +105,39 @@ public class OrderController extends HttpServlet {
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             List<Voucher> validVouchers = new ArrayList<>();
-
+            double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
                 if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
                     validVouchers.add(voucher);
+                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                        valueOfVoucher = voucher.getVoucherValue();
+                    } else {
+                        valueOfVoucher = (subtotal * voucher.getVoucherValue()) / 100;
+                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                            valueOfVoucher = voucher.getMaxDiscountAmount();
+                        }
+                    }
+                    computedValues.put(voucher.getVoucherID(), valueOfVoucher); // 
+                    computedValuesList.add(valueOfVoucher);
+                }
+            }
+            double bestValueVoucher = 0;
+
+            for (int i = 0; i < computedValuesList.size(); i++) {
+                double value = computedValuesList.get(i);
+                if (bestValueVoucher <= value) {
+                    bestValueVoucher = value;
                 }
             }
 
+            for (Map.Entry<Integer, Double> entry : computedValues.entrySet()) {
+                if (entry.getValue().equals(bestValueVoucher)) {
+                    bestVoucherID = entry.getKey();
+                    break;
+                }
+            }
+
+            request.setAttribute("bestVoucherID", bestVoucherID);
             request.setAttribute("listVoucher", validVouchers);
             Account account = (Account) session.getAttribute("account");
             if (account != null) {
@@ -100,11 +145,13 @@ public class OrderController extends HttpServlet {
                 request.setAttribute("phone", account.getPhoneNumber());
                 request.setAttribute("email", account.getEmail());
             }
-
             request.setAttribute("cartItems", cartItems);
+            request.setAttribute("deliveryOptions", deliveryOptions);
+            request.setAttribute("computedValues", computedValues);
             request.setAttribute("priceWithQuantity", subtotal);
         } else if ("buyNow".equals(action)) {
-            List<CartItem> cartItems = new ArrayList<>();
+
+            cartItems = new ArrayList<>();
 
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
@@ -127,25 +174,59 @@ public class OrderController extends HttpServlet {
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
+            List<DeliveryOption> deliveryOptions = new ArrayList<>();
 
-            int sum = (int) (product.getPrice() * quantity);
+            try {
+                OrderDAO OrderDAO = new OrderDAO();
+                deliveryOptions = OrderDAO.getAllDeliveryOptions();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            Double sum = (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             List<Voucher> validVouchers = new ArrayList<>();
-
+            double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
                 if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
                     validVouchers.add(voucher);
+                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                        valueOfVoucher = voucher.getVoucherValue();
+                    } else {
+                        valueOfVoucher = (sum * voucher.getVoucherValue()) / 100;
+                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                            valueOfVoucher = voucher.getMaxDiscountAmount();
+                        }
+                    }
+                    computedValues.put(voucher.getVoucherID(), valueOfVoucher); // 
+                    computedValuesList.add(valueOfVoucher);
+                }
+            }
+            double bestValueVoucher = 0;
+
+            for (int i = 0; i < computedValuesList.size(); i++) {
+                double value = computedValuesList.get(i);
+                if (bestValueVoucher <= value) {
+                    bestValueVoucher = value;
                 }
             }
 
+            for (Map.Entry<Integer, Double> entry : computedValues.entrySet()) {
+                if (entry.getValue().equals(bestValueVoucher)) {
+                    bestVoucherID = entry.getKey();
+                    break;
+                }
+            }
+            request.setAttribute("bestVoucherID", bestVoucherID);
+            request.setAttribute("computedValues", computedValues);
             request.setAttribute("listVoucher", validVouchers);
-
             cartItems.add(new CartItem(account.getAccountID(), product, quantity, subtotal));
             request.setAttribute("cartItems", cartItems);
-            request.setAttribute("priceWithQuantity", subtotal);
             session.setAttribute("cartItems", cartItems);
+            request.setAttribute("priceWithQuantity", subtotal);
+            request.setAttribute("deliveryOptions", deliveryOptions);
+
         }
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("OrderSummaryView.jsp");
@@ -164,6 +245,8 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
+        DeliveryOption delivery = new DeliveryOption();
+        int estimatedTime = 0;
         if (cartItems == null) {
             cartItems = new ArrayList<>();
         }
@@ -174,18 +257,30 @@ public class OrderController extends HttpServlet {
             return;
         }
 
-        int subtotal = 0;
-        int preOrderPrice = 0;
+        Double subtotal = 0.0;
+        Double preOrderPrice = 0.0;
         for (CartItem item : cartItems) {
             subtotal += item.getPriceWithQuantity().doubleValue();
             preOrderPrice = subtotal;
 
         }
+        OrderDAO orderDAO = new OrderDAO();
+        String deliveryOptionID = request.getParameter("shippingOption");
 
-        if ("1".equals(request.getParameter("shippingOption"))) {
-            subtotal += 50000;
-        } else {
-            subtotal += 30000;
+        if (deliveryOptionID != null) {
+            try {
+                int ID = Integer.parseInt(deliveryOptionID);
+                delivery = orderDAO.getDeliveryOption(ID);
+
+                if (delivery != null && delivery.getDeliveryOptionID() == ID) {
+                    subtotal += delivery.getOptionCost(); // Cộng phí giao hàng vào tổng tiền
+
+                } else {
+                    System.out.println("Không tìm thấy phương thức giao hàng với ID: " + ID);
+                }
+            } catch (SQLException | NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
         String voucherIDParam = request.getParameter("voucherID");
@@ -194,7 +289,7 @@ public class OrderController extends HttpServlet {
 
         Integer voucherID = null; // Mặc định là null nếu không chọn voucher
 
-        if (tempVoucherID >0 && !voucherIDParam.trim().isEmpty()) {
+        if (tempVoucherID > 0 && !voucherIDParam.trim().isEmpty()) {
             try {
 
                 Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
@@ -220,14 +315,13 @@ public class OrderController extends HttpServlet {
             orderInfo.setPreVoucherAmount(subtotal);
             orderInfo.setVoucherID(voucherID);
 
-            List<OrderProduct> orderProductList = new ArrayList<>();
+            List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
                 OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);
 
-            OrderDAO orderDAO = new OrderDAO();
             orderDAO.insertOrderInfo(orderInfo);
             session.removeAttribute("cartItems");
             response.sendRedirect("OrderListController");

@@ -226,8 +226,39 @@
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
+        <script>
+            document.getElementById("chatbot-icon").addEventListener("click", function () {
+                document.getElementById("chatbot-window").classList.toggle("hidden");
+            });
 
+            document.getElementById("close-chatbot").addEventListener("click", function () {
+                document.getElementById("chatbot-window").classList.add("hidden");
+            });
 
+            document.getElementById("send-btn").addEventListener("click", function () {
+                const userMessage = document.getElementById("chat-input").value.trim();
+                if (userMessage === "")
+                    return;
+
+                const chatBox = document.getElementById("chat-box");
+                chatBox.innerHTML += `<p class="text-right text-blue-500 font-semibold">Bạn: ${userMessage}</p>`;
+
+                fetch("chat", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: "userMessage=" + encodeURIComponent(userMessage)
+                })
+                        .then(response => response.json())
+                        .then(data => {
+                            chatBox.innerHTML += `<p class="text-left text-gray-700 font-semibold">ChatGPT: ${data.response}</p>`;
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        });
+
+                document.getElementById("chat-input").value = "";
+            });
+        </script>
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
         <!--Header script-->
         <script src="js/scriptHeader.js"></script>
@@ -271,6 +302,8 @@
                 const bannerImg = document.getElementById("banner-img");
                 const bannerLink = document.getElementById("banner-link");
                 const dotsContainer = document.getElementById("dots-container");
+                const prev_btn = document.getElementById("prev-btn");
+                const next_btn = document.getElementById("next-btn");
 
                 function updateBanner() {
                     bannerImg.src = banners[current].img;
@@ -299,10 +332,14 @@
                     updateBanner();
                 }
 
-                document.getElementById("prev-btn").addEventListener("click", prev);
-                document.getElementById("next-btn").addEventListener("click", next);
+                if (prev_btn)
+                    prev_btn.addEventListener("click", prev);
+                if (next_btn)
+                    next_btn.addEventListener("click", next);
 
+                // Chỉ gọi setInterval một lần duy nhất
                 setInterval(next, 3000);
+
                 updateBanner();
             });
 

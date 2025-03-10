@@ -32,9 +32,18 @@ document.addEventListener("DOMContentLoaded", function () {
         updateBanner();
     }
 
-    document.getElementById("prev-btn").addEventListener("click", prev);
-    document.getElementById("next-btn").addEventListener("click", next);
-    setInterval(next, 3000);
+    const prev_btn = document.getElementById("prev-btn");
+    if (prev_btn !== null) {
+        prev_btn.addEventListener("click", prev);
+
+        setInterval(next, 3000);
+    }
+    const next_btn = document.getElementById("next-btn");
+    if (next_btn !== null) {
+        next_btn.addEventListener("click", next);
+
+        setInterval(next, 3000);
+    }
 
     updateBanner();
 });

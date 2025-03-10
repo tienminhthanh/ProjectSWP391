@@ -93,9 +93,4 @@ public class CartItemDAO {
         cartItem.setProduct(product);
         return cartItem;
     }
-
-    public static void main(String[] args) throws SQLException {
-        CartItemDAO ci = new CartItemDAO();
-        System.out.println(ci.getCartItemByCustomerAndProduct(2, 18));
-    }
 }

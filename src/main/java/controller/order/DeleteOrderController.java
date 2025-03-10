@@ -85,7 +85,7 @@ public class DeleteOrderController extends HttpServlet {
                     System.out.println(id);
            
             orderDAO.restoreProductStockByOrderID(id);
-            orderDAO.deleteOrderProductByOrderID(id);
+//            orderDAO.deleteOrderProductByOrderID(id);
              orderDAO.cancelOrderByOrderID(id);
             
        

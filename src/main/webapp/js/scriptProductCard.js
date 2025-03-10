@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
     priceElements.forEach(priceEl => {
         let priceText = priceEl.innerText.trim(); // Get the text inside span
         let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-        console.log("formatted price: ", price);
 
         if (!isNaN(price)) {
             // Format price with commas (e.g., 4,400 VND)
@@ -32,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         dateEl.innerText = date.toLocaleDateString("vi-VN");
-        console.log(dateEl.innerText);
     });
 
 });
@@ -63,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         pricesToSubmit[i].value = priceNumber;
-        console.log('Price is', pricesToSubmit[i].value);
     }
 
 

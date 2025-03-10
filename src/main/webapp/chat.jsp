@@ -1,92 +1,200 @@
-<%-- chat.jsp --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Chat</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <style>
+            .chat-container {
+                width: 45%;
+                height: 80%;
+                position: fixed;
+                bottom: 10px;
+                right: 10px;
+                display: none;
+                background: white;
+                box-shadow: -2px -2px 15px rgba(0,0,0,0.1);
+                border-radius: 10px 10px 0 0;
+                z-index: 1000;
+            }
+            .chat-container.show {
+                display: flex;
+            }
+            .chat-container h2 {
+                text-align: center;
+                display: block;
+                margin: 0 auto;
+                width: 100%;
+            }
 
-<style>
-    .chat-button{
-        z-index: 10;
-    }
-    .chat-container {
-        width: 65%;
-        height: 70%;
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        display: none;
-        background: white;
-        box-shadow: -2px -2px 15px rgba(0,0,0,0.1);
-        border-radius: 10px 10px 0 0;
-        z-index: 1000;
-    }
+            .chat-input {
+                width: 100%;
+                padding: 10px;
+                border-top: 1px solid #eee;
+            }
+            .chat-container {
+                border-radius: 12px; /* Bo góc 12px */
+                overflow: hidden; /* Đảm bảo nội dung bên trong không bị tràn */
+            }
 
-    .chat-container.show {
-        display: flex;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .chat-container {
-            width: 100%;
-            height: 90%;
-        }
-    }
-</style>
-<!-- Chat Button -->
-<div class="fixed bottom-4 right-4 chat-button">
-    <button id="chatButton" class="bg-yellow-500 text-white p-2 rounded-full shadow-lg">
-        <i class="fas fa-comments"></i>
-        <span class="ml-1">Chat</span>
-    </button>
-</div>
-
-<!-- Chat Container -->
-<div id="chatContainer" class="chat-container">
-    <!-- Chat Sidebar -->
-    <div class="w-1/4 bg-white border-r p-4 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold">Chat</h2>
-            <button id="closeChat" class="text-red-500 text-xl hover:text-red-700">&times;</button>
+            @media (max-width: 768px) {
+                .chat-container {
+                    width: 100%;
+                    height: 90%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="fixed bottom-4 right-4">
+            <button id="chatButton" class="bg-yellow-500 text-white p-2 rounded-full shadow-lg">
+                <i class="fas fa-comments"></i>
+                <span class="ml-1">Chat</span>
+            </button>
         </div>
 
-        <div class="mb-4">
-            <input type="text" placeholder="Tìm theo tên..." class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
+        <div id="chatContainer" class="chat-container flex flex-col">
+            <div class="bg-blue-500 p-1 border-b flex justify-between items-center">
+                <h2 class="text-white font-bold">Chat with WiBook</h2>
+                <button id="closeChat" class="text-red-500 text-xl hover:text-red-700">×</button>
+            </div>
 
-        <!-- Chat List -->
-        <div class="flex-1 overflow-y-auto">
-            <c:forEach var="chat" items="${chats}">
-                <div class="p-3 flex items-center hover:bg-gray-50 cursor-pointer border-b">
-                    <img src="${chat.image}" alt="${chat.name}" class="w-10 h-10 rounded-full object-cover mr-3">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold truncate">${chat.name}</span>
-                            <span class="text-xs text-gray-500">${chat.date}</span>
-                        </div>
-                        <p class="text-sm text-gray-600 truncate">${chat.message}</p>
-                    </div>
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto bg-gray-100">
+                <c:choose>
+                    <c:when test="${empty chats}">
+                        <p class="text-center text-gray-500">No messages yet.</p>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="chat" items="${chats}">
+                            <div class="mb-4 ${chat.senderID == sessionScope.account.accountID ? 'text-right' : 'text-left'}">
+                                <div class="inline-block p-3 rounded-lg ${chat.senderID == sessionScope.account.accountID ? 'bg-blue-500 text-white text-left' : 'bg-white'}">
+                                    <p>${chat.messageContent}</p>
+                                    <span class="text-xs">
+                                        <fmt:formatDate value="${chat.sentAt}" pattern="dd/MM HH:mm"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <div class="chat-input">
+                <div class="flex">
+                    <input type="text" id="messageContent" class="flex-1 p-2 border rounded-l-lg" 
+                           placeholder="Enter message..." required>
+                    <button id="sendMessage" class="bg-blue-500 text-white p-2 rounded-r-lg">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
-            </c:forEach>
+            </div>
         </div>
-    </div>
 
-    <!-- Chat Main Content -->
-    <div class="flex-1 flex flex-col items-center justify-center bg-gray-100 p-4">
-        <div class="text-center max-w-md">
-            <img src="https://placehold.co/150x150" alt="Chat illustration" class="mx-auto mb-6 w-32 h-32">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Chào mừng bạn đến với Chat</h3>
-            <p class="text-gray-600">Chọn một cuộc trò chuyện để bắt đầu</p>
-        </div>
-    </div>
-</div>
+        <script>
+            const contextPath = '<%= request.getContextPath()%>';
 
-<script>
-    // Chat toggle logic
-    document.getElementById('chatButton').addEventListener('click', () => {
-        document.getElementById('chatContainer').classList.toggle('show');
-    });
+            // Open/close chat when clicking the chat button
+            document.getElementById('chatButton').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('chatContainer').classList.toggle('show');
+                loadMessages();
+            });
 
-    document.getElementById('closeChat').addEventListener('click', () => {
-        document.getElementById('chatContainer').classList.remove('show');
-    });
-</script>
+            // Close chat when clicking the close button
+            document.getElementById('closeChat').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('chatContainer').classList.remove('show');
+            });
+
+            // Send message when clicking the send button
+            document.getElementById('sendMessage').addEventListener('click', function (e) {
+                e.preventDefault();
+                sendMessage();
+            });
+
+            // Send message when pressing Enter
+            document.getElementById('messageContent').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Close chat when clicking outside
+            document.addEventListener('click', (e) => {
+                const chatContainer = document.getElementById('chatContainer');
+                const chatButton = document.getElementById('chatButton');
+                if (!chatContainer.contains(e.target) && e.target !== chatButton && chatContainer.classList.contains('show')) {
+                    chatContainer.classList.remove('show');
+                }
+            });
+
+            // Function to send message
+            function sendMessage() {
+                const messageContent = document.getElementById('messageContent').value.trim();
+                if (!messageContent) {
+                    alert('Please enter a message!');
+                    return;
+                }
+
+                const data = new URLSearchParams();
+                data.append('messageContent', messageContent);
+
+                fetch(`${contextPath}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: data
+                })
+                        .then(response => {
+                            if (!response.ok)
+                                throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('messageContent').value = '';
+                                loadMessages();
+                            } else {
+                                alert(data.message || 'Unable to send message!');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while sending the message!');
+                        });
+            }
+
+            // Function to scroll to the last message
+            function scrollToBottom() {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+
+            // Function to load messages and scroll to the bottom
+            function loadMessages() {
+                fetch(`${contextPath}/chat`, {
+                    method: 'GET'
+                })
+                        .then(response => response.text())
+                        .then(data => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(data, 'text/html');
+                            const newMessages = doc.querySelector('#chatMessages');
+                            if (newMessages) {
+                                document.getElementById('chatMessages').innerHTML = newMessages.innerHTML;
+                                scrollToBottom();
+                            }
+                        })
+                        .catch(error => console.error('Error loading messages:', error));
+            }
+        </script>
+    </body>
+</html>
