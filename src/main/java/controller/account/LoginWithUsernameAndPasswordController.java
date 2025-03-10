@@ -104,7 +104,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 response.sendRedirect(currentURL);
                                 break;
                             case "staff":
-                                session.setAttribute("account", accountDAO.getAdditionalInfo(account));
+                                session.setAttribute("account",account);
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
