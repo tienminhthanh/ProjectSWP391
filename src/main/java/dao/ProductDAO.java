@@ -364,7 +364,7 @@ public class ProductDAO {
             case "priceHighToLow":
                 return "P.price DESC";
             case "rating":
-                return "P.averageRating DESC";
+                return "P.averageRating DESC, P.numberOfRating DESC";
             case "releaseDate":
             default:
                 return "P.releaseDate DESC";
