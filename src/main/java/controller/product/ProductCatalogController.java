@@ -4,9 +4,7 @@
  */
 package controller.product;
 
-import dao.CartItemDAO;
-import dao.ProductDAO;
-import dao.VoucherDAO;
+import dao.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -50,6 +48,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private ProductDAO productDAO;
     private VoucherDAO vDao;
+    private EventDAO eDao;
 
     @Override
     public void init() throws ServletException {
@@ -904,6 +903,15 @@ public class ProductCatalogController extends HttpServlet {
         session.setAttribute("holoMerchHome", holoMerchHome);
 
     }
+    
+//    private void showBannerInHomepage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        List<String> bannerList = eDao.getBannerEvent();
+//
+//        if (bannerList.isEmpty()) {
+//            throw new Exception("Found no products in the catalog!");
+//        }
+//        request.setAttribute("bannerList", bannerList);
+//    }
 
     private void showVouchersInHomepage(HttpServletRequest request) throws Exception {
 

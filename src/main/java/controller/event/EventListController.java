@@ -20,7 +20,7 @@ import model.Event;
  * @author ADMIN
  */
 @WebServlet(name = "EventListServlet", urlPatterns = {"/eventList"})
-public class EventListServlet extends HttpServlet {
+public class EventListController extends HttpServlet {
 
     private final String EVENT_LIST_PAGE = "eventList.jsp";
 

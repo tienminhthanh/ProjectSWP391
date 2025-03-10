@@ -504,6 +504,8 @@
                 const bannerImg = document.getElementById("banner-img");
                 const bannerLink = document.getElementById("banner-link");
                 const dotsContainer = document.getElementById("dots-container");
+                const prev_btn = document.getElementById("prev-btn");
+                const next_btn = document.getElementById("next-btn");
 
                 function updateBanner() {
                     bannerImg.src = banners[current].img;
@@ -532,18 +534,13 @@
                     updateBanner();
                 }
 
-                const prev_btn = document.getElementById("prev-btn");
-                if (prev_btn !== null) {
+                if (prev_btn)
                     prev_btn.addEventListener("click", prev);
-
-                    setInterval(next, 3000);
-                }
-                const next_btn = document.getElementById("next-btn");
-                if (next_btn !== null) {
+                if (next_btn)
                     next_btn.addEventListener("click", next);
 
-                    setInterval(next, 3000);
-                }
+                // Chỉ gọi setInterval một lần duy nhất
+                setInterval(next, 3000);
 
                 updateBanner();
             });

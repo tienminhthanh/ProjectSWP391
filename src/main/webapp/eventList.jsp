@@ -40,7 +40,8 @@
                                 <th class="px-4 py-3 border border-b w-[80px]">No.</th>
                                 <th class="px-4 py-3 border border-b w-[200]">Event Name</th>
                                 <th class="px-4 py-3 border border-b w-[200]">Banner</th>
-                                <th class="px-4 py-3 border border-b w-[200">Desciption</th>
+                                <th class="px-4 py-3 border border-b w-[200">Description</th>
+                                <th class="px-4 py-3 border border-b w-[150]">Expiry</th>
                                 <th class="px-4 py-3 border border-b w-[150]">Status</th>
                             </tr>
                         </thead>
@@ -56,11 +57,28 @@
                                     <td class="px-4 py-3 border border-b text-left">${event.description}</td>
                                     <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
-                                            <c:when test="${event.isActive}">
+                                            <c:when test="${event.expiry}">
                                                 <span class="text-green-700">Available</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-red-700">Expired</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td class="px-2 py-3 border border-b text-center">
+                                        <c:choose>
+                                            <c:when test="${event.expiry}">
+                                                <c:choose>
+                                                    <c:when test="${event.isActive}">
+                                                        <span class="text-green-600">Active</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-red-600">Deactivate</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-red-600">Deactivate</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
