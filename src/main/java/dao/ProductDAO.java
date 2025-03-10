@@ -577,7 +577,7 @@ public class ProductDAO {
                         rs.getString("generalCategory"),
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
-                        rs.getInt("discountPercentage"),
+                        LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage"),
                         eventEndDate);
             case "merch":
                 Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
@@ -600,7 +600,7 @@ public class ProductDAO {
                         rs.getString("generalCategory"),
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
-                        rs.getInt("discountPercentage"),
+                        LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage"),
                         eventEndDate);
 
             default:
@@ -620,7 +620,7 @@ public class ProductDAO {
                         rs.getString("generalCategory"),
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
-                        rs.getInt("discountPercentage"),
+                        LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage"),
                         eventEndDate);
         }
 
