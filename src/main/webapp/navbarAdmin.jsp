@@ -23,6 +23,10 @@
 </div>
 <nav class="space-y-2">
     <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() == 'admin'}">
+        <a class="flex items-center p-2 hover:bg-orange-800" href="readAccount">
+            <i class="fas fa-user-circle mr-2"></i> 
+            My information
+        </a>
 
         <a class="flex items-center p-2 hover:bg-orange-800" href="#">
             <i class="fas fa-tachometer-alt mr-2"></i>
@@ -62,7 +66,7 @@
         <i class="fas fa-box mr-2"></i>
         Order List
     </a>
-     <a class="flex items-center p-2 hover:bg-orange-800" href="listnotification">
+    <a class="flex items-center p-2 hover:bg-orange-800" href="#">
         <i class="fas fa-bell mr-2"></i>
         Notification List
     </a>
