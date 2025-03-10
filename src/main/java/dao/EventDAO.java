@@ -178,7 +178,7 @@ public class EventDAO {
 //        String currentEvent = "/img/banner_event/voucher1.jpg";
 //        Event en = e.getEventByBanner(currentEvent);
 //        System.out.println(en.getDescription());
-        Event u = new Event(4, "nme", "1191-9-9", 0, "123", "sa", 1, true, "2-2-1212", true);
+        Event u = new Event(4, "kkkkk", "1191-9-9", 0, "123", "kkkk", 1, true, "2-2-1212", true);
         if (e.updateEvent(u)) {
             System.out.println("true");
         } else {

@@ -5,43 +5,43 @@
 
 
 function openMobileMenu() {
-    const mobileMenu = document.getElementById('cus-sidebar');
-    const overlay = document.getElementById('cus-sidebar-overlay');
-    mobileMenu.style.display = 'block';
-    overlay.style.display = 'block';
-}
+const mobileMenu = document.getElementById('cus-sidebar');
+        const overlay = document.getElementById('cus-sidebar-overlay');
+        mobileMenu.style.display = 'block';
+        overlay.style.display = 'block';
+        }
 
 function closeMobileMenu() {
-    const mobileMenu = document.getElementById('cus-sidebar');
-    const overlay = document.getElementById('cus-sidebar-overlay');
-    mobileMenu.style.display = 'none';
-    overlay.style.display = 'none';
-}
+const mobileMenu = document.getElementById('cus-sidebar');
+        const overlay = document.getElementById('cus-sidebar-overlay');
+        mobileMenu.style.display = 'none';
+        overlay.style.display = 'none';
+        }
 
 
 
 function updateHrefOnHover(anchorElement) {
 
-    //    Paths to productCatalog, ensure the function only applies to productCatalog
-    const paths = ["/search", "/category", "/genre", "/publisher", "/creator",
+//    Paths to productCatalog, ensure the function only applies to productCatalog
+const paths = ["/search", "/category", "/genre", "/publisher", "/creator",
         "/series", "/brand", "/character", "/new", "/sale"];
-    const url = new URL(window.location.href);
-    const pathname = url.pathname.replace(/\/$/, ""); // Remove trailing slash if any
-    if (!paths.includes(pathname)) {
-        return;
-    }
-    
-    const params = new URLSearchParams(url.search);
-    try {
+        const url = new URL(window.location.href);
+        const pathname = url.pathname.replace(/\/$/, ""); // Remove trailing slash if any
+        if (!paths.includes(pathname)) {
+return;
+}
+
+const params = new URLSearchParams(url.search);
+        try {
         // Get filter from data-filter attribute
         const filter = anchorElement.dataset.filter;
-        if (!filter) {
-            throw new Error("No filter found in data-filter attribute");
+                if (!filter) {
+        throw new Error("No filter found in data-filter attribute");
         }
 
         const filterParts = filter.split('-');
-        if (filterParts.length !== 2) {
-            throw new Error("Invalid filter format: " + filter);
+                if (filterParts.length !== 2) {
+        throw new Error("Invalid filter format: " + filter);
         }
 
         const filterName = decodeURIComponent(filterParts[0]);
@@ -78,16 +78,16 @@ function updateHrefOnHover(anchorElement) {
         }
 
         if (filterList.length > 0) {
-            params.set(filterName, filterList.join(','));
+        params.set(filterName, filterList.join(','));
         } else {
-            params.delete(filterName);
+        params.delete(filterName);
         }
 
         url.search = params.toString();
-        anchorElement.href = url.toString();
-    } catch (error) {
-        console.error("Error in somefunc:", error.message);
-    }
+                anchorElement.href = url.toString();
+        } catch (error) {
+console.error("Error in somefunc:", error.message);
+}
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -123,25 +123,53 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("toggleBtnCha")?.addEventListener("click", () => toggleShowAllLess("chaList"));
     
 
-    //    Paths to productCatalog, ensure the function only applies to productCatalog
-    const paths = ["/search", "/category", "/genre", "/publisher", "/creator",
-        "/series", "/brand", "/character", "/new", "/sale"];
-    const url = new URL(window.location.href);
-    const pathname = url.pathname.replace(/\/$/, ""); // Remove trailing slash if any
-    if (!paths.includes(pathname)) {
-        return;
-    }
+//Toggle for popular searches section
+const labels = document.querySelectorAll(".pop-label");
+        if (labels) {
 
-    //Display the price range filter in product catalog only
-    document.querySelector('.ft-price-range-area').classList.remove("hidden");
-    const params = new URLSearchParams(url.search);
-    
-    //Display the prices on reload
-    //Display the "X" icon to deselect the filter
-    const minPrice = document.querySelector('#ftprc-min');
-    const maxPrice = document.querySelector('#ftprc-max');
-    if (params.has("ftPrc")) {
-        const closeLink = document.querySelector('#remove-ftprc-link');
+labels.forEach(label => {
+label.addEventListener("click", function () {
+const links = this.nextElementSibling;
+        if (links) {
+links.classList.toggle("hidden");
+}
+});
+});
+}
+
+
+//    Toggle ShowAll
+function toggleShowAllLess(listSelector) {
+let hiddenItems = document.querySelectorAll(`#${listSelector} li:nth-child(n+4)`);
+        let isExpanded = hiddenItems[0]?.classList.contains("hidden") === false;
+        hiddenItems.forEach(item => item.classList.toggle("hidden"));
+        event.currentTarget.textContent = isExpanded ? "Show All" : "Show Less";
+}
+document.getElementById("toggleBtnCat")?.addEventListener("click", () => toggleShowAllLess("catList"));
+        document.getElementById("toggleBtnCre")?.addEventListener("click", () => toggleShowAllLess("creList"));
+        document.getElementById("toggleBtnGen")?.addEventListener("click", () => toggleShowAllLess("genList"));
+        document.getElementById("toggleBtnPub")?.addEventListener("click", () => toggleShowAllLess("pubList"));
+        document.getElementById("toggleBtnSer")?.addEventListener("click", () => toggleShowAllLess("serList"));
+        document.getElementById("toggleBtnBra")?.addEventListener("click", () => toggleShowAllLess("braList"));
+        document.getElementById("toggleBtnCha")?.addEventListener("click", () => toggleShowAllLess("chaList"));
+        //    Paths to productCatalog, ensure the function only applies to productCatalog
+        const paths = ["/search", "/category", "/genre", "/publisher", "/creator",
+                "/series", "/brand", "/character", "/new", "/sale"];
+        const url = new URL(window.location.href);
+        const pathname = url.pathname.replace(/\/$/, ""); // Remove trailing slash if any
+        if (!paths.includes(pathname)) {
+return;
+}
+
+//Display the price range filter in product catalog only
+document.querySelector('.ft-price-range-area').classList.remove("hidden");
+        const params = new URLSearchParams(url.search);
+        //Display the prices on reload
+        //Display the "X" icon to deselect the filter
+        const minPrice = document.querySelector('#ftprc-min');
+        const maxPrice = document.querySelector('#ftprc-max');
+        if (params.has("ftPrc")) {
+const closeLink = document.querySelector('#remove-ftprc-link');
         const priceValues = params.getAll("ftPrc");
         const formContainer = document.querySelector(".form-ftprc-container");
         console.log("Deselect", priceValues);
@@ -152,19 +180,18 @@ document.addEventListener("DOMContentLoaded", function () {
         params.delete("ftPrc");
         url.search = params.toString();
         closeLink.href = url.toString();
-    }
-    
+}
 
     // Loop through existing params and create hidden inputs
     //Append hidden inputs to price range form
     const hiddenInputsContainerSide = document.querySelector(".hidden-input-ftprice");
     params.forEach((value, key) => {
         if (key !== "ftPrc") {  // Exclude inputs already in the form
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = value;
-            hiddenInputsContainerSide.appendChild(input);
+        const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = value;
+                hiddenInputsContainerSide.appendChild(input);
         }
 
     });
@@ -183,39 +210,14 @@ document.addEventListener("DOMContentLoaded", function () {
             max = tempVal;
         }
         minPriceOnSubmit.value = min;
-        maxPriceOnSubmit.value = max;
-        form.submit();
-    });
-    
-    
-    //Move selected filter to top of the list
-    function moveSelectedToTop(filterName, listSelector) {
-        if (!params.has(filterName)) {
-            return;
-        }
-        
-        
-        const list = document.querySelector(listSelector);
-        if (!list) {
-            console.warn("Filter Group not found!");
-            return;
-        }
-        
-        const selectedValues = params.get(filterName).split(",");
-        const items = Array.from(list.querySelectorAll("li"));
-
-        // Find selected item by compare its data-filter with filterName and filterValue
-        selectedValues.forEach(value => {
-            const selectedItem = items.find(item => 
-                item.querySelector("a")?.getAttribute("data-filter") === `${filterName}-${value}`
-            );
-            
-            //If found and not on top -> Move to top
-            if (selectedItem && list.firstChild !== selectedItem) {
-                list.insertBefore(selectedItem, list.firstChild);
-                selectedItem.classList.remove("hidden"); // Ensure it's visible
-            }
+                maxPriceOnSubmit.value = max;
+                form.submit();
         });
+        //Move selected filter to top of the list
+                function moveSelectedToTop(filterName, listSelector) {
+                if (!params.has(filterName)) {
+                return;
+                }
 
         // Update visibility of remaining items
         const allItems = Array.from(list.querySelectorAll("li"));
@@ -235,34 +237,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 item.querySelector("a")?.getAttribute("data-filter") === `${filterName}-${val}`
             )) {
                 item.classList.add("hidden");
-            }
-        });
-    }
-    moveSelectedToTop("ftGnr", "#genList");
-    moveSelectedToTop("ftCrt", "#creList");
-    moveSelectedToTop("ftCtg", "#catList");
-    moveSelectedToTop("ftPbl", "#pubList");
-    moveSelectedToTop("ftBrn", "#braList");
-    moveSelectedToTop("ftSrs", "#serList");
-    moveSelectedToTop("ftChr", "#chaList");
-    
-    
-    
-    //Update display of selected filter
-    function updateFilterAppearance(filterName, listID) {
-        
-    if (!params.has(filterName)) {
-        return;
-        
-    }
-    
-    const list = document.querySelector(`#${listID}`);
-    if (!list) {
-        console.warn("Filter Group not found!");
-        return;
-    }
-    
-    const values = params.get(filterName).split(",");
+                }
+                });
+                }
+        moveSelectedToTop("ftGnr", "#genList");
+                moveSelectedToTop("ftCrt", "#creList");
+                moveSelectedToTop("ftCtg", "#catList");
+                moveSelectedToTop("ftPbl", "#pubList");
+                moveSelectedToTop("ftBrn", "#braList");
+                moveSelectedToTop("ftSrs", "#serList");
+                moveSelectedToTop("ftChr", "#chaList");
+                //Update display of selected filter
+                        function updateFilterAppearance(filterName, listID) {
 
     values.forEach(value => {
         const anchor = list.querySelector(`li a[data-filter="${filterName}-${value}"]`);
@@ -270,11 +256,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        let parent = anchor.parentElement;
-        let closeIcon = anchor.querySelector(`span.hidden`);
-        if (!parent || !closeIcon) {
-            return;
-        }
+                        const list = document.querySelector(`#${listID}`);
+                                if (!list) {
+                        console.warn("Filter Group not found!");
+                                return;
+                        }
 
         parent.classList.add("bg-gray-300", "hover:bg-gray-400");
         closeIcon.classList.remove("hidden");
@@ -292,13 +278,31 @@ document.addEventListener("DOMContentLoaded", function () {
     
 });
 
+                                let parent = anchor.parentElement;
+                                        let closeIcon = anchor.querySelector(`span.hidden`);
+                                        if (!parent || !closeIcon) {
+                                return;
+                                }
+
+                                parent.classList.add("bg-gray-300", "hover:bg-gray-400");
+                                        closeIcon.classList.remove("hidden");
+                                });
+                                }
+                updateFilterAppearance("ftGnr", "genList");
+                        updateFilterAppearance("ftCrt", "creList");
+                        updateFilterAppearance("ftCtg", "catList");
+                        updateFilterAppearance("ftBrn", "braList");
+                        updateFilterAppearance("ftSrs", "serList");
+                        updateFilterAppearance("ftChr", "chaList");
+                        updateFilterAppearance("ftPbl", "pubList");
+                        });
 //    Move this to a separate .js file if we dont need side bar on large view on all screen
-window.addEventListener('resize', () => {
-    const clientWidth = document.documentElement.clientWidth;
-    const sidebar = document.getElementById('cus-sidebar');
-    if (clientWidth > 768) {
-        sidebar.style.display = 'block';
-    } else {
-        sidebar.style.display = 'none';
-    }
-});
+                window.addEventListener('resize', () => {
+                const clientWidth = document.documentElement.clientWidth;
+                        const sidebar = document.getElementById('cus-sidebar');
+                        if (clientWidth > 768) {
+                sidebar.style.display = 'block';
+                } else {
+                sidebar.style.display = 'none';
+                }
+                });

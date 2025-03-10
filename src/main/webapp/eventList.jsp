@@ -25,9 +25,9 @@
                     <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddEvent">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
-                    <c:if test="${not empty errorMessage}">
+                    <c:if test="${not empty message}">
                         <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                            <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
+                            <i class="fas fa-exclamation-circle mr-2"></i>${message}
                         </p>
                     </c:if>
                 </div>
