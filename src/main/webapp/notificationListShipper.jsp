@@ -109,8 +109,8 @@
                             <c:forEach var="notification" items="${notifications}">
                                 <div class="flex items-start p-4 rounded-md notification-item ${notification.read ? 'read' : 'unread'}">
                                     <!-- Wrap the entire item in an anchor tag pointing to the detail page -->
-                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
-                                       class="flex items-start w-full">
+                                    <span class="notification" style="display:none;">${notification.notificationDetails}</span>
+                                    <a class="flex items-start w-full link-detail">
                                         <img alt="Notification icon" class="mr-4" 
                                              src="https://i.pinimg.com/222x/5c/61/84/5c61840474f5e4f69ca6a03507c2a569.jpg" 
                                              width="100" height="100"/>
@@ -153,6 +153,41 @@
         </div>
 
 
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const notifications = document.querySelectorAll(".notification");
+
+                notifications.forEach(notification => {
+                    // Lấy nội dung text và loại bỏ khoảng trắng thừa
+                    const text = notification.textContent.trim();
+                    console.log("Nội dung text:", `"${text}"`); // In chính xác nội dung của text
+
+                    // Kiểm tra và tách Order ID
+                    if (text.includes("Order ID:")) {
+                    const parts = text.split("Order ID:");
+                            console.log("Mảng sau split:", parts); // In mảng để kiểm tra
+
+                            // Lấy phần sau "Order ID:" (nếu có)
+                            const result = parts[1]?.trim() || "";
+                    console.log("Order ID:", `"${result}"`); // In result để kiểm tra
+
+                    // Tiếp tục xử lý với link
+                    const div = notification.closest("div");
+                            const link = div?.querySelector("a");
+                    if (link && result) { // Chỉ cập nhật nếu result không rỗng
+                        link.href = "OrderDetailForShipperController?id=" + result;
+                        console.log("Đã cập nhật href:", link.href);
+                    } else {
+                        console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
+                        }
+                    }
+                    else {
+                    console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
+                    }
+                });
+            });
+        </script>
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <script src="/js/scriptHeader.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
