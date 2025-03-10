@@ -134,10 +134,8 @@
 
                                             <!--Ratings-->
                                             <div class="ratings-area text-lg mt-4 pl-2 md:text-left">
-                                                <%--<c:if test="${product.numberOfRating > 0}">--%>
-                                                <span class="avg-rating"><i class="fa-solid fa-star"></i> 4.5</span>
-                                                <span class="ratings-count">(650 Reviews)</span>
-                                                <%--</c:if>--%>
+                                                <span class="avg-rating"><i class="fa-solid fa-star"></i>${product.averageRating}</span>
+                                                <span class="ratings-count">(${product.numberOfRating} Reviews)</span>
                                             </div>
                                         </div>
                                     </div>
