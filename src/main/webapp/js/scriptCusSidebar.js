@@ -46,7 +46,33 @@ function updateHrefOnHover(anchorElement) {
 
         const filterName = decodeURIComponent(filterParts[0]);
         const filterId = decodeURIComponent(filterParts[1]);
+        
+        //Ensure no duplicate of pathname and filter
+        //Only apply to these filter
+        if(filterName === 'ftPbl' && pathname === '/publisher'){
+            return;
+        }
+        if(filterName === 'ftCtg' && pathname === '/category'){
+            return;
+        }
+        if(filterName === 'ftSrs' && pathname === '/series'){
+            return;
+        }
+        if(filterName === 'ftChr' && pathname === '/character'){
+            return;
+        }
+        if(filterName === 'ftBrn' && pathname === '/brand'){
+            return;
+        }
+        
+        //Get the whole list of the filter group from url params
         let filterList = params.get(filterName) ? params.get(filterName).split(',') : [];
+        
+        //For each group below, only 1 filter can be applied at a time
+        if(filterList.length > 0 && (filterName === 'ftPbl' || filterName === 'ftCtg' || filterName === 'ftSrs' || filterName === 'ftChr' || filterName ==='ftBrn')){
+            return;
+        }
+        
         if (filterList.includes(filterId)) {
             filterList.splice(filterList.indexOf(filterId), 1);
         } else {
@@ -67,6 +93,37 @@ function updateHrefOnHover(anchorElement) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    
+    //Toggle for popular searches section
+    const labels = document.querySelectorAll(".pop-label");
+        if (labels) {
+
+            labels.forEach(label => {
+                label.addEventListener("click", function () {
+                    const links = this.nextElementSibling;
+                    if (links) {
+                        links.classList.toggle("hidden");
+                    }
+                });
+            });
+        }
+    
+    
+    //    Toggle ShowAll
+    function toggleShowAllLess(listSelector) {
+        let hiddenItems = document.querySelectorAll(`#${listSelector} li:nth-child(n+4)`);
+        let isExpanded = hiddenItems[0]?.classList.contains("hidden") === false;
+        hiddenItems.forEach(item => item.classList.toggle("hidden"));
+        event.currentTarget.textContent = isExpanded ? "Show All" : "Show Less";
+    }
+    document.getElementById("toggleBtnCat")?.addEventListener("click", () => toggleShowAllLess("catList"));
+    document.getElementById("toggleBtnCre")?.addEventListener("click", () => toggleShowAllLess("creList"));
+    document.getElementById("toggleBtnGen")?.addEventListener("click", () => toggleShowAllLess("genList"));
+    document.getElementById("toggleBtnPub")?.addEventListener("click", () => toggleShowAllLess("pubList"));
+    document.getElementById("toggleBtnSer")?.addEventListener("click", () => toggleShowAllLess("serList"));
+    document.getElementById("toggleBtnBra")?.addEventListener("click", () => toggleShowAllLess("braList"));
+    document.getElementById("toggleBtnCha")?.addEventListener("click", () => toggleShowAllLess("chaList"));
+    
 
     //    Paths to productCatalog, ensure the function only applies to productCatalog
     const paths = ["/search", "/category", "/genre", "/publisher", "/creator",
@@ -101,6 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
     // Loop through existing params and create hidden inputs
+    //Append hidden inputs to price range form
     const hiddenInputsContainerSide = document.querySelector(".hidden-input-ftprice");
     params.forEach((value, key) => {
         if (key !== "ftPrc") {  // Exclude inputs already in the form
@@ -112,6 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
     });
+    
     //Ensure only valid price range is submitted
     const form = document.querySelector('#ftprc-form');
     form.addEventListener("submit", function (event) {
@@ -119,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const minPriceOnSubmit = document.querySelector('#ftprc-min');
         const maxPriceOnSubmit = document.querySelector('#ftprc-max');
         let min = parseFloat(minPriceOnSubmit.value) || 0;
-        let max = parseFloat(maxPriceOnSubmit.value) || 99999999;
+        let max = parseFloat(maxPriceOnSubmit.value) || 9999999;
         if (min > max) {
             let tempVal = min;
             min = max;
@@ -162,7 +221,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Update visibility of remaining items
         const allItems = Array.from(list.querySelectorAll("li"));
-        allItems.slice(3).forEach((item, index) => {
+        let visibleCount = 3;
+        
+        //For each group below, only 1 filter can be applied at a time
+        if(filterName === 'ftPbl' || filterName === 'ftCtg' || filterName === 'ftSrs' || filterName === 'ftChr' || filterName ==='ftBrn'){
+            visibleCount = 1;
+            const button = list.closest('div')?.querySelector('button');
+            if (button) {
+                button.classList.add('hidden');
+            }
+        }
+        
+        allItems.slice(visibleCount).forEach((item, index) => {
             if (!selectedValues.some(val => 
                 item.querySelector("a")?.getAttribute("data-filter") === `${filterName}-${val}`
             )) {
@@ -197,7 +267,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const values = params.get(filterName).split(",");
 
     values.forEach(value => {
-//        const anchor = document.querySelector(`#${listID} li a[data-filter="${filterName}-${value}"]`);
         const anchor = list.querySelector(`li a[data-filter="${filterName}-${value}"]`);
         if (!anchor) {
             return;
@@ -209,33 +278,18 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        parent.classList.add("bg-gray-200", "hover:bg-gray-300");
+        parent.classList.add("bg-gray-300", "hover:bg-gray-400");
         closeIcon.classList.remove("hidden");
     });
 }
     updateFilterAppearance("ftGnr", "genList");
     updateFilterAppearance("ftCrt", "creList");
     updateFilterAppearance("ftCtg", "catList");
-    updateFilterAppearance("ftPbl", "pubList");
     updateFilterAppearance("ftBrn", "braList");
     updateFilterAppearance("ftSrs", "serList");
     updateFilterAppearance("ftChr", "chaList");
+    updateFilterAppearance("ftPbl", "pubList");
     
-    
-//    Toggle ShowAll
-    function toggleShowAllLess(listSelector) {
-        let hiddenItems = document.querySelectorAll(`#${listSelector} li:nth-child(n+4)`);
-        let isExpanded = hiddenItems[0]?.classList.contains("hidden") === false;
-        hiddenItems.forEach(item => item.classList.toggle("hidden"));
-        event.currentTarget.textContent = isExpanded ? "Show All" : "Show Less";
-    }
-    document.getElementById("toggleBtnCat")?.addEventListener("click", () => toggleShowAllLess("catList"));
-    document.getElementById("toggleBtnCre")?.addEventListener("click", () => toggleShowAllLess("creList"));
-    document.getElementById("toggleBtnGen")?.addEventListener("click", () => toggleShowAllLess("genList"));
-    document.getElementById("toggleBtnPub")?.addEventListener("click", () => toggleShowAllLess("pubList"));
-    document.getElementById("toggleBtnSer")?.addEventListener("click", () => toggleShowAllLess("serList"));
-    document.getElementById("toggleBtnBra")?.addEventListener("click", () => toggleShowAllLess("braList"));
-    document.getElementById("toggleBtnCha")?.addEventListener("click", () => toggleShowAllLess("chaList"));
     
     
 });

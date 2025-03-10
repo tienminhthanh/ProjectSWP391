@@ -16,7 +16,7 @@ public class Merchandise extends Product {
 
 
     private Series series;
-    private Character character;
+    private OGCharacter character;
     private Brand brand;
     private String size;
     private String scaleLevel;
@@ -29,7 +29,7 @@ public class Merchandise extends Product {
     
     
     //Full
-    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
+    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
         super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, discountPercentage, eventEndDate);
         this.series = series;
         this.character = character;
@@ -39,7 +39,7 @@ public class Merchandise extends Product {
         this.material = material;
     }
 
-    public Merchandise(Series series, Character character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         super(productID, productName, price, stockCount, specificCategory, description, releaseDate, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
@@ -48,9 +48,7 @@ public class Merchandise extends Product {
         this.scaleLevel = scaleLevel;
         this.material = material;
     }
-    
-  
-    
+
     
 
 
@@ -62,11 +60,11 @@ public class Merchandise extends Product {
         this.series = series;
     }
 
-    public Character getCharacter() {
+    public OGCharacter getCharacter() {
         return character;
     }
 
-    public void setCharacter(Character character) {
+    public void setCharacter(OGCharacter character) {
         this.character = character;
     }
 

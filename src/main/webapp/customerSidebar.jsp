@@ -1,23 +1,25 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" errorPage ="error.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<div class="overlay" id="cus-sidebar-overlay" onclick="closeMobileMenu()"></div>
-<aside id="cus-sidebar" class="md:w-1/6 p-3 bg-gray-100">
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<div class="overlay" id="cus-sidebar-overlay"></div>
+<aside id="cus-sidebar" class="md:w-1/6 px-3 pb-3 pt-12 md:pt-3 bg-gray-100">
     <div class="close-icon">
         <button type="button" onclick="closeMobileMenu()">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
+    <div class="w-full border-t-4 border-orange-500"></div> 
     <c:if test="${empty sessionScope.account}">
         <div class="bg-orange-400 text-white p-4 rounded mt-4 mb-4">
             <h2>
                 New to WIBOOKS?
             </h2>
-            <button class="bg-orange-600 text-white p-2 rounded mt-2">
+            <button class="bg-orange-600 text-white p-2 rounded mt-2 hover:bg-orange-500 hover:font-bold">
                 <a href="register">Create Account</a>
             </button>
         </div>
         <div class="mb-4 bg-white">
-            <h2 class="text-lg font-bold relative pl-5 mb-3 pb-1">
+            <h2 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
                 <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
                 <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
                 Get Started
@@ -33,68 +35,77 @@
             </ul>
         </div>
     </c:if>
-    
     <div class="mb-4 bg-white">
-        <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1">
-            <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-            <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-            Popular Searches
-        </h3>
+        <c:if test="${not empty sessionScope.account}">
+            <h3 class="text-lg font-bold relative mb-3 pb-1 text-black text-center">
+                Popular Searches
+            </h3>
+        </c:if>
+        <c:if test="${empty sessionScope.account}">
+            <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
+                <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                Popular Searches
+            </h3>
+        </c:if>
         <ul id="popList" class="text-xs leading-loose">
-            <li class=" p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                <div class="pop-label">
-                    New Release
+            <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">New Release</div>
+                <div class="hidden links pl-4 ">
+                    <a href="new?type=book" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Books</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                    <a href="new?type=merch" class="flex flex-row items-center hover:font-bold ">
+                        <span class="w-[calc(90%)]">Merchandise</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
                 </div>
-                <a href="#" class="flex flex-row items-center hover:font-bold">
-                    <span class="w-[calc(90%)]">Books</span>
-                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                </a>
-                <a href="#" class="flex flex-row items-center hover:font-bold">
-                    <span class="w-[calc(90%)]">Merchandise</span>
-                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                </a>
             </li>
-            <li class=" p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                <div class="pop-label">
-                    On Sale
+            <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">On Sale</div>
+                <div class="hidden links pl-4">
+                    <a href="sale?type=book" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Books</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                    <a href="sale?type=merch" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Merchandise</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
                 </div>
-                <a href="#" class="flex flex-row items-center hover:font-bold">
-                    <span class="w-[calc(90%)]">Books</span>
-                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                </a>
-                <a href="#" class="flex flex-row items-center hover:font-bold">
-                    <span class="w-[calc(90%)]">Merchandise</span>
-                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                </a>
             </li>
-            <li class=" p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                <div class="pop-label">
-                    Special Choices
+            <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">Special Choices</div>
+                <div class="hidden links pl-4">
+                    <a href="genre?id=18" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Animated Series</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                    <a href="series?id=1" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Hololive Merchandise</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                    <a href="#" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Ranking</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
                 </div>
-                <a href="#" class="flex flex-row items-center hover:font-bold">
-                    <span class="w-[calc(90%)]">Animated Series</span>
-                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                </a>
-                <a href="#" class="flex flex-row items-center hover:font-bold">
-                    <span class="w-[calc(90%)]">Hololive Merchandise</span>
-                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                </a>
             </li>
-           
         </ul>
     </div>
-    
+
     <div class="mb-4 bg-white">
-        <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1">
+        <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
             <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
             <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
             Category
         </h3>
-        <ul class="text-xs leading-loose">
+        <ul id="catList" class="text-xs leading-loose">
             <c:forEach var="catEntry" items="${applicationScope.categories}">
                 <c:if test="${catEntry.value > 0}">
                     <li class="p-2 mb-2 rounded-md mx-2">
-                        <a href="category?id=${catEntry.key.categoryID}" class="flex flex-row items-center hover:font-bold">
+                        <a href="category?id=${catEntry.key.categoryID}" data-filter="ftCtg-${catEntry.key.categoryID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
                             <span class="w-[calc(90%)]">${catEntry.key.categoryName} (${catEntry.value})</span>
                             <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                         </a>
@@ -105,7 +116,7 @@
     </div>
 
     <div class="mb-4 bg-white">
-        <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1">
+        <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
             <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
             <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
             Creator
@@ -128,113 +139,136 @@
             <button id="toggleBtnCre" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
         </c:if>
     </div>
-
     <!--Start Books-->
-    <c:if test="${(not empty requestScope.type and requestScope.type == 'book')  or (pageContext.request.servletPath == '/home' or pageContext.request.servletPath == '/ranking' or pageContext.request.servletPath == '/productDetails')}">
+    <c:if test="${(not empty requestScope.type and requestScope.type eq 'book') or pageContext.request.servletPath ne '/productCatalog.jsp'}">
+        <div class="my-2">
+            <h3 class="text-center text-xl bg-orange-500 text-white mb-4 p-2 font-bold">Books</h3>
 
-        <div class="mb-4 bg-white">
-            <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1">
-                <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                Genre
-            </h3>
-            <ul id="genList" class="text-xs leading-loose">
-                <c:forEach var="genEntry" items="${applicationScope.genres}" varStatus="status">
-                    <c:if test="${genEntry.value > 0}">
-                        <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                            <a href="genre?id=${genEntry.key.genreID}" data-filter="ftGnr-${genEntry.key.genreID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
-                                <span class="w-[calc(90%)]">${genEntry.key.genreName} (${genEntry.value})</span>
-                                <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                            </a>
-                        </li>
-                    </c:if>
-                </c:forEach>
-            </ul>
-            <c:if test="${applicationScope.genres.size() > 3}">
-                <button id="toggleBtnGen" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
-            </c:if>
-        </div>
-        <div class="mb-4 bg-white">
-            <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1">
-                <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
-                <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
-                Publisher
-            </h3>
-            <ul id="pubList" class="text-xs leading-loose">
-                <c:forEach var="pubEntry" items="${applicationScope.publishers}" varStatus="status">
-                    <c:if test="${pubEntry.value > 0}">
-                        <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                            <a href="publisher?id=${pubEntry.key.publisherID}" data-filter="ftPbl-${pubEntry.key.publisherID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
-                                <span class="w-[calc(90%)]">${pubEntry.key.publisherName} (${pubEntry.value})</span>
-                                <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                            </a>
-                        </li>
-                    </c:if>
-                </c:forEach>
-            </ul>
-            <c:if test="${applicationScope.genres.size() > 3}">
-                <button id="toggleBtnPub" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
-            </c:if>
+            <div class="mb-4 bg-white">
+                <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
+                    <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                    <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    Genre
+                </h3>
+                <ul id="genList" class="text-xs leading-loose">
+                    <c:forEach var="genEntry" items="${applicationScope.genres}" varStatus="status">
+                        <c:if test="${genEntry.value > 0}">
+                            <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                                <a href="genre?id=${genEntry.key.genreID}" data-filter="ftGnr-${genEntry.key.genreID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                    <span class="w-[calc(90%)]">${genEntry.key.genreName} (${genEntry.value})</span>
+                                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                </ul>
+                <c:if test="${applicationScope.genres.size() > 3}">
+                    <button id="toggleBtnGen" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
+                </c:if>
+            </div>
+            <div class="mb-4 bg-white">
+                <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
+                    <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                    <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    Publisher
+                </h3>
+                <ul id="pubList" class="text-xs leading-loose">
+                    <c:forEach var="pubEntry" items="${applicationScope.publishers}" varStatus="status">
+                        <c:if test="${pubEntry.value > 0}">
+                            <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                                <a href="publisher?id=${pubEntry.key.publisherID}" data-filter="ftPbl-${pubEntry.key.publisherID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                    <span class="w-[calc(90%)]">${pubEntry.key.publisherName} (${pubEntry.value})</span>
+                                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                </ul>
+                <c:if test="${applicationScope.genres.size() > 3}">
+                    <button id="toggleBtnPub" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
+                </c:if>
+            </div>
         </div>
     </c:if>
     <!--End Books-->
 
     <!--Start Merch-->
-    <c:if test="${requestScope.type == 'merch'}">
-        <div class="mb-4">
-            <h3 class="font-bold">
-                Series
-            </h3>
-            <ul class="list-disc list-inside">
-                <li>
-                    <a href="#">Series 1</a>
-                </li>
-                <li>
-                    <a href="#">Series 2</a>
-                </li>
-                <li>
-                    <a href="#">See more...</a>
-                </li>
-            </ul>
-        </div>
-        <div class="mb-4">
-            <h3 class="font-bold">
-                Character
-            </h3>
-            <ul class="list-disc list-inside">
-                <li>
-                    <a href="#">Character 1</a>
-                </li>
-                <li>
-                    <a href="#">Character 2</a>
-                </li>
-                <li>
-                    <a href="#">See more...</a>
-                </li>
-            </ul>
-        </div>
-        <div class="mb-4">
-            <h3 class="font-bold">
-                Brand
-            </h3>
-            <ul class="list-disc list-inside">
-                <li>
-                    <a href="#">Brand 1</a>
-                </li>
-                <li>
-                    <a href="#">Brand 2</a>
-                </li>
-                <li>
-                    <a href="#">See more...</a>
-                </li>
-            </ul>
+    <c:if test="${(not empty requestScope.type and requestScope.type eq 'merch') or pageContext.request.servletPath ne '/productCatalog.jsp'}">
+        <div class="my-2">
+            <h3 class="text-center text-xl bg-orange-500 text-white mb-4 p-2 font-bold">Merchandise</h3>
+            <div class="mb-4 bg-white">
+                <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
+                    <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                    <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    Brand
+                </h3>
+                <ul id="braList" class="text-xs leading-loose">
+                    <c:forEach var="braEntry" items="${applicationScope.brands}" varStatus="status">
+                        <c:if test="${braEntry.value > 0}">
+                            <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                                <a href="brand?id=${braEntry.key.brandID}" data-filter="ftBrn-${braEntry.key.brandID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                    <span class="w-[calc(90%)]">${braEntry.key.brandName} (${braEntry.value})</span>
+                                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                </ul>
+                <c:if test="${applicationScope.brands.size() > 3}">
+                    <button id="toggleBtnBra" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
+                </c:if>
+            </div>
+            <div class="mb-4 bg-white">
+                <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
+                    <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                    <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    Series
+                </h3>
+                <ul id="serList" class="text-xs leading-loose">
+                    <c:forEach var="serEntry" items="${applicationScope.series}" varStatus="status">
+                        <c:if test="${serEntry.value > 0}">
+                            <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                                <a href="series?id=${serEntry.key.seriesID}" data-filter="ftSrs-${serEntry.key.seriesID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                    <span class="w-[calc(90%)]">${serEntry.key.seriesName} (${serEntry.value})</span>
+                                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                </ul>
+                <c:if test="${applicationScope.series.size() > 3}">
+                    <button id="toggleBtnSer" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
+                </c:if>
+            </div>
+            <div class="mb-4 bg-white">
+                <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
+                    <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
+                    <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
+                    Character
+                </h3>
+                <ul id="chaList" class="text-xs leading-loose">
+                    <c:forEach var="chaEntry" items="${applicationScope.characters}" varStatus="status">
+                        <c:if test="${chaEntry.value > 0}">
+                            <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                                <a href="character?id=${chaEntry.key.characterID}" data-filter="ftChr-${chaEntry.key.characterID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                    <span class="w-[calc(90%)]">${chaEntry.key.characterName} (${chaEntry.value})</span>
+                                    <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                                </a>
+                            </li>
+                        </c:if>
+                    </c:forEach>
+                </ul>
+                <c:if test="${applicationScope.characters.size() > 3}">
+                    <button id="toggleBtnCha" class="text-orange-500 text-sm text-center py-2 mt-2 w-full border-1 border-gray-200 hover:text-orange-300">Show All</button>
+                </c:if>
+            </div>
         </div>
     </c:if>
     <!--End Merch-->
 
     <!--Show only in catalog-->
     <div class="ft-price-range-area mb-4 hidden bg-white pb-2">
-        <h3 class="text-lg font-bold relative pl-5 pb-1 mb-3">
+        <h3 class="text-lg font-bold relative pl-5 pb-1 mb-3 text-black">
             <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
             <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
             Price range (đ)
@@ -252,8 +286,5 @@
             </form>
         </div>
     </div>
-
-
-    
 
 </aside>

@@ -57,8 +57,6 @@ body {
 
 
 .image-area {
-    /*flex: 0 0 100%;*/
-    /* Keeps it at 30% width */
     min-width: 300px;
 }
 
@@ -141,7 +139,7 @@ body {
 
 .description-title{
     border-bottom: 2px solid rgba(0, 0, 0, 0.1); /* Low-opacity line */
-    border-left: 10px solid orange;
+    border-left: 10px solid #f97316;
     padding: 10px;
 }
 
