@@ -94,7 +94,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 response.sendRedirect("dashboard.jsp");
                                 break;
                             case "shipper":
-                                response.sendRedirect("dashboardShipper.jsp");
+                                response.sendRedirect("OrderListForShipperController");
                                 break;
                             default:
                                 session.invalidate();

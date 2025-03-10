@@ -8,12 +8,18 @@ package model;
  *
  * @author Admin
  */
-public class Customer extends Account {
+public class Customer  extends Account{
+
 
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;
 
     public Customer() {
+    }
+
+    public Customer(double totalPurchasePoints, String defaultDeliveryAddress) {
+        this.totalPurchasePoints = totalPurchasePoints;
+        this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
 
     public Customer(double totalPurchasePoints, String defaultDeliveryAddress, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {

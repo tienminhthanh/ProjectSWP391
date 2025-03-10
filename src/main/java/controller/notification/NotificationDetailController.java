@@ -10,6 +10,7 @@ import dao.NotificationDAO;
 import jakarta.servlet.http.HttpSession;
 import model.Notification;
 import java.sql.SQLException;
+import model.Account;
 
 @WebServlet(name = "NotificationDetailController", urlPatterns = {"/notificationdetail"})
 public class NotificationDetailController extends HttpServlet {
@@ -44,14 +45,16 @@ public class NotificationDetailController extends HttpServlet {
 
             // Kiểm tra vai trò người dùng từ session
             HttpSession session = request.getSession();
-            String role = (String) session.getAttribute("role");
-
+            Account account = (Account) session.getAttribute("account");
+            String role = account.getRole();
             // Chuyển hướng dựa trên vai trò
             String destinationPage;
-            if ((receiverID != null && notification.getReceiverID() != Integer.parseInt(receiverID))) {
+            if (role.equals("admin") || role.equals("staff")) {
                 destinationPage = "/notificationDetailForAdmin.jsp";
-            } else {
+            } else if (role.equals("customer")) {
                 destinationPage = "/notificationDetail.jsp";
+            } else {
+                destinationPage = "/notificationDetailForShipper.jsp";
             }
 
             request.setAttribute("notification", notification);

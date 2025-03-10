@@ -57,27 +57,24 @@
             }
         </style>
     </head>
-    <body class="bg-gray-100">
+    <body class="bg-gray-100 text-base">
         <!-- Header -->
+
+
         <div class="bg-orange-600 text-white p-6 flex justify-between items-center">
             <div class="flex items-center space-x-6">
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-12">
-                <h1 class="text-3xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
-                <nav class="space-x-6">
-                    <a href="#" class="hover:underline text-xl">Đơn hàng</a>
-                    <a href="#" class="hover:underline text-xl">Sản phẩm</a>
-                    <a href="#" class="hover:underline text-xl">Báo cáo</a>
-                    <a href="#" class="hover:underline text-xl">Cấu hình</a>
-                </nav>
+                <h1 class="text-xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
+
             </div>
             <div class="flex items-center space-x-6">
-                <!--<a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
+                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>
                 <a href="readAccount" class="fas fa-user-circle text-2xl"></a>
                 <span class="text-xl">Shipper</span>
                 <a href="logout" class="fas fa-sign-out-alt text-2xl"></a>
             </div>
         </div>
-                
+
         <!-- Order Filter Navbar -->
         <div class="bg-white shadow-md">
             <div class="container mx-auto flex justify-around py-6">
@@ -88,7 +85,6 @@
                 <button class="bg-red-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-red-600">Cancelled</button>
             </div>
         </div>
-
         <div class="flex flex-col md:flex-row">
             <main class="flex-1 bg-white p-4">
                 <div class="flex justify-between items-center mb-4">
@@ -113,7 +109,7 @@
                             <c:forEach var="notification" items="${notifications}">
                                 <div class="flex items-start p-4 rounded-md notification-item ${notification.read ? 'read' : 'unread'}">
                                     <!-- Wrap the entire item in an anchor tag pointing to the detail page -->
-                                    <a href="OrderDetailForShipperController" 
+                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
                                        class="flex items-start w-full">
                                         <img alt="Notification icon" class="mr-4" 
                                              src="https://i.pinimg.com/222x/5c/61/84/5c61840474f5e4f69ca6a03507c2a569.jpg" 

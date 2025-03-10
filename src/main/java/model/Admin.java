@@ -1,10 +1,15 @@
 package model;
 
-public class Admin extends Account {
+public class Admin extends Account{
 
     private int totalEvents, totalVoucher;
 
     public Admin() {
+    }
+
+    public Admin(int totalEvents, int totalVoucher) {
+        this.totalEvents = totalEvents;
+        this.totalVoucher = totalVoucher;
     }
 
     public Admin(int totalEvents, int totalVoucher, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
@@ -29,4 +34,5 @@ public class Admin extends Account {
         this.totalVoucher = totalVoucher;
     }
 
+    
 }
