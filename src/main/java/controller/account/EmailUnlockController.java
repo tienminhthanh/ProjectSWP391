@@ -17,16 +17,47 @@ public class EmailUnlockController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         AccountLib lib = new AccountLib();
-        String email = (String) request.getSession().getAttribute("tempEmail");
+
+        // Lấy email từ session (tempEmail) hoặc request (email từ form)
+        String emailFromSession = (String) request.getSession().getAttribute("tempEmail");
+        String emailFromRequest = request.getParameter("email");
+
+        // Chọn email hợp lệ từ cả hai trường hợp
+        String email = null;
+
+        if (emailFromSession != null && !emailFromSession.trim().isEmpty()) {
+            email = emailFromSession;
+        } else if (emailFromRequest != null && !emailFromRequest.trim().isEmpty()) {
+            email = emailFromRequest;
+             request.getSession().setAttribute("tempEmail", email);
+
+        }
+
+        // Kiểm tra nếu không có email hợp lệ
+        if (email == null || email.trim().isEmpty()) {
+            request.setAttribute("message", "Please enter a valid email.");
+            request.getRequestDispatcher("accountUnlock.jsp").forward(request, response);
+            return;
+        }
 
         try {
+            // Tạo đối tượng AccountDAO để thao tác với cơ sở dữ liệu
             AccountDAO accountDAO = new AccountDAO();
+            // Lấy tài khoản từ email
             Account account = accountDAO.getAccountByEmail(email);
 
             if (account == null) {
                 request.setAttribute("message", "Account not found!");
-                request.getRequestDispatcher("error.jsp").forward(request, response);
+                request.getRequestDispatcher("accountUnlock.jsp").forward(request, response);
+                return;
+            }
+
+            // Kiểm tra xem tài khoản có bị khóa không
+            if (account.getIsActive()) {
+                request.setAttribute("message", "Account is already active.");
+                request.getRequestDispatcher("accountUnlock.jsp").forward(request, response);
                 return;
             }
 
@@ -54,14 +85,17 @@ public class EmailUnlockController extends HttpServlet {
             lib.sendEmail(email, subject, content);
 
             request.setAttribute("message", "A verification code has been sent to your email.");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            request.setAttribute("message", "Failed to send email.");
+
+            // Chờ người dùng xác nhận OTP trước khi mở khóa tài khoản
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("message", "Database error occurred.");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            request.setAttribute("message", "Failed to send email.");
         }
 
+        // Hiển thị thông báo và chuyển hướng đến trang xác nhận OTP
         request.getRequestDispatcher("verifyUnlock.jsp").forward(request, response);
     }
 
@@ -87,8 +121,8 @@ public class EmailUnlockController extends HttpServlet {
                 boolean unlockSuccess = accountDAO.updateAccountStatus(account.getUsername(), true);
                 if (unlockSuccess) {
                     request.getSession().invalidate();
-                    request.setAttribute("message", "Your account has been unlocked successfully! You can now log in.");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);//sua thanh change pass
+                    request.setAttribute("message", "Your account has been unlocked successfully. You can now log in.");
+                    request.getRequestDispatcher("login.jsp").forward(request, response); // Redirect to login page
                 } else {
                     request.setAttribute("message", "Failed to unlock your account.");
                     request.getRequestDispatcher("verifyUnlock.jsp").forward(request, response);

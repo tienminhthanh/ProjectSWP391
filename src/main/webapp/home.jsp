@@ -427,38 +427,36 @@
         </div>
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
+        <!-- Nút mở chat -->
+        <!-- Chat Button -->
+        <div class="fixed bottom-4 left-4 z-50">
+            <button id="openChat" class="bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-yellow-600 transition">
+                🤖 WIBOOKS AI
+            </button>
+        </div>
+
+        <!-- Chat Popup -->
+        <div id="chatPopup" class="z-50 fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
+            <div class="flex justify-between items-center bg-blue-500 text-white px-4 py-2 rounded-t-lg">
+                <span>WIBOOKS AI</span>
+                <span id="closeChatAI" class="cursor-pointer text-xl">❌</span>
+            </div>
+            <div class="flex-grow overflow-y-auto border p-2 bg-gray-200 rounded-lg shadow-lg">
+                <jsp:include page="chatAI.jsp"/>
+            </div>
+        </div>
 
         <script>
-//            document.getElementById("chatbot-icon").addEventListener("click", function () {
-//                document.getElementById("chatbot-window").classList.toggle("hidden");
-//            });
-//
-//            document.getElementById("close-chatbot").addEventListener("click", function () {
-//                document.getElementById("chatbot-window").classList.add("hidden");
-//            });
-//
-//            document.getElementById("send-btn").addEventListener("click", function () {
-//                const userMessage = document.getElementById("chat-input").value.trim();
-//                if (userMessage === "")
-//                    return;
-//
-//                const chatBox = document.getElementById("chat-box");
-//                chatBox.innerHTML += `<p class="text-right text-blue-500 font-semibold">Bạn: ${userMessage}</p>`;
-//
-//                fetch("chat", {
-//                    method: "POST",
-//                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-//                    body: "userMessage=" + encodeURIComponent(userMessage)
-//                })
-//                        .then(response => response.json())
-//                        .then(data => {
-//                            chatBox.innerHTML += `<p class="text-left text-gray-700 font-semibold">ChatGPT: ${data.response}</p>`;
-//                            chatBox.scrollTop = chatBox.scrollHeight;
-//                        });
-//
-//                document.getElementById("chat-input").value = "";
-//            });
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.remove("hidden");
+            });
+
+            document.getElementById("closeChatAI").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.add("hidden");
+            });
         </script>
+
+
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 

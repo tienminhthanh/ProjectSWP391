@@ -17,6 +17,7 @@ public class Admin extends Account{
         this.totalVouchers = totalVouchers;
     }
 
+
   
     public int getTotalEvents() {
         return totalEvents;

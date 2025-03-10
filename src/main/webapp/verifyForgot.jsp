@@ -23,7 +23,7 @@
         <!-- Main Content -->
         <div class="max-w-3xl mx-auto p-6">
             <div class="w-full bg-white p-8 shadow-md rounded-lg">
-                <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">Unlock Account</h1>
+                <h1 class="text-3xl font-bold text-blue-600 mb-6 text-center">Forget Password Account</h1>
                 <h2 class="text-xl font-semibold mb-4 text-center text-gray-700">Enter your verification code</h2>
 
                 <hr class="mb-4"/>
@@ -38,7 +38,7 @@
                 </div>
 
                 <!-- OTP Input Form -->
-                <form action="emailUnlock" method="post" id="otpForm">
+                <form action="emailForgot" method="post" id="otpForm">
                     <div class="flex justify-center space-x-2 mb-4">
                         <input type="text" class="otp-input w-12 h-12 text-xl text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-600" maxlength="1" pattern="[0-9]" required>
                         <input type="text" class="otp-input w-12 h-12 text-xl text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-600" maxlength="1" pattern="[0-9]" required>
@@ -60,7 +60,7 @@
 
                 <!-- Resend OTP -->
                 <div class="text-center mb-4">
-                    <a href="emailUnlock" class="text-blue-600 hover:underline">
+                    <a href="emailForgot" class="text-blue-600 hover:underline">
                         <i class="fas fa-redo-alt"></i> Resend OTP Code
                     </a>
                 </div>
@@ -79,8 +79,8 @@
 
                 <!-- Restart Registration -->
                 <div class="text-center">
-                    <a href="accountUnlock.jsp" class="bg-white border border-gray-300 text-gray-600 py-2 px-4 rounded-full flex items-center justify-center mx-auto hover:bg-gray-200 transition duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i> Black unlock account
+                    <a href="forgotPassword" class="bg-white border border-gray-300 text-gray-600 py-2 px-4 rounded-full flex items-center justify-center mx-auto hover:bg-gray-200 transition duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i> Black forgot account
                     </a>
                 </div>
             </div>
