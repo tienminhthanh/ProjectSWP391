@@ -42,14 +42,14 @@
                 display: flex;
                 justify-content: center;
             }
-            input {
+            input.ai-input {
                 width: 70%;
                 padding: 10px;
                 font-size: 16px;
                 border: 1px solid #ccc;
                 border-radius: 5px;
             }
-            button {
+            button.ai-button {
                 padding: 10px;
                 font-size: 16px;
                 background-color: #007bff;
@@ -58,7 +58,7 @@
                 border-radius: 5px;
                 cursor: pointer;
             }
-            button:hover {
+            button.ai-button:hover {
                 background-color: #0056b3;
             }
         </style>
@@ -101,9 +101,9 @@
         <div id="chatContainer1">
             <div id="chatBox"></div>
             <div id="inputContainer">
-                <input type="text" id="userMessage" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13)
+                <input type="text" id="userMessage" class="ai-input" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13)
                             sendMessage()">
-                <button onclick="sendMessage()">Send</button>
+                <button class="ai-button" onclick="sendMessage()">Send</button>
             </div>
         </div>
     </body>
