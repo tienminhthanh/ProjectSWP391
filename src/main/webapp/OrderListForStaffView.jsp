@@ -36,7 +36,7 @@
                 background-color: #2d3748; /* Màu nền khi hover */
             }
             .main-content {
-                margin-left: 250px; /* Dịch nội dung chính sang phải, tránh bị sidebar che */
+                margin-left: 10px; /* Dịch nội dung chính sang phải, tránh bị sidebar che */
                 padding: 20px;
                 flex: 1; /* Chiếm toàn bộ không gian còn lại */
             }
@@ -130,96 +130,11 @@
     </head>
 
     <body>
-        <div class="sidebar">
-            <div class="p-4">
-                <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
-            </div>
-            <nav class="space-y-2">
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-tachometer-alt mr-2"></i>
-                    Dashboard
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
-                    <i class="fas fa-users mr-2"></i>
-                    Account List
-                </a>            <a class="flex items-center p-2 hover:bg-blue-800" href="eventList">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    Event List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-cogs mr-2"></i>
-                    Product List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comments mr-2"></i>
-                    Dialogue List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="OrderListForStaffController">
-                    <i class="fas fa-box mr-2"></i>
-                    Order List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-gift mr-2"></i>
-                    Voucher List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-bell mr-2"></i>
-                    Notification List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comment-dots mr-2"></i>
-                    Chat
-                </a>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold">SETTINGS</h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-cogs mr-2"></i>
-                        Configuration
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users-cog mr-2"></i>
-                        Management
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        Logout
-                    </a>
-                </div>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold">REPORTS</h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-phone-alt mr-2"></i>
-                        Call history
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-headset mr-2"></i>
-                        Call queue
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users mr-2"></i>
-                        Agents performance
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-file-invoice-dollar mr-2"></i>
-                        Commission report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-calendar mr-2"></i>
-                        Scheduled report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-history mr-2"></i>
-                        Chat history
-                    </a>
-                    <a class="flex items-center p-2 bg-blue-800" href="#">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        Performance report
-                    </a>
-                </div>
-            </nav>
+        <div class="w-64 bg-orange-400 text-white min-h-screen fixed top-0 left-0">
+            <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
-        <div class="main-content">
+        <div class="main-content ml-64">
             <div class="header">
                 <div class="flex items-center">
 
