@@ -71,15 +71,30 @@ public class ProductDAO {
     public Product callGetProductByTypeAndId(String type, int productID) throws SQLException {
         switch (type) {
             case "merch":
-
-//                WIP
-//                WIP
-//                WIP
+                return getMerchById(productID);
             case "book":
                 return getBookById(productID);
             default:
                 return null;
         }
+    }
+    
+    /**
+     * For view merch details
+     * @param productID
+     * @return
+     * @throws SQLException 
+     */
+    public Product getMerchById(int productID) throws SQLException {
+        StringBuilder sql = getCTEProductDiscount().append("");
+
+        Object[] params = {productID};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            if (rs.next()) {
+                return mapResultSetToProduct(rs, rs.getString("generalCategory"));
+            }
+        }
+        return null;
     }
 
     /**
@@ -853,6 +868,71 @@ public class ProductDAO {
             }
             return brandMap;
         }
+    }
+
+    public boolean addNewProducts(Product newProduct) throws SQLException {
+        String sql = "";
+        Object[] params = {newProduct};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewCreators(Creator newCreator) throws SQLException {
+        String sql = "";
+        Object[] params = {newCreator};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean assignCreatorsToProduct(int creatorID, int productID) throws SQLException {
+        String sql = "";
+        Object[] params = {productID, creatorID};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean assignGenresToBook(int genreID, int bookID) throws SQLException {
+        String sql = "";
+        Object[] params = {bookID, genreID};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewMerchSeries(Series newSeries) throws SQLException {
+        String sql = "";
+        Object[] params = {newSeries};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewMerchBrand(Brand newBrand) throws SQLException {
+        String sql = "";
+        Object[] params = {newBrand};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewMerchCharacter(OGCharacter newCharacter) throws SQLException {
+        String sql = "";
+        Object[] params = {newCharacter};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean updateProducts(Product updatedProduct, String type) throws SQLException {
+        String sql = generateUpdateStatementBasedOnType(type);
+        Object[] params = {updatedProduct};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    private String generateUpdateStatementBasedOnType(String type) {
+        switch (type) {
+            case "book":
+                return "UPDATE Book...";
+            case "merch":
+                return "UPDATE Merchandise....";
+            default:
+                return "UPDATE Product...";
+        }
+    }
+
+    public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
+        String sql = "";
+        Object[] params = {productID, newStatus};
+        return context.exeNonQuery(sql, params) > 0;
     }
 
     public static void main(String[] args) {

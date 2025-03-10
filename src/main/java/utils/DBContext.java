@@ -5,6 +5,7 @@ package utils;
      * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 import java.sql.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,5 +88,4 @@ public class DBContext {
             throw e;
         }
     }
-
-}
+} 
