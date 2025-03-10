@@ -122,6 +122,7 @@
                                                 <h4 class="fomo-info sale p-2  w-full text-center ">Sale Ends Date: <span>${product.eventEndDate}</span></h4>
                                             </c:when>
                                         </c:choose>
+
                                         <div class="purchase-inner">
 
                                             <!--Price-->
@@ -137,26 +138,36 @@
                                                 </c:choose>
                                             </div>
 
-                                            <!--Ratings-->
-                                            <div class="ratings-area text-lg mt-4 pl-2 md:text-left">
-                                                <%--<c:if test="${product.numberOfRating > 0}">--%>
-                                                <span class="avg-rating"><i class="fa-solid fa-star"></i> 4.5</span>
-                                                <span class="ratings-count">(650 Reviews)</span>
-                                                <%--</c:if>--%>
-                                            </div>
+                                            <!--Hide ratings if pre-order-->
+                                            <c:if test="${product.specialFilter != 'pre-order'}">
+                                                <!--Ratings-->
+                                                <div class="ratings-area text-lg mt-4 pl-2 md:text-left">
+                                                    <span class="avg-rating"><i class="fa-solid fa-star"></i> ${product.averageRating}</span>
+                                                    <span class="ratings-count">(${product.numberOfRating})</span>
+                                                </div>
+                                            </c:if>
                                         </div>
                                     </div>
 
                                     <!--Purchase form-->
                                     <div class="purchase-form w-90% md:w-full bg-white mx-auto">
-                                        <c:if test="${product.specialFilter != 'pre-order'}">
-                                            <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
-                                                <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
-                                                <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
-                                            </div>
-                                        </c:if>
+                                        <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
+                                            <c:choose>
+                                                <c:when test="${product.specialFilter != 'pre-order'}">
+                                                    <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
+                                                    <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
+                                                </c:when>
+                                                <c:when test="${product.stockCount <= 10}">
+                                                    <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
+                                                </c:when>
+
+                                            </c:choose>
+                                        </div>
+
                                         <c:choose>
                                             <c:when test="${product.specialFilter == 'pre-order'}">
+
+                                                <!--Quantity = 1 for pre-order-->
                                                 <form action="preorder" method="post">
                                                     <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
@@ -318,190 +329,190 @@
         <!--Tailwind-->
         <script src="https://cdn.tailwindcss.com">
         </script>
-        
+
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
+
         <script>
-            //Map input quant to purchase quant in forms
-            document.addEventListener("DOMContentLoaded", function () {
+                                                        //Map input quant to purchase quant in forms
+                                                        document.addEventListener("DOMContentLoaded", function () {
 
-                // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
-                if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
-                    document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
-                    const stockOut = document.querySelector('.purchase-form p');
-                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:pr-2', 'bg-gray-100', 'my-16', 'md:mr-4', 'max-w-full');
-                    return;
-                }
+                                                            // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
+                                                            if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
+                                                                document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
+                                                                const stockOut = document.querySelector('.purchase-form p');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:pr-2', 'bg-gray-100', 'my-16', 'md:mr-4', 'max-w-full');
+                                                                return;
+                                                            }
 
-                let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
-                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                                                            let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                                                            let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                if (!hiddenInputs) {
-                    console.log("Hidden quantity not found!");
-                    return;
-                }
+                                                            if (!hiddenInputs) {
+                                                                console.log("Hidden quantity not found!");
+                                                                return;
+                                                            }
 
-                if (!numberValue) {
-                    console.log("Quantity input not found!");
-                    return;
-                }
+                                                            if (!numberValue) {
+                                                                console.log("Quantity input not found!");
+                                                                return;
+                                                            }
 
 
-                // Loop through all hidden inputs and update their values
-                hiddenInputs.forEach(function (hiddenInput) {
-                    hiddenInput.value = numberValue.value;
-                });
+                                                            // Loop through all hidden inputs and update their values
+                                                            hiddenInputs.forEach(function (hiddenInput) {
+                                                                hiddenInput.value = numberValue.value;
+                                                            });
 
-                // Optional: Display the values for verification
-                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                console.log("quantity:", displayValues);
+                                                            // Optional: Display the values for verification
+                                                            let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                                                            console.log("quantity:", displayValues);
 
 
 //                Map quant on input
-                document.getElementById("quantityInput").addEventListener("input", function (event) {
-                    const inputElement = document.getElementById("quantityInput");
-                    let numberValue = event.target.value; // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                                                            document.getElementById("quantityInput").addEventListener("input", function (event) {
+                                                                const inputElement = document.getElementById("quantityInput");
+                                                                let numberValue = event.target.value; // Get the value from the number input
+                                                                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                    if (!numberValue || !`${product.stockCount}`) {
-                        return;
-                    }
-                    if (numberValue < 1) {
-                        alert("Purchase quantity must be greater than 0!");
-                        inputElement.value = numberValue = 1;
-                    } else if (numberValue > ${product.stockCount}) {
-                        alert("Purchase quantity cannot exceed ${product.stockCount}!");
-                        inputElement.value = numberValue = 1;
-                    }
+                                                                if (!numberValue || !`${product.stockCount}`) {
+                                                                    return;
+                                                                }
+                                                                if (numberValue < 1) {
+                                                                    alert("Purchase quantity must be greater than 0!");
+                                                                    inputElement.value = numberValue = 1;
+                                                                } else if (numberValue > ${product.stockCount}) {
+                                                                    alert("Purchase quantity cannot exceed ${product.stockCount}!");
+                                                                    inputElement.value = numberValue = 1;
+                                                                }
 
 
-                    // Loop through all hidden inputs and update their values
-                    hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue;
-                    });
+                                                                // Loop through all hidden inputs and update their values
+                                                                hiddenInputs.forEach(function (hiddenInput) {
+                                                                    hiddenInput.value = numberValue;
+                                                                });
 
-                    // Optional: Display the values for verification
-                    let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                    console.log("quantity:", displayValues);
-                });
-            });
+                                                                // Optional: Display the values for verification
+                                                                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
+                                                                console.log("quantity:", displayValues);
+                                                            });
+                                                        });
 
 //            Adjust layout based product type
-            document.addEventListener("DOMContentLoaded", function () {
-                const type = "${requestScope.type}";
-                const purchase = document.querySelector(".purchase-area");
-                const overview = document.querySelector(".overview-area");
-                const image = document.querySelector(".image-area");
-                const desc = document.querySelector(".desc-common");
-                if (!type) {
-                    return;
-                }
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            const type = "${requestScope.type}";
+                                                            const purchase = document.querySelector(".purchase-area");
+                                                            const overview = document.querySelector(".overview-area");
+                                                            const image = document.querySelector(".image-area");
+                                                            const desc = document.querySelector(".desc-common");
+                                                            if (!type) {
+                                                                return;
+                                                            }
 
-                if (type === 'book') {
-                    overview.classList.add('md:w-3/4');
-                    image.classList.add('md:w-1/3');
+                                                            if (type === 'book') {
+                                                                overview.classList.add('md:w-3/4');
+                                                                image.classList.add('md:w-1/3');
 
-                    purchase.classList.add('md:w-1/4');
-                    desc.classList.add('md:hidden');
-                } else if (type === 'merch') {
-                    overview.classList.add('md:w-2/3');
-                    purchase.classList.add('md:w-1/3');
+                                                                purchase.classList.add('md:w-1/4');
+                                                                desc.classList.add('md:hidden');
+                                                            } else if (type === 'merch') {
+                                                                overview.classList.add('md:w-2/3');
+                                                                purchase.classList.add('md:w-1/3');
 
-                }
+                                                            }
 
-                //                if (type === 'book') {
-                //                    overview.classList.add('md:w-2/3');
-                //                    purchase.classList.add('md:w-1/3');
-                //
-                //                } else if (type === 'merch') {
-                //                    overview.classList.add('md:w-3/4');
-                //                    image.classList.add('md:w-1/3');
-                //                    purchase.classList.add('md:w-1/4');
-                //                    desc.classList.add('md:hidden');
-                //
-                //                }
-            });
-
-
-            //Format price display
-            document.addEventListener("DOMContentLoaded", function () {
-                // Select all elements with prices
-                let priceElements = document.querySelectorAll(".price-area p");
-
-                priceElements.forEach(priceEl => {
-                    let priceText = priceEl.innerText.trim(); // Get the text inside span
-                    let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-                    console.log("formatted price: ", price);
-                    price = Math.round(price);
-                    console.log("Rounded price: ", price);
-
-                    if (!isNaN(price)) {
-                        // Format price with commas (e.g., 4,400 VND)
-                        priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
-                    }
-                });
-            });
+                                                            //                if (type === 'book') {
+                                                            //                    overview.classList.add('md:w-2/3');
+                                                            //                    purchase.classList.add('md:w-1/3');
+                                                            //
+                                                            //                } else if (type === 'merch') {
+                                                            //                    overview.classList.add('md:w-3/4');
+                                                            //                    image.classList.add('md:w-1/3');
+                                                            //                    purchase.classList.add('md:w-1/4');
+                                                            //                    desc.classList.add('md:hidden');
+                                                            //
+                                                            //                }
+                                                        });
 
 
-            //Map final price to forms
-            document.addEventListener("DOMContentLoaded", function () {
-                const finalPriceElement = document.querySelector(".final-price");
-                let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
+                                                        //Format price display
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            // Select all elements with prices
+                                                            let priceElements = document.querySelectorAll(".price-area p");
 
-                //Check if the forms are there
-                if (!pricesToSubmit) {
-                    return;
-                }
+                                                            priceElements.forEach(priceEl => {
+                                                                let priceText = priceEl.innerText.trim(); // Get the text inside span
+                                                                let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
+                                                                console.log("formatted price: ", price);
+                                                                price = Math.round(price);
+                                                                console.log("Rounded price: ", price);
 
-                if (!finalPriceElement) {
-                    alert("Cannot retrieve product price!");
-                    return;
-                }
+                                                                if (!isNaN(price)) {
+                                                                    // Format price with commas (e.g., 4,400 VND)
+                                                                    priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
+                                                                }
+                                                            });
+                                                        });
 
 
-                let priceText = finalPriceElement.innerText;
-                let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
+                                                        //Map final price to forms
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            const finalPriceElement = document.querySelector(".final-price");
+                                                            let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
 
-                if (isNaN(priceNumber)) {
-                    console.log("Price is not a number");
-                    return;
-                }
+                                                            //Check if the forms are there
+                                                            if (!pricesToSubmit) {
+                                                                return;
+                                                            }
 
-                pricesToSubmit.forEach(function (price) {
-                    price.value = priceNumber;
-                    console.log('Price is', price.value);
-                });
-            });
+                                                            if (!finalPriceElement) {
+                                                                alert("Cannot retrieve product price!");
+                                                                return;
+                                                            }
 
-            //Format date
-            document.addEventListener("DOMContentLoaded", function () {
-                const fomoDate = document.querySelector('.fomo-info>span');
-                const releaseDate = document.querySelector('.release-date');
 
-                if (!fomoDate) {
-                    console.log("Fomo element not found!");
-                } else {
-                    const fomoText = new Date(fomoDate.innerText);
-                    if (fomoText === null) {
-                        console.log("invalid date format");
-                    }
-                    fomoDate.innerText = fomoText.toLocaleDateString("vi-VN");
-                }
+                                                            let priceText = finalPriceElement.innerText;
+                                                            let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
 
-                if (!releaseDate) {
-                    console.log("Date element not found!");
-                    return;
-                }
+                                                            if (isNaN(priceNumber)) {
+                                                                console.log("Price is not a number");
+                                                                return;
+                                                            }
 
-                const dateText = new Date(releaseDate.innerText);
-                if (dateText === null) {
-                    console.log("invalid date format");
-                    return;
-                }
+                                                            pricesToSubmit.forEach(function (price) {
+                                                                price.value = priceNumber;
+                                                                console.log('Price is', price.value);
+                                                            });
+                                                        });
 
-                releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
-            });
+                                                        //Format date
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                            const fomoDate = document.querySelector('.fomo-info>span');
+                                                            const releaseDate = document.querySelector('.release-date');
+
+                                                            if (!fomoDate) {
+                                                                console.log("Fomo element not found!");
+                                                            } else {
+                                                                const fomoText = new Date(fomoDate.innerText);
+                                                                if (fomoText === null) {
+                                                                    console.log("invalid date format");
+                                                                }
+                                                                fomoDate.innerText = fomoText.toLocaleDateString("vi-VN");
+                                                            }
+
+                                                            if (!releaseDate) {
+                                                                console.log("Date element not found!");
+                                                                return;
+                                                            }
+
+                                                            const dateText = new Date(releaseDate.innerText);
+                                                            if (dateText === null) {
+                                                                console.log("invalid date format");
+                                                                return;
+                                                            }
+
+                                                            releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
+                                                        });
 
 
 ////Close sidebar on resize
@@ -512,19 +523,19 @@
 //});
 
 // Stock check function for Add to Cart
-            function checkStock(cartQuantity, stockCount, event) {
-                let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
-                if (cartQuantity + quantityToAdd > stockCount) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Stock Limit Reached',
-                        text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
-                    });
-                    event.preventDefault();
-                    return false;
-                }
-                return true;
-            }
+                                                        function checkStock(cartQuantity, stockCount, event) {
+                                                            let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
+                                                            if (cartQuantity + quantityToAdd > stockCount) {
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'Stock Limit Reached',
+                                                                    text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+                                                                });
+                                                                event.preventDefault();
+                                                                return false;
+                                                            }
+                                                            return true;
+                                                        }
 
         </script>
     </body>

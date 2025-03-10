@@ -38,24 +38,37 @@
     <!-- Product Name -->
     <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title" title="${currentProduct.productName}">${currentProduct.productName}</a>
 
-    <c:if test="${currentProduct.specialFilter ne 'pre-order'}">
+    <!--Stock count & price for NON pre-order-->
+    <c:choose>
+        <c:when test="${currentProduct.specialFilter ne 'pre-order'}">
+            <!-- Stock count section -->
+            <p class="stock-count">Stock count: ${currentProduct.stockCount}</p>
 
-        <!-- Stock count section -->
-        <p class="stock-count">Stock count: ${currentProduct.stockCount}</p>
+            <!-- Price Section -->
+            <p class="product-price">
+                <c:choose>
+                    <c:when test="${currentProduct.discountPercentage != 0}">
+                        <span class="discount-price">${currentProduct.price * (100-currentProduct.discountPercentage)/100}</span>
+                        <span class="original-price">${currentProduct.price}</span>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="discount-price">${currentProduct.price}</span>
+                    </c:otherwise>
+                </c:choose>
+            </p>
+        </c:when>
+        <c:otherwise>
+            <!-- Remaining slots -->
+            <c:if test="${currentProduct.stockCount <= 10}">
+                <p class="stock-count">Remaining slots: <span class="text-blue-500 font-bold md:text-lg">${currentProduct.stockCount}</span></p>
+            </c:if>
 
-        <!-- Price Section -->
-        <p class="product-price">
-            <c:choose>
-                <c:when test="${currentProduct.discountPercentage != 0}">
-                    <span class="discount-price">${currentProduct.price * (100-currentProduct.discountPercentage)/100}</span>
-                    <span class="original-price">${currentProduct.price}</span>
-                </c:when>
-                <c:otherwise>
-                    <span class="discount-price">${currentProduct.price}</span>
-                </c:otherwise>
-            </c:choose>
-        </p>
-    </c:if>
+            <!-- Price Section -->
+            <p class="product-price">
+                <span class="discount-price">${currentProduct.price}</span>
+            </p>
+        </c:otherwise>
+    </c:choose>
 
     <!-- Sale Expiry Date or Release Date -->
     <c:choose>
