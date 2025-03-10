@@ -7,8 +7,8 @@
                 font-family: Arial, sans-serif;
                 text-align: center;
             }
-            #chatContainer {
-                width: 50%;
+            #chatContainer1 {
+                width: 100%;
                 margin: auto;
             }
             #chatBox {
@@ -84,7 +84,7 @@
                         .then(response => response.json())
                         .then(data => {
                             // Hiển thị phản hồi từ Gemini AI
-                            chatBox.innerHTML += "<div class='message bot'><b>Gemini:</b> " + data.response + "</div><br style='clear:both;'>";
+                            chatBox.innerHTML += "<div class='message bot'><b></b> " + data.response + "</div><br style='clear:both;'>";
 
                             // Xóa ô nhập tin nhắn
                             document.getElementById("userMessage").value = "";
@@ -97,13 +97,13 @@
         </script>
     </head>
     <body>
-        <h2>Chat with WIBOOKS AI</h2>
-        <div id="chatContainer">
+       
+        <div id="chatContainer1">
             <div id="chatBox"></div>
             <div id="inputContainer">
-                <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." onkeypress="if (event.keyCode == 13)
+                <input type="text" id="userMessage" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13)
                             sendMessage()">
-                <button onclick="sendMessage()">Gửi</button>
+                <button onclick="sendMessage()">Send</button>
             </div>
         </div>
     </body>

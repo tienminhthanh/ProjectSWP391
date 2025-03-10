@@ -79,8 +79,8 @@
 
                 <!-- Restart Registration -->
                 <div class="text-center">
-                    <a href="accountUnlock.jsp" class="bg-white border border-gray-300 text-gray-600 py-2 px-4 rounded-full flex items-center justify-center mx-auto hover:bg-gray-200 transition duration-200">
-                        <i class="fas fa-arrow-left mr-2"></i> Black unlock account
+                    <a href="forgotPassword" class="bg-white border border-gray-300 text-gray-600 py-2 px-4 rounded-full flex items-center justify-center mx-auto hover:bg-gray-200 transition duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i> Black forgot account
                     </a>
                 </div>
             </div>
