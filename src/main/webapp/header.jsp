@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <header>
     <div class="logo">
         <a href="home">
@@ -77,7 +77,7 @@
             </div>
 
             <!--Toggle customer mobile menu-->
-            <div class="overlay" id="cus-menu-overlay" onclick="closeCustomerMenu()"></div>
+            <div class="overlay" id="cus-menu-overlay"></div>
             <div class="toggle-customer-icons-mobile">
                 <button type="button" onclick="openCustomerMenu()">
                     <img src="img/header_icon_mobile/customerMenuIcon.png" alt="Customer Icons"/>
@@ -85,48 +85,65 @@
             </div>
 
             <!--Customer mobile menu-->
-            <div id="customer-menu-mobile" class="p-3 bg-gray-200">
-                <div class="close-icon">
+            <div id="customer-menu-mobile" class="bg-yellow-500 p-4">
+                <div class="close-icon text-white top-5 right-5">
                     <button type="button" onclick="closeCustomerMenu()">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <div class="mt-4 mb-4">
-                    <ul class="list-disc list-inside">
-                        <li>
-                            <!--Notification button-->
-                            <a href="notification.jsp">
-                                <i class="fa-regular fa-bell"></i>
+                <div class="mt-4 mb-4 text-white text-md">
+                    <ul>
+                        <li class="border-b-2 border-white p-4 rounded-b-lg">
+                            <!-- Notification -->
+                            <a class="flex items-center gap-3" href="notification?action=list&receiverID=${sessionScope.account.accountID}">
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="fa-regular fa-bell text-lg"></i>
+                                </div>
                                 <span>Notification</span>
                                 <c:if test="${unreadCount > 0}">
                                     <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 inline-flex items-center justify-center ml-2">${unreadCount}</span>
                                 </c:if>
                             </a>
                         </li>
-                        <li>
-                            <!--Cart button-->
-                            <a href="cart?customerID=${sessionScope.account.accountID}">
-                                <i class="fa-solid fa-cart-shopping"></i>
+
+                        <li class="border-b-2 border-white p-4 rounded-b-lg">
+                            <!-- Cart button -->
+                            <a href="cart?customerID=${sessionScope.account.accountID}" class="relative flex items-center gap-3">
+                                <div class="relative w-6 h-6 flex items-center justify-center">
+                                    <i class="fa-solid fa-cart-shopping text-lg"></i>
+                                    <c:if test="${not empty sessionScope.cartItems and fn:length(sessionScope.cartItems) > 0}">
+                                        <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2
+                                              bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5
+                                              flex items-center justify-center">
+                                            ${fn:length(sessionScope.cartItems)}
+                                        </span>
+                                    </c:if>
+                                </div>
                                 <span>Cart</span>
-                                <c:if test="${not empty sessionScope.cartItems}">
-                                    <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 inline-flex items-center justify-center ml-2">${fn:length(sessionScope.cartItems)}</span>
-                                </c:if>
+                              
                             </a>
                         </li>
-                        <li>
-                            <!--My Account-->
-                            <a href="readAccount">
-                                <i class="fa-regular fa-user"></i>
+
+                        <li class="border-b-2 border-white p-4 rounded-b-lg">
+                            <!-- My Account -->
+                            <a class="flex items-center gap-3" href="readAccount">
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="fa-regular fa-user text-lg"></i>
+                                </div>
                                 <span>My Account</span>
                             </a>
                         </li>
-                        <li>
-                            <!--Logout-->
-                            <a href="logout">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+                        <li class="border-b-2 border-white p-4 rounded-b-lg">
+                            <!-- Logout -->
+                            <a class="flex items-center gap-3" href="logout">
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-right-from-bracket text-lg"></i>
+                                </div>
                                 <span>Sign out</span>
                             </a>
                         </li>
+
                     </ul>
                 </div>
             </div>

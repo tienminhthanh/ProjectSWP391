@@ -61,35 +61,74 @@
 
             <!--Main section-->
             <main class="w-full md:w-5/6 p-3 flex flex-col">
-                <!--Div1-->
-                <div class="mb-4 bg-white popular-search-area">
-                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
-                        Popular Searches
-                    </h2>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
-                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
-                            On Sale Merch
-                        </button>
-                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
-                            Top Merch
-                        </button>
-                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
-                            On Sale Books
-                        </button>
-                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
-                            Top Books
-                        </button>
-                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
-                            Seasonal Anime - Merch
-                        </button>
-                        <button class="w-48 h-12 bg-orange-500 text-white p-2 rounded">
-                            Seasonal Anime - Books
-                        </button>
+                <!--Popup message from servlet -->
+                <c:if test="${not empty message}">
+                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
+                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
+                        <p>
+                            ${message}
+                        </p>
+                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
                     </div>
+                </c:if>
+                <!--Popular Searches-->
+                <div class="my-4 bg-white popular-search-area border-t-4 border-orange-500">
+
+                    <div class="w-full flex flex-col lg:flex-row items-center justify-center p-8 gap-8">
+                        <div class="w-full md:flex-1 h-64">
+                            <h2 class="text-xl font-bold relative pb-4 text-center text-red-500">
+                                On Sale
+                            </h2>
+                            <div class="w-full rounded-lg border-4 border-red-500 flex flex-row items-center justify-center gap-2 px-2">
+                                <a href="sale?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
+                                    <img  class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-merch.png" alt="On-Sale Merch"/>
+                                </a>
+                                <span class="absoloute top-0 left-0 w-1/3">
+                                    <img class="h-40 w-full object-contain" src="img/popular_search_img/sale-label.png" alt="On-Sale Label"/>
+                                </span>
+                                <a href="sale?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
+                                    <img class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-book.png" alt="On-Sale Books"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="w-full md:flex-1 h-64">
+                            <h2 class="text-xl font-bold relative pb-4 text-center text-amber-500">
+                                Monthly Ranking
+                            </h2>
+                            <div class="w-full rounded-lg border-4 border-amber-500 flex flex-row items-center justify-center gap-2  px-2">
+                                <a href="ranking?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
+                                    <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-merch.png" alt="Top Merch"/>
+                                </a>
+                                <span class="absoloute top-0 left-0 w-1/3">
+                                    <img class="h-40 w-full object-contain" src="img/popular_search_img/top-label.png" alt="Top Label"/>
+                                </span>
+                                <a href="ranking?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
+                                    <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-book.png" alt="Top Books"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="w-full md:flex-1 h-64">
+                            <h2 class="text-xl font-bold relative pb-4 text-center text-sky-400">
+                                Trending
+                            </h2>
+                            <div class="w-full rounded-lg border-4 border-sky-300 flex flex-row items-center justify-center gap-2 px-2 ">
+                                <a href="series?id=1" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
+                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-merch.png" alt="Top Merch"/>
+                                </a>
+                                <span class="absoloute top-0 left-0 w-1/3">
+                                    <img class="max-h-40 w-full object-contain" src="img/popular_search_img/special-label.png" alt="Top Label"/>
+                                </span>
+                                <a href="genre?id=18" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
+                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-book.png" alt="Top Books"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!--Div2-->
-                <div class="mb-4 bg-white voucher-area">
+                <div class="mb-4 bg-white voucher-area border-t-4 border-orange-500">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Available Now
                     </h2>
@@ -199,27 +238,190 @@
                     </div>
                 </div>
 
-                <!--Random Pick-->
-                <div class="bg-white">
-                    <h2 class="text-xl font-bold relative pt-4 pb-4 text-center border-t-4 border-orange-300">
-                        Lucky Books
-                    </h2>
-                    <!--Loop through product list-->
-                    <div class="w-full">
-                        <div class="gap-4 w-full overflow-x-auto">
-                            <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                <c:forEach var="currentProduct" items="${productList}">
-                                    <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
-                                    <jsp:include page="productCard.jsp"/>
-                                </c:forEach>
+                <!--Trending-->
+                <div class="bg-white mb-8">
+                    <c:if test="${not empty sessionScope.animeBookHome}">
+                        <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
+                            Anime Adaptation
+                        </h2>
+                        <!--Loop through product list-->
+                        <div class="w-full mt-4">
+                            <div class="gap-4 w-full overflow-x-auto">
+                                <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                    <c:forEach var="currentProduct" items="${sessionScope.animeBookHome}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <a href="genre?id=18">
+                                    <button type="button" class="w-1/5 mx-auto block text-md md:text-lg bg-orange-500 rounded-lg text-white py-3 my-4 hover:bg-orange-400">See more</button>
+                                </a>
                             </div>
                         </div>
-                    </div>
+                    </c:if>
+
+                    <c:if test="${not empty sessionScope.holoMerchHome}">
+                        <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
+                            Hololive
+                        </h2>
+                        <!--Loop through product list-->
+                        <div class="w-full mt-4">
+                            <div class="gap-4 w-full overflow-x-auto">
+                                <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                    <c:forEach var="currentProduct" items="${sessionScope.holoMerchHome}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <a href="series?id=1">
+                                    <button type="button" class="w-1/5 mx-auto block text-md md:text-lg bg-orange-500 rounded-lg text-white py-3 my-4 hover:bg-orange-400">See more</button>
+                                </a>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${empty sessionScope.animeBookHome && empty sessionScope.holoMerchHome}">
+                        <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
+                            Trending
+                        </h2>
+                        <div class="flex justify-center items-center h-40 w-full">
+                            <p class="text-gray-500 italic"> Our trending products are sold out! Check back soon!</p>
+                        </div>
+                    </c:if>
 
                 </div>
+
+                <!--New Release-->
+                <div class="bg-white mb-8">
+                    <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
+                        New Release
+                    </h2>
+
+                    <!--Loop through product list-->
+                    <c:if test="${not empty sessionScope.newBookHome}">
+                        <div class="w-full mt-4">
+                            <div class="gap-4 w-full overflow-x-auto">
+                                <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                    <c:forEach var="currentProduct" items="${sessionScope.newBookHome}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <a href="new?type=book">
+                                    <button type="button" class="w-1/5 mx-auto block text-md md:text-lg bg-orange-500 rounded-lg text-white py-3 my-4 hover:bg-orange-400">See more</button>
+                                </a>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${not empty sessionScope.newMerchHome && not empty sessionScope.newBookHome}">
+                        <div class="h-1 w-full mb-8 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500"></div>
+                    </c:if>
+
+                    <!--Loop through product list-->
+                    <c:if test="${not empty sessionScope.newMerchHome}">
+                        <div class="w-full">
+                            <div class="gap-4 w-full overflow-x-auto">
+                                <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                    <c:forEach var="currentProduct" items="${sessionScope.newMerchHome}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <a href="new?type=merch">
+                                    <button type="button" class="w-1/5 mx-auto block text-md md:text-lg bg-orange-500 rounded-lg text-white py-3 my-4 hover:bg-orange-400">See more</button>
+                                </a>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${empty sessionScope.newMerchHome && empty sessionScope.newBookHome}">
+                        <div class="flex justify-center items-center h-40 w-full">
+                            <p class="text-gray-500 italic">No new releases available right now. More exciting products coming soon!</p>
+                        </div>
+                    </c:if>
+
+                </div>
+
+                <!--On Sale-->
+                <div class="bg-white mb-8">
+                    <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
+                        On Sale
+                    </h2>
+                    <!--Loop through product list-->
+                    <c:if test="${not empty sessionScope.saleBookHome}">
+                        <div class="w-full mt-4">
+                            <div class="gap-4 w-full overflow-x-auto">
+                                <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                    <c:forEach var="currentProduct" items="${sessionScope.saleBookHome}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <a href="sale?type=book">
+                                    <button type="button" class="w-1/5 mx-auto block text-md md:text-lg bg-orange-500 rounded-lg text-white py-3 my-4 hover:bg-orange-400">See more</button>
+                                </a>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${not empty sessionScope.saleMerchHome && not empty sessionScope.saleBookHome}">
+                        <div class="h-1 w-full mb-8 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500"></div>
+                    </c:if>
+
+                    <!--Loop through product list-->
+                    <c:if test="${not empty sessionScope.saleMerchHome}">
+                        <div class="w-full">
+                            <div class="gap-4 w-full overflow-x-auto">
+                                <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                    <c:forEach var="currentProduct" items="${sessionScope.saleMerchHome}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="w-full">
+                                <a href="sale?type=merch">
+                                    <button type="button" class="w-1/5 mx-auto block text-md md:text-lg bg-orange-500 rounded-lg text-white py-3 my-4 hover:bg-orange-400">See more</button>
+                                </a>
+                            </div>
+                        </div>
+                    </c:if>
+
+                    <c:if test="${empty sessionScope.saleMerchHome && empty sessionScope.saleBookHome}">
+                        <div class="flex justify-center items-center h-40 w-full">
+                            <p class="text-gray-500 italic">All discounted items are sold out! Stay tuned for the next sale.</p>
+                        </div>
+                    </c:if>
+
+                </div>
+
+
+
                 <!--Popup unauthorized users-->
-                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
+                <c:if test="${empty sessionScope.account or sessionScope.account.getRole() ne 'customer'}">
                     <jsp:include page="popuplogin.jsp"/>
+                </c:if>
+
+                <!--Popup message from servlet -->
+                <c:if test="${not empty message}">
+                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
+                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
+                        <p>
+                            ${message}
+                        </p>
+                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
+                    </div>
                 </c:if>
             </main>
         </div>
@@ -227,35 +429,35 @@
         <jsp:include page="chat.jsp"/>
 
         <script>
-            document.getElementById("chatbot-icon").addEventListener("click", function () {
-                document.getElementById("chatbot-window").classList.toggle("hidden");
-            });
-
-            document.getElementById("close-chatbot").addEventListener("click", function () {
-                document.getElementById("chatbot-window").classList.add("hidden");
-            });
-
-            document.getElementById("send-btn").addEventListener("click", function () {
-                const userMessage = document.getElementById("chat-input").value.trim();
-                if (userMessage === "")
-                    return;
-
-                const chatBox = document.getElementById("chat-box");
-                chatBox.innerHTML += `<p class="text-right text-blue-500 font-semibold">Bạn: ${userMessage}</p>`;
-
-                fetch("chat", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: "userMessage=" + encodeURIComponent(userMessage)
-                })
-                        .then(response => response.json())
-                        .then(data => {
-                            chatBox.innerHTML += `<p class="text-left text-gray-700 font-semibold">ChatGPT: ${data.response}</p>`;
-                            chatBox.scrollTop = chatBox.scrollHeight;
-                        });
-
-                document.getElementById("chat-input").value = "";
-            });
+//            document.getElementById("chatbot-icon").addEventListener("click", function () {
+//                document.getElementById("chatbot-window").classList.toggle("hidden");
+//            });
+//
+//            document.getElementById("close-chatbot").addEventListener("click", function () {
+//                document.getElementById("chatbot-window").classList.add("hidden");
+//            });
+//
+//            document.getElementById("send-btn").addEventListener("click", function () {
+//                const userMessage = document.getElementById("chat-input").value.trim();
+//                if (userMessage === "")
+//                    return;
+//
+//                const chatBox = document.getElementById("chat-box");
+//                chatBox.innerHTML += `<p class="text-right text-blue-500 font-semibold">Bạn: ${userMessage}</p>`;
+//
+//                fetch("chat", {
+//                    method: "POST",
+//                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+//                    body: "userMessage=" + encodeURIComponent(userMessage)
+//                })
+//                        .then(response => response.json())
+//                        .then(data => {
+//                            chatBox.innerHTML += `<p class="text-left text-gray-700 font-semibold">ChatGPT: ${data.response}</p>`;
+//                            chatBox.scrollTop = chatBox.scrollHeight;
+//                        });
+//
+//                document.getElementById("chat-input").value = "";
+//            });
         </script>
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
@@ -345,6 +547,11 @@
 
                 updateBanner();
             });
+
+            function closeMessagePopup() {
+                document.getElementById('warning-popup-overlay').classList.add("hidden");
+                document.getElementById('warning-popup-container').classList.add("hidden");
+            }
 
         </script>
 

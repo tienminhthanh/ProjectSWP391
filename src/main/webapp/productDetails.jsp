@@ -9,7 +9,12 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><c:out value="${product.productName} - ${product.specificCategory.categoryName} - WIBOOKS"/></title>
+        <c:if test="${not empty product}">
+            <title><c:out value="${product.productName} - ${product.specificCategory.categoryName} - WIBOOKS"/></title>
+        </c:if>
+        <c:if test="${empty product}">
+            <title>Unavailable Product - WIBOOKS</title>
+        </c:if>
 
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <!--Header css-->
@@ -290,6 +295,7 @@
             <jsp:include page="popuplogin.jsp"/>
         </c:if>
 
+
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
@@ -319,6 +325,7 @@
         <script>
             //Map input quant to purchase quant in forms
             document.addEventListener("DOMContentLoaded", function () {
+
                 // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
                 if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
                     document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
@@ -357,7 +364,7 @@
                     let numberValue = event.target.value; // Get the value from the number input
                     let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                    if (!numberValue) {
+                    if (!numberValue || !`${product.stockCount}`) {
                         return;
                     }
                     if (numberValue < 1) {
@@ -495,6 +502,7 @@
 
                 releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
             });
+
 
 ////Close sidebar on resize
 //window.addEventListener('resize', () => {

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.Account;
+import model.Admin;
+import model.Customer;
 
 public class AccountDAO {
 
@@ -75,6 +77,37 @@ public class AccountDAO {
         Object[] params = {username};
         ResultSet rs = context.exeQuery(sql, params);
         return rs.next() ? mapResultSetToAccount(rs) : null;
+    }
+
+    public Account getAdditionalInfo(Account account) throws SQLException {
+        String sql = "";
+        switch (account.getRole()) {
+            case "admin":
+                sql = "SELECT * from Admin where adminID = ?";
+                break;
+            case "customer":
+                sql = "SELECT * from Customer where customerID = ?";
+                break;
+        }
+
+        Object[] params = {account.getAccountID()};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            switch (account.getRole()) {
+                case "customer":
+                    Customer customer = (Customer)account;
+                    customer.setDefaultDeliveryAddress(rs.getString("defaultDeliveryAddress"));
+                    customer.setTotalPurchasePoints(rs.getDouble("totalPurchasePoints"));
+                    return customer;
+                case "admin":
+                    Admin ad = (Admin)account;
+                    ad.setTotalEvents(rs.getInt("totalEvents"));
+                    ad.setTotalVouchers(rs.getInt("totalVouchers"));
+                    return ad;
+            }
+        }
+
+        return account;
     }
 
     public Account getIDByUsername(String username) throws SQLException {
@@ -258,18 +291,49 @@ public class AccountDAO {
      * Chuyển đổi ResultSet thành đối tượng Account
      */
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
-        return new Account(
-                rs.getInt("accountID"),
-                rs.getString("username"),
-                rs.getString("password"),
-                rs.getString("role"),
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("email"),
-                rs.getString("phoneNumber"),
-                rs.getString("birthDate"),
-                rs.getBoolean("isActive")
-        );
+        switch (rs.getString("role")) {
+            case "customer":
+                return new Customer(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+
+            case "admin":
+                return new Admin(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+
+            default:
+                return new Account(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+        }
     }
 
     public List<Account> getAllCustomers() throws SQLException {
