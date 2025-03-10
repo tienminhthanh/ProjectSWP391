@@ -144,26 +144,30 @@ public class EventDAO {
     }
 
     public boolean updateEvent(Event event) {
-
+        String sql = "UPDATE [dbo].[Event]\n"
+                + "   SET [eventName] = ?\n"
+                + "      ,[dateCreated] = ?\n"
+                + "      ,[duration] = ?\n"
+                + "      ,[banner] = ?\n"
+                + "      ,[description] = ?\n"
+                + "      ,[adminID] = ?\n"
+                + "      ,[dateStarted] = ?\n"
+                + "      ,[isActive] = ?\n"
+                + " WHERE [eventID] = ?";
         try {
-            String sql = "UPDATE [dbo].[Event]\n"
-                    + "   SET [eventName] = ?\n"
-                    + "      ,[dateCreated] = ?\n"
-                    + "      ,[duration] = ?\n"
-                    + "      ,[banner] = ?\n"
-                    + "      ,[description] = ?\n"
-                    + "      ,[adminID] = ?\n"
-                    + "      ,[isActive] = ?\n"
-                    + "      ,[dateStarted] = ?\n"
-                    + " WHERE [eventID] = ?";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate today = LocalDate.now();
+            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getDuration());
+
             Object params[] = {event.getEventName(),
-                event.getDateCreated(), 
+                event.getDateCreated(),
                 event.getDuration(),
-                event.getBanner(), 
-                event.getDescription(), 
+                event.getBanner(),
+                event.getDescription(),
                 event.getAdminID(),
-                event.isIsActive(), 
-                event.getDateStarted(), 
+                event.getDateStarted(),
+                !LocalDate.now().isAfter(expiryDate),
                 event.getEventID()};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;

@@ -211,27 +211,32 @@ public class VoucherDAO {
     }
 
     public boolean updateVoucher(Voucher voucher) {
+        String sql = "UPDATE [dbo].[Voucher]\n"
+                + "   SET [voucherName] = ?\n"
+                + "      ,[voucherValue] = ?\n"
+                + "      ,[quantity] = ?\n"
+                + "      ,[minimumPurchaseAmount] = ?\n"
+                + "      ,[duration] = ?\n"
+                + "      ,[voucherType] = ?\n"
+                + "      ,[maxDiscountAmount] = ?\n"
+                + "      ,[dateStarted] = ?\n"
+                + "      ,[isActive] = ?\n"
+                + "      WHERE [voucherID] = ?";
         try {
-            String sql = "UPDATE [dbo].[Voucher]\n"
-                    + "   SET [voucherName] = ?\n"
-                    + "      ,[voucherValue] = ?\n"
-                    + "      ,[quantity] = ?\n"
-                    + "      ,[minimumPurchaseAmount] = ?\n"
-                    + "      ,[duration] = ?\n"
-                    + "      ,[isActive] = ?\n"
-                    + "      ,[voucherType] = ?\n"
-                    + "      ,[maxDiscountAmount] = ?\n"
-                    + "      ,[dateStarted] = ?\n"
-                    + "      WHERE [voucherID] = ?";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate today = LocalDate.now();
+            LocalDate createDate = LocalDate.parse(voucher.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(voucher.getDuration());
+
             Object[] params = {voucher.getVoucherName(),
                 voucher.getVoucherValue(),
                 voucher.getQuantity(),
                 voucher.getMinimumPurchaseAmount(),
                 voucher.getDuration(),
-                voucher.isIsActive(),
                 voucher.getVoucherType(),
                 voucher.getMaxDiscountAmount(),
                 voucher.getDateStarted(),
+                !LocalDate.now().isAfter(expiryDate),
                 voucher.getVoucherID()};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;

@@ -25,9 +25,9 @@
                     <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddEvent">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
-                    <c:if test="${not empty message}">
+                    <c:if test="${not empty errorMessage}">
                         <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                            <i class="fas fa-exclamation-circle mr-2"></i>${message}
+                            <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
                         </p>
                     </c:if>
                 </div>
@@ -67,15 +67,8 @@
                                     </td>
                                     <td class="px-2 py-3 border border-b text-center">
                                         <c:choose>
-                                            <c:when test="${event.expiry}">
-                                                <c:choose>
-                                                    <c:when test="${event.isActive}">
-                                                        <span class="text-green-600">Active</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="text-red-600">Deactivate</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <c:when test="${event.isActive}">
+                                                <span class="text-green-600">Active</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-red-600">Deactivate</span>
@@ -153,6 +146,23 @@
                                             window.location = 'eventDetails?eventId=' + eventID;
                                         }
         </script>
+        <c:if test="${not empty sessionScope.message}">
+            <div id="popupMessage" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
+                <strong>${sessionScope.message}</strong>
+            </div>
+            <c:remove var="message" scope="session"/>
+            <c:remove var="messageType" scope="session"/>
 
+            <script>
+                // Tự động biến mất sau 3 giây
+                setTimeout(() => {
+                    let popup = document.getElementById("popupMessage");
+                    if (popup) {
+                        popup.style.opacity = "0";
+                        setTimeout(() => popup.remove(), 500); // Xóa khỏi DOM sau khi animation kết thúc
+                    }
+                }, 3000);
+            </script>
+        </c:if>
 </body>
 </html>
