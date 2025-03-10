@@ -13,12 +13,9 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-
 import java.sql.SQLException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -80,10 +77,10 @@ public class OrderController extends HttpServlet {
 
         if ("checkOut".equals(action)) {
 
-//            if (cartItems == null || cartItems.isEmpty()) {
-//                response.sendRedirect("home");
-//                return;
-//            }
+            if (cartItems == null || cartItems.isEmpty()) {
+                response.sendRedirect("home");
+                return;
+            }
             double subtotal = 0;
 
             List<DeliveryOption> deliveryOptions = new ArrayList<>();
@@ -98,7 +95,6 @@ public class OrderController extends HttpServlet {
             for (CartItem item : cartItems) {
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 item.setPriceWithQuantity(priceWithQuantity);
-
                 subtotal += item.getPriceWithQuantity().doubleValue();
             }
 
@@ -151,9 +147,7 @@ public class OrderController extends HttpServlet {
             request.setAttribute("priceWithQuantity", subtotal);
         } else if ("buyNow".equals(action)) {
 
-                cartItems = new ArrayList<>();
-
-            
+            cartItems = new ArrayList<>();
 
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
@@ -293,12 +287,19 @@ public class OrderController extends HttpServlet {
 
         if (tempVoucherID > 0 && !voucherIDParam.trim().isEmpty()) {
             try {
-
+                double valueOfVoucher = 0;
                 Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
                 voucherID = voucher.getVoucherID();
-
                 if (voucherID != null && voucher.isIsActive() && preOrderPrice >= voucher.getMinimumPurchaseAmount()) {
-                    subtotal -= voucher.getVoucherValue();
+                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                        valueOfVoucher = voucher.getVoucherValue();
+                    } else {
+                        valueOfVoucher = (subtotal * voucher.getVoucherValue()) / 100;
+                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                            valueOfVoucher = voucher.getMaxDiscountAmount();
+                        }
+                    }
+                    subtotal -= valueOfVoucher;
                     voucherID = tempVoucherID; // Chỉ gán khi voucher hợp lệ
                     voucher.setQuantity(voucher.getQuantity() - 1);
                 }

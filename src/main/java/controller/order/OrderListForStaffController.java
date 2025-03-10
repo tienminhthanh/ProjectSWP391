@@ -14,14 +14,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Array;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
+import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
 import model.Shipper;
@@ -76,17 +79,29 @@ public class OrderListForStaffController extends HttpServlet {
         OrderInfo orderInfo = new OrderInfo();
         Map<Integer, Account> customerMap = new HashMap<>(); // Lưu orderID -> Account
         List<Shipper> shipperList = new ArrayList<>();
+        DeliveryOption delivery = new DeliveryOption();
+
         String status = request.getParameter("status");
         try {
             orderList = orderDAO.getAllOrders();
-            
+
             for (OrderInfo order : orderList) {
                 Account customer = orderDAO.getInfoCustomerByOrderID(order.getOrderID());
                 if (customer != null) {
                     customerMap.put(order.getOrderID(), customer); // Lưu vào Map
                 }
                 orderInfo = orderDAO.getOrderByID(order.getOrderID(), customer.getAccountID());
-    
+                int deliveryTimeInDays;
+
+                delivery = orderDAO.getDeliveryOption(order.getDeliveryOptionID());
+                deliveryTimeInDays = delivery.getEstimatedTime();
+                Calendar calendar = Calendar.getInstance();
+                Date orderDate = order.getOrderDate();
+                calendar.setTime(orderDate); // Nếu orderDate là null, tránh lỗi ở đây
+                calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
+                Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
+                order.setExpectedDeliveryDate(expectedDeliveryDate);
+            
             }
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,9 +147,12 @@ public class OrderListForStaffController extends HttpServlet {
             return;
         }
         try {
+            String status = "Shipped";
             orderDAO.updateStaffAndShipperForOrder(orderID, account.getAccountID(), shipperID);
-            orderDAO.updateDeliverystatus(orderID);
-            orderDAO.updateOrderstatus(orderID);
+            orderDAO.updateDeliverystatus(orderID,status);
+            orderDAO.updateOrderstatus(orderID,status );
+            session.setAttribute("orderID",orderID );
+            System.out.println();
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }

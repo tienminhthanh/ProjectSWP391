@@ -8,27 +8,24 @@ package model;
  *
  * @author Admin
  */
-public class Customer {
+public class Customer  extends Account{
 
-    private int customerID;
+
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;
 
     public Customer() {
     }
 
-    public Customer(int customerID, double totalPurchasePoints, String defaultDeliveryAddress) {
-        this.customerID = customerID;
+    public Customer(double totalPurchasePoints, String defaultDeliveryAddress) {
         this.totalPurchasePoints = totalPurchasePoints;
         this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
 
-    public int getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(int customerID) {
-        this.customerID = customerID;
+    public Customer(double totalPurchasePoints, String defaultDeliveryAddress, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+        this.totalPurchasePoints = totalPurchasePoints;
+        this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
 
     public double getTotalPurchasePoints() {
@@ -47,5 +44,4 @@ public class Customer {
         this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
 
-    
 }

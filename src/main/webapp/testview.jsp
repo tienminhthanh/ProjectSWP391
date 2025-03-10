@@ -79,7 +79,7 @@
             }
             th {
                 background-color: #f9fafb;
-                font-weight: normal; /* Tắt in đậm cho tiêu đề bảng */
+                font-weight: bold; /* Đậm tiêu đề bảng */
             }
             img {
                 max-width: 70px; /* Tăng kích thước hình ảnh */
@@ -87,17 +87,44 @@
                 object-fit: cover;
                 border-radius: 4px;
             }
+            .card {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                margin-bottom: 16px;
+            }
+            .button {
+                background-color: #FF9800; /* Cam */
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                text-align: center;
+                display: inline-block;
+                margin-top: 8px;
+            }
+            .input, .select {
+                border: 1px solid #D1D5DB;
+                border-radius: 6px;
+                padding: 10px;
+                width: 200px;
+                margin-right: 8px;
+            }
+            .input:focus, .select:focus {
+                border-color: #4CAF50; /* Xanh lá */
+                outline: none;
+            }
             .order-info {
-                display: flex; /* Sử dụng Flexbox cho thông tin đơn hàng */
-                justify-content: space-between; /* Chia đều không gian giữa hai bên */
-                margin-top: 20px; /* Khoảng cách trên */
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
-            .order-info div {
-                flex: 1; /* Mỗi phần chiếm 1/2 chiều rộng */
-                margin-right: 20px; /* Khoảng cách giữa hai phần */
-            }
-            .order-info div:last-child {
-                margin-right: 0; /* Không có khoảng cách bên phải cho phần cuối */
+            .order-details {
+                flex: 1;
+                margin-right: 20px; /* Space between details and buttons */
             }
         </style>
     </head>
@@ -115,8 +142,7 @@
                 <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
                     <i class="fas fa-users mr-2"></i>
                     Account List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="eventList">
+                </a>            <a class="flex items-center p-2 hover:bg-blue-800" href="eventList">
                     <i class="fas fa-calendar-alt mr-2"></i>
                     Event List
                 </a>
@@ -196,88 +222,86 @@
         <div class="main-content">
             <div class="header">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold ml-4">Order Detail</h1>
-              
+
+                    <h1 class="text-xl font-bold ml-4">Order List</h1>
+
                 </div>
                 <div class="flex items-center">
                     <i class="fas fa-bell mr-4"></i>
                     <a href="readAccount" class="fas fa-user-circle mr-4"></a>
-                    <span>Staff</span>
+                    <span>Shipper</span>
                     <a href="logout" class="fas fa-sign-out-alt ml-4"></a>
                 </div>
             </div>
 
-            <div class="p-4">
-                <div class="bg-white p-4 rounded shadow">
-                    <div class="flex justify-between items-center border-b pb-2 mb-4">
-                        <h2 class="text-xl font-bold">Order ID: <span>${orderInfo.orderID}</span></h2>
-                        <div class="space-x-2">
-                            <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
-                            <button class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
-                            <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
+            <div >
+                <div class="bg-white rounded shadow">
+                    <div class="flex-1  overflow-y-auto">
+
+                        <!-- Thanh Navbar trạng thái -->
+                        <div class="flex justify-between items-center mb-6 bg-white p-4 shadow rounded-lg">
+                            <div class="flex items-center space-x-2">
+                                <input id="dateRangePicker" class="border rounded px-2 py-1" type="text" placeholder="Select date range" />
+                            </div>
+                            <div class="flex space-x-4">
+                                <a href="OrderListForStaffController" class="px-4 py-2 rounded-lg text-white
+                                   ${empty                       param.status ? 'bg-blue-600' : 'bg-gray-400'}">All</a>
+
+                                <a href="OrderListForStaffController?status=Pending" class="px-4 py-2 rounded-lg text-white
+                                   ${param.status == 'Pending' ? 'bg-blue-600' : 'bg-gray-400'}">Pending</a>
+
+                                <a href="OrderListForStaffController?status=Shipped" class="px-4 py-2 rounded-lg text-white
+                                   ${param.status == 'Shipped' ? 'bg-blue-600' : 'bg-gray-400'}">Shipped</a>
+
+                                <a href="OrderListForStaffController?status=Completed" class="px-4 py-2 rounded-lg text-white
+                                   ${param.status == 'Completed' ? 'bg-blue-600' : 'bg-gray-400'}">Completed</a>
+
+                                <a href="OrderListForStaffController?status=Canceled" class="px-4 py-2 rounded-lg text-white
+                                   ${param.status == 'Canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
+                            </div>
                         </div>
+
+                        <!-- Lặp danh sách đơn hàng -->         
+                        <c:forEach var="order" items="${orderList}">
+                            <div class="card">
+                                <div class="order-info flex">
+                                    <div class="order-details flex-1">
+                                        <h2 class="font-semibold">Order ID: ${order.orderID}</h2>
+                                        <p>User Name: ${customerMap[order.orderID].firstName} ${customerMap[order.orderID].lastName}</p>
+                                        <p>Address: ${order.deliveryAddress}</p>
+                                        <p>Status: ${order.orderStatus}</p>
+                                        <p>Created Date: ${order.orderDate}</p>
+                                        <p>Total: <fmt:formatNumber value="${order.preVoucherAmount}" pattern="#,##0"/> đ</p>
+                                        <p>Payment Method: ${order.paymentMethod}</p>
+                                        <p>Delivery Status: ${order.deliveryStatus}</p>
+                                        <p>Order Status: ${order.orderStatus}</p>
+                                    </div>
+
+                                </div>
+                                <div class="flex justify-between items-center mt-4">
+                                    <a href="OrderDetailForStaffController?id=${order.orderID}" class="button">View Details</a>
+                                    <div class="update-section flex items-center">
+                                        <!-- Chỉ hiển thị khi trạng thái đơn hàng là 'Pending' -->
+                                        <c:if test="${order.orderStatus eq 'pending'}">
+                                            <form action="OrderListForStaffController" method="POST" class="flex items-center mb-2">
+                                                <input type="hidden" name="orderID" value="${order.orderID}"/>
+                                                <select name="shipperID" class="select" required>
+                                                    <option value="">Choose Shipper</option>
+                                                    <c:forEach var="shipper" items="${shipperList}">
+                                                        <option value="${shipper.accountID}">${shipper.username} (${shipper.totalDeliveries})</option>
+                                                    </c:forEach>
+                                                </select>
+                                                <button type="submit" class="button">Update</button>
+                                            </form>
+                                        </c:if>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </c:forEach>
                     </div>
-
-                    <div class="order-info">
-                        <div>
-                            <h1 class="text-2xl font-bold mb-2">Order Information</h1>
-                            <p><i class="fas fa-user icon"></i> Customer: ${customer.firstName} ${customer.lastName}</p>
-                            <p><i class="fas fa-phone icon"></i> Phone: ${customer.phoneNumber}</p>
-                            <p><i class="fas fa-map-marker-alt icon"></i> Address: ${orderInfo.deliveryAddress}</p>
-                            <p><i class="fas fa-truck icon"></i> Status: ${orderInfo.orderStatus}</p>
-                
-                            <p>
-                                <i class="fas fa-calendar-alt icon"></i> Order Date: 
-                                <fmt:formatDate value="${orderInfo.orderDate}" pattern="dd/MM/yyyy"/>
-                            </p>
-
-                            <p>
-                                <i class="fas fa-calendar-alt icon"></i> Expected Delivery Date: 
-                                <fmt:formatDate value="${orderInfo.expectedDeliveryDate}" pattern="dd/MM/yyyy"/>
-                            </p>
-
-                            <p><i class="fas fa-credit-card icon"></i> Payment Method: ${orderInfo.paymentMethod}</p>                    
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold mb-2"> Payment Information</h1>
-                            <p><i class="fas fa-tags icon"></i> Discount:<fmt:formatNumber value="${valueVoucher}" pattern="#,##0"/> đ</p>
-                            <p><i class="fas fa-coins icon"></i> Total Amount: <fmt:formatNumber value="${orderInfo.preVoucherAmount}" pattern="#,##0"/> đ</p>
-                            <p><i class="fas fa-check-circle icon"></i> Payment Status:${orderInfo.paymentStatus}</p>
-                            <p><strong>Delivery Deadline:</strong> <span class="font-bold">17/02/2022 07:00:00</span></p>
-                        </div>
-                    </div>
-
-                    <div class="border-b pb-2 mb-4">
-                        <div class="flex space-x-4">
-                            <button class="border-b-2 border-orange-500 pb-2">Products</button>
-                            <button class="pb-2">Other Information</button>
-                        </div>
-                    </div>
-
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr>
-                                <th>Product Image</th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price With Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="item" items="${orderInfo.orderProductList}">
-                                <tr>
-                                    <td class="text-center">
-                                        <img src="${item.product.imageURL}" alt="${item.product.productName}">
-                                    </td>
-                                    <td>${item.product.productName}</td>
-                                    <td>${item.quantity}</td>
-                                    <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
                 </div>
             </div>
-        </div>
+
     </body>
 </html>

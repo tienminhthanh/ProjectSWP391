@@ -10,19 +10,14 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     </head>
-    <body class="bg-gray-100 text-lg"> <!-- Tăng cỡ chữ toàn trang -->
+    <body class="bg-gray-100 text-base"> <!-- Tăng cỡ chữ toàn trang -->
 
         <!-- Header -->
         <div class="bg-orange-600 text-white p-6 flex justify-between items-center">
             <div class="flex items-center space-x-6">
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-12">
-                <h1 class="text-3xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
-                <nav class="space-x-6">
-                    <a href="#" class="hover:underline text-xl">Đơn hàng</a>
-                    <a href="#" class="hover:underline text-xl">Sản phẩm</a>
-                    <a href="#" class="hover:underline text-xl">Báo cáo</a>
-                    <a href="#" class="hover:underline text-xl">Cấu hình</a>
-                </nav>
+                <h1 class="text-xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
+           
             </div>
             <div class="flex items-center space-x-6">
                 <i class="fas fa-bell text-2xl"></i>
@@ -46,7 +41,7 @@
         <!-- Main Content Section -->
         <main class="container mx-auto my-10">
             <div class="bg-white p-8 rounded-lg shadow-md">
-                <h2 class="text-4xl font-bold mb-6">Order List</h2> <!-- Tiêu đề lớn hơn -->
+                <h2 class="text-2xl font-bold mb-6">Order List</h2> <!-- Tiêu đề lớn hơn -->
                 <div class="space-y-6">
                     <!-- Order Detail -->
                     <c:forEach var="order" items="${list}" varStatus="loop">
@@ -61,25 +56,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <p class="text-lg">📍 Address: ${order.deliveryAddress}</p>
+                            <p class="text-xl">📍 Address: ${order.deliveryAddress}</p>
 
-                            <p class="text-lg">💰 Fee: <fmt:formatNumber value="${order.preVoucherAmount}" type="number" groupingUsed="true" pattern="#,###"/> đ</p>
+                            <p class="text-xl">💰 Fee: <fmt:formatNumber value="${order.preVoucherAmount}" type="number" groupingUsed="true" pattern="#,###"/> đ</p>
                             <!-- Lấy thông tin khách hàng từ danh sách accountList -->
                             <c:if test="${not empty accountList}">
                                 <c:set var="acc" value="${accountList[loop.index]}" />
-                                <p class="text-lg">👤 User Name: ${acc.username}</p>
-                                <p class="text-lg">📞 Contact: ${acc.phoneNumber}</p>
+                                <p class="text-xl">👤 User Name: ${acc.username}</p>
+                                <p class="text-xl">📞 Contact: ${acc.phoneNumber}</p>
                             </c:if>
-                            <p class="text-lg">💳 Payment Method: ${order.paymentMethod}</p>
+                            <p class="text-xl">💳 Payment Method: ${order.paymentMethod}</p>
 
                             <div class="mt-4">
                                 <a href="OrderDetailForShipperController?id=${order.orderID}" 
                                    class="inline-block px-4 py-2 text-lg bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200 mr-3">
                                     <i class="fas fa-eye mr-2"></i> Details
                                 </a>
-                                <button class="inline-block px-4 py-2 text-lg bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200">
-                                    Update
-                                </button>
+                                
+                                <form action="OrderListForShipperController" method="post">
+                                    <input type="hidden" name="orderID" value="${order.orderID}">
+                                    <button type="submit" class="inline-block px-4 py-2 text-lg bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200">Update</button>
+                                </form>
+
                             </div>
                         </div>
                     </c:forEach>
