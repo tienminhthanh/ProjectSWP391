@@ -4,6 +4,7 @@
  */
 package controller.product;
 
+import dao.CartItemDAO;
 import dao.ProductDAO;
 import dao.VoucherDAO;
 import java.io.IOException;
@@ -373,7 +374,7 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
-            
+
             //Parse id string to integer
             int id = Integer.parseInt(genreID);
 
@@ -553,30 +554,38 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleHomepage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("account") != null) {
-            Account account = (Account) session.getAttribute("account");
-            switch (account.getRole()) {
-                case "staff":
-                    response.sendRedirect("dashboard.jsp");
-                    break;
-                case "shipper":
-                    response.sendRedirect("shipperDashboard.jsp");
-                    break;
-                case "admin":
-                    response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
-                    break;
-            }
-            if (!account.getRole().equals("customer")) {
-                return;
-            }
-        }
-
         try {
+            if (session != null && session.getAttribute("account") != null) {
+
+                Account account = (Account) session.getAttribute("account");
+                switch (account.getRole()) {
+                    case "staff":
+                        response.sendRedirect("dashboard.jsp");
+                        break;
+                    case "shipper":
+                        response.sendRedirect("shipperDashboard.jsp");
+                        break;
+                    case "customer":
+                        CartItemDAO cartDAO = new CartItemDAO();
+                        List<CartItem> listCart = cartDAO.getCartItemsByCustomer(account.getAccountID());
+                        session.setAttribute("cartItems", listCart);
+                        break;
+                    case "admin":
+                        response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
+                        break;
+                }
+                if (!account.getRole().equals("customer")) {
+                    return;
+                }
+
+            }
+
             showProductsInHomepage(request, response);
             showVouchersInHomepage(request, response);
 
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {
+
             System.out.println(e.getMessage());
             request.setAttribute("errorMessage", e.getMessage());
             request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -604,7 +613,7 @@ public class ProductCatalogController extends HttpServlet {
             throws ServletException, IOException {
         // Implementation for ranking functionality
     }
-    
+
     private String formatURL(String encodedURL, Set<String> invalidParams) throws UnsupportedEncodingException, MalformedURLException {
 
         Map<String, String> decodedURLParts = new HashMap<>();
@@ -627,15 +636,15 @@ public class ProductCatalogController extends HttpServlet {
         for (String param : params) {
             String[] keyValue = param.split("=");           //Split param name and value
             String key = keyValue[0];
-            
+
             //Skip if invalid params found
             if (invalidParams.contains(key)) {
                 continue;
             }
-            
+
             //Ensure value never null
             String value = keyValue.length > 1 ? keyValue[1] : "";
-            
+
             //Put only valid param
             decodedURLParts.put(key, value);
         }

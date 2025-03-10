@@ -36,6 +36,7 @@
                     <h2 class="text-xl font-bold">Delivery Information / <span>${orderInfo.orderID}</span></h2>
                     <div class="space-x-2">
                         <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
+                        
                         <button class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
                         <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
                     </div>
@@ -51,9 +52,17 @@
                         <p><strong>Phone Number:</strong> <span class="font-bold">${customer.phoneNumber}</span></p>
                     </div>
                     <div class="space-y-2 text-right">
-                        <p><strong>Delivery Deadline:</strong> <span class="font-bold">17/02/2022 07:00:00</span></p>
-                        <p><strong>Status:</strong> <span class="font-bold text-green-500">${orderInfo.orderStatus}</span></p>
-                        <p><strong>Notes:</strong> <span class="font-bold">Deliver before 5 PM</span></p>
+
+                        <p><strong>Delivery Deadline:</strong> 
+                            <span class="font-bold">
+                                <fmt:formatDate value="${orderInfo.expectedDeliveryDate}" pattern="dd/MM/yyyy"/>
+                            </span>
+                        </p>
+
+                        <p><strong>Status:</strong> 
+                            <span class="font-bold text-green-500">${orderInfo.orderStatus}</span>
+                        </p>
+<!--                        <p><strong>Notes:</strong> <span class="font-bold">Deliver before 5 PM</span></p>-->
                     </div>
                 </div>
 
@@ -70,7 +79,7 @@
                             <th class="py-2">Product</th>
                             <th class="py-2">Description</th>
                             <th class="py-2">Quantity</th>
-<!--                            <th class="py-2">Unit Price</th>-->
+                            <!--<th class="py-2">Unit Price</th>-->
                             <th class="py-2">Total Price</th>
                         </tr>
                     </thead>

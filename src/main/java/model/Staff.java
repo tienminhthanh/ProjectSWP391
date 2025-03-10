@@ -8,12 +8,17 @@ package model;
  *
  * @author Admin
  */
-public class Staff extends Account {
+public class Staff extends Account{
 
     private String workShift;
     private int totalOrders;
 
     public Staff() {
+    }
+
+    public Staff(String workShift, int totalOrders) {
+        this.workShift = workShift;
+        this.totalOrders = totalOrders;
     }
 
     public Staff(String workShift, int totalOrders, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
@@ -37,5 +42,8 @@ public class Staff extends Account {
     public void setTotalOrders(int totalOrders) {
         this.totalOrders = totalOrders;
     }
+
+   
+    
 
 }

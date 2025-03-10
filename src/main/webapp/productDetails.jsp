@@ -162,8 +162,17 @@
                                                 </form>
                                             </c:when>
                                             <c:otherwise>
-                                                <form action="cart" method="post">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                <!-- Calculate cart quantity from session -->
+                                                <c:set var="cartQuantity" value="0" />
+                                                <c:forEach var="cartItem" items="${sessionScope.cartItems}">
+                                                    <c:if test="${cartItem.productID == product.productID}">
+                                                        <c:set var="cartQuantity" value="${cartItem.quantity}" />
+                                                    </c:if>
+                                                </c:forEach>
+
+                                                <!-- Add to Cart form with stock check -->
+                                                <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${product.stockCount}, event)">
+                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}">
                                                     <input type="hidden" name="productID" value="${product.productID}"/>
                                                     <input type="hidden" name="priceWithQuantity"/>
                                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
@@ -303,6 +312,10 @@
         <!--Tailwind-->
         <script src="https://cdn.tailwindcss.com">
         </script>
+        
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
         <script>
             //Map input quant to purchase quant in forms
             document.addEventListener("DOMContentLoaded", function () {
@@ -316,17 +329,17 @@
 
                 let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
                 let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-                
-                if(!hiddenInputs){
+
+                if (!hiddenInputs) {
                     console.log("Hidden quantity not found!");
                     return;
                 }
-                
-                if(!numberValue){
+
+                if (!numberValue) {
                     console.log("Quantity input not found!");
                     return;
                 }
-               
+
 
                 // Loop through all hidden inputs and update their values
                 hiddenInputs.forEach(function (hiddenInput) {
@@ -490,7 +503,20 @@
 //    sidebar.style.display = 'none';
 //});
 
-
+// Stock check function for Add to Cart
+            function checkStock(cartQuantity, stockCount, event) {
+                let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
+                if (cartQuantity + quantityToAdd > stockCount) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Stock Limit Reached',
+                        text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            }
 
         </script>
     </body>

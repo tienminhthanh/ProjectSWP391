@@ -9,21 +9,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order Detail</title>
         <script src="https://cdn.tailwindcss.com"></script>
+         <link href="css/styleHeader.css" rel="stylesheet">
+   <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     </head>
     <body class="bg-gray-100">
-        <header class="bg-white shadow">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <div class="logo">
-                    <a href="home">
-                        <img src="img/logo.png" alt="WIBOOKS" class="h-10"/>
-                    </a> 
-                </div>
-                <a href="logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex items-center">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
-                </a>
-            </div>
-        </header>
+        <div class="header-container">
+            <jsp:include page="header.jsp" flush="true"/> 
+        </div>
+  
 
         <div class="container mx-auto px-4 py-6">
             <div class="mb-4">
@@ -35,7 +30,15 @@
                     <div class="w-full md:w-1/2 px-4">
                         <h2 class="text-xl font-semibold mb-4">Order Information</h2>
                         <p><strong>Order ID:</strong> ${orderInfo.orderID}</p>
-                        <p><strong>Order Date:</strong> ${orderInfo.orderDate}</p>
+
+                        <p><strong>Order Date:</strong> 
+                            <fmt:formatDate value="${orderInfo.orderDate}" pattern="dd/MM/yyyy"/>
+                        </p>
+
+                        <p><strong>Expected Delivery Date:</strong> 
+                            <fmt:formatDate value="${orderInfo.expectedDeliveryDate}" pattern="dd/MM/yyyy"/>
+                        </p>
+
                         <p><strong>Shipping Address:</strong> ${orderInfo.deliveryAddress}</p>
                         <p><strong>Payment Method:</strong> ${orderInfo.paymentMethod}</p>
                         <p><strong>Order Status:</strong> ${orderInfo.orderStatus}</p>
@@ -63,21 +66,35 @@
                         </p>
 
                         <div class="flex space-x-2 mt-4">
-                            <button type="button" onclick="showUpdateForm()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</button>
-                            <form action="DeleteOrderController" method="POST" onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
-                                <input type="hidden" name="id" value="${orderInfo.orderID}">
-                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
-                            </form>
-                            <a href="OrderListController" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Back</a>
-                            <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
-                            <c:if test="${orderInfo.orderStatus == 'Đang giao hàng'}">
-                                <form action="ConfirmReceivedOrderController" method="POST">
-                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
-                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
-                                        Đã nhận hàng
+                            <c:if test="${orderInfo.orderStatus eq 'pending'}">
+                                <button type="button" onclick="showUpdateForm()" 
+                                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                    Update
+                                </button>
+                            </c:if>
+                            <c:if test="${orderInfo.orderStatus eq 'pending'}">
+                                <form action="DeleteOrderController" method="POST" 
+                                      onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
+                                    <input type="hidden" name="id" value="${orderInfo.orderID}">
+                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                        Cancel
                                     </button>
                                 </form>
                             </c:if>
+                            <a href="OrderListController" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Back</a>
+                            <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
+                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'shipped'}">                                <form action="OrderDetailController" method="POST">
+                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
+                                        Confirm Receipt
+                                    </button>
+                                </form>
+                            </c:if>
+                            <c:if test="${ orderInfo.orderStatus eq 'completed'}">                                <form action="OrderDetailController" method="POST">
+                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                </form>
+                            </c:if>
+                            <!-- Rate Button -->
 
                         </div>
                     </div>
@@ -95,6 +112,46 @@
                                     <!--                                    <p class="text-center text-sm font-bold">
                                     <fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ
                                 </p>-->
+
+                                    <c:if test="${ orderInfo.orderStatus eq 'completed'}">                                <form action="OrderDetailController" method="POST">
+                                            <button type="button" onclick="openRatingPopup('${orderInfo.orderID}')" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
+                                                Rate
+                                            </button>
+                                        </c:if>
+
+                                        <div id="ratingPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeRatingPopup(event)">
+                                            <div class="bg-white p-6 rounded-lg shadow-lg w-96" onclick="event.stopPropagation()">
+                                                <h2 class="text-xl font-bold mb-4">Rate Your Order</h2>
+                                                <c:forEach var="item" items="${orderInfo.orderProductList}">
+                                                    <div class="flex items-center space-x-4 border-b pb-3">
+                                                        <img src="${item.product.imageURL}" alt="${item.product.productName}" class="w-24 h-24 object-cover rounded">
+                                                        <div class="flex-1">
+                                                            <p class="text-lg font-semibold">${item.product.productName}</p>
+
+                                                            <!-- Hệ thống đánh giá sao cho từng sản phẩm -->
+                                                            <div class="flex space-x-1 text-2xl" id="starContainer-${item.product.productID}">
+                                                                <div class="flex justify-center mb-4" id="starContainer">
+                                                                    <span class="text-gray-400 text-2xl cursor-pointer" data-star="1">★</span>
+                                                                    <span class="text-gray-400 text-2xl cursor-pointer" data-star="2">★</span>
+                                                                    <span class="text-gray-400 text-2xl cursor-pointer" data-star="3">★</span>
+                                                                    <span class="text-gray-400 text-2xl cursor-pointer" data-star="4">★</span>
+                                                                    <span class="text-gray-400 text-2xl cursor-pointer" data-star="5">★</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </c:forEach>
+                                                <form action="OrderDetailController" method="POST">
+                                                    <input type="hidden" name="orderID" id="orderID">
+                                                    <input type="hidden" name="rating" id="rating" value="0">
+                                                    <!-- Submit Button -->
+                                                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
+
+                                                    <!-- Close Button -->
+                                                    <button type="button" onclick="closeRatingPopup()" class="bg-gray-400 text-white px-4 py-2 rounded ml-2 hover:bg-gray-500">Cancel</button>
+                                                </form>
+                                            </div>
+                                        </div>
                                 </div>
                             </c:forEach>
                         </div>
@@ -128,6 +185,31 @@
             function hideUpdateForm() {
                 document.getElementById("updateForm").classList.add("hidden");
             }
+        </script>
+        <script>
+            function openRatingPopup(orderID) {
+                document.getElementById("ratingPopup").classList.remove("hidden");
+                document.getElementById("orderID").value = orderID;
+            }
+
+            function closeRatingPopup(event) {
+                if (!event || event.target.id === "ratingPopup") {
+                    document.getElementById("ratingPopup").classList.add("hidden");
+                }
+            }
+
+            document.querySelectorAll("#starContainer span").forEach(star => {
+                star.addEventListener("click", function () {
+                    let rating = this.getAttribute("data-star");
+                    document.getElementById("rating").value = rating;
+
+                    // Update star colors dynamically
+                    document.querySelectorAll("#starContainer span").forEach(s => {
+                        s.classList.toggle("text-yellow-500", s.getAttribute("data-star") <= rating);
+                        s.classList.toggle("text-gray-400", s.getAttribute("data-star") > rating);
+                    });
+                });
+            });
         </script>
     </body>
 </html>

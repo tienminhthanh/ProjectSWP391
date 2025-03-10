@@ -78,15 +78,7 @@ public class CreateNotificationController extends HttpServlet {
                 // Send to selected customers
                 for (String receiverIDStr : receiverIDs) {
                     int receiverID = Integer.parseInt(receiverIDStr);
-                    Notification notification = new Notification();
-                    notification.setSenderID(senderID);
-                    notification.setReceiverID(receiverID);
-                    notification.setNotificationTitle(notificationTitle.trim());
-                    notification.setNotificationDetails(notificationDetails.trim());
-                    notification.setDateCreated(new Date(System.currentTimeMillis()));
-                    notification.setDeleted(false);
-                    notification.setRead(false);
-
+                    Notification notification = new Notification(senderID, receiverID, notificationDetails.trim(), new Date(System.currentTimeMillis()), false, notificationTitle.trim(), false);
                     notificationDAO.insertNotification(notification);
                 }
                 response.sendRedirect("listnotification");

@@ -159,17 +159,9 @@
                                     </label><br>
                                 </c:forEach>
                             </div> <hr>
-
-
-                            <!-- Hidden fields to send shipping fee, discount, etc. -->
-                            <input type="hidden" name="shippingFee" value="${optionCost}">
-                            <input type="hidden" name="discount" value="${voucherValue}">
-                            <input type="hidden" name="priceWithQuantity" value="${priceWithQuantity}">
-                            <input type="hidden" name="orderTotalAmount" value="${orderTotalAmount}">
-
                             <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="history.back();">Back to Cart</button>
-                                <button type="submit" class="btn btn-primary">Place Order</button>
+                                <a href="home" class="btn btn-secondary">Back to Home</a>
+                                <button type="submit" class="btn btn-primary" id="placeOrderBtn"  onclick="disableButton()">Place Order</button>
                             </div>
                         </form>
                     </div>
