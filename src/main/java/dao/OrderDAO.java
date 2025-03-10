@@ -177,6 +177,13 @@ public class OrderDAO {
         return orderList;
     }
 
+    public OrderInfo getOrderByOrderID(int orderID) throws SQLException {
+        String sql = "SELECT * FROM OrderInfo WHERE orderID = ?";
+        Object[] params = {orderID};
+        ResultSet rs = context.exeQuery(sql, params);
+        return rs.next() ? mapResultSetToOrderInfo(rs) : null;
+    }
+
     //choose
     public Account getInfoCustomerByOrderID(int orderID) throws SQLException {
         String sql = "SELECT a.* \n"
@@ -445,7 +452,7 @@ public class OrderDAO {
     }
 
     //choose
-    public boolean updateDeliverystatus(int orderID, String newStatus ) throws SQLException {
+    public boolean updateDeliverystatus(int orderID, String newStatus) throws SQLException {
         String sql = "UPDATE OrderInfo \n"
                 + "SET deliveryStatus = ? \n"
                 + "WHERE orderID = ?";
@@ -463,14 +470,21 @@ public class OrderDAO {
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
-    
-    public boolean updateRatingForProduct(int orderID, int productID, int rate) throws SQLException{
-        String sql ="UPDATE Order_Product SET rating =  ? WHERE productID = ? and orderID = ?";
-         Object[] params = {rate, productID, orderID};
+
+    //set rate cho sp
+    public boolean updateRatingForProduct(int orderID, int productID, int rate) throws SQLException {
+        String sql = "UPDATE Order_Product SET rating =  ? WHERE productID = ? and orderID = ?";
+        Object[] params = {rate, productID, orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
-    
+// review
+    public boolean updateCommentForProduct(int orderID, int productID, String comment) throws SQLException {
+        String sql = "UPDATE Order_Product SET comment = ? WHERE orderID = ? AND productID = ?";
+        Object[] params = {comment, orderID, productID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
 
 // choose
     public void restoreProductStockByOrderID(int orderID) throws SQLException {
@@ -508,7 +522,5 @@ public class OrderDAO {
         System.out.println(rowsAffected + " cart items deleted.");
         return rowsAffected > 0;
     }
-    
-    
-    
+
 }

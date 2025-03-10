@@ -114,21 +114,40 @@ public class OrderDetailController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        int rate = Integer.parseInt(request.getParameter("rating"));
+
+        String status = "completed";
+        String action = request.getParameter("action");
+
         OrderDAO orderDao = new OrderDAO();
 
         try {
-            orderDao.updateOrderstatus(orderID, "completed");
-            List<OrderProduct> orderProList = orderDao.getOrderProductByOrderID(orderID);
-
-            for (OrderProduct orderProduct : orderProList) {
-                orderDao.updateRatingForProduct(orderID, orderProduct.getProductID(), rate);
+            if (null != action) {
+                switch (action) {
+                    case "confirm":
+                        orderDao.updateOrderstatus(orderID, status);
+                        break;
+                    case "rate": {
+                        int productID = Integer.parseInt(request.getParameter("productID"));
+                        int rate = Integer.parseInt(request.getParameter("rating"));
+                        orderDao.updateRatingForProduct(orderID, productID, rate);
+                        break;
+                    }
+                    case "review": {
+                        int productID = Integer.parseInt(request.getParameter("productID"));
+                        String reviewContent = request.getParameter("reviewContent");                      
+                        orderDao.updateCommentForProduct(orderID, productID, reviewContent);
+                        break;
+                    }
+                    default:
+                        break;
+                }
             }
+
         } catch (SQLException ex) {
             Logger.getLogger(OrderDetailController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        response.sendRedirect("OrderDetailController");
+        response.sendRedirect("OrderDetailController?id=" + orderID);
     }
 
     /**

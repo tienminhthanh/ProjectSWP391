@@ -17,38 +17,57 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">  
         <style>
         .order-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .order-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: #EA580C; /* Tailwind orange-600 */
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng bóng đổ nhẹ */
+}
 
-        .order-card:hover::before {
-            width: 6px;
-            opacity: 1;
-        }
+.order-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #EA580C; /* Tailwind orange-600 */
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
 
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-    </style>
-  </head>
+.order-card:hover::before {
+    width: 6px;
+    opacity: 1;
+}
 
-  
+.order-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Thêm hiệu ứng bóng đổ khi hover */
+    transform: translateY(-2px); /* Nâng nhẹ lên khi hover */
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    transition: all 0.3s ease; /* Thêm transition để mượt mà */
+}
+
+.text-gray-700 {
+    color: #4a5568; /* Màu mặc định */
+    transition: color 0.3s ease; /* Thêm transition cho hiệu ứng chuyển màu */
+}
+
+.text-gray-700.active {
+    color: #dd6b20; /* Change this to your desired active color */
+}
+
+
+        </style>
+    </head>
+
+
     <body class="bg-gray-50">
         <header>
             <div class="logo">
@@ -167,30 +186,30 @@
         </header>
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 py-2 flex justify-around">
-                <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold">Payment Due</a>
-                <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold">Pending</a>
-                <a href="OrderListController?status=Shipped" class="text-gray-700 hover:text-orange-600 font-semibold">Shipping</a>
-                <a href="OrderListController?status=completed" class="text-gray-700 hover:text-orange-600 font-semibold">History</a>
-                <a href="OrderListController?status=canceled" class="text-gray-700 hover:text-orange-600 font-semibold">canceled</a>
+                <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == '#' ? 'active' : ''}">Payment Due</a>
+                <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'pending' ? 'active' : ''}">Pending</a>
+                <a href="OrderListController?status=Shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'Shipped' ? 'active' : ''}">Shipping</a>
+                <a href="OrderListController?status=completed" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'completed' ? 'active' : ''}">History</a>
+                <a href="OrderListController?status=canceled" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'canceled' ? 'active' : ''}">Canceled</a>
             </div>
         </nav>
         <main class="container mx-auto px-4 py-8">
-        <div class="mb-8 text-center">
-            
-            <p class="text-gray-600 mt-2">Total ${fn:length(requestScope.list)} orders found</p>
-        </div>
+            <div class="mb-8 text-center">
+
+                <p class="text-gray-600 mt-2">Total ${fn:length(requestScope.list)} orders found</p>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-            <c:forEach items="${requestScope.list}" var="c">
-                <c:set var="id" value="${c.orderID}"/>
-                <div class="order-card bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">ORDER ID</span>
-                                <h3 class="text-xl font-bold text-gray-800">#${c.orderID}</h3>
-                            </div>
-                            <span class="status-badge
+                <c:forEach items="${requestScope.list}" var="c">
+                    <c:set var="id" value="${c.orderID}"/>
+                    <div class="order-card bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">ORDER ID</span>
+                                    <h3 class="text-xl font-bold text-gray-800">#${c.orderID}</h3>
+                                </div>
+                                <span class="status-badge
                                   ${c.orderStatus == 'Delivered' ? 'bg-green-100 text-green-800' : 
                                     c.orderStatus == 'Processing' ? 'bg-orange-100 text-orange-800' : 
                                     c.orderStatus == 'Cancelled' ?'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}}">
@@ -265,22 +284,40 @@
         <script>
             let tooltipTimeout;
 
-    function showTooltip(element) {
-        tooltipTimeout = setTimeout(() => {
-            const tooltip = element.nextElementSibling; // Tooltip kế bên
-            tooltip.style.display = "block";
-            tooltip.style.opacity = "1";
-        }, 3000); // Hiển thị sau 3 giây
-    }
+        function showTooltip(element) {
+            tooltipTimeout = setTimeout(() => {
+                const tooltip = element.nextElementSibling; // Tooltip kế bên
+                tooltip.style.display = "block";
+                tooltip.style.opacity = "1";
+            }, 3000); // Hiển thị sau 3 giây
+        }
 
-    function hideTooltip(element) {
-        clearTimeout(tooltipTimeout); // Hủy timeout nếu lướt ra trước 3s
-        const tooltip = element.nextElementSibling;
-        tooltip.style.opacity = "0";
-        setTimeout(() => tooltip.style.display = "none", 300); // Ẩn sau khi mờ dần
-    }
+        function hideTooltip(element) {
+            clearTimeout(tooltipTimeout); // Hủy timeout nếu lướt ra trước 3s
+            const tooltip = element.nextElementSibling;
+            tooltip.style.opacity = "0";
+            setTimeout(() => tooltip.style.display = "none", 300); // Ẩn sau khi mờ dần
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+        // Lấy tất cả các liên kết
+        const links = document.querySelectorAll('.container a');
+
+        // Lặp qua từng liên kết và thêm sự kiện click
+        links.forEach(link => {
+            link.addEventListener('click', function () {
+                // Loại bỏ class 'active' khỏi tất cả các liên kết
+                links.forEach(l => l.classList.remove('active'));
+            
+                // Thêm class 'active' vào liên kết hiện tại
+                link.classList.add('active');
+            });
+        });
+    });
+
 
         </script>
-</body>
+
+    </body>
 
 </html>
