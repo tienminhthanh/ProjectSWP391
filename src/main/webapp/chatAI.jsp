@@ -3,10 +3,6 @@
     <head>
         <title>Chat với Gemini AI</title>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-            }
             #chatContainer1 {
                 width: 100%;
                 margin: auto;

@@ -50,7 +50,7 @@
         </style>
     </head>
     <body>
-        <div class="fixed bottom-4 right-4">
+        <div class="fixed bottom-4 right-4 z-50">
             <button id="chatButton" class="bg-yellow-500 text-white p-2 rounded-full shadow-lg">
                 <i class="fas fa-comments"></i>
                 <span class="ml-1">Chat</span>
