@@ -63,7 +63,7 @@
                         <input type="hidden" name="productID" value="${currentProduct.productID}">
                         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
                         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
-                        <input type="hidden" name="priceWithQuantity">
+                        <input type="hidden" name="priceWithQuantity" value="${currentProduct.discountPercentage > 0 ? currentProduct.price * (100-currentProduct.discountPercentage)/100 : currentProduct.price}">
                         <button name="action" value="buyNow" onclick="openLoginPopup()" type="submit" class="a-buy-now-btn">
                             <i class="fa-solid fa-forward"></i>
                             <span class="a-buy-now-btn-txt">Buy Now</span>
@@ -75,7 +75,7 @@
                         <input type="hidden" name="productID" value="${currentProduct.productID}">
                         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
                         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
-                        <input type="hidden" name="priceWithQuantity">
+                        <input type="hidden" name="priceWithQuantity" value="${currentProduct.discountPercentage > 0 ? currentProduct.price * (100-currentProduct.discountPercentage)/100 : currentProduct.price}">
                         <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="a-cart-btn">
                             <i class="fa-solid fa-cart-plus"></i>
                             <span class="a-cart-btn-txt">Cart</span>
