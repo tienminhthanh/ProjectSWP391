@@ -49,12 +49,13 @@ public class ProductCatalogController extends HttpServlet {
     private ProductDAO productDAO;
     private VoucherDAO vDao;
     private EventDAO eDao;
+    private OrderDAO orderDAO;
 
     @Override
     public void init() throws ServletException {
         vDao = new VoucherDAO();
         productDAO = new ProductDAO();
-
+        orderDAO = new OrderDAO();
     }
 
     /**
@@ -840,6 +841,12 @@ public class ProductCatalogController extends HttpServlet {
                 //Get creators
                 HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
                 request.setAttribute("creatorMap", creatorMap);
+                
+                //Get comments & ratings
+                Map<String,String[]> reviewMap = orderDAO.getRatingsAndCommentsByProduct(id);
+                if (!reviewMap.isEmpty()) {
+                    request.setAttribute("reviewMap", reviewMap);
+                }
 
                 //Get genres if product is a book
                 if (requestedProduct.getGeneralCategory().equals("book")) {

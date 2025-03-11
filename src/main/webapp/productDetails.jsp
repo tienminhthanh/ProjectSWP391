@@ -159,7 +159,7 @@
                                                 </c:when>
                                                 <c:when test="${product.stockCount <= 10}">
                                                     <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
-                                                </c:when>
+                                                    </c:when>
 
                                             </c:choose>
                                         </div>
@@ -290,6 +290,35 @@
                                                 </c:if>
                                             </table>
                                         </c:when>
+                                    </c:choose>
+                                </div>
+
+                                <!--Reviews section-->
+                                <div class="review-area text-sm w-full mb-4 bg-white">
+                                    <h3 class="description-title text-lg">Reviews</h3>
+                                    <c:choose>
+
+                                        <c:when test="${not empty requestScope.reviewMap}">
+                                            <c:forEach var="review" items="${requestScope.reviewMap}">
+                                                <div class="customer-review p-2 m-2 border-b-4 rounded-lg flex flex-col items-start gap-2">
+                                                    <h4 class="customer-name text-md font-bold">${review.key}</h4>
+                                                    <p class="avg-rating">
+                                                        <c:forEach var="i" begin="1" end="${review.value[0]}">
+                                                            <i class="fa-solid fa-star"></i>
+                                                        </c:forEach>
+                                                    </p>
+                                                    <p class="review-content">
+                                                        ${review.value[1] ne null ? review.value[1] : ''}
+                                                    </p>
+                                                </div> 
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="flex justify-center items-center h-40 w-full">
+                                                <p class="text-gray-500 italic">No reviews yet. Be the first to share your thoughts about the purchase!</p>
+                                            </div>
+                                        </c:otherwise>
+
                                     </c:choose>
                                 </div>
 

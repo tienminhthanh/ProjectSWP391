@@ -71,6 +71,7 @@
                         <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
                     </div>
                 </c:if>
+                    
                 <!--Popular Searches-->
                 <div class="my-4 bg-white popular-search-area border-t-4 border-orange-500">
 
@@ -83,7 +84,7 @@
                                 <a href="sale?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img  class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-merch.png" alt="On-Sale Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
+                                <span class=" w-1/3">
                                     <img class="h-40 w-full object-contain" src="img/popular_search_img/sale-label.png" alt="On-Sale Label"/>
                                 </span>
                                 <a href="sale?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
@@ -99,7 +100,7 @@
                                 <a href="ranking?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-merch.png" alt="Top Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
+                                <span class=" w-1/3">
                                     <img class="h-40 w-full object-contain" src="img/popular_search_img/top-label.png" alt="Top Label"/>
                                 </span>
                                 <a href="ranking?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
@@ -115,7 +116,7 @@
                                 <a href="series?id=1" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-merch.png" alt="Top Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
+                                <span class=" w-1/3">
                                     <img class="max-h-40 w-full object-contain" src="img/popular_search_img/special-label.png" alt="Top Label"/>
                                 </span>
                                 <a href="genre?id=18" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
@@ -127,7 +128,7 @@
 
                 </div>
 
-                <!--Div2-->
+                <!--Voucher-->
                 <div class="mb-4 bg-white voucher-area border-t-4 border-orange-500">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Available Now

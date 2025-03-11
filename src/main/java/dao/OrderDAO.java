@@ -4,10 +4,13 @@
  */
 package dao;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
@@ -479,6 +482,7 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 // review
+
     public boolean updateCommentForProduct(int orderID, int productID, String comment) throws SQLException {
         String sql = "UPDATE Order_Product SET comment = ? WHERE orderID = ? AND productID = ?";
         Object[] params = {comment, orderID, productID};
@@ -521,6 +525,24 @@ public class OrderDAO {
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " cart items deleted.");
         return rowsAffected > 0;
+    }
+
+    public Map<String, String[]> getRatingsAndCommentsByProduct(int productID) throws SQLException {
+        String sql = "SELECT Account.firstName, Account.lastName, Order_Product.rating, Order_Product.comment\n"
+                + "FROM     Order_Product INNER JOIN\n"
+                + "                  OrderInfo ON Order_Product.orderID = OrderInfo.orderID INNER JOIN\n"
+                + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
+                + "                  Account ON Customer.customerID = Account.accountID\n"
+                + "				  where productID = ? AND (rating is not null OR comment is not null)";
+        Object [] params = {productID};
+        try(Connection connection = context.getConnection();
+                ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)){
+            Map<String, String[]> reviewMap = new HashMap<>();
+            while (rs.next()) {
+                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "",rs.getString("comment")});
+            }
+            return reviewMap;
+        }
     }
 
 }
