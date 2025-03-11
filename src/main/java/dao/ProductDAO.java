@@ -78,12 +78,13 @@ public class ProductDAO {
                 return null;
         }
     }
-    
+
     /**
      * For view merch details
+     *
      * @param productID
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public Product getMerchById(int productID) throws SQLException {
         StringBuilder sql = getCTEProductDiscount().append("");
@@ -546,9 +547,50 @@ public class ProductDAO {
         }
     }
 
-    private StringBuilder getCTEProductDiscount() {
+    public List<Product> getRankedProducts(String type) throws SQLException {
+        //Base query
+        StringBuilder sql = getCTEProductDiscount(new String[]{"rank"}).append("SELECT P.*,\n"
+                + "C.categoryName,\n"
+                + "PD.discountPercentage,\n"
+                + "PD.dateStarted,\n"
+                + "PD.eventDuration,\n"
+                + "TS.totalSoldQuantity\n"
+                + "FROM Product AS P\n"
+                + "JOIN TopSale TS ON TS.productID = P.productID\n");
+        
+        //Type specific join
+        sql.append(type.equals("book") ? "JOIN Book B ON B.bookID = P.productID\n" : "JOIN Merchandise M ON M.merchandiseID = P.productID\n");
+        
+        //Common part
+        sql.append("LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "WHERE P.isActive = 1\n"
+                + "ORDER BY TS.totalSoldQuantity DESC;");
+        
+        //Execute query
+        try(Connection connection = context.getConnection();
+                ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)){
+            List<Product> productList = new ArrayList<>();
+            while(rs.next()){
+                productList.add(mapResultSetToProduct(rs,""));
+            }
+            return productList;
+        
+        }
+    }
 
-        return new StringBuilder("WITH ProductDiscount AS (\n"
+    private StringBuilder getCTEProductDiscount(String... condition) {
+        StringBuilder cte = new StringBuilder("WITH ");
+        if (condition.length > 0 && condition[0].equals("rank")) {
+            cte.append("TopSale AS (\n"
+                    + "SELECT productID, SUM(soldQuantity) AS totalSoldQuantity\n"
+                    + "FROM SaleHistory\n"
+                    + "WHERE saleDate >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)\n"
+                    + "AND saleDate < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)\n"
+                    + "GROUP BY productID\n"
+                    + "),\n");
+        }
+        return cte.append("ProductDiscount AS (\n"
                 + "SELECT ep.productID,\n"
                 + "e.dateStarted,\n"
                 + "e.duration as eventDuration,\n"
@@ -573,9 +615,9 @@ public class ProductDAO {
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
 
-        switch (type) {
+        switch (type != null ? type : "") {
             case "book":
-                // Create Publisher
+                // For book details
                 Publisher publisher = new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
                 return new Book(publisher, rs.getString("duration"),
                         rs.getInt("productID"),
@@ -597,6 +639,7 @@ public class ProductDAO {
                         discountPercentage,
                         eventEndDate);
             case "merch":
+                // For merch details
                 Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
                 Series series = new Series(rs.getInt("seriesID"), rs.getString("seriesName"));
                 OGCharacter character = new OGCharacter(rs.getInt("characterID"), rs.getString("characterName"));
@@ -621,6 +664,7 @@ public class ProductDAO {
                         eventEndDate);
 
             default:
+                //For listing, sort, search, filter
                 return new Product(rs.getInt("productID"),
                         rs.getString("productName"),
                         rs.getDouble("price"),

@@ -56,7 +56,7 @@
                     </h2>
 
                     <div class="overview-area flex mb-4">
-                        <c:if test="${not empty productList}">
+                        <c:if test="${not empty productList and not fn:startsWith(pageTitle,'Leaderboard')}">
                             <div class="sort-area w-2/5">
                                 <form action="" method="get" id="sortForm">
                                     <div class="hidden-input-sort"></div>
@@ -84,12 +84,25 @@
 
                     <div class="w-full">
                         <c:set var="currentURL" value="${currentURL}" scope="request"/>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-5">
-                            <c:forEach var="currentProduct" items="${productList}">
-                                <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
-                                <jsp:include page="productCard.jsp"/>
-                            </c:forEach>
-                        </div>
+                        <c:choose>
+                            <c:when test="${not fn:startsWith(pageTitle,'Leaderboard')}">
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-5">
+                                    <c:forEach var="currentProduct" items="${productList}">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <jsp:include page="productCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="flex flex-col items-start justify-center">
+                                    <c:forEach var="currentProduct" items="${productList}" varStatus="loopStatus">
+                                        <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
+                                        <c:set var="loopStatus" value="${loopStatus}" scope="request"/>
+                                        <jsp:include page="rankedProductCard.jsp"/>
+                                    </c:forEach>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
 
                 </div>
@@ -98,7 +111,7 @@
                     <c:set var="currentURL" value="${currentURL}" scope="request"/>
                     <jsp:include page="popuplogin.jsp"/>
                 </c:if>
-                
+
                 <!--Popup message from servlet -->
                 <c:if test="${not empty message}">
                     <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
@@ -156,13 +169,13 @@
                     document.getElementById('sortForm').submit();
                 });
 
-                
+
 
             });
-            
+
             function closeMessagePopup() {
-                    document.getElementById('warning-popup-overlay').classList.add("hidden");
-                    document.getElementById('warning-popup-container').classList.add("hidden");
+                document.getElementById('warning-popup-overlay').classList.add("hidden");
+                document.getElementById('warning-popup-container').classList.add("hidden");
             }
 
 

@@ -6,7 +6,6 @@ package controller.product;
 
 import dao.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,20 +14,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import model.*;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import utils.Utility;
 
 /**
  *
@@ -637,17 +629,275 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleSeries(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for series functionality
+        String seriesID = request.getParameter("id");
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent MERCH_FITLERS from being applied to Books
+                if (BOOK_FITLERS.contains(name)) {
+                    message.append("Cannot apply this filter to Merch!");
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+
+            //Parse id string to integer
+            int id = Integer.parseInt(seriesID);
+
+            //            Set up breadCrumb and page title
+            Series selectedSeries = productDAO.getSeriesById(id);
+            String seriesName = selectedSeries != null ? selectedSeries.getSeriesName() : "Coming Soon";
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(" > <a href='search?type=merch'>Merchandise</a>");
+            breadCrumb.append(String.format(" > <a href='series?id=%s'>%s</a>", id, seriesName));
+            request.setAttribute("pageTitle", seriesName);
+            request.setAttribute("breadCrumb", breadCrumb);
+
+            //Get product list
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "srs", "merch", "");
+            if (productList.isEmpty()) {
+                //No result found
+                message.setLength(0);
+                message.append(selectedSeries != null ? "No result found! Please deselect some filter if any." : "This category is unavailable for now. Feel free to browse our other products!");
+            } else {
+                request.setAttribute("productList", productList);
+                //For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("type", "merch");
+            request.setAttribute("currentURL", currentURL);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleBrand(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for brand functionality
+        String brandID = request.getParameter("id");
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent MERCH_FITLERS from being applied to Books
+                if (BOOK_FITLERS.contains(name)) {
+                    message.append("Cannot apply this filter to Merch!");
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+
+            //Parse id string to integer
+            int id = Integer.parseInt(brandID);
+
+            //            Set up breadCrumb and page title
+            Brand selectedBrand = productDAO.getBrandById(id);
+            String brandName = selectedBrand != null ? selectedBrand.getBrandName() : "Coming Soon";
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(" > <a href='search?type=merch'>Merchandise</a>");
+            breadCrumb.append(String.format(" > <a href='brand?id=%s'>%s</a>", id, brandName));
+            request.setAttribute("pageTitle", brandName);
+            request.setAttribute("breadCrumb", breadCrumb);
+
+            //Get product list
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "brn", "merch", "");
+            if (productList.isEmpty()) {
+                //No result found
+                message.setLength(0);
+                message.append(selectedBrand != null ? "No result found! Please deselect some filter if any." : "This category is unavailable for now. Feel free to browse our other products!");
+            } else {
+                request.setAttribute("productList", productList);
+                //For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("type", "merch");
+            request.setAttribute("currentURL", currentURL);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleCharacter(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for character functionality
+        String characterID = request.getParameter("id");
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent MERCH_FITLERS from being applied to Books
+                if (BOOK_FITLERS.contains(name)) {
+                    message.append("Cannot apply this filter to Merch!");
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+
+            //Parse id string to integer
+            int id = Integer.parseInt(characterID);
+
+            //            Set up breadCrumb and page title
+            OGCharacter selectedCharacter = productDAO.getCharacterById(id);
+            String characterName = selectedCharacter != null ? selectedCharacter.getCharacterName() : "Coming Soon";
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(" > <a href='search?type=merch'>Merchandise</a>");
+            breadCrumb.append(String.format(" > <a href='character?id=%s'>%s</a>", id, characterName));
+            request.setAttribute("pageTitle", characterName);
+            request.setAttribute("breadCrumb", breadCrumb);
+
+            //Get product list
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "chr", "merch", "");
+            if (productList.isEmpty()) {
+                //No result found
+                message.setLength(0);
+                message.append(selectedCharacter != null ? "No result found! Please deselect some filter if any." : "This category is unavailable for now. Feel free to browse our other products!");
+            } else {
+                request.setAttribute("productList", productList);
+                //For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("type", "merch");
+            request.setAttribute("currentURL", currentURL);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleNewRelease(HttpServletRequest request, HttpServletResponse response)
@@ -841,9 +1091,9 @@ public class ProductCatalogController extends HttpServlet {
                 //Get creators
                 HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
                 request.setAttribute("creatorMap", creatorMap);
-                
+
                 //Get comments & ratings
-                Map<String,String[]> reviewMap = orderDAO.getRatingsAndCommentsByProduct(id);
+                Map<String, String[]> reviewMap = orderDAO.getRatingsAndCommentsByProduct(id);
                 if (!reviewMap.isEmpty()) {
                     request.setAttribute("reviewMap", reviewMap);
                 }
@@ -910,7 +1160,7 @@ public class ProductCatalogController extends HttpServlet {
         session.setAttribute("holoMerchHome", holoMerchHome);
 
     }
-    
+
 //    private void showBannerInHomepage(HttpServletRequest request, HttpServletResponse response) throws Exception {
 //        List<String> bannerList = eDao.getBannerEvent();
 //
@@ -919,7 +1169,6 @@ public class ProductCatalogController extends HttpServlet {
 //        }
 //        request.setAttribute("bannerList", bannerList);
 //    }
-
     private void showVouchersInHomepage(HttpServletRequest request) throws Exception {
 
         List<Voucher> listVoucher = vDao.getListVoucher();
@@ -929,7 +1178,47 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleRanking(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for ranking functionality
+        String type = request.getParameter("type");
+
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+
+        try {
+
+            // Set up breadCrumb and page Title
+            // Get product list
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type)));
+            breadCrumb.append(String.format(" > <a href='ranking?type=%s'>Ranking</a>", type));
+            List<Product> productList = productDAO.getRankedProducts(type);
+
+            // Set up the product list
+            if (productList.isEmpty()) {
+                // No result
+                message.setLength(0);
+                message.append("Leaderboard is not available right now\n");
+            } else {
+                request.setAttribute("productList", productList);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("type", type);
+            request.setAttribute("breadCrumb", breadCrumb);
+            request.setAttribute("pageTitle", "Leaderboard - " + getDisplayTextBasedOnType(type));
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private String formatURL(String encodedURL, Set<String> invalidParams) throws UnsupportedEncodingException, MalformedURLException {
