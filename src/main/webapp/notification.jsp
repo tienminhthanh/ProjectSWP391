@@ -86,9 +86,9 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="notification" items="${notifications}">
-                                <div class="flex items-start p-4 rounded-md notification-item ${notification.read ? 'read' : 'unread'}">
+                                <div class="flex items-start p-4 rounded-md notification-item ${notification.isRead() ? 'read' : 'unread'}">
                                     <!-- Wrap the entire item in an anchor tag pointing to the detail page -->
-                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${param.receiverID}" 
+                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
                                        class="flex items-start w-full">
                                         <img alt="Notification icon" class="mr-4" 
                                              src="https://icon-library.com/images/icon-notification/icon-notification-3.jpg" 
@@ -106,7 +106,7 @@
                                     </a>
                                     <!-- Keep the buttons outside the <a> tag to avoid them triggering the link -->
                                     <div class="flex space-x-2">
-                                        <c:if test="${not notification.read}">
+                                        <c:if test="${not notification.isRead()}">
                                             <!-- Form to mark notification as read -->
                                             <form action="notification" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                                 <input type="hidden" name="action" value="markAsRead">

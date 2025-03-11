@@ -42,20 +42,9 @@
             Event List
         </a>
 
-        <a class="flex items-center p-2 hover:bg-orange-800" href="#">
-            <i class="fas fa-comments mr-2"></i>
-            Dialogue List
-        </a>
-
-
         <a class="flex items-center p-2 hover:bg-orange-800" href="voucherList">
             <i class="fas fa-gift mr-2"></i>
             Voucher List
-        </a>
-
-        <a class="flex items-center p-2 hover:bg-orange-800" href="chat">
-            <i class="fas fa-comment-dots mr-2"></i>
-            Chat
         </a>
 
     </c:if>

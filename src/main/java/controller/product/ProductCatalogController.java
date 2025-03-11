@@ -873,6 +873,11 @@ public class ProductCatalogController extends HttpServlet {
                 CartItemDAO cartDAO = new CartItemDAO();
                 List<CartItem> listCart = session.getAttribute("cartItems") != null ? (List<CartItem>) session.getAttribute("cartItems") : cartDAO.getCartItemsByCustomer(account.getAccountID());
                 session.setAttribute("cartItems", listCart);
+                
+                NotificationDAO notiDAO = new NotificationDAO();
+                List<Notification> listNoti = session.getAttribute("notifications") != null ? (List<Notification>) session.getAttribute("notifications") : notiDAO.getNotificationsByReceiverDESC(account.getAccountID());
+                session.setAttribute("notifications", listNoti);
+                
             }
 
             showProductsInHomepage(session);
