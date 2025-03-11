@@ -76,12 +76,12 @@
                     <c:choose>
                         <c:when test="${account != null && account.role == 'admin'}">
                             <a class="text-blue-600 hover:underline" href="listAccount">
-                                <i class="fas fa-arrow-left mr-2"></i> Back to list
+                                <i class="fas fa-arrow-left mr-2"></i> Back
                             </a>
                         </c:when>
                         <c:otherwise>
                             <a class="text-blue-600 hover:underline" href="readAccount?username=${account.username}">
-                                <i class="fas fa-arrow-left mr-2"></i> Back to account details
+                                <i class="fas fa-arrow-left mr-2"></i> Back
                             </a>
                         </c:otherwise>
                     </c:choose>
@@ -93,7 +93,7 @@
             <div class="container mx-auto px-4 text-center text-sm text-gray-600">
                 <a class="mr-4" href="#">Privacy</a>
                 <a href="#">Purchase Terms &amp; Conditions</a>
-                <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
+                <p class="mt-4">© WIBOOKS Co.,Ltd.</p>
             </div>
         </footer>
     </body>
