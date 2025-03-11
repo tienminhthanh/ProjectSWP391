@@ -220,7 +220,6 @@ public class VoucherDAO {
                 + "      ,[voucherType] = ?\n"
                 + "      ,[maxDiscountAmount] = ?\n"
                 + "      ,[dateStarted] = ?\n"
-                + "      ,[isActive] = ?\n"
                 + "      WHERE [voucherID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -238,6 +237,8 @@ public class VoucherDAO {
                 voucher.getDateStarted(),
                 !LocalDate.now().isAfter(expiryDate),
                 voucher.getVoucherID()};
+
+            voucher.setExpiry(!LocalDate.now().isAfter(expiryDate));
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {

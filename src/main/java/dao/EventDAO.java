@@ -146,11 +146,9 @@ public class EventDAO {
     public boolean updateEvent(Event event) {
         String sql = "UPDATE [dbo].[Event]\n"
                 + "   SET [eventName] = ?\n"
-                + "      ,[dateCreated] = ?\n"
                 + "      ,[duration] = ?\n"
                 + "      ,[banner] = ?\n"
                 + "      ,[description] = ?\n"
-                + "      ,[adminID] = ?\n"
                 + "      ,[dateStarted] = ?\n"
                 + "      ,[isActive] = ?\n"
                 + " WHERE [eventID] = ?";
@@ -161,18 +159,19 @@ public class EventDAO {
             LocalDate expiryDate = createDate.plusDays(event.getDuration());
 
             Object params[] = {event.getEventName(),
-                event.getDateCreated(),
                 event.getDuration(),
                 event.getBanner(),
                 event.getDescription(),
-                event.getAdminID(),
                 event.getDateStarted(),
                 !LocalDate.now().isAfter(expiryDate),
                 event.getEventID()};
+
+            event.setExpiry(true);
+
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
-            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EventDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -182,11 +181,21 @@ public class EventDAO {
 //        String currentEvent = "/img/banner_event/voucher1.jpg";
 //        Event en = e.getEventByBanner(currentEvent);
 //        System.out.println(en.getDescription());
-        Event u = new Event(4, "kkkkk", "1191-9-9", 0, "123", "kkkk", 1, true, "2-2-1212", true);
-        if (e.updateEvent(u)) {
-            System.out.println("true");
+//       
+//Event u = new Event(4, "kkkkk", "1191-9-9", 0, "123", "kkkk", 1, true, "2-2-1212", true);
+//        if (e.updateEvent(u)) {
+//            System.out.println("true");
+//        } else {
+//            System.out.println("false");
+//        }
+        Event en = new Event(3, "naruto", "1059-2-3", 100, "s", "s", 1, e.getEventByID(4).isIsActive(), "2025-11-03", e.getEventByID(4).isExpiry());
+        if (e.updateEvent(en)) {
+            System.out.println(e.getEventByID(3).getEventID());
+            System.out.println(e.getEventByID(3).getEventName());
+            System.out.println(e.getEventByID(3).isExpiry());
+            System.out.println(e.getEventByID(3).isIsActive());
         } else {
-            System.out.println("false");
+            System.out.println(false);
         }
     }
 }

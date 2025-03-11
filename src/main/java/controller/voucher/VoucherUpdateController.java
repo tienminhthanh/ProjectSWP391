@@ -108,7 +108,7 @@ public class VoucherUpdateController extends HttpServlet {
             LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
 
             Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID,
-                    true, vDao.getVoucherByID(id).isIsActive(), type, maxDiscountAmount, dateStarted.toString());
+                    vDao.getVoucherByID(id).isIsActive(), vDao.getVoucherByID(id).isExpiry(), type, maxDiscountAmount, dateStarted.toString());
 
             if (vDao.updateVoucher(voucher)) {
                 session.setAttribute("message", "Voucher updated successfully!");
