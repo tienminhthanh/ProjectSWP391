@@ -18,7 +18,7 @@
 
     <!-- Product Image -->
     <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image" title="${currentProduct.productName}">
-        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" >
+        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" loading="lazy">
         <div class="hover-name">${currentProduct.productName}</div>
     </a>
 

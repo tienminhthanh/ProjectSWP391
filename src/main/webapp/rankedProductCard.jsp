@@ -7,8 +7,8 @@
         <div class="o-product-img-box">
             <div class="product-img w-2/5 md:w-1/5">
                 <!-- Ranking Badge -->
-                <c:if test="${not empty loopStatus}">
-                    <c:set var="rank" value="${loopStatus.index + 1}" />
+                <c:if test="${currentProduct.salesRank > 0}">
+                    <c:set var="rank" value="${currentProduct.salesRank}" />
                     <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
                     <div class="m-product-ranking text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
                         <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>

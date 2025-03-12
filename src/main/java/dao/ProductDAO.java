@@ -87,7 +87,32 @@ public class ProductDAO {
      * @throws SQLException
      */
     public Product getMerchById(int productID) throws SQLException {
-        StringBuilder sql = getCTEProductDiscount().append("");
+        StringBuilder sql = getCTEProductDiscount(new String[]{"rank"}).append("SELECT\n"
+                + "P.*,\n"
+                + "C.categoryName,\n"
+                + "M.seriesID,\n"
+                + "M.characterID,\n"
+                + "M.brandID,\n"
+                + "M.size,\n"
+                + "M.scaleLevel,\n"
+                + "M.material,\n"
+                + "S.seriesName,\n"
+                + "Ch.characterName,\n"
+                + "B.brandName,\n"
+                + "PD.discountPercentage,\n"
+                + "PD.dateStarted,\n"
+                + "PD.eventDuration,\n"
+                + "TS.salesRank\n"
+                + "FROM Product AS P\n"
+                + "JOIN Merchandise AS M ON P.productID = M.merchandiseID\n"
+                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
+                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "LEFT JOIN Brand AS B ON M.brandID = B.brandID\n"
+                + "LEFT JOIN Character AS Ch ON M.characterID = Ch.characterID\n"
+                + "LEFT JOIN Series AS S ON M.seriesID = S.seriesID\n"
+                + "WHERE P.isActive = 1\n"
+                + "AND P.productID = ? \n");
 
         Object[] params = {productID};
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
@@ -106,11 +131,13 @@ public class ProductDAO {
      * @throws SQLException
      */
     public Product getBookById(int productID) throws SQLException {
-        StringBuilder sql = getCTEProductDiscount().append("SELECT\n"
+
+        StringBuilder sql = getCTEProductDiscount(new String[]{"rank"}).append("SELECT\n"
                 + "P.*, C.categoryName, B.publisherID, B.duration,\n"
-                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.eventDuration\n"
+                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.eventDuration,TS.salesRank\n"
                 + "FROM Product AS P\n"
                 + "JOIN Book AS B ON P.productID = B.bookID\n"
+                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
                 + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
                 + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
@@ -554,28 +581,27 @@ public class ProductDAO {
                 + "PD.discountPercentage,\n"
                 + "PD.dateStarted,\n"
                 + "PD.eventDuration,\n"
-                + "TS.totalSoldQuantity\n"
+                + "TS.salesRank\n"
                 + "FROM Product AS P\n"
                 + "JOIN TopSale TS ON TS.productID = P.productID\n");
-        
+
         //Type specific join
         sql.append(type.equals("book") ? "JOIN Book B ON B.bookID = P.productID\n" : "JOIN Merchandise M ON M.merchandiseID = P.productID\n");
-        
+
         //Common part
         sql.append("LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-                + "WHERE P.isActive = 1\n"
-                + "ORDER BY TS.totalSoldQuantity DESC;");
-        
+                + "WHERE P.isActive = 1 \n"
+                + "ORDER BY TS.salesRank ;");
+
         //Execute query
-        try(Connection connection = context.getConnection();
-                ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)){
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)) {
             List<Product> productList = new ArrayList<>();
-            while(rs.next()){
-                productList.add(mapResultSetToProduct(rs,""));
+            while (rs.next()) {
+                productList.add(mapResultSetToProduct(rs, "").setSalesRank(rs.getInt("salesRank")));
             }
             return productList;
-        
+
         }
     }
 
@@ -583,11 +609,13 @@ public class ProductDAO {
         StringBuilder cte = new StringBuilder("WITH ");
         if (condition.length > 0 && condition[0].equals("rank")) {
             cte.append("TopSale AS (\n"
-                    + "SELECT productID, SUM(soldQuantity) AS totalSoldQuantity\n"
-                    + "FROM SaleHistory\n"
-                    + "WHERE saleDate >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)\n"
-                    + "AND saleDate < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)\n"
-                    + "GROUP BY productID\n"
+                    + "    SELECT SH.productID, SUM(soldQuantity) AS totalSoldQuantity,\n"
+                    + "	ROW_NUMBER() OVER (ORDER BY SUM(SH.soldQuantity) DESC,Pr.averageRating DESC, Pr.numberOfRating DESC) AS salesRank\n"
+                    + "    FROM SaleHistory SH\n"
+                    + "	JOIN Product Pr ON Pr.productID = SH.productID\n"
+                    + "    WHERE saleDate >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)\n"
+                    + "    AND saleDate < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)\n"
+                    + "    GROUP BY SH.productID,Pr.averageRating,Pr.numberOfRating \n"
                     + "),\n");
         }
         return cte.append("ProductDiscount AS (\n"
@@ -637,7 +665,7 @@ public class ProductDAO {
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
-                        eventEndDate);
+                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
             case "merch":
                 // For merch details
                 Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
@@ -661,7 +689,7 @@ public class ProductDAO {
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
-                        eventEndDate);
+                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
 
             default:
                 //For listing, sort, search, filter
