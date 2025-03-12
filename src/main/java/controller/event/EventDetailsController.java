@@ -58,7 +58,7 @@ public class EventDetailsController extends HttpServlet {
                 request.setAttribute("dateEnd", dateEnd);
             } else if (action.equals("home")) {
                 ProductDAO productDAO = new ProductDAO();
-                List<Product> productList = productDAO.get10RandomActiveProducts("book");
+                List<Product> productList = productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "book", "");
                 request.setAttribute("productList", productList);
 
                 String banner = request.getParameter("banner");

@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.*;
 
 /**
@@ -113,6 +115,11 @@ public class ProductDAO {
                 + "LEFT JOIN Series AS S ON M.seriesID = S.seriesID\n"
                 + "WHERE P.isActive = 1\n"
                 + "AND P.productID = ? \n");
+        
+        //Print the final query to console
+        System.out.println(sql);
+        System.out.println("-------------------------------------------------------------------------------------");
+        
 
         Object[] params = {productID};
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
@@ -142,6 +149,11 @@ public class ProductDAO {
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
                 + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
                 + "WHERE P.isActive = 1 AND P.productID = ?");
+        
+        //Print the final query to console
+        System.out.println(sql);
+        System.out.println("-------------------------------------------------------------------------------------");
+        
 
         Object[] params = {productID};
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
@@ -183,49 +195,6 @@ public class ProductDAO {
         }
     }
 
-    public List<Product> get10RandomActiveProducts(String type) throws SQLException {
-
-        StringBuilder sql = getCTEProductDiscount();
-        if (type.equals("book")) {
-            sql.append("SELECT TOP 10 P.*, \n"
-                    + "       C.categoryName, \n"
-                    + "       PD.discountPercentage, \n"
-                    + "       PD.dateStarted,\n"
-                    + "	   PD.eventDuration\n"
-                    + "FROM Product AS P\n"
-                    + "JOIN Book B \n"
-                    + "    ON B.bookID = P.productID\n"
-                    + "LEFT JOIN ProductDiscount PD \n"
-                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
-                    + "LEFT JOIN Category AS C \n"
-                    + "    ON C.categoryID = P.categoryID\n"
-                    + "WHERE P.isActive = 1\n"
-                    + "ORDER BY NEWID()");
-        } else if (type.equals("merch")) {
-            sql.append("SELECT TOP 10 P.*, \n"
-                    + "       C.categoryName, \n"
-                    + "       PD.discountPercentage, \n"
-                    + "       PD.dateStarted,\n"
-                    + "	   PD.eventDuration\n"
-                    + "FROM Product AS P\n"
-                    + "JOIN Merchandise M \n"
-                    + "    ON M.merchandiseID = P.productID\n"
-                    + "LEFT JOIN ProductDiscount PD \n"
-                    + "    ON P.productID = PD.productID AND PD.rn = 1\n"
-                    + "LEFT JOIN Category AS C \n"
-                    + "    ON C.categoryID = P.categoryID\n"
-                    + "WHERE P.isActive = 1\n"
-                    + "ORDER BY NEWID()");
-        }
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)) {
-            List<Product> productList = new ArrayList<>();
-            while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs, ""));
-            }
-            return productList;
-        }
-
-    }
 
     /**
      * When user does not enter anything in the search bar
@@ -269,7 +238,7 @@ public class ProductDAO {
         List<Object> paramList = new ArrayList<>();
 
         //Append filter
-        if (!filterMap.isEmpty()) {
+        if (filterMap != null && !filterMap.isEmpty()) {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
@@ -278,7 +247,7 @@ public class ProductDAO {
                 String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
-                sql.append(getFilterClause(filterOption, selectedFilters.length));
+                sql.append(processFilter(filterOption, selectedFilters.length));
 
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
@@ -295,7 +264,12 @@ public class ProductDAO {
 
         //Append order
         sql.append("ORDER BY ");
-        sql.append(getSortOrder(sortCriteria));
+        sql.append(processSort(sortCriteria));
+        
+        //Print the final query to console
+        System.out.println(sql);
+        System.out.println("-------------------------------------------------------------------------------------");
+        
 
         //Execute query
         Object[] params = paramList.toArray();
@@ -346,7 +320,7 @@ public class ProductDAO {
         paramList.add(formatQuery(query));
 
         //Append filter
-        if (!filterMap.isEmpty()) {
+        if (filterMap != null && !filterMap.isEmpty()) {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
@@ -355,7 +329,7 @@ public class ProductDAO {
                 String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
-                sql.append(getFilterClause(filterOption, selectedFilters.length));
+                sql.append(processFilter(filterOption, selectedFilters.length));
 
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
@@ -372,8 +346,14 @@ public class ProductDAO {
 
         // Append sorting
         sql.append("\nORDER BY ");
-        sql.append(getSortOrder(sortCriteria));
-
+        sql.append(processSort(sortCriteria));
+        
+        //Print the final query to console
+        System.out.println(sql);
+        System.out.println("-------------------------------------------------------------------------------------");
+        
+        
+        
         //Execute query
         Object[] params = paramList.toArray();
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
@@ -394,7 +374,7 @@ public class ProductDAO {
         return String.join(" OR ", queryParts);
     }
 
-    private String getSortOrder(String sortCriteria) {
+    private String processSort(String sortCriteria) {
         switch (sortCriteria) {
             case "relevance":
                 return "KEY_TBL.RANK DESC, P.productName ASC";
@@ -448,7 +428,7 @@ public class ProductDAO {
                 String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
-                sql.append(getFilterClause(filterOption, selectedFilters.length));
+                sql.append(processFilter(filterOption, selectedFilters.length));
 
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
@@ -465,8 +445,12 @@ public class ProductDAO {
 
         //Append order
         sql.append("ORDER BY ");
-        sql.append(getSortOrder(sortCriteria));
-
+        sql.append(processSort(sortCriteria));
+        
+        //Print the final query to console
+        System.out.println(sql);
+        System.out.println("-------------------------------------------------------------------------------------");
+        
         //Execute query
         Object[] params = paramList.toArray();
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
@@ -546,7 +530,7 @@ public class ProductDAO {
 
     }
 
-    private String getFilterClause(String filterOption, int filterCount) {
+    private String processFilter(String filterOption, int filterCount) {
         String placeHolder = String.join(",", Collections.nCopies(filterCount, "?"));
         switch (filterOption) {
             case "ftGnr":
@@ -593,7 +577,12 @@ public class ProductDAO {
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
                 + "WHERE P.isActive = 1 \n"
                 + "ORDER BY TS.salesRank ;");
-
+        
+        //Print the final query to console
+        System.out.println(sql);
+        System.out.println("-------------------------------------------------------------------------------------");
+        
+        
         //Execute query
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)) {
             List<Product> productList = new ArrayList<>();
@@ -1008,15 +997,14 @@ public class ProductDAO {
     }
 
     public static void main(String[] args) {
-        String sql = "SELECT \n"
-                + "    p.publisherID, \n"
-                + "    p.publisherName, \n"
-                + "    COUNT(pr.productID) AS productCount\n"
-                + "FROM Publisher p\n"
-                + "JOIN Book b ON p.publisherID = b.publisherID\n"
-                + "LEFT JOIN Product pr ON b.bookID = pr.productID AND pr.isActive = 1\n"
-                + "GROUP BY p.publisherID, p.publisherName;";
-        System.out.println(sql);
+        try {
+            ProductDAO productDAO = new ProductDAO();
+            productDAO.getAllActiveProducts("book","releaseDate",null);
+            productDAO.getAllActiveProducts("merch","releaseDate",null);
+            System.out.println();
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
