@@ -80,11 +80,14 @@
                                                 <h3 class="description-title text-lg">Description</h3>
 
                                                 <p class="description-content m-2">${product.description}</p>
-                                                <p class="tags">
+                                                <p class="tags p-2">
                                                     <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                                        #${tag} 
+                                                        <a data-tag="${tag}" class="tags-link text-orange-500 hover:underline px-1" href="#" alt="${tag}">
+                                                            <span>#</span>${tag} 
+                                                        </a>
                                                     </c:forTokens>
                                                 </p>
+
                                             </div>
                                         </c:if>
                                     </div>
@@ -217,7 +220,9 @@
                                     <p class="description-content p-2 m-2">${product.description}</p>
                                     <p class="tags p-2">
                                         <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                            #${tag} 
+                                            <a data-tag="${tag}" class="tags-link text-orange-500 hover:underline px-1" href="#" alt="${tag}">
+                                                <span>#</span>${tag} 
+                                            </a>
                                         </c:forTokens>
                                     </p>
                                 </div>
@@ -426,10 +431,6 @@
                                                                 hiddenInput.value = numberValue.value;
                                                             });
 
-                                                            // Optional: Display the values for verification
-                                                            let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                                                            console.log("quantity:", displayValues);
-
 
                                                             //                Map quant on input
                                                             document.getElementById("quantityInput").addEventListener("input", function (event) {
@@ -454,10 +455,9 @@
                                                                     hiddenInput.value = numberValue;
                                                                 });
 
-                                                                // Optional: Display the values for verification
-                                                                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                                                                console.log("quantity:", displayValues);
                                                             });
+
+
                                                         });
 
                                                         //            Adjust layout based product type
@@ -574,6 +574,22 @@
                                                             }
 
                                                             releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
+                                                        });
+                                                        
+                                                        //Format tags-link
+                                                        document.addEventListener('DOMContentLoaded',function(){
+                                                            const tagsLink = document.querySelectorAll('.tags-link');
+                                                            if (tagsLink) {
+                                                                const type = `${requestScope.type}`;
+                                                                if (type !== '') {
+                                                                    tagsLink.forEach(link => {
+                                                                        const tag = link.dataset.tag ? link.dataset.tag : "";
+                                                                        let params = `type=${type}`;
+                                                                        params += tag !== type ? "&query=" + tag : "";
+                                                                        link.href = decodeURIComponent("search?" + encodeURIComponent(params));
+                                                                    });
+                                                                }
+                                                            }
                                                         });
 
 
