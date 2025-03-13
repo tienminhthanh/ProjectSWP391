@@ -22,7 +22,7 @@
                 <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Event List</h1>
                 <hr class="mb-6 border-gray-300"/>
                 <div class="mt-6 flex flex-col items-start"> 
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddEvent">
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddNew">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
                     <c:if test="${not empty errorMessage}">
@@ -117,14 +117,6 @@
             </div>
         </main>
 
-        <!-- FOOTER -->
-        <footer class="bg-gray-200 py-4 mt-8 w-full">
-            <div class="container mx-auto px-4 text-center text-sm text-gray-600">
-                <a class="mr-4 hover:text-gray-800" href="#">Privacy</a>
-                <a class="hover:text-gray-800" href="#">Terms & Conditions</a>
-                <p class="mt-2">© BOOK WALKER Co.,Ltd.</p>
-            </div>
-        </footer>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
                                         function confirmAction(message, url) {

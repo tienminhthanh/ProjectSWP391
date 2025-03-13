@@ -143,6 +143,34 @@ public class EventDAO {
         return false;
     }
 
+    public boolean addEvent(Event event) {
+        try {
+            String sql = "INSERT INTO [dbo].[Event]\n"
+                    + "           ([eventName]\n"
+                    + "           ,[dateCreated]\n"
+                    + "           ,[duration]\n"
+                    + "           ,[banner]\n"
+                    + "           ,[description]\n"
+                    + "           ,[adminID]\n"
+                    + "           ,[isActive]\n"
+                    + "           ,[dateStarted])\n"
+                    + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            Object[] params = {event.getEventName(),
+                event.getDateCreated(),
+                event.getDuration(),
+                event.getBanner(),
+                event.getDescription(),
+                event.getAdminID(),
+                event.isIsActive(),
+                event.getDateStarted()};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public boolean updateEvent(Event event) {
         String sql = "UPDATE [dbo].[Event]\n"
                 + "   SET [eventName] = ?\n"

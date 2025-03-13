@@ -114,13 +114,7 @@
                 </div>
             </div>
         </main>
-        <footer class="bg-gray-200 py-4 mt-8 w-full">
-            <div class="container mx-auto px-4 text-center text-sm text-gray-600">
-                <a class="mr-4" href="#">Privacy</a>
-                <a href="#">Purchase Terms &amp; Conditions</a>
-                <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
-            </div>
-        </footer>
+
         <script>
 // Show/Hide Max Discount Amount based on Voucher Type
             document.getElementById('voucherType').addEventListener('change', function () {
