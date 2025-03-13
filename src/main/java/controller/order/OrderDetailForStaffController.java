@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.AbstractList;
@@ -75,6 +76,12 @@ public class OrderDetailForStaffController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            response.sendRedirect("login");
+            return;
+        }
         OrderDAO orderDAO = new OrderDAO();
         DeliveryOption delivery = new DeliveryOption();
         List<OrderInfo> orderList = null;
@@ -92,7 +99,7 @@ public class OrderDetailForStaffController extends HttpServlet {
 
                 if (customer != null) {
                     int idcus = customer.getAccountID();
-                    
+
                     orderInfo = orderDAO.getOrderByID(id, idcus);
                     valueVoucher = orderDAO.getVoucherValueByOrderID(id);
                 }
@@ -114,7 +121,7 @@ public class OrderDetailForStaffController extends HttpServlet {
         calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
         Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
         orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
-
+        request.setAttribute("account", account);
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
         shipperList = orderDAO.getAllShippers();
@@ -136,7 +143,23 @@ public class OrderDetailForStaffController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession();
+           Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        int orderID = Integer.parseInt(request.getParameter("orderID"));
+        OrderDAO orderDao = new OrderDAO();
+        String status = "canceled";
+        try {
+            orderDao.updateOrderstatus(orderID, status);
+            orderDao.updateAdminIdForOrderInfo(account.getAccountID(),orderID);
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderDetailForStaffController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        response.sendRedirect("OrderDetailForStaffController?id=" +orderID);
+
     }
 
     /**

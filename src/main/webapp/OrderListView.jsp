@@ -15,6 +15,16 @@
    <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">  
+          <!--Header css-->
+        <link href="css/styleHeader.css" rel="stylesheet">
+
+        <!--Footer css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link href="css/styleFooter.css" rel="stylesheet">
+        
+            <!--Banner carousel-->
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
         <style>
         .order-card {
     position: relative;
@@ -63,134 +73,54 @@
     color: #dd6b20; /* Change this to your desired active color */
 }
 
+.breadcrumb-container {
+    background-color: #f8f9fa;  /* Màu nền */
+    padding: 10px 20px;
+    font-size: 12px;
+  
+    color: #e3a100;  /* Màu chữ vàng giống ảnh */
+}
+
+.breadcrumb-container a {
+    text-decoration: none;
+    color: #e3a100; /* Màu chữ vàng */
+    transition: color 0.3s ease-in-out;
+}
+
+.breadcrumb-container a:hover {
+    color: #d38d00; /* Đổi màu khi hover */
+}
+
+.breadcrumb-container .active {
+    color: #e3a100; /* Giữ màu vàng cho trang hiện tại */
+}
 
         </style>
     </head>
 
-
     <body class="bg-gray-50">
         <header>
-            <div class="logo">
-                <a href="home">
-                    <img src="img/logo.png" alt="WIBOOKS" />
-                </a>
-            </div>
-            <div class="top-bar">
-                <div class="search-nav-container">
-                    <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-green-500
-                        mb-2 relative inline-block ml-12"
-                        style="-webkit-text-stroke: 1px white;">
-                        Order List
-                    </h1>
-                </div>
-
-                <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
-                    <div class="customer-icons">
+           <div class="header-container">
+            <jsp:include page="header.jsp" flush="true"/> 
+           </div>    
+           <nav class="breadcrumb-container">
+               <a href="/">Home</a> >
+               <a href="/readAccount">Account</a> >
+               <span class="active">Order List</span>
+           </nav>
 
 
-                        <!--Notification button-->
-                        <a href="notification?action=list&receiverID=${sessionScope.account.accountID}">
-                            <i class="fa-regular fa-bell"></i>
-                        </a>
 
-                        <!--Cart button-->
-                        <a href="cart?customerID=${sessionScope.account.accountID}">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                        </a>
-
-                        <!--My Account-->
-                        <a href="readAccount">
-                            <i class="fa-regular fa-user"></i>
-                        </a>
-
-                        <!--Logout-->
-                        <a href="logout">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        </a>
-
-                    </div>
-
-                    <!--Toggle customer mobile menu-->
-                    <div class="overlay" id="cus-menu-overlay" onclick="closeCustomerMenu()"></div>
-                    <div class="toggle-customer-icons-mobile">
-                        <button type="button" onclick="openCustomerMenu()">
-                            <img src="img/header_icon_mobile/customerMenuIcon.png" alt="Customer Icons"/>
-                        </button>
-                    </div>
-
-                    <!--Customer mobile menu-->
-                    <div id="customer-menu-mobile" class="p-3 bg-gray-200">
-                        <div class="close-icon">
-                            <button type="button" onclick="closeCustomerMenu()">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                        <div class="mt-4 mb-4">
-                            <ul class="list-disc list-inside">
-                                <li>
-                                    <!--Notification button-->
-                                    <a href="notification.jsp">
-                                        <i class="fa-regular fa-bell"></i>
-                                        <span>Notification</span>
-                                    </a>
-
-                                </li>
-                                <li>
-                                    <!--Cart button-->
-                                    <a href="cart?customerID=${sessionScope.account.accountID}">
-                                        <i class="fa-solid fa-cart-shopping"></i>
-                                        <span>Cart</span>
-                                    </a>
-
-                                </li>
-                                <li>
-                                    <!--My Account-->
-                                    <a href="readAccount">
-                                        <i class="fa-regular fa-user"></i>
-                                        <span>My Account</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <!--Logout-->
-                                    <a href="logout">
-                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                                        <span>Sign out</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                    </div>
-
-                </c:if>
-
-                <c:if test="${empty sessionScope.account}">
-                    <div class="auth-buttons">
-
-                        <a href="login" class="loginLinks">
-                            <button class="sign-in"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
-                        </a>
-                        <a href="register">
-                            <button class="sign-up">Sign up</button>
-                        </a>
-                    </div>
-
-                    <div class="auth-icon-mobile">
-                        <a href="login" class="loginLinks">
-                            <i class="fa-regular fa-user"></i>
-                            <p>Sign in</p>
-                        </a>
-                    </div>
-                </c:if>
-            </div>
         </header>
         <nav class="bg-white shadow-md">
+            
             <div class="container mx-auto px-4 py-2 flex justify-around">
-                <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == '#' ? 'active' : ''}">Payment Due</a>
-                <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'pending' ? 'active' : ''}">Pending</a>
-                <a href="OrderListController?status=Shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'Shipped' ? 'active' : ''}">Shipping</a>
-                <a href="OrderListController?status=completed" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'completed' ? 'active' : ''}">History</a>
-                <a href="OrderListController?status=canceled" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'canceled' ? 'active' : ''}">Canceled</a>
+
+                <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == '#' ? 'active' : ''}">Payment Due</a>
+                <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'pending' ? 'active' : ''}">Pending</a>
+                <a href="OrderListController?status=Shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'Shipped' ? 'active' : ''}">Shipping</a>
+                <a href="OrderListController?status=completed" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'completed' ? 'active' : ''}">History</a>
+                <a href="OrderListController?status=canceled" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'canceled' ? 'active' : ''}">Canceled</a>
             </div>
         </nav>
         <main class="container mx-auto px-4 py-8">
@@ -319,5 +249,9 @@
         </script>
 
     </body>
+    <div>
+        <jsp:include page="footer.jsp" flush="true"/> 
+
+    </div>
 
 </html>

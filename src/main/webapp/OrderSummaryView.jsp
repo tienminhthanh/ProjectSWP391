@@ -106,6 +106,7 @@
                     <div class="left-content" style="width: 60%">
                         <h2>Shipping Information</h2> <hr>
                         <form action="OrderController" method="POST">
+                            <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
                             <div class="input-custom">
                                 <label for="name">Full Name</label><br>
                                 <input type="text" name="name" id="name" value="${fullName}" required/>
@@ -126,7 +127,7 @@
                             <div class="payment-custom">
                                 <h2>Payment Method</h2>
                                 <label><input type="radio" name="paymentMethod" value="COD" checked/> Cash on Delivery (COD)</label><br>  
-                                <!--                        <label><input type="radio" name="paymentMethod" value="online" checked/> Cash on Delivery (COD)</label><br>  -->
+                                <!--<label><input type="radio" name="paymentMethod" value="online" checked/> Cash on Delivery (COD)</label><br>  -->
 
                             </div> <hr>
 
@@ -162,6 +163,7 @@
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="home" class="btn btn-secondary">Back to Home</a>
                                 <button type="submit" class="btn btn-primary" id="placeOrderBtn"  onclick="disableButton()">Place Order</button>
+                                <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
                             </div>
                         </form>
                     </div>
@@ -176,7 +178,6 @@
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
                                     <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
-
                                 </div>
                                 <span class="product-quantity">Quantity: ${item.quantity}</span>
                                 <hr>
@@ -220,6 +221,24 @@
                     </div>
                 </div>
         </main>
-        <jsp:include page="footer.jsp"/>s
+        <jsp:include page="footer.jsp"/>
+        <script>
+            function updateOrderTotal() {
+                let totalAmount = document.getElementById("totalAmount").innerText.replace(/[^\d]/g, ""); // Lấy số từ chuỗi
+                document.getElementById("hiddenOrderTotal").value = totalAmount; // Cập nhật vào input hidden
+            }
+
+            // Cập nhật ngay khi trang tải
+            document.addEventListener("DOMContentLoaded", function () {
+                updateOrderTotal();
+            });
+
+            // Cập nhật khi người dùng chọn voucher hoặc phương thức giao hàng
+            document.getElementById("voucherSelect").addEventListener("change", updateOrderTotal);
+            document.querySelectorAll('input[name="shippingOption"]').forEach(radio => {
+                radio.addEventListener("change", updateOrderTotal);
+            });
+        </script>
+
     </body>
 </html>

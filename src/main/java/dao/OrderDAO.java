@@ -120,19 +120,6 @@ public class OrderDAO {
         return orderList;
     }
 
-    //choose
-    public List<OrderInfo> getOrdersByStatus(String orderStatus) throws SQLException {
-        List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT * from OrderInfo  where orderStatus =? ORDER BY orderID DESC";
-        Object params[] = {orderStatus};
-        try ( ResultSet rs = context.exeQuery(sql, params)) {
-            while (rs.next()) {
-                orderList.add(mapResultSetToOrderInfo(rs));
-            }
-        }
-        return orderList;
-    }
-
 // lay list order cho cus
     // choose
     public List<OrderInfo> getOrdersByCustomerID(int customerID) throws SQLException {
@@ -166,7 +153,7 @@ public class OrderDAO {
     //choose
     public List<OrderInfo> getOrdersByShipperID(int shipperID) throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
-        String sql = "SELECT * FROM OrderInfo WHERE shipperID = ?";
+        String sql = "SELECT * FROM OrderInfo WHERE shipperID = ? order by orderID desc";
         Object[] params = {shipperID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
@@ -461,6 +448,24 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
+    public boolean updatePreVoucherAmount(int orderID, Double preVoucherAmount) throws SQLException {
+        String sql = "UPDATE OrderInfo \n"
+                + "SET preVoucherAmount = ? \n"
+                + "WHERE orderID = ?";
+        Object[] params = {preVoucherAmount, orderID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
+
+    public boolean updateAdminIdForOrderInfo(int adminID,int orderID) throws SQLException {
+        String sql = "UPDATE OrderInfo \n"
+                + "SET adminID = ? \n"
+                + "WHERE orderID = ?";
+        Object[] params = {adminID, orderID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
+
     //choose
     public boolean updateOrderstatus(int orderID, String newStatus) throws SQLException {
         String sql = "UPDATE OrderInfo \n"
@@ -479,6 +484,7 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 // review
+
     public boolean updateCommentForProduct(int orderID, int productID, String comment) throws SQLException {
         String sql = "UPDATE Order_Product SET comment = ? WHERE orderID = ? AND productID = ?";
         Object[] params = {comment, orderID, productID};

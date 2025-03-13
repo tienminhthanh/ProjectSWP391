@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+
     // Hiển thị popup cảm ơn sau khi đánh giá
     window.showThankYouPopup = function (productID) {
         document.getElementById("ratingPopup").classList.add("hidden"); // Ẩn popup đánh giá
