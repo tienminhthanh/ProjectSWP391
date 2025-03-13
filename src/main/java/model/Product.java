@@ -27,6 +27,7 @@ public class Product {
     private String imageURL;
     private int discountPercentage;
     private LocalDate eventEndDate;
+    private int salesRank;
 
     /**
      * EMPTY - Set attributes later
@@ -35,7 +36,7 @@ public class Product {
     }
     
     /**
-     * FULL - FOR SELECT
+     * Omit salesRank, set later if query for Leaderboard - For SELECT
      * @param productID
      * @param productName
      * @param price
@@ -76,8 +77,10 @@ public class Product {
         this.eventEndDate = eventEndDate;
     }
     
+    
+    
     /**
-     * Omit lastModifiedTime, averageRating, numberOfRating, discountPercentage, eventEndDate - For Add/Update
+     * Omit lastModifiedTime, averageRating, numberOfRating, discountPercentage, eventEndDate, salesRank - For Add/Update
      * @param productID
      * @param productName
      * @param price
@@ -107,17 +110,7 @@ public class Product {
         this.isActive = isActive;
         this.imageURL = imageURL;
     }
-    
-   
-    
-    
-    
-    
-    
-    
-   
 
-    
 
 
     
@@ -267,6 +260,16 @@ public class Product {
     public void setEventEndDate(LocalDate eventEndDate) {
         this.eventEndDate = eventEndDate;
     }
+
+    public int getSalesRank() {
+        return salesRank;
+    }
+
+    public Product setSalesRank(int salesRank) {
+        this.salesRank = salesRank;
+        return this;
+    }
+    
 
 
     

@@ -17,10 +17,22 @@
             <div class="flex items-center space-x-6">
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-12">
                 <h1 class="text-xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
-           
+
             </div>
             <div class="flex items-center space-x-6">
-                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>
+<!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
+                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}" class="relative">
+                    <i class="fas fa-bell text-2xl"></i>
+                    <c:set var="unreadCount" value="0" />
+                    <c:forEach var="notification" items="${sessionScope.notifications}">
+                        <c:if test="${!notification.isRead()}">
+                            <c:set var="unreadCount" value="${unreadCount + 1}" />
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${unreadCount > 0}">
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${unreadCount}</span>
+                    </c:if>
+                </a>
                 <a href="readAccount" class="fas fa-user-circle text-2xl"></a>
                 <span class="text-xl">Shipper</span>
                 <a href="logout" class="fas fa-sign-out-alt text-2xl"></a>
@@ -72,7 +84,7 @@
                                    class="inline-block px-4 py-2 text-lg bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200 mr-3">
                                     <i class="fas fa-eye mr-2"></i> Details
                                 </a>
-                                
+
                                 <form action="OrderListForShipperController" method="post">
                                     <input type="hidden" name="orderID" value="${order.orderID}">
                                     <button type="submit" class="inline-block px-4 py-2 text-lg bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200">Update</button>

@@ -71,15 +71,56 @@ public class ProductDAO {
     public Product callGetProductByTypeAndId(String type, int productID) throws SQLException {
         switch (type) {
             case "merch":
-
-//                WIP
-//                WIP
-//                WIP
+                return getMerchById(productID);
             case "book":
                 return getBookById(productID);
             default:
                 return null;
         }
+    }
+
+    /**
+     * For view merch details
+     *
+     * @param productID
+     * @return
+     * @throws SQLException
+     */
+    public Product getMerchById(int productID) throws SQLException {
+        StringBuilder sql = getCTEProductDiscount(new String[]{"rank"}).append("SELECT\n"
+                + "P.*,\n"
+                + "C.categoryName,\n"
+                + "M.seriesID,\n"
+                + "M.characterID,\n"
+                + "M.brandID,\n"
+                + "M.size,\n"
+                + "M.scaleLevel,\n"
+                + "M.material,\n"
+                + "S.seriesName,\n"
+                + "Ch.characterName,\n"
+                + "B.brandName,\n"
+                + "PD.discountPercentage,\n"
+                + "PD.dateStarted,\n"
+                + "PD.eventDuration,\n"
+                + "TS.salesRank\n"
+                + "FROM Product AS P\n"
+                + "JOIN Merchandise AS M ON P.productID = M.merchandiseID\n"
+                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
+                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "LEFT JOIN Brand AS B ON M.brandID = B.brandID\n"
+                + "LEFT JOIN Character AS Ch ON M.characterID = Ch.characterID\n"
+                + "LEFT JOIN Series AS S ON M.seriesID = S.seriesID\n"
+                + "WHERE P.isActive = 1\n"
+                + "AND P.productID = ? \n");
+
+        Object[] params = {productID};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            if (rs.next()) {
+                return mapResultSetToProduct(rs, rs.getString("generalCategory"));
+            }
+        }
+        return null;
     }
 
     /**
@@ -90,11 +131,13 @@ public class ProductDAO {
      * @throws SQLException
      */
     public Product getBookById(int productID) throws SQLException {
-        StringBuilder sql = getCTEProductDiscount().append("SELECT\n"
+
+        StringBuilder sql = getCTEProductDiscount(new String[]{"rank"}).append("SELECT\n"
                 + "P.*, C.categoryName, B.publisherID, B.duration,\n"
-                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.eventDuration\n"
+                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.eventDuration,TS.salesRank\n"
                 + "FROM Product AS P\n"
                 + "JOIN Book AS B ON P.productID = B.bookID\n"
+                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
                 + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
                 + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
@@ -364,7 +407,7 @@ public class ProductDAO {
             case "priceHighToLow":
                 return "P.price DESC";
             case "rating":
-                return "P.averageRating DESC";
+                return "P.averageRating DESC, P.numberOfRating DESC";
             case "releaseDate":
             default:
                 return "P.releaseDate DESC";
@@ -531,9 +574,51 @@ public class ProductDAO {
         }
     }
 
-    private StringBuilder getCTEProductDiscount() {
+    public List<Product> getRankedProducts(String type) throws SQLException {
+        //Base query
+        StringBuilder sql = getCTEProductDiscount(new String[]{"rank"}).append("SELECT P.*,\n"
+                + "C.categoryName,\n"
+                + "PD.discountPercentage,\n"
+                + "PD.dateStarted,\n"
+                + "PD.eventDuration,\n"
+                + "TS.salesRank\n"
+                + "FROM Product AS P\n"
+                + "JOIN TopSale TS ON TS.productID = P.productID\n");
 
-        return new StringBuilder("WITH ProductDiscount AS (\n"
+        //Type specific join
+        sql.append(type.equals("book") ? "JOIN Book B ON B.bookID = P.productID\n" : "JOIN Merchandise M ON M.merchandiseID = P.productID\n");
+
+        //Common part
+        sql.append("LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
+                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
+                + "WHERE P.isActive = 1 \n"
+                + "ORDER BY TS.salesRank ;");
+
+        //Execute query
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)) {
+            List<Product> productList = new ArrayList<>();
+            while (rs.next()) {
+                productList.add(mapResultSetToProduct(rs, "").setSalesRank(rs.getInt("salesRank")));
+            }
+            return productList;
+
+        }
+    }
+
+    private StringBuilder getCTEProductDiscount(String... condition) {
+        StringBuilder cte = new StringBuilder("WITH ");
+        if (condition.length > 0 && condition[0].equals("rank")) {
+            cte.append("TopSale AS (\n"
+                    + "    SELECT SH.productID, SUM(soldQuantity) AS totalSoldQuantity,\n"
+                    + "	ROW_NUMBER() OVER (ORDER BY SUM(SH.soldQuantity) DESC,Pr.averageRating DESC, Pr.numberOfRating DESC) AS salesRank\n"
+                    + "    FROM SaleHistory SH\n"
+                    + "	JOIN Product Pr ON Pr.productID = SH.productID\n"
+                    + "    WHERE saleDate >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)\n"
+                    + "    AND saleDate < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)\n"
+                    + "    GROUP BY SH.productID,Pr.averageRating,Pr.numberOfRating \n"
+                    + "),\n");
+        }
+        return cte.append("ProductDiscount AS (\n"
                 + "SELECT ep.productID,\n"
                 + "e.dateStarted,\n"
                 + "e.duration as eventDuration,\n"
@@ -558,9 +643,9 @@ public class ProductDAO {
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
 
-        switch (type) {
+        switch (type != null ? type : "") {
             case "book":
-                // Create Publisher
+                // For book details
                 Publisher publisher = new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
                 return new Book(publisher, rs.getString("duration"),
                         rs.getInt("productID"),
@@ -580,8 +665,9 @@ public class ProductDAO {
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
-                        eventEndDate);
+                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
             case "merch":
+                // For merch details
                 Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
                 Series series = new Series(rs.getInt("seriesID"), rs.getString("seriesName"));
                 OGCharacter character = new OGCharacter(rs.getInt("characterID"), rs.getString("characterName"));
@@ -603,9 +689,10 @@ public class ProductDAO {
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
-                        eventEndDate);
+                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
 
             default:
+                //For listing, sort, search, filter
                 return new Product(rs.getInt("productID"),
                         rs.getString("productName"),
                         rs.getDouble("price"),
@@ -853,6 +940,71 @@ public class ProductDAO {
             }
             return brandMap;
         }
+    }
+
+    public boolean addNewProducts(Product newProduct) throws SQLException {
+        String sql = "";
+        Object[] params = {newProduct};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewCreators(Creator newCreator) throws SQLException {
+        String sql = "";
+        Object[] params = {newCreator};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean assignCreatorsToProduct(int creatorID, int productID) throws SQLException {
+        String sql = "";
+        Object[] params = {productID, creatorID};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean assignGenresToBook(int genreID, int bookID) throws SQLException {
+        String sql = "";
+        Object[] params = {bookID, genreID};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewMerchSeries(Series newSeries) throws SQLException {
+        String sql = "";
+        Object[] params = {newSeries};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewMerchBrand(Brand newBrand) throws SQLException {
+        String sql = "";
+        Object[] params = {newBrand};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean addNewMerchCharacter(OGCharacter newCharacter) throws SQLException {
+        String sql = "";
+        Object[] params = {newCharacter};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public boolean updateProducts(Product updatedProduct, String type) throws SQLException {
+        String sql = generateUpdateStatementBasedOnType(type);
+        Object[] params = {updatedProduct};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    private String generateUpdateStatementBasedOnType(String type) {
+        switch (type) {
+            case "book":
+                return "UPDATE Book...";
+            case "merch":
+                return "UPDATE Merchandise....";
+            default:
+                return "UPDATE Product...";
+        }
+    }
+
+    public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
+        String sql = "";
+        Object[] params = {productID, newStatus};
+        return context.exeNonQuery(sql, params) > 0;
     }
 
     public static void main(String[] args) {

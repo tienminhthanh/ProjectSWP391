@@ -80,11 +80,14 @@
                                                 <h3 class="description-title text-lg">Description</h3>
 
                                                 <p class="description-content m-2">${product.description}</p>
-                                                <p class="tags">
+                                                <p class="tags p-2">
                                                     <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                                        #${tag} 
+                                                        <a data-tag="${tag}" class="tags-link text-orange-500 hover:underline px-1" href="#" alt="${tag}">
+                                                            <span>#</span>${tag} 
+                                                        </a>
                                                     </c:forTokens>
                                                 </p>
+
                                             </div>
                                         </c:if>
                                     </div>
@@ -159,7 +162,7 @@
                                                 </c:when>
                                                 <c:when test="${product.stockCount <= 10}">
                                                     <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
-                                                </c:when>
+                                                    </c:when>
 
                                             </c:choose>
                                         </div>
@@ -217,7 +220,9 @@
                                     <p class="description-content p-2 m-2">${product.description}</p>
                                     <p class="tags p-2">
                                         <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                            #${tag} 
+                                            <a data-tag="${tag}" class="tags-link text-orange-500 hover:underline px-1" href="#" alt="${tag}">
+                                                <span>#</span>${tag} 
+                                            </a>
                                         </c:forTokens>
                                     </p>
                                 </div>
@@ -251,8 +256,18 @@
                                                     <c:if test="${not empty product.duration}">
                                                     <tr><td>Duration</td><td>${product.duration}</td></tr>
                                                 </c:if>
-                                                <c:if test="${not empty ranking}">
-                                                    <tr><td>Ranking</td><td>${ranking}</td></tr>
+                                                <c:if test="${product.salesRank > 0}">
+                                                    <c:set var="rank" value="${product.salesRank}" />
+                                                    <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
+                                                    <tr>
+                                                        <td>Monthly Ranking</td>
+                                                        <td class=" text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                                            <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>
+                                                            <span class="a-product-rank-${rank}">
+                                                                ${rank}<span>${suffix}</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
                                                 </c:if>
                                             </table>
                                         </c:when>
@@ -260,24 +275,37 @@
                                         <c:when test= "${type=='merch'}">
                                             <table class="m-2">
                                                 <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                                <c:if test="${not empty creatorMap.sculptor}">
+                                                <c:if test="${not empty creatorMap.sculptor and not empty creatorMap.scupltor.creatorName}">
                                                     <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
                                                 </c:if>
-                                                <c:if test="${not empty creatorMap.artist}">
+                                                <c:if test="${not empty creatorMap.artist and not empty creatorMap.artist.creatorName}">
                                                     <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
                                                 </c:if>
-                                                <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
-                                                <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
-                                                <tr><td>Character</td><td>${product.character.characterName}</td></tr>
+
+                                                <c:if test="${not empty product.brand and not empty product.brand.brandName}">
+                                                    <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
+                                                </c:if>
+                                                <c:if test="${not empty product.series and not empty product.series.seriesName}">
+                                                    <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
+                                                </c:if>
+                                                <c:if test="${not empty product.character and not empty product.character.characterName}">
+                                                    <tr><td>Character</td><td>${product.character.characterName}</td></tr>
+                                                </c:if>
 
                                                 <tr>
                                                     <td>Specification</td>
                                                     <td>
                                                         <ul>
-                                                            <li>Category: ${product.specificCategory.categoryName}</li>
-                                                            <li>Scale level: ${product.scaleLevel}</li>
-                                                            <li>Size: ${product.size}</li>
-                                                            <li>Material: ${product.material}</li>
+                                                            <li>${product.specificCategory.categoryName}</li>
+                                                                <c:if test="${not empty product.scaleLevel}">
+                                                                <li>Scale level: ${product.scaleLevel}</li>
+                                                                </c:if>
+                                                                <c:if test="${not empty product.size}">
+                                                                <li>Size: ${product.size}</li>
+                                                                </c:if>
+                                                                <c:if test="${not empty product.material}">
+                                                                <li>Material: ${product.material}</li>
+                                                                </c:if>
                                                         </ul>
 
                                                     </td>
@@ -285,11 +313,50 @@
 
 
                                                 <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                                    <c:if test="${not empty ranking}">
-                                                    <tr><td>Ranking</td><td>${ranking}</td></tr>
+                                                    <c:if test="${product.salesRank > 0}">
+                                                        <c:set var="rank" value="${product.salesRank}" />
+                                                        <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
+                                                    <tr>
+                                                        <td>Monthly Ranking</td>
+                                                        <td class=" text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                                            <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>
+                                                            <span class="a-product-rank-${rank}">
+                                                                ${rank}<span>${suffix}</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
                                                 </c:if>
                                             </table>
                                         </c:when>
+                                    </c:choose>
+                                </div>
+
+                                <!--Reviews section-->
+                                <div class="review-area text-sm w-full mb-4 bg-white">
+                                    <h3 class="description-title text-lg">Reviews</h3>
+                                    <c:choose>
+
+                                        <c:when test="${not empty requestScope.reviewMap}">
+                                            <c:forEach var="review" items="${requestScope.reviewMap}">
+                                                <div class="customer-review p-2 m-2 border-b-4 rounded-lg flex flex-col items-start gap-2">
+                                                    <h4 class="customer-name text-md font-bold">${review.key}</h4>
+                                                    <p class="avg-rating">
+                                                        <c:forEach var="i" begin="1" end="${review.value[0]}">
+                                                            <i class="fa-solid fa-star"></i>
+                                                        </c:forEach>
+                                                    </p>
+                                                    <p class="review-content">
+                                                        ${review.value[1] ne null ? review.value[1] : ''}
+                                                    </p>
+                                                </div> 
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="flex justify-center items-center h-40 w-full">
+                                                <p class="text-gray-500 italic">No reviews yet. Be the first to share your thoughts about the purchase!</p>
+                                            </div>
+                                        </c:otherwise>
+
                                     </c:choose>
                                 </div>
 
@@ -364,12 +431,8 @@
                                                                 hiddenInput.value = numberValue.value;
                                                             });
 
-                                                            // Optional: Display the values for verification
-                                                            let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                                                            console.log("quantity:", displayValues);
 
-
-//                Map quant on input
+                                                            //                Map quant on input
                                                             document.getElementById("quantityInput").addEventListener("input", function (event) {
                                                                 const inputElement = document.getElementById("quantityInput");
                                                                 let numberValue = event.target.value; // Get the value from the number input
@@ -392,13 +455,12 @@
                                                                     hiddenInput.value = numberValue;
                                                                 });
 
-                                                                // Optional: Display the values for verification
-                                                                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                                                                console.log("quantity:", displayValues);
                                                             });
+
+
                                                         });
 
-//            Adjust layout based product type
+                                                        //            Adjust layout based product type
                                                         document.addEventListener("DOMContentLoaded", function () {
                                                             const type = "${requestScope.type}";
                                                             const purchase = document.querySelector(".purchase-area");
@@ -513,16 +575,32 @@
 
                                                             releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
                                                         });
+                                                        
+                                                        //Format tags-link
+                                                        document.addEventListener('DOMContentLoaded',function(){
+                                                            const tagsLink = document.querySelectorAll('.tags-link');
+                                                            if (tagsLink) {
+                                                                const type = `${requestScope.type}`;
+                                                                if (type !== '') {
+                                                                    tagsLink.forEach(link => {
+                                                                        const tag = link.dataset.tag ? link.dataset.tag : "";
+                                                                        let params = `type=${type}`;
+                                                                        params += tag !== type ? "&query=" + tag : "";
+                                                                        link.href = decodeURIComponent("search?" + encodeURIComponent(params));
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
 
 
-////Close sidebar on resize
-//window.addEventListener('resize', () => {
-//    const clientWidth = document.documentElement.clientWidth;
-//    const sidebar = document.getElementById('cus-sidebar');
-//    sidebar.style.display = 'none';
-//});
+                                                        ////Close sidebar on resize
+                                                        //window.addEventListener('resize', () => {
+                                                        //    const clientWidth = document.documentElement.clientWidth;
+                                                        //    const sidebar = document.getElementById('cus-sidebar');
+                                                        //    sidebar.style.display = 'none';
+                                                        //});
 
-// Stock check function for Add to Cart
+                                                        // Stock check function for Add to Cart
                                                         function checkStock(cartQuantity, stockCount, event) {
                                                             let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
                                                             if (cartQuantity + quantityToAdd > stockCount) {

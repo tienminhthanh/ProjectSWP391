@@ -149,6 +149,12 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+                <div class="flex justify-end space-x-4">
+                    <a href="OrderListForShipperController" 
+                       class="btn btn-primary">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
             </main>
         </div>
 
@@ -156,36 +162,35 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const notifications = document.querySelectorAll(".notification");
-
-                notifications.forEach(notification => {
+            const notifications = document.querySelectorAll(".notification");
+                    notifications.forEach(notification => {
                     // Lấy nội dung text và loại bỏ khoảng trắng thừa
                     const text = notification.textContent.trim();
-                    console.log("Nội dung text:", `"${text}"`); // In chính xác nội dung của text
+                            console.log("Nội dung text:", `"${text}"`); // In chính xác nội dung của text
 
-                    // Kiểm tra và tách Order ID
-                    if (text.includes("Order ID:")) {
+                            // Kiểm tra và tách Order ID
+                            if (text.includes("Order ID:")) {
                     const parts = text.split("Order ID:");
                             console.log("Mảng sau split:", parts); // In mảng để kiểm tra
 
                             // Lấy phần sau "Order ID:" (nếu có)
                             const result = parts[1]?.trim() || "";
-                    console.log("Order ID:", `"${result}"`); // In result để kiểm tra
+                            console.log("Order ID:", `"${result}"`); // In result để kiểm tra
 
-                    // Tiếp tục xử lý với link
-                    const div = notification.closest("div");
+                            // Tiếp tục xử lý với link
+                            const div = notification.closest("div");
                             const link = div?.querySelector("a");
-                    if (link && result) { // Chỉ cập nhật nếu result không rỗng
-                        link.href = "OrderDetailForShipperController?id=" + result;
-                        console.log("Đã cập nhật href:", link.href);
+                            if (link && result) { // Chỉ cập nhật nếu result không rỗng
+                    link.href = "OrderDetailForShipperController?id=" + result;
+                            console.log("Đã cập nhật href:", link.href);
                     } else {
-                        console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
-                        }
+                    console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
+                    }
                     }
                     else {
                     console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
                     }
-                });
+                    });
             });
         </script>
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
