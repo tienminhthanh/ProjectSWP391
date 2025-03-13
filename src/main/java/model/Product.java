@@ -36,7 +36,7 @@ public class Product {
     }
     
     /**
-     * Omit salesRank, set later if query for Leaderboard - For SELECT
+     * Omit salesRank, set later if query for Leaderboard - For Catalog
      * @param productID
      * @param productName
      * @param price
@@ -80,7 +80,7 @@ public class Product {
     
     
     /**
-     * Omit lastModifiedTime, averageRating, numberOfRating, discountPercentage, eventEndDate, salesRank - For Add/Update
+     * Omit discountPercentage, eventEndDate, salesRank - For Management
      * @param productID
      * @param productName
      * @param price
@@ -88,6 +88,9 @@ public class Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
+     * @param lastModifiedTime
+     * @param averageRating
+     * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
@@ -95,7 +98,7 @@ public class Product {
      * @param isActive
      * @param imageURL 
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -103,6 +106,9 @@ public class Product {
         this.specificCategory = specificCategory;
         this.description = description;
         this.releaseDate = releaseDate;
+        this.lastModifiedTime = lastModifiedTime;
+        this.averageRating = averageRating;
+        this.numberOfRating = numberOfRating;
         this.specialFilter = specialFilter;
         this.adminID = adminID;
         this.keywords = keywords;
@@ -110,8 +116,7 @@ public class Product {
         this.isActive = isActive;
         this.imageURL = imageURL;
     }
-
-
+    
 
     
     

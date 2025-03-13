@@ -4,6 +4,7 @@
  */
 package controller.product;
 
+import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,13 +12,27 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Account;
+import model.Product;
 
 /**
  *
  * @author anhkc
  */
-@WebServlet({"/manage-product/list", "/manage-product/details", "/manage-product/update", "/manage-product/add", "/manage-product/delete"})
-public class ManageProductController extends HttpServlet {
+@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/deleteProduct"})
+public class ProductManagementController extends HttpServlet {
+    private ProductDAO productDAO;
+
+    @Override
+    public void init() throws ServletException {
+        super.init(); 
+        productDAO = new ProductDAO();
+    }
+    
 
     /**
      * Processes requests for both HTTP GET and POST methods.
@@ -33,19 +48,19 @@ public class ManageProductController extends HttpServlet {
         String path = request.getServletPath();
 
         switch (path) {
-            case "/manage-product/list":
+            case "/manageProductList":
                 manageList(request, response);
                 break;
-            case "/manage-product/details":
+            case "/manageProductDetails":
                 manageDetails(request, response);
                 break;
-            case "/manage-product/update":
+            case "/updateProduct":
                 manageUpdate(request, response);
                 break;
-            case "/manage-product/add":
+            case "/addProduct":
                 manageAdd(request, response);
                 break;
-            case "/manage-product/delete":
+            case "/deleteProduct":
                 manageDelete(request, response);
                 break;
             default:
@@ -56,16 +71,46 @@ public class ManageProductController extends HttpServlet {
 
     private void manageList(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        try (PrintWriter out = response.getWriter()) {
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head><title>Product List</title></head>");
-            out.println("<body>");
-            out.println("<h1>Product List</h1>");
-            out.println("<p>Displaying all products here...</p>");
-            out.println("</body>");
-            out.println("</html>");
+        //Three items per page
+        int pageSize = 5;
+        String pageStr = request.getParameter("page");
+        String query = request.getParameter("query");
+        String type = request.getParameter("type");
+        //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
+        
+        //Prevent unauthorized access
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account)(session.getAttribute("account"));
+        if (currentAccount == null || (!currentAccount.getRole().equals("admin") && !currentAccount.getRole().equals("staff"))) {
+            response.sendRedirect(request.getContextPath() + "login.jsp");
+            return;
         }
+
+        try {
+            // Get all products
+            List<Product> productList = productDAO.getAllProducts(query,type, query != null && !query.trim().isEmpty() ? "relevance" : "", page, pageSize);
+
+            // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(query,type);
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / pageSize) : 1;
+
+            
+            request.setAttribute("productList", productList);
+            request.setAttribute("type", type);
+            request.setAttribute("query", query);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages); 
+            request.setAttribute("pageSize", pageSize); 
+            request.setAttribute("totalProducts", totalProducts);
+
+            
+        } catch (Exception ex) {
+            Logger.getLogger(ProductManagementController.class.getName()).log(Level.SEVERE, "Error: " + ex.getMessage(), ex);
+            request.setAttribute("errorMessage", "An error occurred while fetching products: " + ex.getMessage());
+        }
+        request.getRequestDispatcher("productCatalogManagement.jsp").forward(request, response);
     }
 
     private void manageDetails(HttpServletRequest request, HttpServletResponse response) 

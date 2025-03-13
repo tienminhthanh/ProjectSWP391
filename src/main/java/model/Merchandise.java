@@ -41,8 +41,8 @@ public class Merchandise extends Product {
         this.material = material;
     }
 
-    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
+    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -50,6 +50,8 @@ public class Merchandise extends Product {
         this.scaleLevel = scaleLevel;
         this.material = material;
     }
+
+   
 
     
 

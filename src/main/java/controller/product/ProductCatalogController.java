@@ -202,7 +202,7 @@ public class ProductCatalogController extends HttpServlet {
                 //No keywords entered
                 breadCrumb += String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type));
                 pageTitle.append(getDisplayTextBasedOnType(type));
-                productList = productDAO.getAllActiveProducts(type, sortCriteria, filterMap);
+                productList = productDAO.getActiveProducts(type, sortCriteria, filterMap);
 
             } else {
                 breadCrumb += String.format(" > <a href='search?type=%s&query=%s'>Search Result: %s</a>", type, query, query);
