@@ -12,7 +12,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-        <title>Product Management</title>
+        <title>Product Management - WIBOOKS</title>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
@@ -30,13 +30,13 @@
             <div class="my-6 flex flex-col items-start">
                 <!-- Add New Product Button -->
                 <div class="flex items-center space-x-6">
-                    <a class="bg-green-600 text-white p-3 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="accountAddNew.jsp">
+                    <a class="bg-green-600 text-white p-3 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="productManagementForm.jsp?action=add">
                         <i class="fas fa-plus mr-2"></i> Add New Product
                     </a>
 
                     <!--Search Field--> 
                     <form action="" method="get" class="flex items-center space-x-4 mb-4 ">
-                        <div class="flex items-center justify-center">
+                        <div class="flex items-stretch justify-center">
                             <select class="p-3 border border-gray-300 rounded-l focus:ring-blue-500 focus:border-blue-500" name="type">
                                 <option value="" ${empty param.type ? 'selected' : ''}>All Products</option>
                                 <option value="book" ${param.type == 'book' ? 'selected' : ''}>Books</option>
@@ -87,10 +87,12 @@
 
                                 <!--Image - Name-->
                                 <td class="px-2 py-3 border-b text-center w-[15%]">
-                                    <figure>
-                                        <img loading="lazy" class="object-contain w-full" src="${product.imageURL}" alt="${product.productName}" title="${product.productName}" />
-                                        <figcaption class="font-bold text-xs md:text-md py-2">${product.productName}</figcaption>
-                                    </figure>
+                                    <a href="manageProductDetails?id=${product.productID}&type=${product.generalCategory}">
+                                        <figure>
+                                            <img loading="lazy" class="object-contain w-full" src="${product.imageURL}" alt="${product.productName}" title="${product.productName}" />
+                                            <figcaption class="font-bold text-xs md:text-md py-2">${product.productName}</figcaption>
+                                        </figure>
+                                    </a>
                                 </td>
 
                                 <!--Price-->
@@ -103,7 +105,7 @@
                                 <!--Category-->
                                 <td class="px-2 py-3 border-b text-center">${product.specificCategory.categoryName}</td>
                                 <!--Release Date-->
-                                <td class="date-str px-2 py-3 border-b text-center">${product.releaseDate}</td>
+                                <td class="release-date px-2 py-3 border-b text-center">${product.releaseDate}</td>
                                 <!--Special Filter-->
                                 <td class="px-2 py-3 border-b text-center">${empty product.specialFilter ? 'Unset': product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'pre-order' ? 'Pre-Order' : ''}</td>
                                 <!--Type-->
@@ -122,7 +124,7 @@
                                     </div>
                                 </td>
                                 <!--Last Modified Time-->
-                                <td class="date-str px-2 py-3 border-b text-center">${product.lastModifiedTime}</td>
+                                <td class="modified-time px-2 py-3 border-b text-center">${product.lastModifiedTime}</td>
                                 <!--Status-->
                                 <td class="px-6 py-3 border-b text-center">
                                     <c:choose>
@@ -137,18 +139,18 @@
                                 <!--Actions-->
                                 <c:if test="${sessionScope.account ne null and sessionScope.account.role eq 'admin'}">
                                     <td class="px-2 py-3 border-b text-left w-[10%]">
-                                        <a href="manage-product/update?id=${product.productID}&type=${product.generalCategory}" class="text-blue-500 hover:text-blue-700">
+                                        <a href="updateProduct?id=${product.productID}" class="text-blue-500 hover:text-blue-700">
                                             <i class="fas fa-edit"></i> Update
                                         </a>
                                         <br/>
                                         <c:choose>
                                             <c:when test="${product.isActive}">
-                                                <a class="text-red-500 hover:text-red-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to deactivate this product?', 'manage-product/delete?id=${product.productID}&action=deactivate')">
+                                                <a class="text-red-500 hover:text-red-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to deactivate this product?', 'changeProductStatus?id=${product.productID}&action=deactivate')">
                                                     <i class="fas fa-lock"></i><span> Deactivate</span>
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <a class="text-green-500 hover:text-green-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to activate this product?', 'manage-product/delete?id=${product.productID}&action=activate')">
+                                                <a class="text-green-500 hover:text-green-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to activate this product?', 'changeProductStatus?id=${product.productID}&action=activate')">
                                                     <i class="fas fa-unlock"></i><span> Activate</span>
                                                 </a>
                                             </c:otherwise>
@@ -205,51 +207,64 @@
         <script src="https://cdn.tailwindcss.com"></script>       
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-                                                    function confirmAction(message, url) {
-                                                        Swal.fire({
-                                                            title: 'Confirmation',
-                                                            text: message,
-                                                            icon: 'warning',
-                                                            showCancelButton: true,
-                                                            confirmButtonText: 'Yes, do it!',
-                                                            cancelButtonText: 'Cancel',
-                                                            reverseButtons: true
-                                                        }).then((result) => {
-                                                            if (result.isConfirmed) {
-                                                                window.location.href = url;
-                                                            }
-                                                        });
-                                                    }
-                                                    ;
+            function confirmAction(message, url) {
+                Swal.fire({
+                    title: 'Confirmation',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, do it!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            }
+            ;
 
-                                                    //Format date display
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        const dateStrs = document.querySelectorAll('.date-str');
-                                                        if (dateStrs) {
-                                                            dateStrs.forEach(strDate => {
-                                                                const dateObj = new Date(strDate.innerText.trim());
-                                                                if (!isNaN(dateObj)) {
-                                                                    const today = new Date();
-                                                                    // Remove time from today's date for accurate comparison
-                                                                    today.setHours(0, 0, 0, 0);
+            //Format date display
+            document.addEventListener('DOMContentLoaded', function () {
+                const releaseDates = document.querySelectorAll('.release-date');
+                const modifiedTimes = document.querySelectorAll('.modified-time');
 
-                                                                    // Formatting functions for Vietnam locale
-                                                                    const formatDate = (date) =>
-                                                                        new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
-                                                                    const formatTime = (date) =>
-                                                                        new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false}).format(date);
+                // Formatting functions for Vietnam locale
+                const formatDate = (date) =>
+                    new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                const formatTime = (date) =>
+                    new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
 
-                                                                    // Show time if today, otherwise show formatted date
-                                                                    const formattedDate = dateObj.toDateString() === today.toDateString()
-                                                                            ? formatTime(dateObj)
-                                                                            : formatDate(dateObj);
-                                                                    console.log('DATE', formattedDate);
-                                                                    strDate.innerText = formattedDate;
-                                                                }
-                                                            });
-                                                        }
+                //ReleaseDate
+                if (releaseDates) {
+                    releaseDates.forEach(rlsDate => {
+                        const rlsDateObj = new Date(rlsDate.innerText.trim());
+                        if (!isNaN(rlsDateObj)) {
+                            rlsDate.innerText = formatDate(rlsDateObj);
+                        }
+                    });
+                }
 
-                                                    });
+                //Last modified time
+                if (modifiedTimes) {
+                    modifiedTimes.forEach(strDate => {
+                        const dateObj = new Date(strDate.innerText.trim());
+                        if (!isNaN(dateObj)) {
+                            const today = new Date();
+                            // Remove time from today's date for accurate comparison
+                            today.setHours(0, 0, 0, 0);
+
+                            // Show time if today, otherwise show formatted date
+                            const formattedDate = dateObj.toDateString() === today.toDateString()
+                                    ? formatTime(dateObj)
+                                    : formatDate(dateObj);
+                            console.log('DATE', formattedDate);
+                            strDate.innerText = formattedDate;
+                        }
+                    });
+                }
+
+            });
 
         </script>
         <!--Script for include icons-->

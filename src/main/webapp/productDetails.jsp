@@ -16,7 +16,7 @@
             <title>Unavailable Product - WIBOOKS</title>
         </c:if>
 
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+        
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 
@@ -35,9 +35,6 @@
 
     <body>
 
-        <fmt:setLocale value="vi_vn"/> <!-- Set locale if needed -->
-        <fmt:formatDate value="<%= new java.util.Date()%>" pattern="yyyy-MM-dd" var="todayDate"/>
-
         <!--header-->
         <jsp:include page="header.jsp"/>
 
@@ -49,15 +46,6 @@
             <jsp:include page="customerSidebar.jsp"/>
 
             <main class="w-full md:w-5/6 p-3">
-                <c:if test="${not empty requestScope.exception}">
-                    <h3>
-                        An error occurred when retrieving product information!
-                    </h3>
-                    <p>
-                        ${requestScope.exception}
-                    </p>
-                </c:if>
-
                 <c:if test="${not empty requestScope.product}">
                     <div class="root-container bg-gray-100">
 

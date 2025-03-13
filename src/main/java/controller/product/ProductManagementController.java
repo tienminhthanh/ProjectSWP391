@@ -4,6 +4,8 @@
  */
 package controller.product;
 
+import dao.EventDAO;
+import dao.OrderDAO;
 import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,24 +15,34 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
+import model.Creator;
+import model.Event;
+import model.Genre;
 import model.Product;
 
 /**
  *
  * @author anhkc
  */
-@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/deleteProduct"})
+@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus"})
 public class ProductManagementController extends HttpServlet {
     private ProductDAO productDAO;
+    private OrderDAO orderDAO;
+    private EventDAO eDAO;
 
     @Override
     public void init() throws ServletException {
         super.init(); 
         productDAO = new ProductDAO();
+        orderDAO = new  OrderDAO();
+        eDAO = new EventDAO();
     }
     
 
@@ -60,8 +72,8 @@ public class ProductManagementController extends HttpServlet {
             case "/addProduct":
                 manageAdd(request, response);
                 break;
-            case "/deleteProduct":
-                manageDelete(request, response);
+            case "/changeProductStatus":
+                manageStatus(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid product management url: " + path);
@@ -115,15 +127,51 @@ public class ProductManagementController extends HttpServlet {
 
     private void manageDetails(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        try (PrintWriter out = response.getWriter()) {
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head><title>Product Details</title></head>");
-            out.println("<body>");
-            out.println("<h1>Product Details</h1>");
-            out.println("<p>Showing details for a specific product...</p>");
-            out.println("</body>");
-            out.println("</html>");
+         String productID = request.getParameter("id");
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+        String type = request.getParameter("type");
+
+        try {
+            int id = Integer.parseInt(productID);
+
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id);
+            if (requestedProduct == null) {
+                throw new Exception("Cannot retrieve information of productID=" + id);
+            } else {
+                //Get creators
+                HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
+                request.setAttribute("creatorMap", creatorMap);
+
+                //Get comments & ratings
+                Map<String, String[]> reviewMap = orderDAO.getRatingsAndCommentsByProduct(id);
+                if (!reviewMap.isEmpty()) {
+                    request.setAttribute("reviewMap", reviewMap);
+                }
+
+                //Get genres if product is a book
+                if (requestedProduct.getGeneralCategory().equals("book")) {
+                    List<Genre> genreList = productDAO.getGenresOfThisBook(id);
+                    request.setAttribute("genreList", genreList);
+                }
+                
+                //Get event list
+                List<Event> eventList= eDAO.getListActiveEvents();
+                request.setAttribute("eventList", eventList);
+                
+                //Check if product is currently featured in an event
+                request.setAttribute( "productEventStatus", requestedProduct.getEventEndDate() == null || LocalDate.now().isAfter(requestedProduct.getEventEndDate()) ? "notInEvent" : "inEvent");
+                
+                request.setAttribute("product", requestedProduct);
+                request.setAttribute("type", type);
+                request.setAttribute("currentURL", currentURL);
+
+                request.getRequestDispatcher("productDetailsManagement.jsp").forward(request, response);
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(ProductManagementController.class.getName()).log(Level.SEVERE, "Error: " + ex.getMessage(), ex);
+            request.setAttribute("errorMessage", "An error occurred while fetching the product: " + ex.getMessage());
+            request.getRequestDispatcher("manageProductList").forward(request, response);
         }
     }
 
@@ -155,7 +203,7 @@ public class ProductManagementController extends HttpServlet {
         }
     }
 
-    private void manageDelete(HttpServletRequest request, HttpServletResponse response) 
+    private void manageStatus(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {
             out.println("<!DOCTYPE html>");
