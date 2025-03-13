@@ -16,7 +16,7 @@
             <title>Unavailable Product - WIBOOKS</title>
         </c:if>
 
-        
+
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 
@@ -535,37 +535,47 @@
                                                             });
                                                         });
 
-                                                        //Format date
-                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                        //Format date display
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const releaseDates = document.querySelectorAll('.release-date');
                                                             const fomoDate = document.querySelector('.fomo-info>span');
-                                                            const releaseDate = document.querySelector('.release-date');
 
-                                                            if (!fomoDate) {
-                                                                console.log("Fomo element not found!");
-                                                            } else {
-                                                                const fomoText = new Date(fomoDate.innerText);
-                                                                if (fomoText === null) {
-                                                                    console.log("invalid date format");
+                                                            // Formatting functions for Vietnam locale
+                                                            const formatDate = (date) =>
+                                                                new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                                                            const formatTime = (date) =>
+                                                                new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
+
+                                                            //ReleaseDate
+                                                            if (releaseDates) {
+                                                                releaseDates.forEach(rlsDate => {
+                                                                    const rlsDateObj = new Date(rlsDate.innerText.trim());
+                                                                    if (!isNaN(rlsDateObj)) {
+                                                                        rlsDate.innerText = formatDate(rlsDateObj);
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            //Last modified time
+                                                            if (fomoDate) {
+                                                                const dateObj = new Date(fomoDate.innerText.trim());
+                                                                if (!isNaN(dateObj)) {
+                                                                    const today = new Date();
+                                                                    // Remove time from today's date for accurate comparison
+                                                                    today.setHours(0, 0, 0, 0);
+
+                                                                    // Show time if today, otherwise show formatted date
+                                                                    const formattedDate = dateObj.toDateString() === today.toDateString()
+                                                                            ? formatTime(dateObj)
+                                                                            : formatDate(dateObj);
+                                                                    fomoDate.innerText = formattedDate;
                                                                 }
-                                                                fomoDate.innerText = fomoText.toLocaleDateString("vi-VN");
                                                             }
 
-                                                            if (!releaseDate) {
-                                                                console.log("Date element not found!");
-                                                                return;
-                                                            }
-
-                                                            const dateText = new Date(releaseDate.innerText);
-                                                            if (dateText === null) {
-                                                                console.log("invalid date format");
-                                                                return;
-                                                            }
-
-                                                            releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
                                                         });
-                                                        
+
                                                         //Format tags-link
-                                                        document.addEventListener('DOMContentLoaded',function(){
+                                                        document.addEventListener('DOMContentLoaded', function () {
                                                             const tagsLink = document.querySelectorAll('.tags-link');
                                                             if (tagsLink) {
                                                                 const type = `${requestScope.type}`;

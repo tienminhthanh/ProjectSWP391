@@ -130,7 +130,7 @@
                                 <div class="my-4 w-3/5 md:w-full">
                                     <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
                                 </div>
-                                
+
                                 <c:set var="p_e_status" value="${productEventStatus}"/>
                                 <!-- Add to Event form with availability check -->
                                 <form  class="flex flex-row items-stretch px-2" action="event" method="post" onsubmit="return checkAvailability(`${p_e_status}`, event)">
@@ -325,7 +325,7 @@
                                     //Format date display
                                     document.addEventListener('DOMContentLoaded', function () {
                                         const releaseDates = document.querySelectorAll('.release-date');
-                                        const modifiedTimes = document.querySelectorAll('.modified-time');
+                                        const fomoDate = document.querySelector('.fomo-info>span');
 
                                         // Formatting functions for Vietnam locale
                                         const formatDate = (date) =>
@@ -344,22 +344,19 @@
                                         }
 
                                         //Last modified time
-                                        if (modifiedTimes) {
-                                            modifiedTimes.forEach(strDate => {
-                                                const dateObj = new Date(strDate.innerText.trim());
-                                                if (!isNaN(dateObj)) {
-                                                    const today = new Date();
-                                                    // Remove time from today's date for accurate comparison
-                                                    today.setHours(0, 0, 0, 0);
+                                        if (fomoDate) {
+                                            const dateObj = new Date(fomoDate.innerText.trim());
+                                            if (!isNaN(dateObj)) {
+                                                const today = new Date();
+                                                // Remove time from today's date for accurate comparison
+                                                today.setHours(0, 0, 0, 0);
 
-                                                    // Show time if today, otherwise show formatted date
-                                                    const formattedDate = dateObj.toDateString() === today.toDateString()
-                                                            ? formatTime(dateObj)
-                                                            : formatDate(dateObj);
-                                                    console.log('DATE', formattedDate);
-                                                    strDate.innerText = formattedDate;
-                                                }
-                                            });
+                                                // Show time if today, otherwise show formatted date
+                                                const formattedDate = dateObj.toDateString() === today.toDateString()
+                                                        ? formatTime(dateObj)
+                                                        : formatDate(dateObj);
+                                                fomoDate.innerText = formattedDate;
+                                            }
                                         }
 
                                     });
@@ -437,7 +434,7 @@
                                             }
                                         }
                                     });
-                                    
+
                                     // Availability check function for Add to Event
                                     function checkAvailability(productEventStatus, event) {
                                         if (productEventStatus && productEventStatus === 'inEvent') {
