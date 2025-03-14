@@ -185,7 +185,8 @@ public class EventAddNewController extends HttpServlet {
 
             String fileName = "img/banner_event/" + fileName_raw;
             // Ghi file vào thư mục trong dự án
-            File file = new File(directory, fileName);
+            File file = new File(directory, fileName_raw);
+            System.out.println("File size: " + part.getSize());
             part.write(file.getAbsolutePath());
 
             System.out.println("File saved at: " + file.getAbsolutePath());
