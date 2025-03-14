@@ -8,7 +8,8 @@ package model;
  *
  * @author Admin
  */
-public class Customer extends Account {
+public class Customer  extends Account{
+
 
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;

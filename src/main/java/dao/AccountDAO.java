@@ -83,6 +83,7 @@ public class AccountDAO {
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
 
+
     public Account getIDByUsername(String username) throws SQLException {
         String sql = "SELECT accountID FROM Account WHERE username = ?";
         Object[] params = {username};

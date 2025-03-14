@@ -8,14 +8,14 @@ package model;
  *
  * @author anhkc
  */
-public class Character {
+public class OGCharacter {
     private int characterID;
     private String characterName;
 
     // Constructor
-    public Character() {}
+    public OGCharacter() {}
 
-    public Character(int characterID, String characterName) {
+    public OGCharacter(int characterID, String characterName) {
         this.characterID = characterID;
         this.characterName = characterName;
     }

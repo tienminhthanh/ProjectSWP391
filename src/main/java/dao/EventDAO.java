@@ -81,6 +81,22 @@ public class EventDAO {
         return null;
     }
 
+    public List<String> getBannerEvent() {
+        String sql = "SELECT [banner]\n"
+                + "  FROM [dbo].[Event]";
+        List<String> listBanner = new ArrayList<>();
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            while (rs.next()) {
+                String banner = rs.getString(1);
+                listBanner.add(banner);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listBanner;
+    }
+
     public Event getEventByBanner(String currentBanner) {
         try {
             String sql = "SELECT * FROM [dbo].[Event] WHERE [banner] = ?";
@@ -107,10 +123,66 @@ public class EventDAO {
         return null;
     }
 
+    public boolean deleteEvent(int id) {
+        try {
+            Event event = getEventByID(id);
+
+            if (!event.isExpiry() && !event.isIsActive()) {
+                return false;
+            }
+
+            String sql = "UPDATE [dbo].[Event]\n"
+                    + "   SET [isActive] = ?\n"
+                    + " WHERE [eventID] = ?";
+            Object[] params = {!event.isIsActive(), id};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(EventDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public boolean updateEvent(Event event) {
+
+        try {
+            String sql = "UPDATE [dbo].[Event]\n"
+                    + "   SET [eventName] = ?\n"
+                    + "      ,[dateCreated] = ?\n"
+                    + "      ,[duration] = ?\n"
+                    + "      ,[banner] = ?\n"
+                    + "      ,[description] = ?\n"
+                    + "      ,[adminID] = ?\n"
+                    + "      ,[isActive] = ?\n"
+                    + "      ,[dateStarted] = ?\n"
+                    + " WHERE [eventID] = ?";
+            Object params[] = {event.getEventName(),
+                event.getDateCreated(), 
+                event.getDuration(),
+                event.getBanner(), 
+                event.getDescription(), 
+                event.getAdminID(),
+                event.isIsActive(), 
+                event.getDateStarted(), 
+                event.getEventID()};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         EventDAO e = new EventDAO();
-        String currentEvent = "/img/banner_event/voucher1.jpg";
-        Event en = e.getEventByBanner(currentEvent);
-        System.out.println(en.getDescription());
+//        String currentEvent = "/img/banner_event/voucher1.jpg";
+//        Event en = e.getEventByBanner(currentEvent);
+//        System.out.println(en.getDescription());
+        Event u = new Event(4, "kkkkk", "1191-9-9", 0, "123", "kkkk", 1, true, "2-2-1212", true);
+        if (e.updateEvent(u)) {
+            System.out.println("true");
+        } else {
+            System.out.println("false");
+        }
     }
 }

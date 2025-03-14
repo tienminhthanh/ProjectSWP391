@@ -1,6 +1,6 @@
 package model;
 
-public class Admin extends Account {
+public class Admin extends Account{
 
     private int totalEvents, totalVouchers;
 
@@ -17,6 +17,8 @@ public class Admin extends Account {
         this.totalVouchers = totalVouchers;
     }
 
+
+  
     public int getTotalEvents() {
         return totalEvents;
     }
@@ -32,5 +34,7 @@ public class Admin extends Account {
     public void setTotalVouchers(int totalVouchers) {
         this.totalVouchers = totalVouchers;
     }
+
+    
 
 }

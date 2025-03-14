@@ -14,7 +14,7 @@
 
         <!-- Header -->
         <header class="bg-white shadow w-full">
-            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <a href="${sessionScope.account.role == 'admin' ? 'listAccount' : (sessionScope.account.role == 'shipper' ? 'dashboardShipper.jsp' : 'home')}" class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <img alt="WIBOOKS Logo" class="h-10" src="./img/logoWibooks-removebg-preview.png"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>
@@ -95,10 +95,12 @@
                             <i class="fas fa-shopping-cart mr-2"></i> Order List
                         </a>
                     </c:if>
-                    <a href="deleteAccount?username=${account.username}" class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
-                       onclick="return confirm('Are you sure you want to delete this account?');">
-                        <i class="fas fa-trash mr-2"></i> Delete Account
-                    </a>
+                    <c:if test="${sessionScope.account.role ne 'admin'}">
+                        <a href="deleteAccount?username=${account.username}" class="bg-red-600 text-white p-3 rounded hover:bg-red-700 flex items-center" 
+                           onclick="return confirm('Are you sure you want to delete this account?');">
+                            <i class="fas fa-trash mr-2"></i> Delete Account
+                        </a>
+                    </c:if>
                 </div>
             </div>
         </main>

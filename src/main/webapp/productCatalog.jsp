@@ -102,11 +102,11 @@
                 <!--Popup message from servlet -->
                 <c:if test="${not empty message}">
                     <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50" id="warning-popup-container">
+                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
                         <p>
                             ${message}
                         </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 px-1 py-2 text-white border-0 cursor-pointer bg-gray-300">Close</button>
+                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
                     </div>
                 </c:if>
             </main>

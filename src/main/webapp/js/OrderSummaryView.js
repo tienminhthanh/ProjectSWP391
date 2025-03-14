@@ -48,4 +48,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     updateTotalAmount();
+    function disableButton() {
+        let btn = document.getElementById("placeOrderBtn");
+        btn.disabled = true;
+        btn.innerHTML = "Processing...";
+    }
 });

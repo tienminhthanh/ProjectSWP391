@@ -13,11 +13,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
+import model.OrderProduct;
 
 /**
  *
@@ -67,10 +73,21 @@ public class OrderDetailController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
+        DeliveryOption delivery = new DeliveryOption();
         try {
             String orderID = request.getParameter("id");
             OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
-            DeliveryOption delivery = new DeliveryOption();
+            //set ngày giao
+            int deliveryTimeInDays;
+            delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
+            deliveryTimeInDays = delivery.getEstimatedTime();
+            Calendar calendar = Calendar.getInstance();
+            Date orderDate = orderInfo.getOrderDate();
+            calendar.setTime(orderDate); // Nếu orderDate là null, tránh lỗi ở đây
+            calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
+            Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
+            orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
+
             int voucher = orderDAO.getVoucherValueByOrderID(Integer.parseInt(orderID));
             delivery = (DeliveryOption) orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
             request.setAttribute("orderInfo", orderInfo); // Đặt dữ liệu vào requestScope
@@ -96,7 +113,41 @@ public class OrderDetailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        int orderID = Integer.parseInt(request.getParameter("orderID"));
 
+        String status = "completed";
+        String action = request.getParameter("action");
+
+        OrderDAO orderDao = new OrderDAO();
+
+        try {
+            if (null != action) {
+                switch (action) {
+                    case "confirm":
+                        orderDao.updateOrderstatus(orderID, status);
+                        break;
+                    case "rate": {
+                        int productID = Integer.parseInt(request.getParameter("productID"));
+                        int rate = Integer.parseInt(request.getParameter("rating"));
+                        orderDao.updateRatingForProduct(orderID, productID, rate);
+                        break;
+                    }
+                    case "review": {
+                        int productID = Integer.parseInt(request.getParameter("productID"));
+                        String reviewContent = request.getParameter("reviewContent");                      
+                        orderDao.updateCommentForProduct(orderID, productID, reviewContent);
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderDetailController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        response.sendRedirect("OrderDetailController?id=" + orderID);
     }
 
     /**

@@ -16,8 +16,8 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonWriter;
 
-@WebServlet("/ChatServlet")
-public class ChatServlet extends HttpServlet {
+@WebServlet("/ChatServletAI")
+public class ChatAIController extends HttpServlet {
 
     private static final String API_KEY = "AIzaSyAdr95aaOBJifRSD9qEMCH8AHeCu9rGYg8"; // 🔴 Replace with your API key
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
@@ -25,7 +25,7 @@ public class ChatServlet extends HttpServlet {
             + "cũng như thông tin về tác giả của những cuốn sách hoặc bộ truyện đó. "
             + "Nếu bạn có câu hỏi như 'Conan là ai?', 'Cốt truyện của One Piece như thế nào?', hay 'Tác giả của Harry Potter là ai?', hãy sẵn lòng giúp người tìm câu trả lời.\n"
             + "Tuy nhiên, nếu câu hỏi không liên quan đến sách, truyện tranh hoặc các nhân vật trong đó, chẳng hạn như 'Tòa nhà cao nhất thế giới là gì?', 'Cách nấu món ăn này như thế nào?' hay 'Sự kiện thể thao nào sắp diễn ra?', tôi xin phép không trả lời. "
-            + "Mong bạn hãy đặt những câu hỏi liên quan đến sách và truyện để tôi có thể tư  một cách tốt nhất.";
+            + "Mong bạn hãy đặt những câu hỏi liên quan đến sách và truyện để tôi có thể tư  một cách tốt nhất. Và tôi sẽ trả lời bạn thành một đoạn văn chứ không trình bày theo kiểu liệt kê sử dung  dấu *";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -89,9 +89,9 @@ public class ChatServlet extends HttpServlet {
                     + "\"contents\": [{"
                     + "\"parts\": ["
                     + "{\"text\": \"" + SYSTEM_PROMPT + "\"},"
-                    + "{\"text\": \"Người dùng: " + previousUserMessage + "\"},"
-                    + "{\"text\": \"Gemini: " + previousAiResponse + "\"},"
-                    + "{\"text\": \"Người dùng: " + message + "\"}"
+                    + "{\"text\": \"User: " + previousUserMessage + "\"},"
+                    + "{\"text\": \"" + previousAiResponse + "\"},"
+                    + "{\"text\": \"User: " + message + "\"}"
                     + "]"
                     + "}]"
                     + "}";
@@ -128,7 +128,7 @@ public class ChatServlet extends HttpServlet {
 
     // Main method for testing in the console
     public static void main(String[] args) {
-        ChatServlet chatServlet = new ChatServlet();
+        ChatAIController chatServlet = new ChatAIController();
         Scanner scanner = new Scanner(System.in);
 
         // Simulated AiSession storage

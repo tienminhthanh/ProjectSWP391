@@ -24,9 +24,10 @@ import model.*;
  * @author ADMIN
  */
 @WebServlet(name = "EventDetailsServlet", urlPatterns = {"/eventDetails"})
-public class EventDetailsServlet extends HttpServlet {
+public class EventDetailsController extends HttpServlet {
 
-    private final String EVENT_DETAILS_PAGE = "eventDetails.jsp";
+    private final String EVENT_DETAILS_ADMIN_PAGE = "eventDetailsAdmin.jsp";
+    private final String EVENT_DETAILS_CUS_PAGE = "eventDetailsCus.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,7 +42,7 @@ public class EventDetailsServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         /* TODO output your page here. You may use following sample code. */
-        String url = EVENT_DETAILS_PAGE;
+        String url = EVENT_DETAILS_ADMIN_PAGE;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             String action = request.getParameter("action");
@@ -73,6 +74,7 @@ public class EventDetailsServlet extends HttpServlet {
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
                 LocalDate dateEnd = createDate.plusDays(event.getDuration());
                 request.setAttribute("dateEnd", dateEnd);
+                url = EVENT_DETAILS_CUS_PAGE;
             }
 
         } catch (Exception ex) {

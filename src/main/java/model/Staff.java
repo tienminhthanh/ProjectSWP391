@@ -8,7 +8,7 @@ package model;
  *
  * @author Admin
  */
-public class Staff extends Account {
+public class Staff extends Account{
 
     private String workShift;
     private int totalOrders;
@@ -41,5 +41,8 @@ public class Staff extends Account {
     public void setTotalOrders(int totalOrders) {
         this.totalOrders = totalOrders;
     }
+
+   
+    
 
 }

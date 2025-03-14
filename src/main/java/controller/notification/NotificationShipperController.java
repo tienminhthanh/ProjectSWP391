@@ -19,13 +19,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Notification;
+import model.OrderInfo;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "NotificationController", urlPatterns = {"/notification"})
-public class NotificationController extends HttpServlet {
+@WebServlet(name = "NotificationShipperController", urlPatterns = {"/notificationshipper"})
+public class NotificationShipperController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private NotificationDAO notificationDAO;
@@ -39,12 +40,16 @@ public class NotificationController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+//        Integer orderID = (Integer) request.getSession().getAttribute("orderID");
+        OrderInfo order = (OrderInfo) session.getAttribute("order");
+        Notification notification = new Notification();
         try {
             String receiverIDParam = request.getParameter("receiverID");
             int receiverID = Integer.parseInt(receiverIDParam);
-            List<Notification> notifications = notificationDAO.getNotificationsByReceiverDESC(receiverID);
-            session.setAttribute("notifications", notifications);
-            request.getRequestDispatcher("notification.jsp").forward(request, response);
+            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
+            request.setAttribute("notifications", notifications);
+            
+            request.getRequestDispatcher("notificationListShipper.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
             throw new ServletException("Database error", ex);
@@ -87,7 +92,7 @@ public class NotificationController extends HttpServlet {
             int receiverID = Integer.parseInt(request.getParameter("receiverID"));
             List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
             request.setAttribute("notifications", notifications);
-            request.getRequestDispatcher("notifications.jsp").forward(request, response);
+            request.getRequestDispatcher("notificationListShipper.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
             throw new ServletException("Database error", ex);
@@ -108,7 +113,7 @@ public class NotificationController extends HttpServlet {
 
             Notification notification = new Notification(0, senderID, receiverID, details, dateCreated, isDeleted, title, isRead);
             notificationDAO.insertNotification(notification);
-            response.sendRedirect("notification?action=list&receiverID=" + receiverID);
+            response.sendRedirect("notificationshipper?action=list&receiverID=" + receiverID);
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
@@ -121,7 +126,7 @@ public class NotificationController extends HttpServlet {
         try {
             int notificationID = Integer.parseInt(request.getParameter("notificationID"));
             notificationDAO.markAsRead(notificationID);
-            response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
+            response.sendRedirect("notificationshipper?action=list&receiverID=" + request.getParameter("receiverID"));
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
@@ -134,7 +139,7 @@ public class NotificationController extends HttpServlet {
         try {
             int receiverID = Integer.parseInt(request.getParameter("receiverID"));
             notificationDAO.markAsAllRead(receiverID);
-            response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
+            response.sendRedirect("notificationshipper?action=list&receiverID=" + request.getParameter("receiverID"));
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
@@ -147,7 +152,7 @@ public class NotificationController extends HttpServlet {
         try {
             int notificationID = Integer.parseInt(request.getParameter("notificationID"));
             notificationDAO.deleteNotification(notificationID);
-            response.sendRedirect("notification?action=list&receiverID=" + request.getParameter("receiverID"));
+            response.sendRedirect("notificationshipper?action=list&receiverID=" + request.getParameter("receiverID"));
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");

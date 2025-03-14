@@ -33,7 +33,6 @@
                     </c:if>
                 </div>
 
-                <!-- TABLE -->
                 <div>
                     <c:choose>
                         <c:when test="${!empty VOUCHER_DETAILS}">
@@ -110,9 +109,18 @@
                                         <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200">
                                             Update
                                         </a>
-                                        <a class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
-                                            Delete
-                                        </a>
+                                        <c:choose>
+                                            <c:when test="${VOUCHER_DETAILS.isActive}">
+                                                <a class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
+                                                    Delete
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
+                                                    Unlock
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </div>
                             </div>
@@ -134,24 +142,24 @@
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-                                            function confirmAction(message, url) {
-                                                Swal.fire({
-                                                    title: 'Are you sure?',
-                                                    text: message,
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonText: 'Yes, do it!',
-                                                    cancelButtonText: 'Cancel',
-                                                    reverseButtons: true
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        window.location.href = url;
+                                                    function confirmAction(message, url) {
+                                                        Swal.fire({
+                                                            title: 'Are you sure?',
+                                                            text: message,
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes, do it!',
+                                                            cancelButtonText: 'Cancel',
+                                                            reverseButtons: true
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                window.location.href = url;
+                                                            }
+                                                        });
                                                     }
-                                                });
-                                            }
-                                            function navigateToUpdate(voucherId) {
-                                                window.location = 'listAccount?voucherId=' + voucherId;
-                                            }
+                                                    function navigateToUpdate(voucherId) {
+                                                        window.location = 'listAccount?voucherId=' + voucherId;
+                                                    }
         </script>
 </body>
 </html>

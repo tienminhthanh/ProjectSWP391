@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import model.Admin;
+import model.Customer;
 
 /**
  * Servlet responsible for handling user login.
@@ -32,7 +34,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
      * Handles GET requests by forwarding users to the login page.
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+   protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String currentURL = request.getParameter("currentURL");
         if (currentURL != null && !currentURL.trim().isEmpty()) {
@@ -113,7 +115,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
-                                response.sendRedirect("OrderDetailForShipperController");
+                                response.sendRedirect("OrderListForShipperController");
                                 break;
                             default:
                                 session.invalidate();

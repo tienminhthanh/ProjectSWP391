@@ -32,6 +32,17 @@ public class Notification {
         this.isRead = isRead;
     }
 
+    public Notification(int senderID, int receiverID, String notificationDetails, Date dateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
+        this.senderID = senderID;
+        this.receiverID = receiverID;
+        this.notificationDetails = notificationDetails;
+        this.dateCreated = dateCreated;
+        this.isDeleted = isDeleted;
+        this.notificationTitle = notificationTitle;
+        this.isRead = isRead;
+    }
+
+    
     public Notification() {
     }
 
@@ -105,4 +116,10 @@ public class Notification {
     public void setRead(boolean isRead) {
         this.isRead = isRead;
     }
+
+    @Override
+    public String toString() {
+        return "Notification{" + "notificationID=" + notificationID + ", senderID=" + senderID + ", receiverID=" + receiverID + ", notificationDetails=" + notificationDetails + ", dateCreated=" + dateCreated + ", isDeleted=" + isDeleted + ", notificationTitle=" + notificationTitle + ", isRead=" + isRead + '}';
+    }
+    
 }

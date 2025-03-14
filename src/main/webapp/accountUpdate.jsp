@@ -11,7 +11,7 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
-            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <a href="${sessionScope.account.role == 'admin' ? 'listAccount' : (sessionScope.account.role == 'shipper' ? 'dashboardShipper.jsp' : 'home')}"  class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-globe text-xl"></i>

@@ -16,12 +16,13 @@
     .logo:hover {
         box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Bóng đổ đậm hơn khi hover */
     }
+    
 </style>
 
 <div class="p-4">
     <img alt="Company Logo" class="mb-4 logo" height="100" src="./img/logo.png" width="300"/>
 </div>
-<nav class="space-y-2">
+<nav class="space-y-2 side-nav">
     <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() == 'admin'}">
         <a class="flex items-center p-2 hover:bg-orange-800" href="readAccount">
             <i class="fas fa-user-circle mr-2"></i> 
@@ -41,20 +42,9 @@
             Event List
         </a>
 
-        <a class="flex items-center p-2 hover:bg-orange-800" href="#">
-            <i class="fas fa-comments mr-2"></i>
-            Dialogue List
-        </a>
-
-
         <a class="flex items-center p-2 hover:bg-orange-800" href="voucherList">
             <i class="fas fa-gift mr-2"></i>
             Voucher List
-        </a>
-
-        <a class="flex items-center p-2 hover:bg-orange-800" href="chat">
-            <i class="fas fa-comment-dots mr-2"></i>
-            Chat
         </a>
 
     </c:if>
@@ -62,11 +52,11 @@
         <i class="fas fa-cogs mr-2"></i>
         Product List
     </a>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="#">
+    <a class="flex items-center p-2 hover:bg-orange-800" href="OrderListForStaffController">
         <i class="fas fa-box mr-2"></i>
         Order List
     </a>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="#">
+    <a class="flex items-center p-2 hover:bg-orange-800" href="listnotification">
         <i class="fas fa-bell mr-2"></i>
         Notification List
     </a>

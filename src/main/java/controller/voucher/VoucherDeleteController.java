@@ -46,7 +46,7 @@ public class VoucherDeleteController extends HttpServlet {
                 session.setAttribute("message", "Voucher deleted successfully!");
                 session.setAttribute("messageType", "success");
             } else {
-                session.setAttribute("message", "Failed to update voucher.");
+                session.setAttribute("message", "Failed to delete voucher.");
                 session.setAttribute("messageType", "error");
             }
         } catch (Exception e) {

@@ -2,9 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/ServletListener.java to edit this template
  */
-package controller.listener;
+package listener;
 
-import dao.CartItemDAO;
 import dao.ProductDAO;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
@@ -18,12 +17,9 @@ import jakarta.servlet.ServletContextListener;
 public class DataCacheListener implements ServletContextListener {
 
     @Override
-    public void contextInitialized(ServletContextEvent event) {
-        ServletContext context = event.getServletContext();
-
-        // Create DAO instances once and store them in ServletContext
+    public void contextInitialized(ServletContextEvent sce) {
+        ServletContext context = sce.getServletContext();
         ProductDAO productDAO = new ProductDAO();
-        context.setAttribute("productDAO", productDAO);
         
         try {
             
@@ -32,11 +28,11 @@ public class DataCacheListener implements ServletContextListener {
         context.setAttribute("creators", productDAO.getAllCreators());
         context.setAttribute("genres", productDAO.getAllGenres());
         context.setAttribute("publishers", productDAO.getAllPublishers());
-//        context.setAttribute("brands", productDAO.getAllBrands();
-//        context.setAttribute("series", productDAO.getAllSeries());
-//        context.setAttribute("characters", productDAO.getAllCharacters());
+        context.setAttribute("brands", productDAO.getAllBrands());
+        context.setAttribute("series", productDAO.getAllSeries());
+        context.setAttribute("characters", productDAO.getAllCharacters());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.toString());
         }
     }
 

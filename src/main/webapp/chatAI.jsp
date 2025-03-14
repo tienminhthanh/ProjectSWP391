@@ -3,10 +3,6 @@
     <head>
         <title>Chat với Gemini AI</title>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-            }
             #chatContainer1 {
                 width: 100%;
                 margin: auto;
@@ -42,14 +38,14 @@
                 display: flex;
                 justify-content: center;
             }
-            input {
+            input.ai-input {
                 width: 70%;
                 padding: 10px;
                 font-size: 16px;
                 border: 1px solid #ccc;
                 border-radius: 5px;
             }
-            button {
+            button.ai-button {
                 padding: 10px;
                 font-size: 16px;
                 background-color: #f37015;
@@ -58,9 +54,43 @@
                 border-radius: 5px;
                 cursor: pointer;
             }
-            button:hover {
+            button.ai-button:hover {
                 background-color: #0056b3;
             }
+            .typing {
+                display: inline-block;
+                font-size: 16px;
+                color: #666;
+                margin: 5px 0;
+            }
+
+            .typing span {
+                display: inline-block;
+                animation: blink 1.5s infinite;
+            }
+
+            .typing span:nth-child(1) {
+                animation-delay: 0s;
+            }
+            .typing span:nth-child(2) {
+                animation-delay: 0.3s;
+            }
+            .typing span:nth-child(3) {
+                animation-delay: 0.6s;
+            }
+
+            @keyframes blink {
+                0% {
+                    opacity: 0.3;
+                }
+                50% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0.3;
+                }
+            }
+
         </style>
         <script>
             function sendMessage() {
@@ -72,24 +102,37 @@
 
                 var chatBox = document.getElementById("chatBox");
 
-                // Hiển thị tin nhắn người dùng trên giao diện
+                // Hiển thị tin nhắn người dùng
                 chatBox.innerHTML += "<div class='message user'><b>Bạn:</b> " + userMessage + "</div><br style='clear:both;'>";
 
+                // Hiển thị hiệu ứng "đang gõ..."
+                var typingIndicator = document.createElement("div");
+                typingIndicator.className = "typing bot";
+                typingIndicator.id = "typingIndicator";
+                typingIndicator.innerHTML = "<span>.</span><span>.</span><span>.</span>";
+                chatBox.appendChild(typingIndicator);
+
+                // Cuộn xuống cuối
+                chatBox.scrollTop = chatBox.scrollHeight;
+
                 // Gửi request đến Servlet
-                fetch("ChatServlet", {
+                fetch("ChatServletAI", {
                     method: "POST",
                     headers: {"Content-Type": "application/x-www-form-urlencoded"},
                     body: "message=" + encodeURIComponent(userMessage)
                 })
                         .then(response => response.json())
                         .then(data => {
-                            // Hiển thị phản hồi từ Gemini AI
-                            chatBox.innerHTML += "<div class='message bot'><b></b> " + data.response + "</div><br style='clear:both;'>";
+                            // Xóa dấu ba chấm "đang gõ..."
+                            document.getElementById("typingIndicator").remove();
+
+                            // Hiển thị phản hồi từ chatbot
+                            chatBox.innerHTML += "<div class='message bot'><b>AI:</b> " + data.response + "</div><br style='clear:both;'>";
 
                             // Xóa ô nhập tin nhắn
                             document.getElementById("userMessage").value = "";
 
-                            // Cuộn xuống để xem tin nhắn mới nhất
+                            // Cuộn xuống cuối
                             chatBox.scrollTop = chatBox.scrollHeight;
                         })
                         .catch(error => console.error("Lỗi khi gửi yêu cầu:", error));
@@ -97,13 +140,13 @@
         </script>
     </head>
     <body>
-       
+
         <div id="chatContainer1">
             <div id="chatBox"></div>
             <div id="inputContainer">
-                <input type="text" id="userMessage" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13)
+                <input type="text" id="userMessage" class="ai-input" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13)
                             sendMessage()">
-                <button onclick="sendMessage()">Send</button>
+                <button class="ai-button" onclick="sendMessage()">Send</button>
             </div>
         </div>
     </body>

@@ -8,133 +8,114 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order List</title>      
+        
         <script src="https://cdn.tailwindcss.com"></script>
+        
+                 <link href="css/styleHeader.css" rel="stylesheet">
+   <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">  
         <style>
         .order-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .order-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: #EA580C; /* Tailwind orange-600 */
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm hiệu ứng bóng đổ nhẹ */
+}
 
-        .order-card:hover::before {
-            width: 6px;
-            opacity: 1;
-        }
+.order-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #EA580C; /* Tailwind orange-600 */
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
 
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-    </style>
-  </head>
+.order-card:hover::before {
+    width: 6px;
+    opacity: 1;
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Thêm hiệu ứng bóng đổ khi hover */
+    transform: translateY(-2px); /* Nâng nhẹ lên khi hover */
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    transition: all 0.3s ease; /* Thêm transition để mượt mà */
+}
+
+.text-gray-700 {
+    color: #4a5568; /* Màu mặc định */
+    transition: color 0.3s ease; /* Thêm transition cho hiệu ứng chuyển màu */
+}
+
+.text-gray-700.active {
+    color: #dd6b20; /* Change this to your desired active color */
+}
+
+
+        </style>
+    </head>
+
 
     <body class="bg-gray-50">
-        <header class="bg-white shadow">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <div class="logo">
-                    <a href="home">
-                        <img src="img/logo.png" alt="WIBOOKS" class="h-10"/>
-                    </a> 
-                </div>
-                <a href="logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex items-center">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
-                </a>
-            </div>
-        </header>
-        <!--        <div class="w-64 flex-shrink-0">
-                    <div class="bg-white p-6 rounded-xl shadow-sm">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Orders</h3>
-                        <nav class="space-y-2">
-                            <a href="OrderListController" 
-                               class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${empty param.status ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-                                All Orders
-                                <span class="float-right">${fn:length(requestScope.list)}</span>
-                            </a>
-                            <a href="OrderListController?status=Processing" 
-                               class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Processing' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-                                Processing
-        <c:set var="processingCount" value="${0}"/>
-        <c:forEach items="${requestScope.list}" var="order">
-            <c:if test="${order.orderStatus == 'Processing'}">
-                <c:set var="processingCount" value="${processingCount + 1}"/>
-            </c:if>
-        </c:forEach>
-        <span class="float-right">${processingCount}</span>
-    </a>
-    <a href="OrderListController?status=Delivered" 
-       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Delivered' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-        Delivered
-        <c:set var="deliveredCount" value="${0}"/>
-        <c:forEach items="${requestScope.list}" var="order">
-            <c:if test="${order.orderStatus == 'Delivered'}">
-                <c:set var="deliveredCount" value="${deliveredCount + 1}"/>
-            </c:if>
-        </c:forEach>
-        <span class="float-right">${deliveredCount}</span>
-    </a>
-    <a href="OrderListController?status=Cancelled" 
-       class="block px-4 py-2 rounded-lg hover:bg-gray-50 ${param.status == 'Cancelled' ? 'bg-orange-100 text-orange-700' : 'text-gray-600'} transition-colors">
-        Cancelled
-        <c:set var="cancelledCount" value="${0}"/>
-        <c:forEach items="${requestScope.list}" var="order">
-            <c:if test="${order.orderStatus == 'Cancelled'}">
-                <c:set var="cancelledCount" value="${cancelledCount + 1}"/>
-            </c:if>
-        </c:forEach>
-        <span class="float-right">${cancelledCount}</span>
-    </a>
-</nav>
-</div>
-</div>-->
-
-        <main class="container mx-auto px-4 py-8">
-        <div class="mb-8 text-center">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2 relative inline-block">
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-green-500">
-                    ORDER List
-                </span>
-            </h1>
-            <p class="text-gray-600 mt-2">Total ${fn:length(requestScope.list)} orders found</p>
+        <div class="header-container">
+            <jsp:include page="header.jsp" flush="true"/> 
         </div>
+        <nav class="bg-white shadow-md">
+                    <h1 class=" text-center text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500
+                        mb-2 relative block ml-12"
+                        style="-webkit-text-stroke: 1px white;">
+                        Order List
+                    </h1>
+            <div class="container mx-auto px-4 py-2 flex justify-around">
+                <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == '#' ? 'active' : ''}">Payment Due</a>
+                <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'pending' ? 'active' : ''}">Pending</a>
+                <a href="OrderListController?status=Shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'Shipped' ? 'active' : ''}">Shipping</a>
+                <a href="OrderListController?status=completed" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'completed' ? 'active' : ''}">History</a>
+                <a href="OrderListController?status=canceled" class="text-gray-700 hover:text-orange-600 font-semibold ${param.status == 'canceled' ? 'active' : ''}">Canceled</a>
+            </div>
+        </nav>
+        <main class="container mx-auto px-4 py-8">
+            <div class="mb-8 text-center">
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-            <c:forEach items="${requestScope.list}" var="c">
-                <c:set var="id" value="${c.orderID}"/>
-                <div class="order-card bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">ORDER ID</span>
-                                <h3 class="text-xl font-bold text-gray-800">#${c.orderID}</h3>
-                            </div>
-                            <span class="status-badge
+                <p class="text-gray-600 mt-2">Total ${fn:length(requestScope.list)} orders found</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                <c:forEach items="${requestScope.list}" var="c">
+                    <c:set var="id" value="${c.orderID}"/>
+                    <div class="order-card bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">ORDER ID</span>
+                                    <h3 class="text-xl font-bold text-gray-800">#${c.orderID}</h3>
+                                </div>
+                                <span class="status-badge
                                   ${c.orderStatus == 'Delivered' ? 'bg-green-100 text-green-800' : 
                                     c.orderStatus == 'Processing' ? 'bg-orange-100 text-orange-800' : 
                                     c.orderStatus == 'Cancelled' ?'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}}">
                                   ${c.orderStatus}
                               </span>
                         </div>
-
                         <div class="space-y-3 text-sm">
                             <div class="flex items-center">
                                 <i class="fas fa-calendar-day text-gray-400 mr-2 w-5"></i>
                                 <span class="font-medium text-gray-700">
-                                    <fmt:formatDate value="${c.orderDate}" pattern="dd/MM/yyyy"/>
+                              <fmt:formatDate value="${c.orderDate}" pattern="dd/MM/yyyy"/> - 
+                                <fmt:formatDate value="${c.expectedDeliveryDate}" pattern="dd/MM/yyyy"/>
+        
                                 </span>
                             </div>
 
@@ -161,11 +142,22 @@
                                                                     <fmt:formatNumber value="${c.preVoucherAmount}" type="number" groupingUsed="true"/> đ
                                 </p>
                             </div>
-                            <a href="OrderDetailController?id=${id}" 
-                               class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200">
-                                <i class="fas fa-eye mr-2"></i>
-                                Details
-                            </a>
+                            <div class="relative inline-block">
+                                <!-- Nút Details -->
+                                <a href="OrderDetailController?id=${id}" 
+                                   class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200"
+                                   onmouseover="showTooltip(this)" 
+                                   onmouseleave="hideTooltip(this)">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Details
+                                </a>
+
+                                <!-- Tooltip hiển thị thông tin -->
+                                <div class="absolute left-0 mt-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg opacity-0 transition-opacity duration-300"
+                                     style="display: none;">
+                                    Đơn hàng #${id}: Đang xử lý...
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -182,5 +174,43 @@
             </div>
         </c:if>
     </main>
-</body>
+        <script>
+            let tooltipTimeout;
+
+        function showTooltip(element) {
+            tooltipTimeout = setTimeout(() => {
+                const tooltip = element.nextElementSibling; // Tooltip kế bên
+                tooltip.style.display = "block";
+                tooltip.style.opacity = "1";
+            }, 3000); // Hiển thị sau 3 giây
+        }
+
+        function hideTooltip(element) {
+            clearTimeout(tooltipTimeout); // Hủy timeout nếu lướt ra trước 3s
+            const tooltip = element.nextElementSibling;
+            tooltip.style.opacity = "0";
+            setTimeout(() => tooltip.style.display = "none", 300); // Ẩn sau khi mờ dần
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+        // Lấy tất cả các liên kết
+        const links = document.querySelectorAll('.container a');
+
+        // Lặp qua từng liên kết và thêm sự kiện click
+        links.forEach(link => {
+            link.addEventListener('click', function () {
+                // Loại bỏ class 'active' khỏi tất cả các liên kết
+                links.forEach(l => l.classList.remove('active'));
+            
+                // Thêm class 'active' vào liên kết hiện tại
+                link.classList.add('active');
+            });
+        });
+    });
+
+
+        </script>
+
+    </body>
+
 </html>
