@@ -24,31 +24,38 @@
                     <p class="text-red-600 text-center mb-4">${message}</p>
                 </c:if>
                 <form action="eventAddNew" method="post" enctype="multipart/form-data">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Hàng 1: Event Name và Banner -->
+                    <div class="grid grid-cols-1 gap-4">
+                        <!-- Hàng 1: Event Name -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Event Name</label>
                             <input class="w-full p-3 border border-gray-300 rounded" name="eventName" placeholder="Enter event name" required type="text"/>
                         </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Banner</label>
-                            <input type="file" name="bannerFile" accept="image/*" class="w-full p-3 border border-gray-300 rounded" required>
-                        </div>
 
                         <!-- Hàng 2: Date Started và Duration -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Date Started</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" placeholder="Enter Date Started" required type="date"/>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" name="duration" placeholder="Enter duration" required type="number"/>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Date Started</label>
+                                <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" placeholder="Enter Date Started" required type="date"/>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
+                                <input class="w-full p-3 border border-gray-300 rounded" name="duration" placeholder="Enter duration" required type="number"/>
+                            </div>
                         </div>
 
                         <!-- Hàng 3: Description -->
-                        <div class="mb-4 col-span-2">
+                        <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Description</label>
                             <textarea class="w-full p-3 border border-gray-300 rounded" name="description" placeholder="Enter event description" required rows="4"></textarea>
+                        </div>
+
+                        <!-- Hàng 4: Banner Upload + Hi?n th? ?nh -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Banner</label>
+                            <input type="file" id="bannerFile" name="bannerFile" accept="image/*" class="w-full p-3 border border-gray-300 rounded" required>
+                            <div class="mt-4 flex justify-center">
+                                <img id="previewImage" class="hidden max-w-xs md:max-w-sm lg:max-w-md rounded-md border border-gray-300 shadow-md"/>
+                            </div>
                         </div>
                     </div>
                     <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-orange-500 mt-4" type="submit">Add Event</button>
@@ -60,5 +67,24 @@
                 </div>
             </div>
         </main>
+
+        <script>
+            document.getElementById("bannerFile").addEventListener("change", function (event) {
+                let file = event.target.files[0]; // L?y file v?a ch?n
+                let previewImage = document.getElementById("previewImage");
+
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result; // Hi?n th? ?nh m?i
+                        previewImage.classList.remove("hidden"); // Hi?n ?nh xem tr??c
+                    };
+                    reader.readAsDataURL(file); // ??c file ?? hi?n th?
+                } else {
+                    previewImage.src = "";
+                    previewImage.classList.add("hidden"); // ?n ?nh n?u không có file
+                }
+            });
+        </script>
     </body>
 </html>

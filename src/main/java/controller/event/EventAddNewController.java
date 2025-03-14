@@ -168,22 +168,23 @@ public class EventAddNewController extends HttpServlet {
 //            }
 //            String realPath = request.getServletContext().getRealPath("/banner_event");
             Part part = request.getPart("bannerFile");
-            String fileName = Path.of(part.getSubmittedFileName()).getFileName().toString();
+            String fileName_raw = Path.of(part.getSubmittedFileName()).getFileName().toString();
             ServletContext context = getServletContext();
-// Lấy đường dẫn thư mục lưu ảnh trong dự án
+            // Lấy đường dẫn thư mục lưu ảnh trong dự án
             String realPath = request.getServletContext().getRealPath("/img/banner_event");
 
             if (realPath.contains("target")) {
                 realPath = context.getRealPath("").replace("\\", "/")
                         .replaceAll("target/.*", "") + "src/main/webapp/img/banner_event";
             }
-// Kiểm tra và tạo thư mục nếu chưa tồn tại
+            // Kiểm tra và tạo thư mục nếu chưa tồn tại
             File directory = new File(realPath);
             if (!directory.exists()) {
                 directory.mkdirs();
             }
 
-// Ghi file vào thư mục trong dự án
+            String fileName = "img/banner_event/" + fileName_raw;
+            // Ghi file vào thư mục trong dự án
             File file = new File(directory, fileName);
             part.write(file.getAbsolutePath());
 

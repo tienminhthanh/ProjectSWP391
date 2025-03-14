@@ -38,11 +38,11 @@
                         <thead class="bg-orange-400 text-white">
                             <tr>
                                 <th class="px-4 py-3 border border-b w-[80px]">No.</th>
-                                <th class="px-4 py-3 border border-b w-[200]">Event Name</th>
-                                <th class="px-4 py-3 border border-b w-[200]">Banner</th>
-                                <th class="px-4 py-3 border border-b w-[200">Description</th>
-                                <th class="px-4 py-3 border border-b w-[150]">Expiry</th>
-                                <th class="px-4 py-3 border border-b w-[150]">Status</th>
+                                <th class="px-4 py-3 border border-b w-[250px]">Event Name</th>
+                                <th class="px-4 py-3 border border-b w-[400px]">Banner</th>
+                                <th class="px-4 py-3 border border-b w-[250px]">Description</th>
+                                <th class="px-4 py-3 border border-b w-[100px]">Expiry</th>
+                                <th class="px-4 py-3 border border-b w-[100px]">Status</th>
                             </tr>
                         </thead>
                         <tbody>

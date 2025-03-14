@@ -89,9 +89,9 @@ public class EventDAO {
             ResultSet rs = context.exeQuery(sql, null);
             while (rs.next()) {
                 String banner = rs.getString(1);
-                if (!banner.startsWith("img/")) {
-                    banner = "img/banner_event/" + banner;
-                }
+//                if (!banner.startsWith("img/")) {
+//                    banner = "img/banner_event/" + banner;
+//                }
                 listBanner.add(banner);
             }
         } catch (Exception e) {
@@ -158,14 +158,14 @@ public class EventDAO {
                     + "           ,[isActive]\n"
                     + "           ,[dateStarted])\n"
                     + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            String banner = event.getBanner();
-            if (!banner.startsWith("img/")) {
-                banner = "img/banner_event/" + banner;
-            }
+//            String banner = event.getBanner();
+//            if (!banner.startsWith("img/")) {
+//                banner = "img/banner_event/" + banner;
+//            }
             Object[] params = {event.getEventName(),
                 event.getDateCreated(),
                 event.getDuration(),
-                banner,
+                event.getBanner(),
                 event.getDescription(),
                 event.getAdminID(),
                 event.isIsActive(),
