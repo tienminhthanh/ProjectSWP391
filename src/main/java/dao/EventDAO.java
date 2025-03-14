@@ -26,6 +26,48 @@ public class EventDAO {
         context = new utils.DBContext();
     }
 
+    public List<Event> getEventByPage(int page, int pageSize) {
+        List<Event> list = new ArrayList<>();
+        String sql = "SELECT * FROM [dbo].[Event] ORDER BY eventID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try {
+
+            ResultSet rs = context.exeQuery(sql, new Object[]{(page - 1) * pageSize, pageSize});
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String dateCreated = rs.getString(3);
+                int duration = rs.getInt(4);
+                String banner = rs.getString(5);
+                String description = rs.getString(6);
+                int adminID = rs.getInt(7);
+                boolean isActive = rs.getBoolean(8);
+                String dateStarted = rs.getString(9);
+                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
+                LocalDate expiryDate = createDate.plusDays(duration);
+                Event event = new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
+                list.add(event);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public int getTotalEvent() {
+        String sql = "SELECT COUNT(*) FROM Event";
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return 0;
+    }
+
     public List<Event> getListEvent() {
         List<Event> listEvent = new ArrayList<>();
         String sql = "SELECT * FROM [dbo].[Event]";

@@ -37,9 +37,23 @@ public class EventListController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = EVENT_LIST_PAGE;
+        int page = 1;
+        int pageSize = 5;
+        String pageStr = request.getParameter("page");
+        if (pageStr != null) {
+            try {
+                page = Integer.parseInt(pageStr);
+            } catch (Exception e) {
+                page = 1;
+            }
+        }
         try {
             EventDAO eDao = new EventDAO();
-            List<Event> listEvent = eDao.getListEvent();
+            List<Event> listEvent = eDao.getEventByPage(page, pageSize);
+            int totalEvent = eDao.getTotalEvent();
+            int totalPages = (int) Math.ceil((double) totalEvent / pageSize);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPage", totalPages);
             request.setAttribute("LIST_EVENT", listEvent);
         } catch (Exception ex) {
             log("VoucherListServlet error:" + ex.getMessage());
