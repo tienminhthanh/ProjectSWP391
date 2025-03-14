@@ -8,12 +8,17 @@ package model;
  *
  * @author Admin
  */
-public class Customer extends Account {
+public class Customer  extends Account{
+
 
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;
 
     public Customer() {
+    }
+
+    public Customer(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
     }
 
     public Customer(double totalPurchasePoints, String defaultDeliveryAddress, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {

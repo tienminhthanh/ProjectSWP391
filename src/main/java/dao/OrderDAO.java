@@ -30,6 +30,7 @@ public class OrderDAO {
 
 //chen mot order vo orderInfo
     // sau them voucher
+    //choose
     public void insertOrderInfo(OrderInfo orderInfo) throws SQLException {
         String sql = "INSERT INTO OrderInfo ("
                 + "  deliveryAddress, deliveryOptionID, customerID, "
@@ -67,6 +68,7 @@ public class OrderDAO {
     }
 
 // insert row vao bang Order_product
+    //choose
     public void insertOrderProduct(Object[] params) throws SQLException {
         String sql = "INSERT INTO Order_Product (orderID, productID, quantity, priceWithQuantity)  \n"
                 + "VALUES (?, ?, ?, ?);";
@@ -76,6 +78,7 @@ public class OrderDAO {
     }
 
 // for them tung obj vao bang order_product
+    //choose
     public void callInsertOrderProduct(OrderInfo orderInfo, int orderID) throws SQLException {
         for (int i = 0; i < orderInfo.getOrderProductList().size(); i++) {
             OrderProduct orderProduct = orderInfo.getOrderProductList().get(i);
@@ -87,6 +90,7 @@ public class OrderDAO {
 
     // GET CAC LOAI THONG TIN
     // lay orderID moi nhat
+    //choose
     public int getLastInsertedOrderID(int customerID) throws SQLException {
         String sql = "select top 1 orderID\n"
                 + "from OrderInfo\n"
@@ -103,19 +107,20 @@ public class OrderDAO {
     }
 
     // for admin with satff manage orderlist
+    //choose
     public List<OrderInfo> getAllOrders() throws SQLException {
-    List<OrderInfo> orderList = new ArrayList<>();
-    String sql = "SELECT * FROM OrderInfo ORDER BY orderID DESC"; // Sắp xếp theo orderID từ lớn đến bé
+        List<OrderInfo> orderList = new ArrayList<>();
+        String sql = "SELECT * FROM OrderInfo ORDER BY orderID DESC"; // Sắp xếp theo orderID từ lớn đến bé
 
-    try (ResultSet rs = context.exeQuery(sql, null)) {
-        while (rs.next()) {
-            orderList.add(mapResultSetToOrderInfo(rs));
+        try ( ResultSet rs = context.exeQuery(sql, null)) {
+            while (rs.next()) {
+                orderList.add(mapResultSetToOrderInfo(rs));
+            }
         }
+        return orderList;
     }
-    return orderList;
-}
 
-
+    //choose
     public List<OrderInfo> getOrdersByStatus(String orderStatus) throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
         String sql = "SELECT * from OrderInfo  where orderStatus =? ORDER BY orderID DESC";
@@ -128,29 +133,8 @@ public class OrderDAO {
         return orderList;
     }
 
-  
-
-    //dung truy van khi ng dung hoac admin xoa order thi an di
-    public OrderInfo getOrderByOrderID(int orderID) throws SQLException {
-        String sql = "SELECT o.*, c.firstName + ' ' + c.lastName AS customerName, "
-                + "s.firstName + ' ' + s.lastName AS shipperName, "
-                + "st.firstName + ' ' + st.lastName AS staffName "
-                + "FROM OrderInfo o "
-                + "LEFT JOIN Customer c ON o.customerID = c.customerID "
-                + "LEFT JOIN Shipper s ON o.shipperID = s.shipperID "
-                + "LEFT JOIN Staff st ON o.staffID = st.staffID "
-                + "WHERE o.orderID = ?";
-        Object[] param = {orderID};
-
-        try ( ResultSet rs = context.exeQuery(sql, param)) {
-            if (rs.next()) {
-                return mapResultSetToOrderInfo(rs);
-            }
-        }
-        return null;
-    }
-
 // lay list order cho cus
+    // choose
     public List<OrderInfo> getOrdersByCustomerID(int customerID) throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
         String sql = "SELECT OrderInfo.*, DeliveryOption.optionName "
@@ -164,12 +148,10 @@ public class OrderDAO {
         try ( ResultSet rs = context.exeQuery(sql, params)) {
             while (rs.next()) {
                 OrderInfo orderInfo = mapResultSetToOrderInfo(rs);
-
                 // Tạo đối tượng DeliveryOption
                 DeliveryOption deliveryOption = new DeliveryOption();
                 deliveryOption.setOptionName(rs.getString("optionName"));
                 deliveryOption.setDeliveryOptionID(rs.getInt("deliveryOptionID"));
-
                 // Gán phương thức giao hàng cho đơn hàng
                 orderInfo.setDeliveryOption(deliveryOption);
 
@@ -181,6 +163,7 @@ public class OrderDAO {
     }
 
     // lay list order cho shipper
+    //choose
     public List<OrderInfo> getOrdersByShipperID(int shipperID) throws SQLException {
         List<OrderInfo> orderList = new ArrayList<>();
         String sql = "SELECT * FROM OrderInfo WHERE shipperID = ?";
@@ -194,6 +177,14 @@ public class OrderDAO {
         return orderList;
     }
 
+    public OrderInfo getOrderByOrderID(int orderID) throws SQLException {
+        String sql = "SELECT * FROM OrderInfo WHERE orderID = ?";
+        Object[] params = {orderID};
+        ResultSet rs = context.exeQuery(sql, params);
+        return rs.next() ? mapResultSetToOrderInfo(rs) : null;
+    }
+
+    //choose
     public Account getInfoCustomerByOrderID(int orderID) throws SQLException {
         String sql = "SELECT a.* \n"
                 + "FROM Account a\n"
@@ -207,6 +198,7 @@ public class OrderDAO {
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
 
+    //choose
     public Account getCustomerByOrderID(int orderID) throws SQLException {
         String sql = "SELECT a.*\n"
                 + "FROM Account a\n"
@@ -217,6 +209,7 @@ public class OrderDAO {
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
 
+    //choose maybe fix lai
     public Account getAccountByShipperIDAndOrderID(int orderID, int shipperID) throws SQLException {
         String sql = "SELECT \n"
                 + "    a.accountID,\n"
@@ -254,6 +247,7 @@ public class OrderDAO {
     }
 
     //lay gia tri vocher de dua vao orderdeatil
+    //choose
     public int getVoucherValueByOrderID(int orderID) throws SQLException {
         int voucherValue = 0;
         String sql = "SELECT v.voucherValue FROM OrderInfo o "
@@ -270,6 +264,7 @@ public class OrderDAO {
     }
 
     // lay thong tin cac san pham theo oderId de in ra orderdeatil
+    //choose
     public List<OrderProduct> getOrderProductByOrderID(int orderID) throws SQLException {
         List<OrderProduct> OrderProductList = new ArrayList<>();
         String sql = "SELECT Order_Product.orderID, Order_Product.productID, Order_Product.quantity, Order_Product.priceWithQuantity, Product.productName, Product.imageURL\n"
@@ -290,6 +285,7 @@ public class OrderDAO {
         }
         return OrderProductList;
     }
+//choose
 
     public OrderInfo getOrderByID(int orderID, int customerID) throws SQLException {
         String sql = "SELECT OrderInfo.*\n"
@@ -308,6 +304,7 @@ public class OrderDAO {
 
     }
 
+    //choose de 1
     public List<DeliveryOption> getAllDeliveryOptions() throws SQLException {
         List<DeliveryOption> deliveryOptions = new ArrayList<>();
         String sql = "SELECT * FROM DeliveryOption";
@@ -326,6 +323,7 @@ public class OrderDAO {
         return deliveryOptions;
     }
 
+    //choose de 2
     public DeliveryOption getDeliveryOption(int deliveryOptionID) throws SQLException {
         String sql = "SELECT * FROM DeliveryOption WHERE deliveryOptionID = ?";
         Object[] params = {deliveryOptionID};
@@ -343,6 +341,7 @@ public class OrderDAO {
         return null; // Nếu không tìm thấy ID, trả về `null`
     }
 
+    //choose
     public List<Shipper> getAllShippers() {
         List<Shipper> shipperList = new ArrayList<>();
         String sql = "SELECT Account.*, Shipper.* "
@@ -352,21 +351,18 @@ public class OrderDAO {
         try ( ResultSet rs = context.exeQuery(sql, null)) {
             while (rs.next()) {
                 // Tạo đối tượng Account từ dữ liệu bảng Account
-                Account account = new Account();
-                account.setAccountID(rs.getInt("accountID"));
-                account.setUsername(rs.getString("username"));
-                account.setFirstName(rs.getString("firstName"));
-                account.setLastName(rs.getString("lastName"));
-                account.setEmail(rs.getString("email"));
-                account.setPhoneNumber(rs.getString("phoneNumber"));
-                account.setBirthDate(rs.getString("birthDate"));
-
                 Shipper shipper = new Shipper();
-                shipper.setShipperID(rs.getInt("shipperID"));
+
+                shipper.setAccountID(rs.getInt("accountID"));
+                shipper.setUsername(rs.getString("username"));
+                shipper.setFirstName(rs.getString("firstName"));
+                shipper.setLastName(rs.getString("lastName"));
+                shipper.setEmail(rs.getString("email"));
+                shipper.setPhoneNumber(rs.getString("phoneNumber"));
+                shipper.setBirthDate(rs.getString("birthDate"));
+
                 shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                 shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
-
-                shipper.setAccount(account);
 
                 shipperList.add(shipper);
             }
@@ -378,6 +374,7 @@ public class OrderDAO {
 
     // MAP THONG TIN 
 // map de lay all orderinfo cho listAll
+    //choose
     private OrderInfo mapResultSetToOrderInfo(ResultSet rs) throws SQLException {
         return new OrderInfo(
                 rs.getInt("orderID"),
@@ -400,6 +397,7 @@ public class OrderDAO {
     }
 
     //map de lay orderproduct cua mot don
+    //choose
     private OrderProduct mapResultSetToOrderProduct(ResultSet rs) throws SQLException {
         return new OrderProduct(
                 rs.getInt("productID"),
@@ -407,6 +405,7 @@ public class OrderDAO {
                 rs.getInt("priceWithQuantity")
         );
     }
+//choose
 
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
         return new Account(
@@ -423,26 +422,9 @@ public class OrderDAO {
         );
     }
 // UPDATE CAC THU
-    //upadte trang thai giao hang cho shipper
-
-    public boolean updateDeliveryOptionByOrderID(int orderID, int newDeliveryOptionID) throws SQLException {
-        String sql = "UPDATE OrderInfo SET deliveryOptionID = ? WHERE orderID = ? AND deliveryStatus != 'Delivered'";
-        Object[] params = {newDeliveryOptionID, orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        System.out.println(rowsAffected + " rows affected");
-        return rowsAffected > 0;
-    }
-
-    // staff update shipper cho order 
-    public boolean assignShipperToOrder(int orderID, int shipperID) throws SQLException {
-        String sql = "UPDATE OrderInfo SET shipperID = ? WHERE orderID = ? AND shipperID IS NULL";
-        Object[] params = {shipperID, orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        System.out.println(rowsAffected + " rows affected");
-        return rowsAffected > 0;
-    }
-
     // cho cus update lai address khi ma chua giao hang 
+    //choose
+
     public boolean updateDeliveryAddressByOrderID(int orderID, String newAddress) throws SQLException {
         String sql = "UPDATE OrderInfo SET deliveryAddress = ? WHERE orderID = ? AND deliveryStatus != 'Delivered'";
         Object[] params = {newAddress, orderID};
@@ -451,24 +433,8 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
-    // update cho COD khi cus nhan hang va tra tien
-    public boolean updatePaymentStatus(int orderID, String newStatus) throws SQLException {
-        String sql = "UPDATE OrderInfo SET paymentStatus = ? WHERE orderID = ?";
-        Object[] params = {newStatus, orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        System.out.println(rowsAffected + " rows affected");
-        return rowsAffected > 0;
-    }
-
-    // dung cho cus hoac admin huy don 
-    public boolean cancelOrder(int orderID) throws SQLException {
-        String sql = "UPDATE OrderInfo SET orderStatus = 'Canceled' WHERE orderID = ? AND deliveryStatus != 'Delivered'";
-        Object[] params = {orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        return rowsAffected > 0;
-    }
-
     // update stock
+    //choose
     public boolean updateProductStock(int productID, int quantityOrdered) throws SQLException {
         String sql = "UPDATE Product SET stockCount = stockCount - ? WHERE productID = ? AND stockCount >= ?";
         Object[] params = {quantityOrdered, productID, quantityOrdered};
@@ -477,6 +443,7 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
+    //choose
     public boolean updateStaffAndShipperForOrder(int orderID, int staffID, int shipperID) throws SQLException {
         String sql = "UPDATE OrderInfo SET staffID = ?, shipperID = ? WHERE orderID = ?;";
         Object[] params = {staffID, shipperID, orderID};
@@ -484,34 +451,42 @@ public class OrderDAO {
         return rowsAffected > 0;
     }
 
-    public boolean updateDeliverystatus(int orderID) throws SQLException {
+    //choose
+    public boolean updateDeliverystatus(int orderID, String newStatus) throws SQLException {
         String sql = "UPDATE OrderInfo \n"
-                + "SET deliveryStatus = 'Shipped' \n"
+                + "SET deliveryStatus = ? \n"
                 + "WHERE orderID = ?";
-        Object[] params = {orderID};
+        Object[] params = {newStatus, orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 
-    public boolean updateOrderstatus(int orderID) throws SQLException {
+    //choose
+    public boolean updateOrderstatus(int orderID, String newStatus) throws SQLException {
         String sql = "UPDATE OrderInfo \n"
-                + "SET orderStatus = 'Shipped' \n"
+                + "SET orderStatus =?  \n"
                 + "WHERE orderID = ?";
-        Object[] params = {orderID};
+        Object[] params = {newStatus, orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 
-    public boolean updateTotalDeliveries(int shipperID) throws SQLException {
-        String sql = "UPDATE Shipper \n"
-                + "SET totalDeliveries = totalDeliveries + 1 \n"
-                + "WHERE shipperID = ?;";
-        Object[] params = {shipperID};
+    //set rate cho sp
+    public boolean updateRatingForProduct(int orderID, int productID, int rate) throws SQLException {
+        String sql = "UPDATE Order_Product SET rating =  ? WHERE productID = ? and orderID = ?";
+        Object[] params = {rate, productID, orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
-//
+// review
+    public boolean updateCommentForProduct(int orderID, int productID, String comment) throws SQLException {
+        String sql = "UPDATE Order_Product SET comment = ? WHERE orderID = ? AND productID = ?";
+        Object[] params = {comment, orderID, productID};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        return rowsAffected > 0;
+    }
 
+// choose
     public void restoreProductStockByOrderID(int orderID) throws SQLException {
         // Lấy dữ liệu từ Order_Product, nhưng không ép kiểu trực tiếp
         String selectSQL = "SELECT productID, quantity FROM Order_Product WHERE orderID = ?";
@@ -539,26 +514,13 @@ public class OrderDAO {
     }
 
     //DELETE CAC THU
+    //choose
     public boolean deleteCartItemsByCustomerID(int customerID) throws SQLException {
         String sql = "DELETE FROM CartItem WHERE customerID = ?";
         Object[] params = {customerID};
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " cart items deleted.");
         return rowsAffected > 0;
-    }
-
-    public void cancelOrderByOrderID(int orderID) throws SQLException {
-        String sql = "UPDATE OrderInfo SET orderStatus = ? WHERE orderID = ?";
-        Object[] params = {"canceled", orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        System.out.println(rowsAffected + " order(s) canceled.");
-    }
-
-    public void deleteOrderProductByOrderID(int orderID) throws SQLException {
-        String sql = "DELETE FROM Order_Product WHERE orderID = ?";
-        Object[] params = {orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
-        System.out.println(rowsAffected + " order products deleted.");
     }
 
 }

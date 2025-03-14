@@ -50,7 +50,7 @@
         </style>
     </head>
     <body>
-        <div class="fixed bottom-4 right-4">
+        <div class="fixed bottom-4 right-4 z-50">
             <button id="chatButton" class="bg-yellow-500 text-white p-2 rounded-full shadow-lg">
                 <i class="fas fa-comments"></i>
                 <span class="ml-1">Chat</span>
@@ -58,9 +58,9 @@
         </div>
 
         <div id="chatContainer" class="chat-container flex flex-col">
-            <div class="bg-blue-500 p-1 border-b flex justify-between items-center">
+            <div class="bg-orange-500 p-1 border-b flex justify-between items-center">
                 <h2 class="text-white font-bold">Chat with WiBook</h2>
-                <button id="closeChat" class="text-red-500 text-xl hover:text-red-700">×</button>
+                <button id="closeChat" class="text-black text-xl">x</button>
             </div>
 
             <div id="chatMessages" class="flex-1 p-4 overflow-y-auto bg-gray-100">
@@ -71,10 +71,10 @@
                     <c:otherwise>
                         <c:forEach var="chat" items="${chats}">
                             <div class="mb-4 ${chat.senderID == sessionScope.account.accountID ? 'text-right' : 'text-left'}">
-                                <div class="inline-block p-3 rounded-lg ${chat.senderID == sessionScope.account.accountID ? 'bg-blue-500 text-white text-left' : 'bg-white'}">
+                                <div class="inline-block p-3 rounded-lg ${chat.senderID == sessionScope.account.accountID ? 'bg-orange-500 text-white text-left' : 'bg-white'}">
                                     <p>${chat.messageContent}</p>
                                     <span class="text-xs">
-                                        <fmt:formatDate value="${chat.sentAt}" pattern="dd/MM HH:mm"/>
+                                        <fmt:formatDate value="${chat.sentAt}" pattern="HH:mm"/>
                                     </span>
                                 </div>
                             </div>
@@ -87,7 +87,7 @@
                 <div class="flex">
                     <input type="text" id="messageContent" class="flex-1 p-2 border rounded-l-lg" 
                            placeholder="Enter message..." required>
-                    <button id="sendMessage" class="bg-blue-500 text-white p-2 rounded-r-lg">
+                    <button id="sendMessage" class="bg-orange-500 text-white p-2 rounded-r-lg">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>

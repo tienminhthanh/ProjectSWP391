@@ -3,12 +3,8 @@
     <head>
         <title>Chat với Gemini AI</title>
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-            }
-            #chatContainer {
-                width: 50%;
+            #chatContainer1 {
+                width: 100%;
                 margin: auto;
             }
             #chatBox {
@@ -42,14 +38,14 @@
                 display: flex;
                 justify-content: center;
             }
-            input {
+            input.ai-input {
                 width: 70%;
                 padding: 10px;
                 font-size: 16px;
                 border: 1px solid #ccc;
                 border-radius: 5px;
             }
-            button {
+            button.ai-button {
                 padding: 10px;
                 font-size: 16px;
                 background-color: #007bff;
@@ -58,7 +54,7 @@
                 border-radius: 5px;
                 cursor: pointer;
             }
-            button:hover {
+            button.ai-button:hover {
                 background-color: #0056b3;
             }
         </style>
@@ -84,7 +80,7 @@
                         .then(response => response.json())
                         .then(data => {
                             // Hiển thị phản hồi từ Gemini AI
-                            chatBox.innerHTML += "<div class='message bot'><b>Gemini:</b> " + data.response + "</div><br style='clear:both;'>";
+                            chatBox.innerHTML += "<div class='message bot'><b></b> " + data.response + "</div><br style='clear:both;'>";
 
                             // Xóa ô nhập tin nhắn
                             document.getElementById("userMessage").value = "";
@@ -97,13 +93,13 @@
         </script>
     </head>
     <body>
-        <h2>Chat with WIBOOKS AI</h2>
-        <div id="chatContainer">
+       
+        <div id="chatContainer1">
             <div id="chatBox"></div>
             <div id="inputContainer">
-                <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." onkeypress="if (event.keyCode == 13)
+                <input type="text" id="userMessage" class="ai-input" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13)
                             sendMessage()">
-                <button onclick="sendMessage()">Gửi</button>
+                <button class="ai-button" onclick="sendMessage()">Send</button>
             </div>
         </div>
     </body>

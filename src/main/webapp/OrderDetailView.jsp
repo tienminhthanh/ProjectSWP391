@@ -9,33 +9,280 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order Detail</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="js/OrderDetailView.js"></script>
+        <link href="css/styleHeader.css" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <style>
+            /* General Styles */
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f7fafc; /* Light gray background */
+                margin: 0; /* Remove default margin */
+                padding: 0; /* Remove default padding */
+            }
+
+            .container {
+                max-width: 1200px; /* Max width for the container */
+                margin: auto; /* Center the container */
+                padding: 1rem; /* Add padding for better spacing */
+            }
+
+            /* Header Styles */
+            header {
+                background-color: #ffffff; /* White header */
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            }
+
+            .logo img {
+                max-width: 150px; /* Logo size */
+            }
+
+            .top-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem 2rem; /* Padding for top bar */
+            }
+
+            /* Typography */
+            h1 {
+                font-size: 2rem;
+                font-weight: bold;
+                color: #EA580C; /* Tailwind orange */
+            }
+
+            h2, h3 {
+                color: #2d3748; /* Dark gray for headings */
+            }
+
+            p {
+                color: #4a5568; /* Medium gray for text */
+            }
+
+            /* Card Styles */
+            .bg-white {
+                background-color: #ffffff; /* White background for cards */
+                border-radius: 0.5rem; /* Rounded corners */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Card shadow */
+                padding: 1rem; /* Padding inside cards */
+            }
+
+            /* Button Styles */
+            button {
+                transition: background-color 0.3s ease; /* Smooth transition for buttons */
+                border: none; /* Remove default border */
+                cursor: pointer; /* Change cursor to pointer */
+            }
+
+            button:hover {
+                opacity: 0.9; /* Slightly fade on hover */
+            }
+
+            /* Flexbox Utilities */
+            .flex {
+                display: flex;
+            }
+
+            .flex-wrap {
+                flex-wrap: wrap; /* Allow buttons to wrap if necessary */
+            }
+
+            .flex-col {
+                flex-direction: column; /* Stack buttons vertically */
+            }
+
+            .space-x-2 > *:not(:last-child) {
+                margin-right: 0.5rem; /* Space between buttons */
+            }
+
+            /* Product Item Styles */
+            .product-item {
+                transition: transform 0.2s; /* Smooth scaling */
+                display: flex;
+                flex-direction: column; /* Stack content vertically */
+                align-items: center; /* Center items */
+                padding: 1rem; /* Padding inside product item */
+            }
+
+            .product-item:hover {
+                transform: scale(1.05); /* Scale up on hover */
+            }
+
+            /* Popup Styles */
+            .rating-popup, .review-popup {
+                background-color: #ffffff; /* White background for popups */
+                border-radius: 0.5rem; /* Rounded corners */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Popup shadow */
+                padding: 1rem; /* Padding inside popups */
+            }
+
+            .rating-popup h2, .review-popup h2 {
+                color: #2d3748; /* Dark gray for popup headings */
+            }
+
+            /* Textarea Styles */
+            textarea {
+                border: 1px solid #cbd5e0; /* Light gray border */
+                border-radius: 0.25rem; /* Rounded corners */
+                padding: 0.5rem; /* Padding inside textarea */
+                width: 100%; /* Full width */
+            }
+
+            textarea:focus {
+                border-color: #EA580C; /* Orange border on focus */
+                outline: none; /* Remove default outline */
+            }
+
+            /* Utility Classes */
+            .mt-2 {
+                margin-top: 0.5rem; /* Space between elements */
+            }
+
+            .hidden {
+                display: none; /* Hide elements */
+            }
+        </style>
+
     </head>
     <body class="bg-gray-100">
-        <header class="bg-white shadow">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <div class="logo">
-                    <a href="home">
-                        <img src="img/logo.png" alt="WIBOOKS" class="h-10"/>
-                    </a> 
-                </div>
-                <a href="logout" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex items-center">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
+        <header>
+            <div class="logo">
+                <a href="home">
+                    <img src="img/logo.png" alt="WIBOOKS" />
                 </a>
+            </div>
+            <div class="top-bar">
+                <div class="search-nav-container">
+                    <a href="OrderListController" class=" text-white px-4 py-2 rounded hover:bg-red-600">Back</a>
+
+                    <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-green-500
+                        mb-2 relative inline-block ml-12">
+                        Order Detail
+                    </h1>
+                </div>
+
+                <c:if test="${not empty sessionScope.account && sessionScope.account.getRole() == 'customer'}">
+                    <div class="customer-icons">
+
+
+                        <!--Notification button-->
+                        <a href="notification?action=list&receiverID=${sessionScope.account.accountID}">
+                            <i class="fa-regular fa-bell"></i>
+                        </a>
+
+                        <!--Cart button-->
+                        <a href="cart?customerID=${sessionScope.account.accountID}">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                            
+                        <!--My Account-->
+                        <a href="readAccount">
+                            <i class="fa-regular fa-user"></i>
+                        </a>
+
+                        <!--Logout-->
+                        <a href="logout">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </a>
+
+                    </div>
+
+                    <!--Toggle customer mobile menu-->
+                    <div class="overlay" id="cus-menu-overlay" onclick="closeCustomerMenu()"></div>
+                    <div class="toggle-customer-icons-mobile">
+                        <button type="button" onclick="openCustomerMenu()">
+                            <img src="img/header_icon_mobile/customerMenuIcon.png" alt="Customer Icons"/>
+                        </button>
+                    </div>
+
+                    <!--Customer mobile menu-->
+                    <div id="customer-menu-mobile" class="p-3 bg-gray-200">
+                        <div class="close-icon">
+                            <button type="button" onclick="closeCustomerMenu()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="mt-4 mb-4">
+                            <ul class="list-disc list-inside">
+                                <li>
+                                    <!--Notification button-->
+                                    <a href="notification.jsp">
+                                        <i class="fa-regular fa-bell"></i>
+                                        <span>Notification</span>
+                                    </a>
+
+                                </li>
+                                <li>
+                                    <!--Cart button-->
+                                    <a href="cart?customerID=${sessionScope.account.accountID}">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                        <span>Cart</span>
+                                    </a>
+
+                                </li>
+                                <li>
+                                    <!--My Account-->
+                                    <a href="readAccount">
+                                        <i class="fa-regular fa-user"></i>
+                                        <span>My Account</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <!--Logout-->
+                                    <a href="logout">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                        <span>Sign out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                </c:if>
+
+                <c:if test="${empty sessionScope.account}">
+                    <div class="auth-buttons">
+
+                        <a href="login" class="loginLinks">
+                            <button class="sign-in"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
+                        </a>
+                        <a href="register">
+                            <button class="sign-up">Sign up</button>
+                        </a>
+                    </div>
+
+                    <div class="auth-icon-mobile">
+                        <a href="login" class="loginLinks">
+                            <i class="fa-regular fa-user"></i>
+                            <p>Sign in</p>
+                        </a>
+                    </div>
+                </c:if>
             </div>
         </header>
 
+
         <div class="container mx-auto px-4 py-6">
-            <div class="mb-4">
-                <h1 class="text-2xl font-bold">Order Detail</h1>
-            </div>
+
             <div class="bg-white shadow-md rounded-lg p-6">
+
                 <div class="flex flex-wrap -mx-4">
+
                     <!-- Thông tin đơn hàng bên trái -->
                     <div class="w-full md:w-1/2 px-4">
                         <h2 class="text-xl font-semibold mb-4">Order Information</h2>
                         <p><strong>Order ID:</strong> ${orderInfo.orderID}</p>
-                        <p><strong>Order Date:</strong> ${orderInfo.orderDate}</p>
+
+                        <p><strong>Order Date:</strong> 
+                            <fmt:formatDate value="${orderInfo.orderDate}" pattern="dd/MM/yyyy"/>
+                        </p>
+
+                        <p><strong>Expected Delivery Date:</strong> 
+                            <fmt:formatDate value="${orderInfo.expectedDeliveryDate}" pattern="dd/MM/yyyy"/>
+                        </p>
+
                         <p><strong>Shipping Address:</strong> ${orderInfo.deliveryAddress}</p>
                         <p><strong>Payment Method:</strong> ${orderInfo.paymentMethod}</p>
                         <p><strong>Order Status:</strong> ${orderInfo.orderStatus}</p>
@@ -63,21 +310,34 @@
                         </p>
 
                         <div class="flex space-x-2 mt-4">
-                            <button type="button" onclick="showUpdateForm()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</button>
-                            <form action="DeleteOrderController" method="POST" onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
-                                <input type="hidden" name="id" value="${orderInfo.orderID}">
-                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cancel</button>
-                            </form>
-                            <a href="OrderListController" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Back</a>
-                            <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
-                            <c:if test="${orderInfo.orderStatus == 'Đang giao hàng'}">
-                                <form action="ConfirmReceivedOrderController" method="POST">
-                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
-                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
-                                        Đã nhận hàng
+                            <c:if test="${orderInfo.orderStatus eq 'pending'}">
+                                <button type="button" onclick="showUpdateForm()" 
+                                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                    Update
+                                </button>
+                            </c:if>
+                            <c:if test="${orderInfo.orderStatus eq 'pending'}">
+                                <form action="DeleteOrderController" method="POST" 
+                                      onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
+
+                                    <input type="hidden" name="id" value="${orderInfo.orderID}">
+                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                        Cancel
                                     </button>
                                 </form>
                             </c:if>
+                            <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
+                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'Shipped'}">                              
+                                <form action="OrderDetailController" method="POST">
+                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                    <input type="hidden" name="action" value="confirm"> 
+                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
+                                        Confirm Receipt
+                                    </button>
+                                </form>
+                            </c:if>
+
+                            <!-- Rate Button -->
 
                         </div>
                     </div>
@@ -95,10 +355,77 @@
                                     <!--                                    <p class="text-center text-sm font-bold">
                                     <fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ
                                 </p>-->
+                                    <c:if test="${ orderInfo.orderStatus eq 'completed'}">                               
+                                        <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                        <input type="hidden" name="productID" value="${item.product.productID}">
+                                        <button type="submit" id="rateButton_${item.product.productID}" 
+                                                onclick="openRatingPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
+                                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
+                                            Rate
+                                        </button>
+                                    </c:if>
+                                    <c:if test="${ orderInfo.orderStatus eq 'completed'}">      
+                                        <button type="button" 
+                                                id="reviewButton_${item.product.productID}"
+                                                onclick="openReviewPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
+                                                class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 mt-2">
+                                            Review
+                                        </button>
+                                    </c:if>
+
+
+                                    <div id="ratingPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeRatingPopup(event)">
+                                        <div class="bg-white p-6 rounded-lg shadow-lg w-96" onclick="event.stopPropagation()">
+                                            <h2 class="text-xl font-bold mb-4">Rate Your Order</h2>
+                                            <div class="flex items-center space-x-4 border-b pb-3">
+                                                <img id="popupProductImage" src="" alt="" class="w-24 h-24 object-cover rounded">
+                                                <div class="flex-1">
+                                                    <p id="popupProductName" class="text-lg font-semibold"></p>
+                                                    <div class="flex space-x-1 text-2xl" id="starContainer">
+                                                        <span class="text-gray-400 text-2xl cursor-pointer" data-star="1">★</span>
+                                                        <span class="text-gray-400 text-2xl cursor-pointer" data-star="2">★</span>
+                                                        <span class="text-gray-400 text-2xl cursor-pointer" data-star="3">★</span>
+                                                        <span class="text-gray-400 text-2xl cursor-pointer" data-star="4">★</span>
+                                                        <span class="text-gray-400 text-2xl cursor-pointer" data-star="5">★</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form action="OrderDetailController" method="POST" ">
+                                                <input type="hidden" name="orderID" id="popupOrderID">
+                                                <input type="hidden" name="productID" id="popupProductID">
+                                                <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                                <input type="hidden" name="productID" value="${item.product.productID}">
+                                                <input type="hidden" name="action" value="rate"> 
+                                                <input type="hidden" name="rating" id="rating" value="0">
+                                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
+                                                <button type="button" onclick="closeRatingPopup()" class="bg-gray-400 text-white px-4 py-2 rounded ml-2 hover:bg-gray-500">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </c:forEach>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <!-- Popup Review -->
+        <div id="reviewPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeReviewPopup(event)">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-2/3 flex" onclick="event.stopPropagation()">
+                <div class="w-1/3 flex items-center justify-center">
+                    <img id="reviewProductImage" src="" alt="" class="w-48 h-48 object-cover rounded">
+                </div>
+                <div class="w-2/3 p-4">
+                    <h2 class="text-xl font-bold mb-4">Write a Review</h2>
+                    <p id="reviewProductName" class="text-lg font-semibold mb-2"></p>
+                    <form id="reviewForm" action="OrderDetailController" method="POST">
+                        <input type="hidden" name="orderID" id="reviewOrderID">
+                        <input type="hidden" name="productID" id="reviewProductID">
+                        <input type="hidden" name="action" value="review"> 
+                        <textarea name="reviewContent" id="reviewContent" rows="4" class="w-full border rounded p-2 mb-4" placeholder="Write your review here..."></textarea>
+                        <button type="button" onclick="submitReview()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit</button>
+                        <button type="button" onclick="closeReviewPopup()" class="bg-gray-400 text-white px-4 py-2 rounded ml-2 hover:bg-gray-500">Cancel</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -119,15 +446,12 @@
                 </form>
             </div>
         </div>
-
-        <script>
-            function showUpdateForm() {
-                document.getElementById("updateForm").classList.remove("hidden");
-            }
-
-            function hideUpdateForm() {
-                document.getElementById("updateForm").classList.add("hidden");
-            }
-        </script>
+        <div id="thankYouPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                <h2 class="text-xl font-bold mb-4">Thank You!</h2>
+                <p>Your rating has been submitted successfully.</p>
+                <button onclick="closeThankYouPopup()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">OK</button>
+            </div>
+        </div>
     </body>
 </html>

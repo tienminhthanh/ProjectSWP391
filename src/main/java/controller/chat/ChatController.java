@@ -30,9 +30,7 @@ public class ChatController extends HttpServlet {
     public void init() throws ServletException {
         try {
             chatDAO = new ChatDAO();
-            LOGGER.info("ChatDAO initialized successfully");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to initialize ChatDAO", e);
             throw new ServletException("Failed to initialize ChatController", e);
         }
     }
@@ -42,7 +40,6 @@ public class ChatController extends HttpServlet {
             throws ServletException, IOException {
         Account account = (Account) request.getSession().getAttribute("account");
         if (account == null) {
-            LOGGER.warning("User not logged in, redirecting to login");
             response.sendRedirect("login");
             return;
         }
@@ -76,10 +73,8 @@ public class ChatController extends HttpServlet {
                 request.getRequestDispatcher("/chat.jsp").forward(request, response);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error retrieving chat data", e);
             throw new ServletException("Failed to retrieve chat data", e);
         } catch (NumberFormatException e) {
-            LOGGER.log(Level.WARNING, "Invalid customerID parameter", e);
             response.sendRedirect("chat");
         }
     }
@@ -127,13 +122,10 @@ public class ChatController extends HttpServlet {
             if (!success) {
                 throw new SQLException("Failed to insert chat message");
             }
-            LOGGER.log(Level.INFO, "Message sent successfully by accountID: {0}", userID);
             response.getWriter().write("{\"success\": true, \"message\": \"Message sent successfully\"}");
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Database error sending chat message", e);
             throw new ServletException("Database error: " + e.getMessage(), e);
         } catch (NumberFormatException e) {
-            LOGGER.log(Level.WARNING, "Invalid customerID parameter: " + request.getParameter("customerID"), e);
             throw new IllegalArgumentException("Invalid customer ID");
         }
     }

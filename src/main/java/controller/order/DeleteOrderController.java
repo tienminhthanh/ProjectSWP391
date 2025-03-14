@@ -82,13 +82,12 @@ public class DeleteOrderController extends HttpServlet {
         try {
             String orderID = request.getParameter("id");
             int id = Integer.parseInt(orderID);
-                    System.out.println(id);
-           
+            System.out.println(id);
+            String status = "canceled";
             orderDAO.restoreProductStockByOrderID(id);
 //            orderDAO.deleteOrderProductByOrderID(id);
-             orderDAO.cancelOrderByOrderID(id);
-            
-       
+            orderDAO.updateOrderstatus(id, status);
+
         } catch (SQLException ex) {
             Logger.getLogger(DeleteOrderController.class.getName()).log(Level.SEVERE, null, ex);
         }

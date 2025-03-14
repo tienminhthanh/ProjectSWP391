@@ -14,12 +14,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
+import model.DeliveryOption;
 import model.OrderInfo;
 import model.Shipper;
 
@@ -69,9 +72,7 @@ public class OrderDetailForShipperController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
-        ProductDAO productDAO = new ProductDAO();
-        List<OrderInfo> orderList = null;
-        List<Shipper> shipperList = new ArrayList<>();
+        DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = null;
 
@@ -80,13 +81,24 @@ public class OrderDetailForShipperController extends HttpServlet {
         try {
             if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
                 int id = Integer.parseInt(orderID);
-
                 customer = orderDAO.getCustomerByOrderID(id);
-
                 if (customer != null) {
                     int idcus = customer.getAccountID();
                     orderInfo = orderDAO.getOrderByID(id, idcus);
                     valueVoucher = orderDAO.getVoucherValueByOrderID(id);
+                    int deliveryTimeInDays;
+                    try {
+                        delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(OrderDetailForStaffController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    deliveryTimeInDays = delivery.getEstimatedTime();
+                    Calendar calendar = Calendar.getInstance();
+                    Date orderDate = orderInfo.getOrderDate();
+                    calendar.setTime(orderDate); // Nếu orderDate là null, tránh lỗi ở đây
+                    calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
+                    Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
+                    orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
 
                 }
             }
@@ -96,9 +108,8 @@ public class OrderDetailForShipperController extends HttpServlet {
 
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
-        shipperList = orderDAO.getAllShippers();
-        request.setAttribute("shipperList", shipperList);
-        request.setAttribute("orderList", orderList);
+      
+
         request.setAttribute("valueVoucher", valueVoucher);
 
         request.getRequestDispatcher("OrderDetailForShipperView.jsp").forward(request, response);

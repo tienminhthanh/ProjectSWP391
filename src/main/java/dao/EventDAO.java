@@ -89,6 +89,9 @@ public class EventDAO {
             ResultSet rs = context.exeQuery(sql, null);
             while (rs.next()) {
                 String banner = rs.getString(1);
+                if (!banner.startsWith("img/")) {
+                    banner = "img/banner_event/" + banner;
+                }
                 listBanner.add(banner);
             }
         } catch (Exception e) {
@@ -155,19 +158,25 @@ public class EventDAO {
                     + "           ,[isActive]\n"
                     + "           ,[dateStarted])\n"
                     + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String banner = event.getBanner();
+            if (!banner.startsWith("img/")) {
+                banner = "img/banner_event/" + banner;
+            }
             Object[] params = {event.getEventName(),
                 event.getDateCreated(),
                 event.getDuration(),
-                event.getBanner(),
+                banner,
                 event.getDescription(),
                 event.getAdminID(),
                 event.isIsActive(),
-                event.getDateStarted()};
+                event.getDateStarted()
+            };
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
             Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return false;
     }
 
@@ -185,10 +194,13 @@ public class EventDAO {
             LocalDate today = LocalDate.now();
             LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
             LocalDate expiryDate = createDate.plusDays(event.getDuration());
-
+            String banner = event.getBanner();
+            if (!banner.startsWith("img/")) {
+                banner = "img/banner_event/" + banner;
+            }
             Object params[] = {event.getEventName(),
                 event.getDuration(),
-                event.getBanner(),
+                banner,
                 event.getDescription(),
                 event.getDateStarted(),
                 !LocalDate.now().isAfter(expiryDate),
@@ -198,8 +210,10 @@ public class EventDAO {
 
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
+
         } catch (SQLException ex) {
-            Logger.getLogger(EventDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EventDAO.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }

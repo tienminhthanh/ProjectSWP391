@@ -13,9 +13,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import model.Account;
+import model.DeliveryOption;
 import model.OrderInfo;
 
 /**
@@ -66,11 +72,30 @@ public class OrderListController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-
+        String status = request.getParameter("status");
+        DeliveryOption delivery = new DeliveryOption();
+       
         try {
-
             List<OrderInfo> orderList = orderDAO.getOrdersByCustomerID(account.getAccountID());
+           
+            if (status != null && !status.isEmpty()) {
+                orderList = orderList.stream()
+                        .filter(order -> status.equals(order.getOrderStatus()))
+                        .collect(Collectors.toList());
+            }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
+            for (OrderInfo orderInfo : orderList) {
+                int deliveryTimeInDays;
+                delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
+                deliveryTimeInDays = delivery.getEstimatedTime();
+                Calendar calendar = Calendar.getInstance();
+                Date orderDate = orderInfo.getOrderDate();
+                calendar.setTime(orderDate); // Nếu orderDate là null, tránh lỗi ở đây
+                calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
+                Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
+                orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
+                System.out.println(orderInfo.getExpectedDeliveryDate());
+            }
 
             // Chuyển hướng đến OrderListView.jsp
             request.getRequestDispatcher("OrderListView.jsp").forward(request, response);

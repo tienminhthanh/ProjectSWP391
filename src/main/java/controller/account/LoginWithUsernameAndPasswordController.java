@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import model.Admin;
+import model.Customer;
 
 /**
  * Servlet responsible for handling user login.
@@ -32,8 +34,12 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
      * Handles GET requests by forwarding users to the login page.
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+   protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String currentURL = request.getParameter("currentURL");
+        if (currentURL != null && !currentURL.trim().isEmpty()) {
+            request.setAttribute("currentURL", currentURL);
+        }
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
@@ -43,6 +49,8 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //String currentURL = request.getParameter("currentURL");
+        String currentURL = request.getParameter("currentURL") != null && !request.getParameter("currentURL").isBlank() ? request.getParameter("currentURL") : "home";
         AccountLib lib = new AccountLib(); // Utility class for password hashing
 
         // Retrieve login details from the request
@@ -78,22 +86,35 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                     // Verify the password
                     if (account.getPassword().equals(password)) {
                         session.setAttribute("account", account);
-                        session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
-                        session.removeAttribute("failedAttempts"); // Reset failed attempts counter
-                        session.removeAttribute("previousUsername"); // Reset username tracking
 
                         // Redirect based on user role
                         switch (account.getRole()) {
                             case "admin":
+                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.removeAttribute("failedAttempts"); // Reset failed attempts counter
+                                session.removeAttribute("previousUsername"); // Reset username tracking
                                 response.sendRedirect("listAccount");
                                 break;
                             case "customer":
-                                response.sendRedirect("home");
+                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.removeAttribute("failedAttempts"); // Reset failed attempts counter
+                                session.removeAttribute("previousUsername"); // Reset username tracking
+                                if (currentURL == null || currentURL.isEmpty()) {
+                                    response.sendRedirect("home");
+                                } else {
+                                    response.sendRedirect(currentURL);
+                                }
                                 break;
                             case "staff":
-                                response.sendRedirect("dashboard.jsp");
+                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.removeAttribute("failedAttempts"); // Reset failed attempts counter
+                                session.removeAttribute("previousUsername"); // Reset username tracking
+                                response.sendRedirect("OrderListController.jsp");
                                 break;
                             case "shipper":
+                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.removeAttribute("failedAttempts"); // Reset failed attempts counter
+                                session.removeAttribute("previousUsername"); // Reset username tracking
                                 response.sendRedirect("dashboardShipper.jsp");
                                 break;
                             default:

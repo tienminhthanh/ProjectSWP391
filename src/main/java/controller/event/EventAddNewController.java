@@ -5,6 +5,7 @@
 package controller.event;
 
 import dao.EventDAO;
+import jakarta.servlet.ServletContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -145,26 +148,48 @@ public class EventAddNewController extends HttpServlet {
             }
             int adminID = account.getAccountID();
 
-            Part photo = request.getPart("bannerFile");
-            if (photo != null && photo.getSize() > 0) {
-                String uploadPath = getServletContext().getRealPath("/img/banner_event/");
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
-                String originalFileName = Paths.get(photo.getSubmittedFileName()).getFileName().toString();
-                File existingFile = new File(uploadDir, originalFileName);
-                if (existingFile.exists()) {
-                    request.setAttribute("error", "Ảnh đã tồn tại, vui lòng đổi tên file!");
-                    request.getRequestDispatcher("eventUpdate.jsp").forward(request, response);
-                    return;
-                }
-                File newFile = new File(uploadDir, originalFileName);
-                photo.write(newFile.getAbsolutePath());
-                banner = "/img/banner_event/" + originalFileName;
+//            Part photo = request.getPart("bannerFile");
+//            if (photo != null && photo.getSize() > 0) {
+//                String uploadPath = getServletContext().getRealPath("/img/banner_event/");
+//                File uploadDir = new File(uploadPath);
+//                if (!uploadDir.exists()) {
+//                    uploadDir.mkdirs();
+//                }
+//                String originalFileName = Paths.get(photo.getSubmittedFileName()).getFileName().toString();
+//                File existingFile = new File(uploadDir, originalFileName);
+//                if (existingFile.exists()) {
+//                    request.setAttribute("error", "Ảnh đã tồn tại, vui lòng đổi tên file!");
+//                    request.getRequestDispatcher("eventUpdate.jsp").forward(request, response);
+//                    return;
+//                }
+//                File newFile = new File(uploadDir, originalFileName);
+//                photo.write(newFile.getAbsolutePath());
+//                banner = "/img/banner_event/" + originalFileName;
+//            }
+//            String realPath = request.getServletContext().getRealPath("/banner_event");
+            Part part = request.getPart("bannerFile");
+            String fileName = Path.of(part.getSubmittedFileName()).getFileName().toString();
+            ServletContext context = getServletContext();
+// Lấy đường dẫn thư mục lưu ảnh trong dự án
+            String realPath = request.getServletContext().getRealPath("/img/banner_event");
+
+            if (realPath.contains("target")) {
+                realPath = context.getRealPath("").replace("\\", "/")
+                        .replaceAll("target/.*", "") + "src/main/webapp/img/banner_event";
+            }
+// Kiểm tra và tạo thư mục nếu chưa tồn tại
+            File directory = new File(realPath);
+            if (!directory.exists()) {
+                directory.mkdirs();
             }
 
-            Event event = new Event(name, dateCreated.toString(), duration, banner, description, adminID, true, dateStarted.toString(), true);
+// Ghi file vào thư mục trong dự án
+            File file = new File(directory, fileName);
+            part.write(file.getAbsolutePath());
+
+            System.out.println("File saved at: " + file.getAbsolutePath());
+
+            Event event = new Event(name, dateCreated.toString(), duration, fileName, description, adminID, true, dateStarted.toString(), true);
             boolean add = eDao.addEvent(event);
             if (add) {
                 session.setAttribute("message", "Event created successfully!");

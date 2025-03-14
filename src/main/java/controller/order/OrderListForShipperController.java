@@ -13,10 +13,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Account;
+import model.DeliveryOption;
 import model.OrderInfo;
 
 /**
@@ -67,18 +72,33 @@ public class OrderListForShipperController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-
+        DeliveryOption delivery = new DeliveryOption();
         try {
             List<OrderInfo> orderList = orderDAO.getOrdersByShipperID(account.getAccountID());
             List<Account> accountList = new ArrayList<>();
-        // Duyệt qua từng đơn hàng để lấy thông tin khách hàng
+            // Duyệt qua từng đơn hàng để lấy thông tin khách hàng
             for (OrderInfo order : orderList) {
                 Account acc = orderDAO.getAccountByShipperIDAndOrderID(order.getOrderID(), account.getAccountID());
                 if (acc != null) {
                     accountList.add(acc); // Chỉ thêm nếu không null
                 }
             }
+            for (OrderInfo orderInfo : orderList) {
+                int deliveryTimeInDays;
+
+                delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
+                deliveryTimeInDays = delivery.getEstimatedTime();
+                Calendar calendar = Calendar.getInstance();
+                Date orderDate = orderInfo.getOrderDate();
+                calendar.setTime(orderDate); // Nếu orderDate là null, tránh lỗi ở đây
+                calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
+                Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
+                orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
+                System.out.println(orderInfo.getExpectedDeliveryDate());
+            }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
+           
+             // Đặt dữ liệu vào requestScope
             request.setAttribute("accountList", accountList);
             request.getRequestDispatcher("OrderListForShipperView.jsp").forward(request, response);
         } catch (SQLException e) {
@@ -98,7 +118,17 @@ public class OrderListForShipperController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        int orderID = Integer.parseInt(request.getParameter("orderID"));
+        System.out.println(orderID);
+        OrderDAO orderDao = new OrderDAO();
+        String status = "delivered";
+        try {
+            orderDao.updateDeliverystatus(orderID, status);
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderListForShipperController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        response.sendRedirect(request.getRequestURI());
+
     }
 
     /**

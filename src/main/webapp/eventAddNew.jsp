@@ -51,7 +51,7 @@
                             <textarea class="w-full p-3 border border-gray-300 rounded" name="description" placeholder="Enter event description" required rows="4"></textarea>
                         </div>
                     </div>
-                    <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Add Event</button>
+                    <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-orange-500 mt-4" type="submit">Add Event</button>
                 </form>
                 <div class="mt-6">
                     <a class="text-orange-400 hover:underline" href="eventList">
