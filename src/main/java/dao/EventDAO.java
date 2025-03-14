@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.Event;
+import model.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
@@ -24,6 +24,28 @@ public class EventDAO {
 
     public EventDAO() {
         context = new utils.DBContext();
+    }
+
+    public List<EventProduct> getListEventProduct(int eventID) {
+        List<EventProduct> listEventProduct = new ArrayList<>();
+        String sql = "SELECT [productID]\n"
+                + "      ,[discountPercentage]\n"
+                + "  FROM [dbo].[Event_Product]"
+                + "  WHERE [eventID] = ?";
+        try {
+            Object[] params = {eventID};
+            ResultSet rs = context.exeQuery(sql, params);
+
+            while (rs.next()) {
+                int productID = rs.getInt(1);
+                int discountPercent = rs.getInt(2);
+                EventProduct ep = new EventProduct(eventID, productID, discountPercent);
+                listEventProduct.add(ep);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listEventProduct;
     }
 
     public List<Event> getEventByPage(int page, int pageSize) {
@@ -262,24 +284,9 @@ public class EventDAO {
 
     public static void main(String[] args) {
         EventDAO e = new EventDAO();
-//        String currentEvent = "/img/banner_event/voucher1.jpg";
-//        Event en = e.getEventByBanner(currentEvent);
-//        System.out.println(en.getDescription());
-//       
-//Event u = new Event(4, "kkkkk", "1191-9-9", 0, "123", "kkkk", 1, true, "2-2-1212", true);
-//        if (e.updateEvent(u)) {
-//            System.out.println("true");
-//        } else {
-//            System.out.println("false");
-//        }
-        Event en = new Event(3, "naruto", "1059-2-3", 100, "s", "s", 1, e.getEventByID(4).isIsActive(), "2025-11-03", e.getEventByID(4).isExpiry());
-        if (e.updateEvent(en)) {
-            System.out.println(e.getEventByID(3).getEventID());
-            System.out.println(e.getEventByID(3).getEventName());
-            System.out.println(e.getEventByID(3).isExpiry());
-            System.out.println(e.getEventByID(3).isIsActive());
-        } else {
-            System.out.println(false);
+        List<EventProduct> list = e.getListEventProduct(39);
+        for (EventProduct eventProduct : list) {
+            System.out.println(eventProduct.getProductID());
         }
     }
 }
