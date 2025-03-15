@@ -45,15 +45,17 @@ public class EventDetailsController extends HttpServlet {
         /* TODO output your page here. You may use following sample code. */
         String url = EVENT_DETAILS_ADMIN_PAGE;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        EventDAO eDao = new EventDAO();
+        EventProductDAO epDao = new EventProductDAO();
+
         try {
             String action = request.getParameter("action");
             if (action == null) {
                 int id = Integer.parseInt(request.getParameter("eventId"));
-                EventDAO eDao = new EventDAO();
                 Event eventDetails = eDao.getEventByID(id);
                 request.setAttribute("EVENT_DETAILS", eventDetails);
 
-                List<EventProduct> listEventProduct = eDao.getListEventProduct(id);
+                List<EventProduct> listEventProduct = epDao.getListEventProduct(id);
 
                 List<Product> updatedProductList = new ArrayList<>();
                 ProductDAO pDao = new ProductDAO();
@@ -73,7 +75,6 @@ public class EventDetailsController extends HttpServlet {
 
             } else if (action.equals("home")) {
                 ProductDAO productDAO = new ProductDAO();
-                EventDAO eDao = new EventDAO();
 
                 String banner = request.getParameter("banner");
                 if (banner != null) {
@@ -84,7 +85,7 @@ public class EventDetailsController extends HttpServlet {
                 Event event = eDao.getEventByBanner(banner);
                 request.setAttribute("eventDetails", event);
 
-                List<EventProduct> listEventProduct = eDao.getListEventProduct(event.getEventID());
+                List<EventProduct> listEventProduct = epDao.getListEventProduct(event.getEventID());
                 List<Product> updatedProductList = new ArrayList<>();
                 for (EventProduct ep : listEventProduct) {
                     Product product = productDAO.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID

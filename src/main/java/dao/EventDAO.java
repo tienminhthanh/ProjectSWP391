@@ -26,28 +26,6 @@ public class EventDAO {
         context = new utils.DBContext();
     }
 
-    public List<EventProduct> getListEventProduct(int eventID) {
-        List<EventProduct> listEventProduct = new ArrayList<>();
-        String sql = "SELECT [productID]\n"
-                + "      ,[discountPercentage]\n"
-                + "  FROM [dbo].[Event_Product]"
-                + "  WHERE [eventID] = ?";
-        try {
-            Object[] params = {eventID};
-            ResultSet rs = context.exeQuery(sql, params);
-
-            while (rs.next()) {
-                int productID = rs.getInt(1);
-                int discountPercent = rs.getInt(2);
-                EventProduct ep = new EventProduct(eventID, productID, discountPercent);
-                listEventProduct.add(ep);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return listEventProduct;
-    }
-
     public List<Event> getEventByPage(int page, int pageSize) {
         List<Event> list = new ArrayList<>();
         String sql = "SELECT * FROM [dbo].[Event] ORDER BY eventID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
@@ -283,10 +261,5 @@ public class EventDAO {
     }
 
     public static void main(String[] args) {
-        EventDAO e = new EventDAO();
-        List<EventProduct> list = e.getListEventProduct(39);
-        for (EventProduct eventProduct : list) {
-            System.out.println(eventProduct.getProductID());
-        }
     }
 }

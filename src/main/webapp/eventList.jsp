@@ -39,10 +39,11 @@
                             <tr>
                                 <th class="px-4 py-3 border border-b w-[80px]">No.</th>
                                 <th class="px-4 py-3 border border-b w-[250px]">Event Name</th>
-                                <th class="px-4 py-3 border border-b w-[400px]">Banner</th>
+                                <th class="px-4 py-3 border border-b w-[350px]">Banner</th>
                                 <th class="px-4 py-3 border border-b w-[250px]">Description</th>
                                 <th class="px-4 py-3 border border-b w-[100px]">Expiry</th>
                                 <th class="px-4 py-3 border border-b w-[100px]">Status</th>
+                                <th class="px-4 py-3 border border-b w-[120px]">Total Products</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,6 +75,9 @@
                                                 <span class="text-red-600">Deactivate</span>
                                             </c:otherwise>
                                         </c:choose>
+                                    </td>
+                                    <td class="px-2 py-3 border border-b text-center">
+                                        ${EVENT_PRODUCT_COUNT[event.eventID]}
                                     </td>
                                 </tr>
                             </c:forEach>
