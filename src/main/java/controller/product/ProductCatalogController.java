@@ -1126,17 +1126,15 @@ public class ProductCatalogController extends HttpServlet {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
         try {
-            if (account != null && (account.getRole().equals("customer") || account.getRole().equals("shipper"))) {
+            if (account != null && (account.getRole().equals("customer"))) {
                 CartItemDAO cartDAO = new CartItemDAO();
                 List<CartItem> listCart = session.getAttribute("cartItems") != null ? (List<CartItem>) session.getAttribute("cartItems") : cartDAO.getCartItemsByCustomer(account.getAccountID());
                 session.setAttribute("cartItems", listCart);
-                
+
                 NotificationDAO notiDAO = new NotificationDAO();
                 List<Notification> listNoti = session.getAttribute("notifications") != null ? (List<Notification>) session.getAttribute("notifications") : notiDAO.getNotificationsByReceiverDESC(account.getAccountID());
                 session.setAttribute("notifications", listNoti);
-                
             }
-
             showProductsInHomepage(session);
             showVouchersInHomepage(request);
             request.getRequestDispatcher("home.jsp").forward(request, response);

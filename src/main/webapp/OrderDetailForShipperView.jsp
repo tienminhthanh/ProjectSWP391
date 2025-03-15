@@ -35,9 +35,12 @@
                 <div class="flex justify-between items-center border-b pb-2 mb-4">
                     <h2 class="text-xl font-bold">Delivery Information / <span>${orderInfo.orderID}</span></h2>
                     <div class="space-x-2">
-                        <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
-                        
-                        <button class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
+                        <form action="OrderListForShipperController" method="post" class="inline">
+                            <input type="hidden" name="orderID" value="${order.orderID}">
+                            <c:if test="${ orderInfo.deliveryStatus eq 'Shipped'}">      
+                                <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
+                            </c:if>
+                        </form>
                         <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
                     </div>
 
@@ -60,9 +63,9 @@
                         </p>
 
                         <p><strong>Status:</strong> 
-                            <span class="font-bold text-green-500">${orderInfo.orderStatus}</span>
+                            <span class="font-bold text-green-500">${orderInfo.deliveryStatus}</span>
                         </p>
-<!--                        <p><strong>Notes:</strong> <span class="font-bold">Deliver before 5 PM</span></p>-->
+                        <!--                        <p><strong>Notes:</strong> <span class="font-bold">Deliver before 5 PM</span></p>-->
                     </div>
                 </div>
 

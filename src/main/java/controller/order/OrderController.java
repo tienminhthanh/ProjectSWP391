@@ -70,6 +70,7 @@ public class OrderController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
+
         Map<Integer, Double> computedValues = new HashMap<>();
         List<Double> computedValuesList = new ArrayList<>();
         int bestVoucherID = 0;
@@ -241,7 +242,8 @@ public class OrderController extends HttpServlet {
         HttpSession session = request.getSession();
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
         DeliveryOption delivery = new DeliveryOption();
-        int estimatedTime = 0;
+        String orderTotalStr = request.getParameter("orderTotal");
+        Double orderTotal = Double.parseDouble(orderTotalStr);
         if (cartItems == null) {
             cartItems = new ArrayList<>();
         }
@@ -257,7 +259,6 @@ public class OrderController extends HttpServlet {
         for (CartItem item : cartItems) {
             subtotal += item.getPriceWithQuantity().doubleValue();
             preOrderPrice = subtotal;
-
         }
         OrderDAO orderDAO = new OrderDAO();
         String deliveryOptionID = request.getParameter("shippingOption");
@@ -314,7 +315,9 @@ public class OrderController extends HttpServlet {
             orderInfo.setDeliveryAddress(request.getParameter("addr"));
             orderInfo.setDeliveryOptionID(Integer.parseInt(request.getParameter("shippingOption")));
             orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
-            orderInfo.setPreVoucherAmount(subtotal);
+            orderInfo.setPreVoucherAmount(orderTotal);
+            orderDAO.updatePreVoucherAmount(orderInfo.getOrderID(), orderTotal);
+            
             orderInfo.setVoucherID(voucherID);
 
             List< OrderProduct> orderProductList = new ArrayList<>();

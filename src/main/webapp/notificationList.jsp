@@ -55,7 +55,7 @@
             background-color: #cccccc; /* Màu nền nhạt (gần orange-50) khi hover */
         }
         .btn-primary {
-            background-color: red; /* Nút màu orange-400 */
+            /*background-color: red;  Nút màu orange-400 */
             border: none;
             color: #ffffff; /* Chữ trắng */
         }
@@ -116,7 +116,7 @@
                                             <h2 class="font-bold">${notification.notificationTitle}</h2>
                                             <p>Click to see details.</p>
                                             <p class="text-sm">
-                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd-MM-yyyy"/>
+                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
                                             </p>
                                         </div>
                                     </div>

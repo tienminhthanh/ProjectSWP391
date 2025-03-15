@@ -74,13 +74,17 @@ public class OrderListController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         String status = request.getParameter("status");
         DeliveryOption delivery = new DeliveryOption();
-       
+
         try {
             List<OrderInfo> orderList = orderDAO.getOrdersByCustomerID(account.getAccountID());
-           
+
+            if (status == null || status.isEmpty()) {
+                status = "pending";
+            }
             if (status != null && !status.isEmpty()) {
+                final String finalStatus = status;
                 orderList = orderList.stream()
-                        .filter(order -> status.equals(order.getOrderStatus()))
+                        .filter(order -> finalStatus.equals(order.getOrderStatus()))
                         .collect(Collectors.toList());
             }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
@@ -98,6 +102,8 @@ public class OrderListController extends HttpServlet {
             }
 
             // Chuyển hướng đến OrderListView.jsp
+            request.setAttribute("currentStatus", status);
+
             request.getRequestDispatcher("OrderListView.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();

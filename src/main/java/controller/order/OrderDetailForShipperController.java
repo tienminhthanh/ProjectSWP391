@@ -4,6 +4,7 @@
  */
 package controller.order;
 
+import dao.NotificationDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
+import model.Notification;
 import model.OrderInfo;
 import model.Shipper;
 
@@ -32,6 +34,8 @@ import model.Shipper;
  */
 @WebServlet(name = "OrderDetailForShipperController", urlPatterns = {"/OrderDetailForShipperController"})
 public class OrderDetailForShipperController extends HttpServlet {
+
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,8 +78,8 @@ public class OrderDetailForShipperController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
-        Account customer = null;
 
+        Account customer = null;
         String orderID = request.getParameter("id");
         int valueVoucher = 0;
         try {
@@ -108,7 +112,6 @@ public class OrderDetailForShipperController extends HttpServlet {
 
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
-      
 
         request.setAttribute("valueVoucher", valueVoucher);
 

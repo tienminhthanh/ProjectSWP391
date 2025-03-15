@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -9,15 +10,32 @@
         <title>Shipper Dashboard</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+        <style>
+            .status-badge {
+                padding: 4px 10px;
+                border-radius: 15px;
+                font-size: 0.875rem;
+                font-weight: 500;
+                text-transform: capitalize;
+                transition: all 0.3s ease;
+            }
+
+            .text-gray-700 {
+                color: #4a5568;
+                transition: color 0.3s ease;
+            }
+
+            .text-gray-700.active {
+                color: #dd6b20;
+            }
+        </style>
     </head>
-    <body class="bg-gray-100 text-base"> <!-- Tăng cỡ chữ toàn trang -->
-
+    <body class="bg-gray-100 text-sm"> 
         <!-- Header -->
-        <div class="bg-orange-600 text-white p-6 flex justify-between items-center">
-            <div class="flex items-center space-x-6">
-                <img src="./img/logo.png" alt="Logo Wibooks" class="h-12">
-                <h1 class="text-xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
-
+        <div class="bg-orange-500 text-white p-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
+                <h1 class="text-lg font-semibold">Deliver</h1>
             </div>
             <div class="flex items-center space-x-6">
 <!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
@@ -29,7 +47,7 @@
                             <c:set var="unreadCount" value="${unreadCount + 1}" />
                         </c:if>
                     </c:forEach>
-                    <c:if test="${unreadCount > 0}">
+                    <c:if test="${unreadCount > -1}">
                         <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${unreadCount}</span>
                     </c:if>
                 </a>
@@ -40,46 +58,42 @@
         </div>
 
         <!-- Order Filter Navbar -->
-        <div class="bg-white shadow-md">
-            <div class="container mx-auto flex justify-around py-6">
-                <button class="bg-green-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-green-600">All Orders</button>
-                <button class="bg-yellow-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-yellow-600">Pending</button>
-                <button class="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600">In Progress</button>
-                <button class="bg-purple-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-purple-600">Completed</button>
-                <button class="bg-red-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-red-600">Cancelled</button>
+        <!-- Order Filter Navbar -->
+        <nav class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-2 flex justify-around">
+                <a href="OrderListForShipperController?status=Shipped" 
+                   class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'Shipped' ? 'text-orange-600' : ''}">
+                    Shipping
+                </a>
+                <a href="OrderListForShipperController?status=delivered" 
+                   class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'delivered' ? 'text-orange-600' : ''}">
+                    Delivered
+                </a>
             </div>
-        </div>
+        </nav>
+
 
         <!-- Main Content Section -->
-        <main class="container mx-auto my-10">
-            <div class="bg-white p-8 rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold mb-6">Order List</h2> <!-- Tiêu đề lớn hơn -->
-                <div class="space-y-6">
-                    <!-- Order Detail -->
+        <main class="container mx-auto my-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-bold mb-4">Order List</h2>
+                <div class="space-y-4">
                     <c:forEach var="order" items="${list}" varStatus="loop">
-                        <div class="p-6 bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-2xl font-semibold">Order #${order.orderID}</p>
-                                <div class="relative group">
-                                    <div class="absolute right-0 mt-2 w-52 bg-white border rounded-lg shadow-lg hidden group-hover:flex flex-col">
-                                        <a href="#" class="block px-5 py-3 text-gray-800 hover:bg-gray-200 text-lg">Update Status</a>
-                                        <a href="#" class="block px-5 py-3 text-gray-800 hover:bg-gray-200 text-lg">Update Payment</a>
-                                        <a href="#" class="block px-5 py-3 text-gray-800 hover:bg-gray-200 text-lg">Update Details</a>
-                                    </div>
-                                </div>
+                        <div class="p-4 bg-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="text-base font-semibold">Order #${order.orderID}</p>
                             </div>
-                            <p class="text-xl">📍 Address: ${order.deliveryAddress}</p>
-
-                            <p class="text-xl">💰 Fee: <fmt:formatNumber value="${order.preVoucherAmount}" type="number" groupingUsed="true" pattern="#,###"/> đ</p>
-                            <!-- Lấy thông tin khách hàng từ danh sách accountList -->
+                            <p><i class="fas fa-calendar-alt"></i> Expected Delivery Date: <fmt:formatDate value="${order.expectedDeliveryDate}" pattern="dd/MM/yyyy"/></p>
+                            <p>📍 Address: ${order.deliveryAddress}</p>
+                            <p>💰 Fee: <fmt:formatNumber value="${order.preVoucherAmount}" type="number" groupingUsed="true" pattern="#,###"/> đ</p>
                             <c:if test="${not empty accountList}">
                                 <c:set var="acc" value="${accountList[loop.index]}" />
-                                <p class="text-xl">👤 User Name: ${acc.username}</p>
-                                <p class="text-xl">📞 Contact: ${acc.phoneNumber}</p>
+                                <p>👤 User Name: ${acc.username}</p>
+                                <p>📞 Contact: ${acc.phoneNumber}</p>
                             </c:if>
-                            <p class="text-xl">💳 Payment Method: ${order.paymentMethod}</p>
+                            <p>💳 Payment Method: ${order.paymentMethod}</p>
 
-                            <div class="mt-4">
+                            <div class="mt-3">
                                 <a href="OrderDetailForShipperController?id=${order.orderID}" 
                                    class="inline-block px-4 py-2 text-lg bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200 mr-3">
                                     <i class="fas fa-eye mr-2"></i> Details
@@ -87,9 +101,11 @@
 
                                 <form action="OrderListForShipperController" method="post">
                                     <input type="hidden" name="orderID" value="${order.orderID}">
-                                    <button type="submit" class="inline-block px-4 py-2 text-lg bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200">Update</button>
-                                </form>
+                                    <c:if test="${ orderInfo.deliveryStatus eq 'Shipped'}">      
+                                        <button type="submit" class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm">Update</button>
+                                    </c:if>
 
+                                </form>
                             </div>
                         </div>
                     </c:forEach>
@@ -98,19 +114,10 @@
         </main>
 
         <!-- Footer Section -->
-        <footer class="bg-green-600 text-white py-6">
+        <footer class="bg-green-600 text-white py-4">
             <div class="container mx-auto text-center">
-                <p class="text-xl">&copy; 2023 Shipper Dashboard. All rights reserved.</p>
+                <p>&copy; 2023 Shipper Dashboard. All rights reserved.</p>
             </div>
         </footer>
-
-        <script>
-            document.querySelectorAll('.relative').forEach(function (dropdown) {
-                dropdown.addEventListener('click', function () {
-                    this.querySelector('.absolute').classList.toggle('hidden');
-                });
-            });
-        </script>
-
     </body>
 </html>
