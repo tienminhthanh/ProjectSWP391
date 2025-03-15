@@ -309,7 +309,33 @@
 
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
+        
+<div class="fixed bottom-4 left-4 z-50">
+            <button id="openChat" class="bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-yellow-600 transition">
+                🤖 WIBOOKS AI
+            </button>
+        </div>
 
+        <!-- Chat Popup -->
+        <div id="chatPopup" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
+            <div class="flex justify-between items-center bg-orange-500 text-white px-4 py-2 rounded-t-lg">
+                <span>WIBOOKS AI</span>
+                <span id="closeChatAI" class="cursor-pointer text-xl">❌</span>
+            </div>
+            <div class="flex-grow overflow-y-auto border p-2 bg-gray-200 rounded-lg shadow-lg">
+                <jsp:include page="chatAI.jsp"/>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.remove("hidden");
+            });
+
+            document.getElementById("closeChatAI").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.add("hidden");
+            });
+        </script>
 
         <!--Icon-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
