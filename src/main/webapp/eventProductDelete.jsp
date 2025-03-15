@@ -37,7 +37,7 @@
                     ${eventName}
                 </h1>
                 <div class="overflow-x-auto rounded-lg shadow-md">
-                    <form id="productForm" action="eventProductAddNew?eventId=${param.eventId}" method="post">
+                    <form id="productForm" action="eventProductDelete?eventId=${param.eventId}" method="post">
                         <table class="table-fixed min-w-full bg-white border border-gray-200">
                             <thead class="bg-orange-400 text-white">
                                 <tr>
@@ -48,7 +48,6 @@
                                     <th class="px-4 py-3 border">Stock</th>
                                     <th class="border border-gray-300 px-4 py-2">Price</th>
                                     <th class="border border-gray-300 px-4 py-2">Choose</th>
-                                    <th class="border border-gray-300 px-4 py-2">Discount</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -68,27 +67,18 @@
                                             <input type="checkbox" id="checkbox_${product.productID}" name="selectedProducts" value="${product.productID}" class="w-6 h-6"
                                                    <c:if test="${product.stockCount == 0}">
                                                        disabled
-                                                   </c:if> 
-                                                   onclick="toggleDiscount('${product.productID}')">
-                                        </td>
-                                        <td class="border border-gray-300 px-4 py-2 text-center">
-                                            <input type="number" id="discount_${product.productID}"
-                                                   name="discountPercent_${product.productID}" 
-                                                   class="w-20 p-1 border rounded text-center" 
-                                                   min="1" max="99" step="1"
-                                                   disabled
-                                                   >
+                                                   </c:if> >
                                         </td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
 
-                        <!-- Nút Add bên dưới bảng -->
+                        <!-- Nút Remove bên dưới bảng -->
                         <div class="mt-4 text-center">
-                            <button type="button" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 w-48 ease-in-out transform hover:scale-105 items-center justify-start transition duration-300" 
-                                    onclick="addSelectedProducts()">
-                                Add Product To Event
+                            <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 w-48 ease-in-out transform hover:scale-105 items-center justify-start transition duration-300" 
+                                    onclick="removeSelectedProducts()">
+                                Remove Product
                             </button>
                         </div>
                     </form>
@@ -96,71 +86,14 @@
             </div>
         </div>
         <script>
-            function toggleCheckbox(productID, stockCount) {
-                if (stockCount === 0)
-                    return; // Không làm gì nếu hết hàng
-
-                let checkbox = document.getElementById("checkbox_" + productID);
-                let discountInput = document.getElementById("discount_" + productID);
-
-                // Đảo trạng thái checkbox
-                checkbox.checked = !checkbox.checked;
-
-                // Bật/tắt ô nhập discount
-                if (checkbox.checked) {
-                    discountInput.disabled = false;
-                } else {
-                    discountInput.disabled = true;
-                    discountInput.value = 0; // Reset về 0 nếu bỏ chọn
-                }
-            }
-        </script>
-        <script>
-            function validateDiscount(input) {
-                let value = input.value.trim();
-                if (value === "" || isNaN(value) || value < 1 || value > 99) {
-                    input.classList.add("border-red-500");
-                    input.classList.remove("border-gray-300");
-                    input.value = "";
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Discount',
-                        text: 'Discount must be between 1 and 99.',
-                    });
-                } else {
-                    input.classList.remove("border-red-500");
-                    input.classList.add("border-gray-300");
-                }
-            }
-
-            function addSelectedProducts() {
+            function removeSelectedProducts() {
                 let selectedProducts = [];
-                let discountData = {};
-                let errors = []; // 🔹 Thêm dòng này để tránh lỗi "errors is not defined"
+                let errors = [];
 
                 let checkboxes = document.querySelectorAll('input[name="selectedProducts"]:checked');
                 for (let checkbox of checkboxes) {
                     let productID = checkbox.value;
-                    let discountInput = document.getElementById("discount_" + productID);
-                    let discount = discountInput.value.trim();
-
-                    if (discount === "" || isNaN(discount) || discount < 1 || discount > 99) {
-                        discountInput.classList.add("border-red-500");
-                        errors.push(`Product ID ${productID}: Discount must be between 1% and 99%`);
-                    } else {
-                        discountInput.classList.remove("border-red-500");
-                        selectedProducts.push(productID);
-                        discountData[productID] = discount;
-                    }
-                }
-
-                if (errors.length > 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Validation Error',
-                        html: 'Some selected products have invalid discounts.<br>Please enter a discount between 1% and 99%.'
-                    });
-                    return;
+                    selectedProducts.push(productID);
                 }
 
                 if (selectedProducts.length === 0) {
@@ -178,37 +111,15 @@
                 selectedProducts.forEach(productID => {
                     let inputProduct = document.createElement("input");
                     inputProduct.type = "hidden";
-                    inputProduct.name = "selectedProducts"; // 🔹 Định dạng mảng cho server
+                    inputProduct.name = "selectedProducts";
                     inputProduct.value = productID;
                     form.appendChild(inputProduct);
                 });
 
-                let inputDiscounts = document.createElement("input");
-                inputDiscounts.type = "hidden";
-                inputDiscounts.name = "discountData";
-                inputDiscounts.value = JSON.stringify(discountData);
-                form.appendChild(inputDiscounts);
-
                 console.log("Submitting form with selectedProducts:", selectedProducts);
-                console.log("Submitting form with discountData:", discountData);
 
                 form.submit();
                 localStorage.removeItem("selectedProducts");
-            }
-
-
-
-            function toggleDiscount(productID) {
-                let checkbox = document.getElementById("checkbox_" + productID);
-                let discountInput = document.getElementById("discount_" + productID);
-
-                if (checkbox.checked) {
-                    discountInput.disabled = false;
-                } else {
-                    discountInput.disabled = true;
-                    discountInput.value = "";
-                    discountInput.classList.remove("border-red-500");
-                }
             }
         </script>
     </body>

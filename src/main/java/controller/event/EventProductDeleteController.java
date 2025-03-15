@@ -6,7 +6,9 @@ package controller.event;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dao.*;
+import dao.EventDAO;
+import dao.EventProductDAO;
+import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -21,16 +23,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import model.*;
+import model.Product;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name = "EventProductAddNewController", urlPatterns = {"/eventProductAddNew"})
-public class EventProductAddNewController extends HttpServlet {
+@WebServlet(name = "EventProductDeleteController", urlPatterns = {"/eventProductDelete"})
+public class EventProductDeleteController extends HttpServlet {
 
-    private final String EVENT_PRODUCT_ADDNEW_PAGE = "eventProductAddNew.jsp";
+    private final String EVENT_PRODUCT_DELETE_PAGE = "eventProductDelete.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -49,10 +51,10 @@ public class EventProductAddNewController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EventProductAddNewController</title>");
+            out.println("<title>Servlet EventProductDeleteController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet EventProductAddNewController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet EventProductDeleteController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -70,7 +72,6 @@ public class EventProductAddNewController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         ProductDAO pDao = new ProductDAO();
         EventProductDAO epDao = new EventProductDAO();
         EventDAO eDao = new EventDAO();
@@ -80,9 +81,9 @@ public class EventProductAddNewController extends HttpServlet {
             String eventName = eDao.getEventByID(id).getEventName();
             request.setAttribute("eventName", eventName);
 
-            List<Product> listProductForEvent = epDao.getListProductToAddForEvent(id);
+            List<Product> listProductForEvent = epDao.getListProductInEvent(id);
             request.setAttribute("productList", listProductForEvent);
-            request.getRequestDispatcher(EVENT_PRODUCT_ADDNEW_PAGE).forward(request, response);
+            request.getRequestDispatcher(EVENT_PRODUCT_DELETE_PAGE).forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,7 +104,7 @@ public class EventProductAddNewController extends HttpServlet {
             eventId = Integer.parseInt(request.getParameter("eventId"));
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid event ID.");
-            request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
+            request.getRequestDispatcher("eventProductDelete.jsp").forward(request, response);
             return;
         }
 
@@ -111,12 +112,11 @@ public class EventProductAddNewController extends HttpServlet {
 
         // Lấy danh sách sản phẩm đã chọn (dùng getParameterValues để lấy nhiều giá trị)
         String[] selectedProductsArr = request.getParameterValues("selectedProducts");
-        String discountDataStr = request.getParameter("discountData");
 
         // Kiểm tra danh sách sản phẩm có hợp lệ không
         if (selectedProductsArr == null || selectedProductsArr.length == 0) {
             request.setAttribute("errorMessage", "No products selected.");
-            request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
+            request.getRequestDispatcher("eventProductDelete.jsp").forward(request, response);
             return;
         }
 
@@ -128,58 +128,38 @@ public class EventProductAddNewController extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid product ID format.");
-            request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
+            request.getRequestDispatcher("eventProductDelete.jsp").forward(request, response);
             return;
         }
 
         // Kiểm tra nếu không có sản phẩm hợp lệ
         if (productSet.isEmpty()) {
             request.setAttribute("errorMessage", "No valid products selected.");
-            request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
+            request.getRequestDispatcher("eventProductDelete.jsp").forward(request, response);
             return;
         }
 
-        // Chuyển chuỗi JSON discountData thành Map<Integer, Integer>
-        Map<Integer, Integer> discountMap = new HashMap<>();
-        if (discountDataStr != null && !discountDataStr.trim().isEmpty()) {
-            try {
-                discountMap = parseDiscountData(discountDataStr);
-                // Chỉ giữ lại các discount liên quan đến sản phẩm đã chọn
-                discountMap.keySet().removeIf(key -> !productSet.contains(key));
-            } catch (Exception e) {
-                request.setAttribute("errorMessage", "Invalid discount data format: " + e.getMessage());
-                request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
-                return;
-            }
-        }
-
-        // Gọi DAO để thêm sản phẩm vào sự kiện
+        // Gọi DAO để xóa sản phẩm khỏi sự kiện
         EventProductDAO epDao = new EventProductDAO();
         List<Integer> failedProducts = new ArrayList<>();
 
         for (int productId : productSet) {
-            int discountPercent = discountMap.getOrDefault(productId, 0);
-            if (discountPercent < 0 || discountPercent > 99) {
-                failedProducts.add(productId);
-                continue; // Không return sớm, tiếp tục xử lý sản phẩm khác
-            }
-
-            boolean isAdded = epDao.addProductToEvent(eventId, productId, discountPercent);
-            if (!isAdded) {
+            boolean isRemoved = epDao.deleteProductFromEvent(eventId, productId);
+            if (!isRemoved) {
                 failedProducts.add(productId);
             }
 
-            System.out.println("Added Product ID: " + productId + " | Discount: " + discountPercent + "%");
+            System.out.println("Removed Product ID: " + productId);
         }
 
         // Nếu có sản phẩm thất bại, báo lỗi nhưng vẫn tiếp tục với những sản phẩm thành công
         if (!failedProducts.isEmpty()) {
-            request.setAttribute("errorMessage", "Failed to add some products: " + failedProducts);
-            request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "Failed to remove some products: " + failedProducts);
+            request.getRequestDispatcher("eventProductDelete.jsp").forward(request, response);
             return;
         }
 
-        session.setAttribute("message", "Product added successfully!");
+        session.setAttribute("message", "Product removed successfully!");
         session.setAttribute("messageType", "success");
         response.sendRedirect("eventDetails?eventId=" + eventId);
     }
