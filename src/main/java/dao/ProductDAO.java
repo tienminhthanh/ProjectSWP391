@@ -172,6 +172,7 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             HashMap<String, Creator> creatorMap = new HashMap<>();
             while (rs.next()) {
+
                 creatorMap.put(rs.getString(3), new Creator(rs.getInt(1), rs.getString(2), rs.getString(3)));
             }
             return creatorMap;
@@ -315,7 +316,7 @@ public class ProductDAO {
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        paramList.add(formatQuery(query));
+        paramList.add(formatQueryBroad(query));
 
         //Append filter
         if (filterMap != null && !filterMap.isEmpty()) {
@@ -361,13 +362,27 @@ public class ProductDAO {
         }
     }
 
-    private String formatQuery(String query) {
+    private String formatQueryBroad(String query) {
         String[] queryParts = query.split("\\s+");
+        String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and prefix
+
         for (int i = 0; i < queryParts.length; i++) {
-            queryParts[i] = "\"" + queryParts[i] + "*\"";
+            // Add FORMSOF(INFLECTIONAL, word)
+            formattedParts[i * 2] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
+            // Add "word*" for prefix wildcard
+            formattedParts[i * 2 + 1] = "\"" + queryParts[i] + "*\"";
         }
 
-        return String.join(" OR ", queryParts);
+        return String.join(" OR ", formattedParts);
+    }
+
+    private String formatQueryTight(String query, String logic) {
+        String[] queryParts = query.split("\\s+");
+        for (int i = 0; i < queryParts.length; i++) {
+            queryParts[i] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
+        }
+
+        return String.join(" " + logic + " ", queryParts);
     }
 
     private String processSort(String sortCriteria) {
@@ -702,10 +717,9 @@ public class ProductDAO {
     }
 
     public Category getCategoryById(int id) throws SQLException {
-        String sql = "SELECT top 1 Category.categoryID, Category.categoryName, Product.generalCategory\n"
-                + "FROM     Product INNER JOIN\n"
-                + "                  Category ON Product.categoryID = Category.categoryID\n"
-                + "				  where Product.categoryID = ?";
+        String sql = "SELECT *\n"
+                + "FROM Category\n"
+                + "WHERE categoryID = ?";
         Object[] params = {id};
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
@@ -721,12 +735,12 @@ public class ProductDAO {
                 + "FROM Category AS c  \n"
                 + "LEFT JOIN Product AS p  \n"
                 + "    ON p.categoryID = c.categoryID AND p.isActive = 1  \n"
-                + "GROUP BY c.categoryID, c.categoryName;";
+                + "GROUP BY c.categoryID, c.categoryName, c.generalCategory;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             Map<Category, Integer> categoryMap = new HashMap<>();
             while (rs.next()) {
-                categoryMap.put(new Category(rs.getInt("categoryID"), rs.getString("categoryName")), rs.getInt("productCount"));
+                categoryMap.put(new Category(rs.getInt("categoryID"), rs.getString("categoryName"), rs.getString("generalCategory")), rs.getInt("productCount"));
             }
             return categoryMap;
         }
@@ -927,9 +941,6 @@ public class ProductDAO {
             return brandMap;
         }
     }
-    
-
-
 
     /**
      * For management
@@ -978,18 +989,17 @@ public class ProductDAO {
         List<Object> paramList = new ArrayList<>();
         //Add search term if any
         if (query != null && !query.trim().isEmpty()) {
-            paramList.add(formatQuery(query));
+            paramList.add(formatQueryBroad(query));
         }
-
 
         // Append sorting
         sortCriteria = sortCriteria != null ? sortCriteria : ""; //Handling null
         sql.append("\nORDER BY ");
         sql.append(processSort(sortCriteria));
-        
+
         //Append paginated
         sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        
+
         paramList.add(offset);
         paramList.add(pageSize);
 
@@ -1007,13 +1017,13 @@ public class ProductDAO {
             return productList;
         }
     }
-    
-    public int getProductsCount(String query, String type) throws SQLException{
+
+    public int getProductsCount(String query, String type) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
-        
+
         //If there is search query
         sql.append(query != null && !query.trim().isEmpty() ? "\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY]" : "");
-        
+
         // Type-specific JOIN if needed
         type = type != null ? type : "";    //Handling null
         if (type.equals("book")) {
@@ -1023,93 +1033,258 @@ public class ProductDAO {
             sql.append("\nJOIN Merchandise M");
             sql.append("\n    ON M.merchandiseID = P.productID");
         }
-        
+
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
         //Add search term if any
         if (query != null && !query.trim().isEmpty()) {
-            paramList.add(formatQuery(query));
+            paramList.add(formatQueryBroad(query));
         }
-        
+
         Object[] params = paramList.toArray();
-        
-        try(Connection connection = context.getConnection();
-                ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)){
-                return rs.next() ? rs.getInt(1) : 0;
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            return rs.next() ? rs.getInt(1) : 0;
         }
     }
 
     public boolean addNewProducts(Product newProduct) throws SQLException {
-        String sql = "";
-        Object[] params = {newProduct};
+        String sql = "INSERT INTO Product (categoryID, adminID, keywords, generalCategory, isActive, imageURL, description, releaseDate, specialFilter, productName, price, stockCount) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        Object[] params = {
+            newProduct.getSpecificCategory().getCategoryID(), // categoryID
+            newProduct.getAdminID(), // adminID
+            newProduct.getKeywords(), // keywords
+            newProduct.getGeneralCategory(), // generalCategory
+            newProduct.isIsActive(), // isActive
+            newProduct.getImageURL(), // imageURL
+            newProduct.getDescription(), // description
+            java.sql.Date.valueOf(newProduct.getReleaseDate()), // releaseDate
+            newProduct.getSpecialFilter(), // specialFilter
+            newProduct.getProductName(), // productName
+            newProduct.getPrice(), // price
+            newProduct.getStockCount() // stockCount
+        };
+
         return context.exeNonQuery(sql, params) > 0;
     }
 
-    public boolean addNewCreators(Creator newCreator) throws SQLException {
-        String sql = "";
-        Object[] params = {newCreator};
-        return context.exeNonQuery(sql, params) > 0;
+    public int getLatestProductID() throws SQLException {
+        String sql = "SELECT TOP 1 productID FROM Product ORDER BY productID DESC";
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
+            if (rs.next()) {
+                return rs.getInt("productID");
+            }
+        }
+        return 0;
     }
 
-    public boolean assignCreatorsToProduct(int creatorID, int productID) throws SQLException {
-        String sql = "";
-        Object[] params = {productID, creatorID};
-        return context.exeNonQuery(sql, params) > 0;
-    }
-
-    public boolean assignGenresToBook(int genreID, int bookID) throws SQLException {
-        String sql = "";
-        Object[] params = {bookID, genreID};
-        return context.exeNonQuery(sql, params) > 0;
-    }
-
-    public boolean addNewMerchSeries(Series newSeries) throws SQLException {
-        String sql = "";
-        Object[] params = {newSeries};
-        return context.exeNonQuery(sql, params) > 0;
-    }
-
-    public boolean addNewMerchBrand(Brand newBrand) throws SQLException {
-        String sql = "";
-        Object[] params = {newBrand};
-        return context.exeNonQuery(sql, params) > 0;
-    }
-
-    public boolean addNewMerchCharacter(OGCharacter newCharacter) throws SQLException {
-        String sql = "";
-        Object[] params = {newCharacter};
-        return context.exeNonQuery(sql, params) > 0;
-    }
-
-    public boolean updateProducts(Product updatedProduct, String type) throws SQLException {
-        String sql = generateUpdateStatementBasedOnType(type);
-        Object[] params = {updatedProduct};
-        return context.exeNonQuery(sql, params) > 0;
-    }
-
-    private String generateUpdateStatementBasedOnType(String type) {
-        switch (type) {
-            case "book":
-                return "UPDATE Book...";
-            case "merch":
-                return "UPDATE Merchandise....";
-            default:
-                return "UPDATE Product...";
+    public boolean addNewCreators(Creator newCreator) {
+        try {
+            String sql = "INSERT INTO [dbo].[Creator]\n"
+                    + "           ([creatorName]\n"
+                    + "           ,[creatorRole])\n"
+                    + "     VALUES\n"
+                    + "           (?,?)";
+            Object[] params = {newCreator.getCreatorName(), newCreator.getCreatorRole()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException e) {
+            return false;
         }
     }
 
-    public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
-        String sql = "";
-        Object[] params = {productID, newStatus};
+    public int getCreatorIDByNameAndRole(String name, String role) throws SQLException {
+        String sql = "SELECT creatorID from Creator\n"
+                + "WHERE contains(creatorName, ?) AND creatorRole = ?";
+        Object[] params = {formatQueryTight(name, "AND"), role};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            if (rs.next()) {
+                return rs.getInt("creatorID");
+            }
+        }
+        return 0;
+    }
+
+    public boolean assignCreatorsToProduct(int productID, int creatorID) {
+        try {
+            String sql = "INSERT INTO [dbo].[Product_Creator]\n"
+                    + "           ([productID]\n"
+                    + "           ,[creatorID])\n"
+                    + "     VALUES\n"
+                    + "           (?,?)";
+            Object[] params = {productID, creatorID};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean assignGenresToBook(int bookID, int genreID) {
+        try {
+            String sql = "INSERT INTO [dbo].[Book_Genre]\n"
+                    + "           ([bookID]\n"
+                    + "           ,[genreID])\n"
+                    + "     VALUES\n"
+                    + "           (?,?)";
+            Object[] params = {bookID, genreID};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public int getPublisherIDByName(String publisherName) throws SQLException {
+        String sql = "SELECT publisherID\n"
+                + "FROM     Publisher\n"
+                + "WHERE  contains(publisherName,?)";
+        Object[] params = {formatQueryTight(publisherName, "AND")};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            if (rs.next()) {
+                return rs.getInt("publisherID");
+            }
+        }
+        return 0;
+    }
+
+    public boolean addNewPublishers(Publisher newPublisher) {
+        try {
+            String sql = "INSERT INTO [dbo].[Publisher]\n"
+                    + "           ([publisherName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newPublisher.getPublisherName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+    
+    public int getSeriesIDByName(String seriesName) throws SQLException {
+        String sql = "SELECT seriesID\n"
+                + "FROM     Series\n"
+                + "WHERE  contains(seriesName,?)";
+        Object[] params = {formatQueryTight(seriesName, "AND")};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            if (rs.next()) {
+                return rs.getInt("seriesID");
+            }
+        }
+        return 0;
+    }
+
+    public int getCharacterIDByName(String characterName) throws SQLException {
+        String sql = "SELECT characterID\n"
+                + "FROM     Character\n"
+                + "WHERE  contains(characterName,?)";
+        Object[] params = {formatQueryTight(characterName, "AND")};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            if (rs.next()) {
+                return rs.getInt("characterID");
+            }
+        }
+        return 0;
+    }
+
+    public int getBrandIDByName(String brandName) throws SQLException {
+        String sql = "SELECT brandID\n"
+                + "FROM     Brand\n"
+                + "WHERE  contains(brandName,?)";
+        Object[] params = {formatQueryTight(brandName, "AND")};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            if (rs.next()) {
+                return rs.getInt("brandID");
+            }
+        }
+        return 0;
+    }
+
+    public boolean addNewMerchSeries(Series newSeries) {
+        try {
+            String sql = "INSERT INTO [dbo].[Series]\n"
+                    + "           ([seriesName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newSeries.getSeriesName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean addNewMerchBrand(Brand newBrand) {
+        try {
+            String sql = "INSERT INTO [dbo].[Brand]\n"
+                    + "           ([brandName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newBrand.getBrandName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean addNewMerchCharacter(OGCharacter newCharacter) {
+        try {
+            String sql = "INSERT INTO [dbo].[Character]\n"
+                    + "           ([characterName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newCharacter.getCharacterName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean updateBooks(Book updatedBook) throws SQLException {
+        String sql = "update book set publisherID = ?, duration = ?\n"
+                + "where bookID = ?";
+        Object[] params = {updatedBook.getPublisher().getPublisherID(), updatedBook.getDuration(), updatedBook.getProductID()};
         return context.exeNonQuery(sql, params) > 0;
     }
+
+    public boolean updateMerch(Merchandise updatedMerch) throws SQLException {
+        String sql = "UPDATE [dbo].[Merchandise]\n"
+                + "   SET [seriesID] = ?\n"
+                + "      ,[characterID] = ?\n"
+                + "      ,[brandID] = ?\n"
+                + "      ,[size] = ?\n"
+                + "      ,[scaleLevel] = ?\n"
+                + "      ,[material] = ?\n"
+                + "WHERE [merchandiseID] = ?";
+
+        Object[] params = {
+            updatedMerch.getSeries().getSeriesID(), // For [seriesID]
+            updatedMerch.getCharacter().getCharacterID(), // For [characterID]
+            updatedMerch.getBrand().getBrandID(), // For [brandID]
+            updatedMerch.getSize(), // For [size]
+            updatedMerch.getScaleLevel(), // For [scaleLevel]
+            updatedMerch.getMaterial(), // For [material]
+            updatedMerch.getProductID()// For WHERE [merchandiseID]
+        };
+
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    
+    public boolean updateProducts(Product updatedProduct) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
+        String sql = "UPDATE Product SET isActive = ? WHERE productID = ?";
+        Object[] params = {newStatus, productID};
+        return context.exeNonQuery(sql, params) > 0;
+    }
+    
+
 
     public static void main(String[] args) {
         try {
             ProductDAO productDAO = new ProductDAO();
-            productDAO.getActiveProducts("book", "releaseDate", null);
-            productDAO.getActiveProducts("merch", "releaseDate", null);
-            System.out.println();
+            System.out.println(productDAO.getPublisherIDByName(""));
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }

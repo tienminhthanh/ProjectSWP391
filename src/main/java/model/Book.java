@@ -36,26 +36,24 @@ public class Book extends Product {
 
    
     
-    
-
-    
-
-    
 
     public Publisher getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(Publisher publisher) {
-        this.publisher = publisher;
-    }
-
     public String getDuration() {
         return duration;
     }
+        
+  // Fluent Setters
+    public Book setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+        return this;
+    }
 
-    public void setDuration(String duration) {
+    public Book setDuration(String duration) {
         this.duration = duration;
+        return this;
     }
 
 }

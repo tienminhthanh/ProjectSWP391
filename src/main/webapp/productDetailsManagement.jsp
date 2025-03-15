@@ -24,12 +24,12 @@
     </head>
     <body class="bg-gray-50 min-h-screen flex">
 
-        <div class="w-64 bg-orange-400 text-white min-h-screen">
+        <div class="side-nav-container w-64 bg-orange-400 text-white min-h-screen">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 p-3">
+        <div class="flex-1 p-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Product Details</h1>
             <hr class="mb-6 border-gray-300"/>
             <div class="root-container bg-gray-100">
@@ -68,7 +68,7 @@
 
 
                         <!--Title - purchase-->
-                        <div class="purchase-area w-full flex-grow md:pl-4 mb-4 bg-white border-l-2 border-solid border-black/10">
+                        <div class="purchase-area w-full flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
                             <!--Title-->
                             <div class="big-product-name bg-white p-2 border-b-2 border-solid border-black/10">
                                 <div class="big-product-name-inner w-full text-base md:text-sm lg:text-base">
@@ -125,24 +125,26 @@
                                 </div>
                             </div>
 
-                            <!--Purchase form-->
-                            <div class="w-90% md:w-full bg-white mx-auto mb-8">
+                            <div class="w-[90%] md:w-full bg-white mx-auto mb-8">
+                                <!--Stock count-->
                                 <div class="my-4 w-3/5 md:w-full">
                                     <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
                                 </div>
 
-                                <c:set var="p_e_status" value="${productEventStatus}"/>
-                                <!-- Add to Event form with availability check -->
-                                <form  class="flex flex-row items-stretch px-2" action="event" method="post" onsubmit="return checkAvailability(`${p_e_status}`, event)">
-                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                    <select class="w-3/5 p-4 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-lg" name="event">
-                                        <c:forEach var="event" items="${eventList}">
-                                            <option value="${event.eventID}">${event.eventName}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <button name="action" value="add" class="w-2/5 p-4 rounded-r-lg bg-orange-400 text-center text-white text-lg" type="submit">Add to Event</button>
-                                </form>
+                                <!-- Add to Event form with availability check - Admin only -->
+                                <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() eq 'admin'}">
+                                    <c:set var="p_e_status" value="${productEventStatus}"/>
+                                    <form  class="flex flex-row items-stretch px-2" action="event" method="post" onsubmit="return checkAvailability(`${p_e_status}`, event)">
+                                        <input type="hidden" name="productID" value="${product.productID}"/>
+                                        <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                        <select class="w-3/5 p-4 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="event">
+                                            <c:forEach var="event" items="${eventList}">
+                                                <option value="${event.eventID}">${event.eventName}</option>
+                                            </c:forEach>
+                                        </select>
+                                        <button name="action" value="add" class="w-2/5 p-4 rounded-r-lg bg-orange-400 text-center text-white text-md" type="submit">Add to Event</button>
+                                    </form>
+                                </c:if>
                             </div>
 
                         </div>
@@ -168,14 +170,14 @@
                             <c:choose>
                                 <c:when test="${type=='book'}">
                                     <table class="m-2">
-                                        <tr><td>Title</td><td>${product.productName}</td></tr>
-                                        <c:if test="${not empty creatorMap.author}">
-                                            <tr><td>Author</td><td>${creatorMap.author.creatorName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty creatorMap.artist}">
-                                            <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
-                                        </c:if>
+                                        <tr><td>Title</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
+
+                                        <tr><td>Author</td><td>${not empty creatorMap.author ? creatorMap.author.creatorName : 'Unknown'}</td></tr>
+
+                                        <tr><td>Artist</td><td>${not empty creatorMap.artist ? creatorMap.artist.creatorName : 'Unknown'}</td></tr>
+
                                         <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
+
                                         <tr>
                                             <td>Genre</td>
                                             <td>
@@ -188,59 +190,44 @@
                                         </tr>
 
                                         <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                            <c:if test="${not empty product.duration}">
-                                            <tr><td>Duration</td><td>${product.duration}</td></tr>
-                                        </c:if>
-                                        <c:if test="${product.salesRank > 0}">
-                                            <c:set var="rank" value="${product.salesRank}" />
-                                            <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
-                                            <tr>
-                                                <td>Monthly Ranking</td>
-                                                <td class=" text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+
+                                        <tr><td>Duration</td><td>${not empty product.duration ? product.duration : 'Unknown'}</td></tr>
+
+                                        <c:set var="rank" value="${product.salesRank}" />
+                                        <c:set var="suffix" value="${rank == 0 ? '' :(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
+                                        <tr>
+                                            <td>Monthly Ranking</td>
+                                            <td class=" text-${rank == 0 ? 'black' : rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                                <c:if test="${product.salesRank > 0}">
                                                     <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>
-                                                    <span class="a-product-rank-${rank}">
-                                                        ${rank}<span>${suffix}</span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </c:if>
+                                                    </c:if>
+                                                <span class="a-product-rank-${rank}">
+                                                    ${rank > 0 ? rank : 'Unranked'}<span>${suffix}</span>
+                                                </span>
+                                            </td>
+                                        </tr>
+
                                     </table>
                                 </c:when>
 
                                 <c:when test= "${type=='merch'}">
                                     <table class="m-2">
-                                        <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                        <c:if test="${not empty creatorMap.sculptor and not empty creatorMap.scupltor.creatorName}">
-                                            <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty creatorMap.artist and not empty creatorMap.artist.creatorName}">
-                                            <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
-                                        </c:if>
+                                        <tr><td>Product Name</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
+                                        <tr><td>Sculptor</td><td>${not empty creatorMap.sculptor and not empty creatorMap.sculptor.creatorName ? creatorMap.sculptor.creatorName : 'Unknown'}</td></tr>
+                                        <tr><td>Artist</td><td>${not empty creatorMap.artist and not empty creatorMap.artist.creatorName ? creatorMap.artist.creatorName : 'Unknown'}</td></tr>
 
-                                        <c:if test="${not empty product.brand and not empty product.brand.brandName}">
-                                            <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty product.series and not empty product.series.seriesName}">
-                                            <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
-                                        </c:if>
-                                        <c:if test="${not empty product.character and not empty product.character.characterName}">
-                                            <tr><td>Character</td><td>${product.character.characterName}</td></tr>
-                                        </c:if>
+                                        <tr><td>Brand</td><td>${not empty product.brand and not empty product.brand.brandName ? product.brand.brandName : 'Unknown'}</td></tr>
+                                        <tr><td>Series</td><td>${not empty product.series and not empty product.series.seriesName ? product.series.seriesName : 'Unknown'}</td></tr>
+                                        <tr><td>Character</td><td>${not empty product.character and not empty product.character.characterName ? product.character.characterName : 'Unknown'}</td></tr>
 
                                         <tr>
                                             <td>Specification</td>
                                             <td>
                                                 <ul>
                                                     <li>${product.specificCategory.categoryName}</li>
-                                                        <c:if test="${not empty product.scaleLevel}">
-                                                        <li>Scale level: ${product.scaleLevel}</li>
-                                                        </c:if>
-                                                        <c:if test="${not empty product.size}">
-                                                        <li>Size: ${product.size}</li>
-                                                        </c:if>
-                                                        <c:if test="${not empty product.material}">
-                                                        <li>Material: ${product.material}</li>
-                                                        </c:if>
+                                                    <li>Scale level: ${not empty product.scaleLevel ? product.scaleLevel : 'Unknown'}</li>
+                                                    <li>Size: ${not empty product.size ? product.size : 'Unknown'}</li>
+                                                    <li>Material: ${not empty product.material ? product.material : 'Unknown'}</li>
                                                 </ul>
 
                                             </td>
@@ -248,19 +235,19 @@
 
 
                                         <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                            <c:if test="${product.salesRank > 0}">
-                                                <c:set var="rank" value="${product.salesRank}" />
-                                                <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
-                                            <tr>
-                                                <td>Monthly Ranking</td>
-                                                <td class=" text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                            <c:set var="rank" value="${product.salesRank}" />
+                                            <c:set var="suffix" value="${rank == 0 ? '' :(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
+                                        <tr>
+                                            <td>Monthly Ranking</td>
+                                            <td class=" text-${rank == 0 ? 'black' : rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                                <c:if test="${product.salesRank > 0}">
                                                     <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>
-                                                    <span class="a-product-rank-${rank}">
-                                                        ${rank}<span>${suffix}</span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </c:if>
+                                                    </c:if>
+                                                <span class="a-product-rank-${rank}">
+                                                    ${rank > 0 ? rank : 'Unranked'}<span>${suffix}</span>
+                                                </span>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </c:when>
                             </c:choose>
@@ -287,8 +274,8 @@
                                     </c:forEach>
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="flex justify-center items-center h-40 w-full">
-                                        <p class="text-gray-500 italic">No reviews yet. Be the first to share your thoughts about the purchase!</p>
+                                    <div class="flex justify-center items-center h-40 w-full text-xl">
+                                        <p class="text-gray-500 italic">No reviews yet.</p>
                                     </div>
                                 </c:otherwise>
 
@@ -305,149 +292,151 @@
         <script src="https://cdn.tailwindcss.com"></script>       
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-                                    function confirmAction(message, url) {
-                                        Swal.fire({
-                                            title: 'Confirmation',
-                                            text: message,
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Yes, do it!',
-                                            cancelButtonText: 'Cancel',
-                                            reverseButtons: true
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                window.location.href = url;
-                                            }
-                                        });
-                                    }
-                                    ;
-
-                                    //Format date display
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        const releaseDates = document.querySelectorAll('.release-date');
-                                        const fomoDate = document.querySelector('.fomo-info>span');
-
-                                        // Formatting functions for Vietnam locale
-                                        const formatDate = (date) =>
-                                            new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
-                                        const formatTime = (date) =>
-                                            new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
-
-                                        //ReleaseDate
-                                        if (releaseDates) {
-                                            releaseDates.forEach(rlsDate => {
-                                                const rlsDateObj = new Date(rlsDate.innerText.trim());
-                                                if (!isNaN(rlsDateObj)) {
-                                                    rlsDate.innerText = formatDate(rlsDateObj);
+                                        function confirmAction(message, url) {
+                                            Swal.fire({
+                                                title: 'Confirmation',
+                                                text: message,
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonText: 'Yes, do it!',
+                                                cancelButtonText: 'Cancel',
+                                                reverseButtons: true
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    window.location.href = url;
                                                 }
                                             });
                                         }
+                                        ;
 
-                                        //Last modified time
-                                        if (fomoDate) {
-                                            const dateObj = new Date(fomoDate.innerText.trim());
-                                            if (!isNaN(dateObj)) {
-                                                const today = new Date();
-                                                // Remove time from today's date for accurate comparison
-                                                today.setHours(0, 0, 0, 0);
+                                        //Format date display
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const releaseDates = document.querySelectorAll('.release-date');
+                                            const fomoDate = document.querySelector('.fomo-info>span');
 
-                                                // Show time if today, otherwise show formatted date
-                                                const formattedDate = dateObj.toDateString() === today.toDateString()
-                                                        ? formatTime(dateObj)
-                                                        : formatDate(dateObj);
-                                                fomoDate.innerText = formattedDate;
-                                            }
-                                        }
+                                            // Formatting functions for Vietnam locale
+                                            const formatDate = (date) =>
+                                                new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                                            const formatTime = (date) =>
+                                                new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
 
-                                    });
-
-
-                                    //            Adjust layout based product type
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        const type = "${requestScope.type}";
-                                        const purchase = document.querySelector(".purchase-area");
-                                        const overview = document.querySelector(".overview-area");
-                                        const image = document.querySelector(".image-area");
-                                        const desc = document.querySelector(".desc-common");
-                                        if (!type) {
-                                            return;
-                                        }
-
-                                        if (type === 'book') {
-                                            overview.classList.add('md:w-3/4');
-                                            image.classList.add('md:w-1/3');
-
-                                            purchase.classList.add('md:w-1/4');
-                                            desc.classList.add('md:hidden');
-                                        } else if (type === 'merch') {
-                                            overview.classList.add('md:w-2/3');
-                                            purchase.classList.add('md:w-1/3');
-
-                                        }
-
-                                        //                if (type === 'book') {
-                                        //                    overview.classList.add('md:w-2/3');
-                                        //                    purchase.classList.add('md:w-1/3');
-                                        //
-                                        //                } else if (type === 'merch') {
-                                        //                    overview.classList.add('md:w-3/4');
-                                        //                    image.classList.add('md:w-1/3');
-                                        //                    purchase.classList.add('md:w-1/4');
-                                        //                    desc.classList.add('md:hidden');
-                                        //
-                                        //                }
-                                    });
-
-
-                                    //Format price display
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        // Select all elements with prices
-                                        let priceElements = document.querySelectorAll(".price-area p");
-
-                                        priceElements.forEach(priceEl => {
-                                            let priceText = priceEl.innerText.trim(); // Get the text inside span
-                                            let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-                                            console.log("formatted price: ", price);
-                                            price = Math.round(price);
-                                            console.log("Rounded price: ", price);
-
-                                            if (!isNaN(price)) {
-                                                // Format price with commas (e.g., 4,400 VND)
-                                                priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
-                                            }
-                                        });
-                                    });
-
-
-                                    //Format tags-link
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        const tagsLink = document.querySelectorAll('.tags-link');
-                                        if (tagsLink) {
-                                            const type = `${requestScope.type}`;
-                                            if (type !== '') {
-                                                tagsLink.forEach(link => {
-                                                    const tag = link.dataset.tag ? link.dataset.tag : "";
-                                                    let params = `type=${type}`;
-                                                    params += tag !== type ? "&query=" + tag : "";
-                                                    link.href = decodeURIComponent("manageProductList?" + encodeURIComponent(params));
+                                            //ReleaseDate
+                                            if (releaseDates) {
+                                                releaseDates.forEach(rlsDate => {
+                                                    const rlsDateObj = new Date(rlsDate.innerText.trim());
+                                                    if (!isNaN(rlsDateObj)) {
+                                                        rlsDate.innerText = formatDate(rlsDateObj);
+                                                    }
                                                 });
                                             }
-                                        }
-                                    });
 
-                                    // Availability check function for Add to Event
-                                    function checkAvailability(productEventStatus, event) {
-                                        if (productEventStatus && productEventStatus === 'inEvent') {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Event limit reached',
-                                                text: `This product is already assigned to an currently active event. Please remove it from the event before proceeding!`
+                                            //Last modified time
+                                            if (fomoDate) {
+                                                const dateObj = new Date(fomoDate.innerText.trim());
+                                                if (!isNaN(dateObj)) {
+                                                    const today = new Date();
+                                                    // Remove time from today's date for accurate comparison
+                                                    today.setHours(0, 0, 0, 0);
+
+                                                    // Show time if today, otherwise show formatted date
+                                                    const formattedDate = dateObj.toDateString() === today.toDateString()
+                                                            ? formatTime(dateObj)
+                                                            : formatDate(dateObj);
+                                                    fomoDate.innerText = formattedDate;
+                                                }
+                                            }
+
+                                        });
+
+
+                                        //            Adjust layout based product type
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            const type = "${requestScope.type}";
+                                            const purchase = document.querySelector(".purchase-area");
+                                            const overview = document.querySelector(".overview-area");
+                                            const image = document.querySelector(".image-area");
+                                            const desc = document.querySelector(".desc-common");
+                                            if (!type) {
+                                                return;
+                                            }
+
+                                            if (type === 'book') {
+                                                overview.classList.add('md:w-3/4');
+                                                image.classList.add('md:w-1/3');
+
+                                                purchase.classList.add('md:w-1/4');
+                                                desc.classList.add('md:hidden');
+                                            } else if (type === 'merch') {
+                                                overview.classList.add('md:w-2/3');
+                                                purchase.classList.add('md:w-1/3');
+
+                                            }
+
+                                            //                if (type === 'book') {
+                                            //                    overview.classList.add('md:w-2/3');
+                                            //                    purchase.classList.add('md:w-1/3');
+                                            //
+                                            //                } else if (type === 'merch') {
+                                            //                    overview.classList.add('md:w-3/4');
+                                            //                    image.classList.add('md:w-1/3');
+                                            //                    purchase.classList.add('md:w-1/4');
+                                            //                    desc.classList.add('md:hidden');
+                                            //
+                                            //                }
+                                        });
+
+
+                                        //Format price display
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            // Select all elements with prices
+                                            let priceElements = document.querySelectorAll(".price-area p");
+
+                                            priceElements.forEach(priceEl => {
+                                                let priceText = priceEl.innerText.trim(); // Get the text inside span
+                                                let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
+                                                console.log("formatted price: ", price);
+                                                price = Math.round(price);
+                                                console.log("Rounded price: ", price);
+
+                                                if (!isNaN(price)) {
+                                                    // Format price with commas (e.g., 4,400 VND)
+                                                    priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
+                                                }
                                             });
-                                            event.preventDefault();
-                                            return false;
+                                        });
+
+
+                                        //Format tags-link
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const tagsLink = document.querySelectorAll('.tags-link');
+                                            if (tagsLink) {
+                                                const type = `${requestScope.type}`;
+                                                if (type !== '') {
+                                                    tagsLink.forEach(link => {
+                                                        const tag = link.dataset.tag ? link.dataset.tag : "";
+                                                        let params = `type=${type}`;
+                                                        params += tag !== type ? "&query=" + tag : "";
+                                                        link.href = decodeURIComponent("manageProductList?" + encodeURIComponent(params));
+                                                    });
+                                                }
+                                            }
+                                        });
+
+                                        // Availability check function for Add to Event
+                                        function checkAvailability(productEventStatus, event) {
+                                            if (productEventStatus && productEventStatus === 'inEvent') {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Event limit reached',
+                                                    text: `This product is already assigned to an currently active event. Please remove it from the event before proceeding!`
+                                                });
+                                                event.preventDefault();
+                                                return false;
+                                            }
+                                            return true;
                                         }
-                                        return true;
-                                    }
+
+
 
 
         </script>

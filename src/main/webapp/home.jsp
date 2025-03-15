@@ -61,16 +61,7 @@
 
             <!--Main section-->
             <main class="w-full md:w-5/6 p-3 flex flex-col">
-                <!--Popup message from servlet -->
-                <c:if test="${not empty message}">
-                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
-                        <p>
-                            ${message}
-                        </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
-                    </div>
-                </c:if>
+                
                     
                 <!--Popular Searches-->
                 <div class="my-4 bg-white popular-search-area border-t-4 border-orange-500">
@@ -408,22 +399,12 @@
                 </div>
 
 
-
                 <!--Popup unauthorized users-->
                 <c:if test="${empty sessionScope.account or sessionScope.account.getRole() ne 'customer'}">
                     <jsp:include page="popuplogin.jsp"/>
                 </c:if>
 
-                <!--Popup message from servlet -->
-                <c:if test="${not empty message}">
-                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
-                        <p>
-                            ${message}
-                        </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
-                    </div>
-                </c:if>
+               
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
@@ -447,16 +428,6 @@
             </div>
         </div>
 
-        <script>
-            document.getElementById("openChat").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.remove("hidden");
-            });
-
-            document.getElementById("closeChatAI").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.add("hidden");
-            });
-        </script>
-
 
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
@@ -479,16 +450,19 @@
                         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
                 crossorigin="anonymous"></script>-->
 
-        <!--Tailwind-->
-        <script src="https://cdn.tailwindcss.com">
-        </script>
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
 
         <!--Voucher Date End-->
         <script src="js/scriptVoucherDateEnd.js"></script>
-
+        
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com">
+        </script>
+        
+         <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
         <script>
@@ -543,11 +517,26 @@
 
                 updateBanner();
             });
+            
+//            Pop-up message
+            document.addEventListener('DOMContentLoaded',function(){
+                const reqMessage = `${requestScope.message}`;
+                if(reqMessage){
+                    Swal.fire({
+                        icon: 'warning',
+                        text: reqMessage
+                    });
+                }
+            });
 
-            function closeMessagePopup() {
-                document.getElementById('warning-popup-overlay').classList.add("hidden");
-                document.getElementById('warning-popup-container').classList.add("hidden");
-            }
+            
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.remove("hidden");
+            });
+
+            document.getElementById("closeChatAI").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.add("hidden");
+            });
 
         </script>
 

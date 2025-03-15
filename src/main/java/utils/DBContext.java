@@ -19,7 +19,8 @@ public class DBContext {
     private static final String URL = "jdbc:sqlserver://localhost:1433;"
             + "databaseName=WIBOOKS;"
             + "encrypt=true;"
-            + "trustServerCertificate=true;";
+            + "trustServerCertificate=true;"
+            + "characterEncoding=UTF-8";
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";

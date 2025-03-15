@@ -83,7 +83,7 @@
 
 
                                 <!--Title - purchase-->
-                                <div class="purchase-area w-full flex-grow md:pl-4 mb-4 bg-white border-l-2 border-solid border-black/10">
+                                <div class="purchase-area w-full flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
                                     <!--Title-->
                                     <div class="big-product-name bg-white p-2 border-b-2 border-solid border-black/10">
                                         <div class="big-product-name-inner w-full text-base md:text-sm lg:text-base">
@@ -141,7 +141,7 @@
                                     </div>
 
                                     <!--Purchase form-->
-                                    <div class="purchase-form w-90% md:w-full bg-white mx-auto">
+                                    <div class="purchase-form w-[90%] md:w-full bg-white mx-auto">
                                         <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
                                             <c:choose>
                                                 <c:when test="${product.specialFilter != 'pre-order'}">
@@ -241,9 +241,11 @@
                                                 </tr>
 
                                                 <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                                    <c:if test="${not empty product.duration}">
+                                                
+                                                <c:if test="${not empty product.duration}">
                                                     <tr><td>Duration</td><td>${product.duration}</td></tr>
                                                 </c:if>
+                                                    
                                                 <c:if test="${product.salesRank > 0}">
                                                     <c:set var="rank" value="${product.salesRank}" />
                                                     <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
@@ -263,8 +265,8 @@
                                         <c:when test= "${type=='merch'}">
                                             <table class="m-2">
                                                 <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                                <c:if test="${not empty creatorMap.sculptor and not empty creatorMap.scupltor.creatorName}">
-                                                    <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
+                                                <c:if test="${not empty creatorMap.sculptor and not empty creatorMap.sculptor.creatorName}">
+                                                    <tr><td>Sculptor</td><td>${creatorMap.sculptor.creatorName}</td></tr>
                                                 </c:if>
                                                 <c:if test="${not empty creatorMap.artist and not empty creatorMap.artist.creatorName}">
                                                     <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
@@ -396,7 +398,7 @@
                                                             if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
                                                                 document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
                                                                 const stockOut = document.querySelector('.purchase-form p');
-                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:pr-2', 'bg-gray-100', 'my-16', 'md:mr-4', 'max-w-full');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
                                                                 return;
                                                             }
 
@@ -430,10 +432,18 @@
                                                                     return;
                                                                 }
                                                                 if (numberValue < 1) {
-                                                                    alert("Purchase quantity must be greater than 0!");
+                                                                    Swal.fire({
+                                                                        icon: 'error',
+                                                                        title: 'Invalid purchase quantity',
+                                                                        text: `Purchase quantity must be greater than 0!`
+                                                                    });
                                                                     inputElement.value = numberValue = 1;
                                                                 } else if (numberValue > ${product.stockCount}) {
-                                                                    alert("Purchase quantity cannot exceed ${product.stockCount}!");
+                                                                     Swal.fire({
+                                                                        icon: 'error',
+                                                                        title: 'Invalid purchase quantity',
+                                                                        text: `Purchase quantity cannot exceed ${product.stockCount}!`
+                                                                    });
                                                                     inputElement.value = numberValue = 1;
                                                                 }
 
@@ -508,15 +518,31 @@
                                                         //Map final price to forms
                                                         document.addEventListener("DOMContentLoaded", function () {
                                                             const finalPriceElement = document.querySelector(".final-price");
+                                                            const purchaseForms = document.querySelectorAll(".purchase-form form");
                                                             let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
-
-                                                            //Check if the forms are there
-                                                            if (!pricesToSubmit) {
+                                                            
+                                                            if(!purchaseForms){
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'An error occured: Purchase forms not found',
+                                                                    text: `This product is not ready for purchase right now! Feel free to check the others.`
+                                                                });
+                                                                document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                                                                const stockOut = document.querySelector('.purchase-form p');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
                                                                 return;
                                                             }
-
-                                                            if (!finalPriceElement) {
-                                                                alert("Cannot retrieve product price!");
+                                                            
+                                                            //Check if the form inputs and price are there
+                                                            if (!pricesToSubmit || !finalPriceElement) {
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'An error occured: Unable to process product price',
+                                                                    text: `This product is not ready for purchase right now! Feel free to check the others.`
+                                                                });
+                                                                document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                                                                const stockOut = document.querySelector('.purchase-form p');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
                                                                 return;
                                                             }
 

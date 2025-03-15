@@ -27,35 +27,28 @@
         <div class="flex-1 p-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Product List</h1>
             <hr class="mb-6 border-gray-300"/>
-            <div class="my-6 flex flex-col items-start">
+            <div class="mt-6 flex flex-col items-start">
                 <!-- Add New Product Button -->
                 <div class="flex items-center space-x-6">
-                    <a class="bg-green-600 text-white p-3 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="productManagementForm.jsp?action=add">
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="addProduct">
                         <i class="fas fa-plus mr-2"></i> Add New Product
                     </a>
 
                     <!--Search Field--> 
                     <form action="" method="get" class="flex items-center space-x-4 mb-4 ">
                         <div class="flex items-stretch justify-center">
-                            <select class="p-3 border border-gray-300 rounded-l focus:ring-blue-500 focus:border-blue-500" name="type">
+                            <select class="p-4 border border-gray-300 rounded-l focus:ring-blue-500 focus:border-blue-500" name="type">
                                 <option value="" ${empty param.type ? 'selected' : ''}>All Products</option>
                                 <option value="book" ${param.type == 'book' ? 'selected' : ''}>Books</option>
                                 <option value="merch" ${param.type == 'merch' ? 'selected' : ''}>Merchandise</option>
                             </select>
-                            <input class="p-3 border border-gray-300 focus:ring-blue-500 focus:border-blue-500" type="text" placeholder="Search for products..." aria-label="Search" name="query" value="${requestScope.query}">
-                            <button class="p-3 border border-gray-300 rounded-r focus:ring-blue-500 focus:border-blue-500 bg-orange-500 text-white font-bold" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <input class="p-4 border border-gray-300 focus:ring-blue-500 focus:border-blue-500" type="text" placeholder="Search for products..." aria-label="Search" name="query" value="${requestScope.query}">
+                            <button class="p-4 border border-gray-300 rounded-r focus:ring-blue-500 focus:border-blue-500 bg-orange-500 text-white font-bold" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
 
                 </div>
 
-
-                <!-- Display Error Message if Any -->
-                <c:if test="${not empty errorMessage}">
-                    <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                        <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
-                    </p>
-                </c:if>
             </div>
 
             <!-- TABLE -->
@@ -264,6 +257,32 @@
                     });
                 }
 
+            });
+            
+            //            Pop-up message
+            document.addEventListener('DOMContentLoaded',function(){
+                const reqMessage = `${requestScope.message}`;
+                const successfulMessage = `${requestScope.successfulMessage}`;
+                const failedMessage = `${requestScope.failedMessage}`;
+                if(reqMessage){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Product not found',
+                        text: reqMessage
+                    });
+                }
+                if(successfulMessage){
+                    Swal.fire({
+                        icon: 'success',
+                        text: successfulMessage
+                    });
+                }
+                if(failedMessage){
+                    Swal.fire({
+                        icon: 'warning',
+                        text: failedMessage
+                    });
+                }
             });
 
         </script>
