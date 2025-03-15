@@ -19,7 +19,6 @@
                 </div>
             </a>
         </header>
-
         <!-- Main Content -->
         <div class="max-w-3xl mx-auto p-6">
             <div class="w-full bg-white p-8 shadow-md rounded-lg">

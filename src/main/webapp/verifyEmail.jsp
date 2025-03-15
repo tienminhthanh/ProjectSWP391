@@ -12,16 +12,13 @@
 
         <!-- Header -->
         <!-- Header -->
-        <header class="bg-white shadow w-full mb-4">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <a href="home.jsp">
-                    <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png" />
-                </a>
+        <header class="bg-white shadow w-full">
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+                <img alt="WIBOOKS Logo" class="h-10" src="./img/logoWibooks-removebg-preview.png"/>
                 <div class="flex items-center space-x-4">
-                    <a href="login.jsp" class="text-orange-600 font-semibold hover:underline">Login</a>
-                    <a href="home.jsp" class="text-orange-600 font-semibold hover:underline">Home</a>
+                    <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
 
         <!-- Main Content -->
@@ -85,7 +82,7 @@
 
                 <!-- Resend OTP -->
                 <div class="text-center mb-4">
-                    <a href="sendEmailOTP" class="text-blue-600 hover:underline">
+                    <a href="emailAuthentication" class="text-blue-600 hover:underline">
                         <i class="fas fa-redo-alt"></i> Resend OTP Code
                     </a>
                 </div>

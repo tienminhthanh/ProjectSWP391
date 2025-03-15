@@ -437,8 +437,8 @@
         </div>
 
         <!-- Chat Popup -->
-        <div id="chatPopup" class="z-50 fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
-            <div class="flex justify-between items-center bg-blue-500 text-white px-4 py-2 rounded-t-lg">
+        <div id="chatPopup" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
+            <div class="flex justify-between items-center bg-orange-500 text-white px-4 py-2 rounded-t-lg">
                 <span>WIBOOKS AI</span>
                 <span id="closeChatAI" class="cursor-pointer text-xl">❌</span>
             </div>
@@ -458,6 +458,7 @@
         </script>
 
 
+        
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
