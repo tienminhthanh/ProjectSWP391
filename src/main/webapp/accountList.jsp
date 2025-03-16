@@ -34,16 +34,17 @@
                             <label class="text-gray-700 font-semibold mr-2">Role</label>
                             <select class="p-4 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500" name="role" onchange="this.form.submit()">
                                 <option value="" ${empty param.role ? 'selected' : ''}>All Roles</option>
+                                <option value="customer" ${param.role == 'customer' ? 'selected' : ''}>Customer</option>
                                 <option value="staff" ${param.role == 'staff' ? 'selected' : ''}>Staff</option>
                                 <option value="shipper" ${param.role == 'shipper' ? 'selected' : ''}>Shipper</option>
                                 <option value="admin" ${param.role == 'admin' ? 'selected' : ''}>Admin</option>
                             </select>
                         </div>
                     </form>
-                  
+
 
                     <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="accountStatic">
-                         <i class="fas fa-tachometer-alt"></i> View Account Dashboard
+                        <i class="fas fa-tachometer-alt"></i> View Account Dashboard
                     </a>
 
                 </div>
@@ -136,38 +137,54 @@
             </div>
 
             <!-- Pagination Links -->
+            <!-- Pagination Links -->
             <div class="flex justify-center mt-6">
                 <nav aria-label="Page navigation">
                     <ul class="flex space-x-2">
-                        <c:if test="${currentPage > 1}">
-                            <li><a href="listAccount?role=${roleFilter}&page=1" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">First</a></li>
-                            <li><a href="listAccount?role=${roleFilter}&page=${currentPage - 1}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Previous</a></li>
-                            </c:if>
 
+                        <!-- Previous button -->
+                        <c:if test="${currentPage > 1}">
+                            <li>
+                                <a href="listAccount?role=${roleFilter}&page=${currentPage - 1}"
+                                   class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                    &laquo; Previous
+                                </a>
+                            </li>
+                        </c:if>
+
+                        <!-- Display page numbers -->
                         <c:forEach begin="${currentPage - 2 > 0 ? currentPage - 2 : 1}" 
                                    end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}" 
                                    var="i">
                             <c:if test="${i > 0 && i <= totalPages}">
-                                <li><a href="listAccount?role=${roleFilter}&page=${i}" 
-                                       class="px-4 py-2 ${i == currentPage ? 'bg-blue-700' : 'bg-blue-500'} text-white rounded hover:bg-blue-600">${i}</a></li>
-                                </c:if>
-                            </c:forEach>
-
-                        <c:if test="${currentPage < totalPages}">
-                            <li><a href="listAccount?role=${roleFilter}&page=${currentPage + 1}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next</a></li>
-                            <li><a href="listAccount?role=${roleFilter}&page=${totalPages}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Last</a></li>
+                                <li>
+                                    <a href="listAccount?role=${roleFilter}&page=${i}" 
+                                       class="px-4 py-2 rounded ${i == currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
+                                        ${i}
+                                    </a>
+                                </li>
                             </c:if>
+                        </c:forEach>
+
+                        <!-- Next button -->
+                        <c:if test="${currentPage < totalPages}">
+                            <li>
+                                <a href="listAccount?role=${roleFilter}&page=${currentPage + 1}" 
+                                   class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                    Next &raquo;
+                                </a>
+                            </li>
+                        </c:if>
+
                     </ul>
                 </nav>
             </div>
 
-            <!-- Hiển thị thông tin phân trang -->
-            <div class="text-center mt-4 text-gray-600">
-                Page ${currentPage} of ${totalPages} 
-                <c:if test="${not empty accounts}">
-                    (Showing ${(currentPage - 1) * 3 + 1} - ${currentPage * 3 > totalAccounts ? totalAccounts : currentPage * 3} of ${totalAccounts} accounts)
-                </c:if>
-            </div>
+
+
+
+
+
 
         </div>
 
