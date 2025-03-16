@@ -247,10 +247,10 @@ public class EventDAO {
                 banner,
                 event.getDescription(),
                 event.getDateStarted(),
-                !LocalDate.now().isAfter(expiryDate),
+                (LocalDate.now().isAfter(expiryDate) || LocalDate.parse(event.getDateStarted()).isAfter(today)) ? false : true,
                 event.getEventID()};
 
-            event.setExpiry(true);
+            event.setExpiry(!LocalDate.now().isAfter(expiryDate));
 
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;

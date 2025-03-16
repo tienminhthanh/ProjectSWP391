@@ -95,6 +95,7 @@ public class EventUpdateController extends HttpServlet {
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
+        Event e = new Event();
 
         try {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");
@@ -178,10 +179,14 @@ public class EventUpdateController extends HttpServlet {
                 fileName = banner;
             }
 
+            boolean isActive = existingEvent.isIsActive();
+
             // Tạo đối tượng Event và cập nhật
             Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
                     existingEvent.isIsActive(), dateStarted.toString(), existingEvent.isExpiry());
-
+            if (dateStarted.isAfter(LocalDate.parse(dateCreated, formatter))) {
+                event.setIsActive(!isActive);
+            }
             if (eDao.updateEvent(event)) {
                 session.setAttribute("message", "Event updated successfully!");
                 session.setAttribute("messageType", "success");
@@ -189,8 +194,8 @@ public class EventUpdateController extends HttpServlet {
                 session.setAttribute("message", "Failed to update event.");
                 session.setAttribute("messageType", "error");
             }
-        } catch (Exception e) {
-            session.setAttribute("message", "Error: " + e.getMessage());
+        } catch (Exception ex) {
+            session.setAttribute("message", "Error: " + ex.getMessage());
             session.setAttribute("messageType", "error");
         }
 
