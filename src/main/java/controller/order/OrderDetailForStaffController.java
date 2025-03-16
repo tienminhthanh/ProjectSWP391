@@ -166,7 +166,7 @@ public class OrderDetailForStaffController extends HttpServlet {
                 Notification notification = new Notification();
                 notification.setSenderID(account.getAccountID()); // Staff who assigned the order
                 notification.setReceiverID(customerID); // Shipper's account ID
-                notification.setNotificationDetails("Your order has been canceled by the system.! Order ID: " + orderID);
+                notification.setNotificationDetails("Your order has been canceled by the system! Order ID: " + orderID);
                 notification.setDateCreated(new Date(System.currentTimeMillis()));
                 notification.setDeleted(false);
                 notification.setNotificationTitle("Order Cancellation");
