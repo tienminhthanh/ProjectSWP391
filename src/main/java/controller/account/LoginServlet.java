@@ -23,7 +23,7 @@ public class LoginServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String currentURL = request.getParameter("currentURL");
+        String currentURL = request.getParameter("currentURL");
         if (currentURL != null && !currentURL.trim().isEmpty()) {
             request.setAttribute("currentURL", currentURL);
         }
@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
             Account account = accountDAO.getAccountByUsername(username);
 
             if (account != null) {
-                if (account.getIsActive()) {    
+                if (account.getIsActive()) {
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
                     if (failedAttempts == null) {
                         failedAttempts = 0;
@@ -72,7 +72,8 @@ public class LoginServlet extends HttpServlet {
                                 }
                                 break;
                             case "staff":
-                                response.sendRedirect("listAccount");
+                                //khi đăng nhập staff thì cho vô thẳng orderlist 
+                                response.sendRedirect("OrderListForStaffController");
                                 break;
                             case "shipper":
                                 response.sendRedirect("OrderListForShipperController");

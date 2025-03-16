@@ -79,9 +79,10 @@ public class DeleteOrderController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
+        String orderID = request.getParameter("id");
+        int id = Integer.parseInt(orderID);
         try {
-            String orderID = request.getParameter("id");
-            int id = Integer.parseInt(orderID);
+
             System.out.println(id);
             String status = "canceled";
             orderDAO.restoreProductStockByOrderID(id);
@@ -90,6 +91,9 @@ public class DeleteOrderController extends HttpServlet {
 
         } catch (SQLException ex) {
             Logger.getLogger(DeleteOrderController.class.getName()).log(Level.SEVERE, null, ex);
+            request.setAttribute("errorMessage1", "Something went wrong. Please try again later!");
+//            response.sendRedirect("error.jsp");
+            request.getRequestDispatcher("OrderDetailController?id=" + id).forward(request, response);
         }
         response.sendRedirect("OrderListController");
 

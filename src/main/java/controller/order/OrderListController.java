@@ -74,18 +74,24 @@ public class OrderListController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         String status = request.getParameter("status");
         DeliveryOption delivery = new DeliveryOption();
-       
+
         try {
             List<OrderInfo> orderList = orderDAO.getOrdersByCustomerID(account.getAccountID());
-           
+            if (status == null || status.isEmpty()) {
+                status = "pending";
+            }
             if (status != null && !status.isEmpty()) {
+                final String finalStatus = status;
                 orderList = orderList.stream()
-                        .filter(order -> status.equals(order.getOrderStatus()))
+                        .filter(order -> finalStatus.equals(order.getOrderStatus()))
                         .collect(Collectors.toList());
             }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
             for (OrderInfo orderInfo : orderList) {
                 int deliveryTimeInDays;
+                OrderInfo info  = new OrderInfo();
+                info = orderDAO.getOrderByID(orderInfo.getOrderID(), orderInfo.getCustomerID());
+                
                 delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
                 deliveryTimeInDays = delivery.getEstimatedTime();
                 Calendar calendar = Calendar.getInstance();
@@ -95,9 +101,12 @@ public class OrderListController extends HttpServlet {
                 Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
                 orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
                 System.out.println(orderInfo.getExpectedDeliveryDate());
+                orderInfo.setOrderProductList(info.getOrderProductList());
             }
-
+            
             // Chuyển hướng đến OrderListView.jsp
+            request.setAttribute("currentStatus", status);
+
             request.getRequestDispatcher("OrderListView.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();

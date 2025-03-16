@@ -74,8 +74,7 @@ public class OrderDetailForShipperController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
-        Account customer = null;
-
+        Account customer = new Account();
         String orderID = request.getParameter("id");
         int valueVoucher = 0;
         try {
@@ -105,13 +104,9 @@ public class OrderDetailForShipperController extends HttpServlet {
         } catch (SQLException | NumberFormatException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
-      
-
         request.setAttribute("valueVoucher", valueVoucher);
-
         request.getRequestDispatcher("OrderDetailForShipperView.jsp").forward(request, response);
     }
 
