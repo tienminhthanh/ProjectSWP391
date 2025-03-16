@@ -106,7 +106,7 @@ public class VoucherAddNewController extends HttpServlet {
             int adminID = account.getAccountID();
 
             VoucherDAO vDao = new VoucherDAO();
-            Voucher voucher = new Voucher(adminID, name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true, type, maxDiscountAmount, dateStarted);
+            Voucher voucher = new Voucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true, type, maxDiscountAmount, dateStarted);
             boolean add = vDao.addVoucher(voucher);
             if (add) {
                 session.setAttribute("message", "Voucher created successfully!");

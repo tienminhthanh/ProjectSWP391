@@ -26,6 +26,18 @@ public class Event {
     public Event() {
     }
 
+    public Event(String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
+        this.eventName = eventName;
+        this.dateCreated = dateCreated;
+        this.duration = duration;
+        this.banner = banner;
+        this.description = description;
+        this.adminID = adminID;
+        this.isActive = isActive;
+        this.dateStarted = dateStarted;
+        this.expiry = expiry;
+    }
+
     public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
         this.eventID = eventID;
         this.eventName = eventName;

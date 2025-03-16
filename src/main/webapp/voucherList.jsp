@@ -77,18 +77,11 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-
+                                    
                                     <td class="px-2 py-3 border border-b text-center">
                                         <c:choose>
-                                            <c:when test="${voucher.expiry}">
-                                                <c:choose>
-                                                    <c:when test="${voucher.isActive}">
-                                                        <span class="text-green-600">Active</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="text-red-600">Deactivate</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <c:when test="${voucher.isActive}">
+                                                <span class="text-green-600">Active</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-red-600">Deactivate</span>

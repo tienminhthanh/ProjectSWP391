@@ -4,16 +4,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
 <fmt:setLocale value="en_US"/>
-<%
-    String bannerPath = application.getRealPath("/img/banner_event/");
-    File folder = new File(bannerPath);
-    String[] files = folder.list(new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.matches(".*\\.(jpg|jpeg|png|gif)");
-        }
-    });
-%>
+
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -53,7 +44,7 @@
         </div>
 
         <div class="banner-container">
-            <jsp:include page="banner.jsp" flush="true"/> 
+                <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -447,16 +438,6 @@
             </div>
         </div>
 
-        <script>
-            document.getElementById("openChat").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.remove("hidden");
-            });
-
-            document.getElementById("closeChatAI").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.add("hidden");
-            });
-        </script>
-
 
         
         <!--Script for include icons-->
@@ -489,68 +470,6 @@
 
         <!--Voucher Date End-->
         <script src="js/scriptVoucherDateEnd.js"></script>
-
-
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let banners = [
-            <% for (String file : files) {%>
-                    {img: "/img/banner_event/<%= file%>"},
-            <% }%>
-                ];
-
-                let current = 0;
-                const bannerImg = document.getElementById("banner-img");
-                const bannerLink = document.getElementById("banner-link");
-                const dotsContainer = document.getElementById("dots-container");
-                const prev_btn = document.getElementById("prev-btn");
-                const next_btn = document.getElementById("next-btn");
-
-                function updateBanner() {
-                    bannerImg.src = banners[current].img;
-                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
-
-                    dotsContainer.innerHTML = "";
-                    banners.forEach((_, index) => {
-                        const dot = document.createElement("div");
-                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
-                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
-                        dot.onclick = () => {
-                            current = index;
-                            updateBanner();
-                        };
-                        dotsContainer.appendChild(dot);
-                    });
-                }
-
-                function next() {
-                    current = (current + 1) % banners.length;
-                    updateBanner();
-                }
-
-                function prev() {
-                    current = (current - 1 + banners.length) % banners.length;
-                    updateBanner();
-                }
-
-                if (prev_btn)
-                    prev_btn.addEventListener("click", prev);
-                if (next_btn)
-                    next_btn.addEventListener("click", next);
-
-                // Chỉ gọi setInterval một lần duy nhất
-                setInterval(next, 3000);
-
-                updateBanner();
-            });
-
-            function closeMessagePopup() {
-                document.getElementById('warning-popup-overlay').classList.add("hidden");
-                document.getElementById('warning-popup-container').classList.add("hidden");
-            }
-
-        </script>
 
     </body>
 </html>
