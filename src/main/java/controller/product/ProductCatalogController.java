@@ -202,7 +202,7 @@ public class ProductCatalogController extends HttpServlet {
                 //No keywords entered
                 breadCrumb += String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type));
                 pageTitle.append(getDisplayTextBasedOnType(type));
-                productList = productDAO.getAllActiveProducts(type, sortCriteria, filterMap);
+                productList = productDAO.getActiveProducts(type, sortCriteria, filterMap);
 
             } else {
                 breadCrumb += String.format(" > <a href='search?type=%s&query=%s'>Search Result: %s</a>", type, query, query);
@@ -1088,6 +1088,9 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", "The product is not available right now!");
                 request.getRequestDispatcher("home").forward(request, response);
             } else {
+                //Handle linebreak for html display
+                requestedProduct.setDescription(requestedProduct.getDescription().replaceAll("\r\n|\r|\n", "<br>"));
+                
                 //Get creators
                 HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
                 request.setAttribute("creatorMap", creatorMap);

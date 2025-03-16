@@ -16,7 +16,7 @@
             <title>Unavailable Product - WIBOOKS</title>
         </c:if>
 
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 
@@ -35,9 +35,6 @@
 
     <body>
 
-        <fmt:setLocale value="vi_vn"/> <!-- Set locale if needed -->
-        <fmt:formatDate value="<%= new java.util.Date()%>" pattern="yyyy-MM-dd" var="todayDate"/>
-
         <!--header-->
         <jsp:include page="header.jsp"/>
 
@@ -49,15 +46,6 @@
             <jsp:include page="customerSidebar.jsp"/>
 
             <main class="w-full md:w-5/6 p-3">
-                <c:if test="${not empty requestScope.exception}">
-                    <h3>
-                        An error occurred when retrieving product information!
-                    </h3>
-                    <p>
-                        ${requestScope.exception}
-                    </p>
-                </c:if>
-
                 <c:if test="${not empty requestScope.product}">
                     <div class="root-container bg-gray-100">
 
@@ -95,7 +83,7 @@
 
 
                                 <!--Title - purchase-->
-                                <div class="purchase-area w-full flex-grow md:pl-4 mb-4 bg-white border-l-2 border-solid border-black/10">
+                                <div class="purchase-area w-full flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
                                     <!--Title-->
                                     <div class="big-product-name bg-white p-2 border-b-2 border-solid border-black/10">
                                         <div class="big-product-name-inner w-full text-base md:text-sm lg:text-base">
@@ -153,7 +141,7 @@
                                     </div>
 
                                     <!--Purchase form-->
-                                    <div class="purchase-form w-90% md:w-full bg-white mx-auto">
+                                    <div class="purchase-form w-[90%] md:w-full bg-white mx-auto">
                                         <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
                                             <c:choose>
                                                 <c:when test="${product.specialFilter != 'pre-order'}">
@@ -253,9 +241,11 @@
                                                 </tr>
 
                                                 <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                                    <c:if test="${not empty product.duration}">
+                                                
+                                                <c:if test="${not empty product.duration}">
                                                     <tr><td>Duration</td><td>${product.duration}</td></tr>
                                                 </c:if>
+                                                    
                                                 <c:if test="${product.salesRank > 0}">
                                                     <c:set var="rank" value="${product.salesRank}" />
                                                     <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
@@ -275,8 +265,8 @@
                                         <c:when test= "${type=='merch'}">
                                             <table class="m-2">
                                                 <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                                <c:if test="${not empty creatorMap.sculptor and not empty creatorMap.scupltor.creatorName}">
-                                                    <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
+                                                <c:if test="${not empty creatorMap.sculptor and not empty creatorMap.sculptor.creatorName}">
+                                                    <tr><td>Sculptor</td><td>${creatorMap.sculptor.creatorName}</td></tr>
                                                 </c:if>
                                                 <c:if test="${not empty creatorMap.artist and not empty creatorMap.artist.creatorName}">
                                                     <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
@@ -434,7 +424,7 @@
                                                             if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
                                                                 document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
                                                                 const stockOut = document.querySelector('.purchase-form p');
-                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:pr-2', 'bg-gray-100', 'my-16', 'md:mr-4', 'max-w-full');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
                                                                 return;
                                                             }
 
@@ -468,10 +458,18 @@
                                                                     return;
                                                                 }
                                                                 if (numberValue < 1) {
-                                                                    alert("Purchase quantity must be greater than 0!");
+                                                                    Swal.fire({
+                                                                        icon: 'error',
+                                                                        title: 'Invalid purchase quantity',
+                                                                        text: `Purchase quantity must be greater than 0!`
+                                                                    });
                                                                     inputElement.value = numberValue = 1;
                                                                 } else if (numberValue > ${product.stockCount}) {
-                                                                    alert("Purchase quantity cannot exceed ${product.stockCount}!");
+                                                                     Swal.fire({
+                                                                        icon: 'error',
+                                                                        title: 'Invalid purchase quantity',
+                                                                        text: `Purchase quantity cannot exceed ${product.stockCount}!`
+                                                                    });
                                                                     inputElement.value = numberValue = 1;
                                                                 }
 
@@ -546,15 +544,31 @@
                                                         //Map final price to forms
                                                         document.addEventListener("DOMContentLoaded", function () {
                                                             const finalPriceElement = document.querySelector(".final-price");
+                                                            const purchaseForms = document.querySelectorAll(".purchase-form form");
                                                             let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
-
-                                                            //Check if the forms are there
-                                                            if (!pricesToSubmit) {
+                                                            
+                                                            if(!purchaseForms){
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'An error occured: Purchase forms not found',
+                                                                    text: `This product is not ready for purchase right now! Feel free to check the others.`
+                                                                });
+                                                                document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                                                                const stockOut = document.querySelector('.purchase-form p');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
                                                                 return;
                                                             }
-
-                                                            if (!finalPriceElement) {
-                                                                alert("Cannot retrieve product price!");
+                                                            
+                                                            //Check if the form inputs and price are there
+                                                            if (!pricesToSubmit || !finalPriceElement) {
+                                                                Swal.fire({
+                                                                    icon: 'error',
+                                                                    title: 'An error occured: Unable to process product price',
+                                                                    text: `This product is not ready for purchase right now! Feel free to check the others.`
+                                                                });
+                                                                document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                                                                const stockOut = document.querySelector('.purchase-form p');
+                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
                                                                 return;
                                                             }
 
@@ -573,37 +587,47 @@
                                                             });
                                                         });
 
-                                                        //Format date
-                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                        //Format date display
+                                                        document.addEventListener('DOMContentLoaded', function () {
+                                                            const releaseDates = document.querySelectorAll('.release-date');
                                                             const fomoDate = document.querySelector('.fomo-info>span');
-                                                            const releaseDate = document.querySelector('.release-date');
 
-                                                            if (!fomoDate) {
-                                                                console.log("Fomo element not found!");
-                                                            } else {
-                                                                const fomoText = new Date(fomoDate.innerText);
-                                                                if (fomoText === null) {
-                                                                    console.log("invalid date format");
+                                                            // Formatting functions for Vietnam locale
+                                                            const formatDate = (date) =>
+                                                                new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                                                            const formatTime = (date) =>
+                                                                new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
+
+                                                            //ReleaseDate
+                                                            if (releaseDates) {
+                                                                releaseDates.forEach(rlsDate => {
+                                                                    const rlsDateObj = new Date(rlsDate.innerText.trim());
+                                                                    if (!isNaN(rlsDateObj)) {
+                                                                        rlsDate.innerText = formatDate(rlsDateObj);
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            //Last modified time
+                                                            if (fomoDate) {
+                                                                const dateObj = new Date(fomoDate.innerText.trim());
+                                                                if (!isNaN(dateObj)) {
+                                                                    const today = new Date();
+                                                                    // Remove time from today's date for accurate comparison
+                                                                    today.setHours(0, 0, 0, 0);
+
+                                                                    // Show time if today, otherwise show formatted date
+                                                                    const formattedDate = dateObj.toDateString() === today.toDateString()
+                                                                            ? formatTime(dateObj)
+                                                                            : formatDate(dateObj);
+                                                                    fomoDate.innerText = formattedDate;
                                                                 }
-                                                                fomoDate.innerText = fomoText.toLocaleDateString("vi-VN");
                                                             }
 
-                                                            if (!releaseDate) {
-                                                                console.log("Date element not found!");
-                                                                return;
-                                                            }
-
-                                                            const dateText = new Date(releaseDate.innerText);
-                                                            if (dateText === null) {
-                                                                console.log("invalid date format");
-                                                                return;
-                                                            }
-
-                                                            releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
                                                         });
-                                                        
+
                                                         //Format tags-link
-                                                        document.addEventListener('DOMContentLoaded',function(){
+                                                        document.addEventListener('DOMContentLoaded', function () {
                                                             const tagsLink = document.querySelectorAll('.tags-link');
                                                             if (tagsLink) {
                                                                 const type = `${requestScope.type}`;

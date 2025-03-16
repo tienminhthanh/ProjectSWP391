@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 /**
@@ -12,8 +8,8 @@ public class Category {
     private int categoryID; // Maps to INT
     private String categoryName; // Maps to NVARCHAR(100)
     private String generalCategory;
-    
-    // Constructor
+
+    // Constructors
     public Category() {}
 
     public Category(int categoryID, String categoryName) {
@@ -26,22 +22,25 @@ public class Category {
         this.categoryName = categoryName;
         this.generalCategory = generalCategory;
     }
-    
-    
-    
-    // Getters and Setters
+
+    // Getters
     public int getCategoryID() { return categoryID; }
-    public void setCategoryID(int categoryID) { this.categoryID = categoryID; }
-
     public String getCategoryName() { return categoryName; }
-    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    public String getGeneralCategory() { return generalCategory; }
 
-    public String getGeneralCategory() {
-        return generalCategory;
+    // Fluent Setters
+    public Category setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+        return this;
     }
 
-    public void setGeneralCategory(String generalCategory) {
+    public Category setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+        return this;
+    }
+
+    public Category setGeneralCategory(String generalCategory) {
         this.generalCategory = generalCategory;
+        return this;
     }
-    
 }

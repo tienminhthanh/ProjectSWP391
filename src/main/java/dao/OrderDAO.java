@@ -73,7 +73,8 @@ public class OrderDAO {
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
     }
-
+    
+    
 // insert row vao bang Order_product
     //choose
     public void insertOrderProduct(Object[] params) throws SQLException {

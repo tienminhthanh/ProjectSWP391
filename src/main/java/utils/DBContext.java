@@ -20,7 +20,8 @@ public class DBContext {
     private static final String URL = "jdbc:sqlserver://localhost:1433;"
             + "databaseName=WIBOOKS;"
             + "encrypt=true;"
-            + "trustServerCertificate=true;";
+            + "trustServerCertificate=true;"
+            + "characterEncoding=UTF-8";
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -63,7 +64,13 @@ public class DBContext {
         try ( Connection connection = getConnection();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             if (params != null && params.length > 0) {
                 for (int i = 0; i < params.length; i++) {
-                    preparedStatement.setObject(i + 1, params[i]);
+                    if(params[i] instanceof String){
+                        preparedStatement.setString(i+1, (String)params[i]);
+                    }
+                    else {
+                        preparedStatement.setObject(i + 1, params[i]);
+                    
+                    }
                 }
             }
             int rowsAffected = preparedStatement.executeUpdate();
