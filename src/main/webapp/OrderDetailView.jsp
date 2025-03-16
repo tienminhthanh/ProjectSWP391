@@ -260,7 +260,7 @@
                                 </form>
                             </c:if>
                             <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
-                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'Shipped'}">                              
+                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'delivered'}">                              
                                 <form action="OrderDetailController" method="POST">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                     <input type="hidden" name="action" value="confirm"> 
@@ -323,7 +323,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form action="OrderDetailController" method="POST" ">
+                                    <form action="OrderDetailController" method="POST" >
                                         <input type="hidden" name="orderID" id="popupOrderID">
                                         <input type="hidden" name="productID" id="popupProductID">
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">
