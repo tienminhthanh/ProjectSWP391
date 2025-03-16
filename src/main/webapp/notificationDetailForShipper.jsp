@@ -123,48 +123,47 @@
                 </c:choose>
             </div>
         </main>
-    </div>
 
 
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        const notifications = document.querySelectorAll(".notification");
-                notifications.forEach(notification => {
-                // Lấy nội dung text và loại bỏ khoảng trắng thừa
-                const text = notification.textContent.trim();
-                        console.log("content text:", `"${text}"`); // In chính xác nội dung của text
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+    const notifications = document.querySelectorAll(".notification");
+    notifications.forEach(notification => {
+        // Lấy nội dung text và loại bỏ khoảng trắng thừa
+        const text = notification.textContent.trim();
+        console.log("content text:", `"${text}"`); // In chính xác nội dung của text
 
-                        // Kiểm tra và tách Order ID
-                        if (text.includes("Order ID:")) {
-                const parts = text.split("Order ID:");
-                        console.log("Mảng sau split:", parts); // In mảng để kiểm tra
+        // Kiểm tra và tách Order ID
+        if (text.includes("Order ID:")) {
+            const parts = text.split("Order ID:");
+            console.log("Mảng sau split:", parts); // In mảng để kiểm tra
 
-                        // Lấy phần sau "Order ID:" (nếu có)
-                        const result = parts[1]?.trim() || "";
-                        console.log("Order ID:", `"${result}"`); // In result để kiểm tra
+            // Lấy phần sau "Order ID:" (nếu có)
+            const result = parts[1]?.trim() || "";
+            console.log("Order ID:", `"${result}"`); // In result để kiểm tra
 
-                        // Tiếp tục xử lý với link
-                        const div = notification.closest("div");
-                        const link = div?.querySelector("a");
-                        if (link && result) { // Chỉ cập nhật nếu result không rỗng
+            // Tiếp tục xử lý với link
+            const div = notification.closest("div");
+            const link = div?.querySelector("a");
+            if (link && result) { // Chỉ cập nhật nếu result không rỗng
                 link.href = "OrderDetailForShipperController?id=" + result;
-                        console.log("Đã cập nhật href:", link.href);
-                } else {
+                console.log("Đã cập nhật href:", link.href);
+            } else {
                 console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
-                }
-                }
-                else {
-                console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
-                }
-                });
-        });
-    </script>
-    <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+            }
+        }
+        else {
+            console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
+        }
+    });
+});
+        </script>
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-    crossorigin="anonymous"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+    </body>
 </html>
