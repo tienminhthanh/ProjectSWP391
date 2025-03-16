@@ -156,6 +156,9 @@ public class ProductManagementController extends HttpServlet {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);
             } else {
+                //Format linebreak for html display
+                requestedProduct.setDescription(requestedProduct.getDescription().replaceAll("\r\n|\r|\n", "<br>"));
+
                 //Get and creators
                 HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
                 request.setAttribute("creatorMap", creatorMap);
@@ -243,20 +246,20 @@ public class ProductManagementController extends HttpServlet {
         }
 
         if (action == null) {
-            //Redirect to the form
+            //Ensure only forms for adding products are shown
             request.setAttribute("formAction", "add");
         } else {
             //After form submission
             Map<String, String[]> paramMap = request.getParameterMap() != null ? request.getParameterMap() : new HashMap<>();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             StringBuilder message = new StringBuilder();
-            
+
             try {
                 //Instantiate newProduct
                 Product newProduct = action.equals("addBook") ? new Book()
                         : action.equals("addMerch") ? new Merchandise()
                         : new Product();
-                
+
                 newProduct.setProductName(paramMap.get("productName")[0])
                         .setPrice(Integer.parseInt(paramMap.get("price")[0]))
                         .setStockCount(Integer.parseInt(paramMap.get("stockCount")[0]))
@@ -272,11 +275,10 @@ public class ProductManagementController extends HttpServlet {
                                 : action.equals("addMerch") ? "merch" : "unset");
 
                 //Insert new product to database
-                // If failed, throw exception 
                 if (!productDAO.addNewProducts(newProduct)) {
                     throw new RuntimeException("Failed to add this product!");
                 }
-                message.append("New uncategorized product has been added successfully!\n");
+                message.append("New product has been added!\n");
 
                 //Get ID of new product
                 int productID = productDAO.getLatestProductID();
@@ -287,13 +289,13 @@ public class ProductManagementController extends HttpServlet {
                 //Handling creators
                 String[] creatorNames = paramMap.get("creatorName");
                 String[] creatorRoles = paramMap.get("creatorRole");
-                for (int i = 0; i < creatorNames.length; i++) {
+                for(int i = 0; i < creatorNames.length; i++) {
                     //Skip if name is empty
                     if (creatorNames[i].trim().isEmpty()) {
                         continue;
                     }
 
-                    //Check if exist
+                    //Check if exist (creatorID > 0)
                     int creatorID = productDAO.getCreatorIDByNameAndRole(creatorNames[i], creatorRoles[i]);
                     //Insert to database if not exist
                     boolean isAssignable = creatorID == 0 ? productDAO.addNewCreators(new Creator()
@@ -314,12 +316,13 @@ public class ProductManagementController extends HttpServlet {
                             throw new SQLException("Error assigning creatorID " + creatorID + " to productID " + productID);
                         }
                     }
+                    
 
                 }
                 
                 //Ensure creatorMap in application scope is up to date
                 getServletContext().setAttribute("creators", productDAO.getAllCreators());
-                
+
                 //Type-specific atributes
                 if (newProduct instanceof Book) {
                     //Handle book-specific attributes
@@ -330,36 +333,39 @@ public class ProductManagementController extends HttpServlet {
                 }
 
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                request.setAttribute("errorMessage", message.append(e.getMessage()));
+                LOGGER.log(Level.SEVERE, e.toString(), e);
+                request.setAttribute("errorMessage",
+                        message.append("...But cannot be categorized due to:\n")
+                                .append(e.toString())
+                                .toString()
+                                .replaceAll("\r\n|\r|\n", "<br>"));
             }
         }
+        
+        //Forward to view
         request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
     }
 
     private void addBook(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
             throws Exception {
-
-        //setDuration
-        newBook.setDuration(paramMap.get("duration")[0]);
-
         //Handle genres
         String[] genres = paramMap.get("genre");
         for (String genre : genres) {
             int genreID = Integer.parseInt(genre);
             //Insert to junction table
-            if(!productDAO.assignGenresToBook(newBook.getProductID(), genreID)){
+            if (!productDAO.assignGenresToBook(newBook.getProductID(), genreID)) {
                 throw new SQLException("Error assigning genreID " + genreID + " to productID " + newBook.getProductID());
             }
         }
-
+        
         //Handle publisher
         String publisherName = paramMap.get("publisherName")[0];
         if (!publisherName.trim().isEmpty()) {
-            //Check if exist
+            Publisher publisher = new Publisher();
+            //Check if exist (publisherID > 0)
             int publisherID = productDAO.getPublisherIDByName(publisherName);
             //Insert to database if not exist
-            boolean isAssignable = publisherID == 0 ? productDAO.addNewPublishers(new Publisher()
+            boolean isAssignable = publisherID == 0 ? productDAO.addNewPublishers(publisher
                     .setPublisherName(publisherName))
                     : true;
 
@@ -371,9 +377,15 @@ public class ProductManagementController extends HttpServlet {
             //Ensure ID is valid
             publisherID = publisherID > 0 ? publisherID : productDAO.getPublisherIDByName(publisherName);
             if (publisherID > 0) {
-                newBook.setPublisher(new Publisher(publisherID, publisherName));
+                newBook.setPublisher(publisher.setPublisherID(publisherID));
             }
+        
+            //Ensure publisherMap in application scope is up to date
+            getServletContext().setAttribute("publishers", productDAO.getAllPublishers());
         }
+        
+        //setDuration
+        newBook.setDuration(paramMap.get("duration")[0]);
 
         //Update Book
         if (productDAO.updateBooks(newBook)) {
@@ -398,7 +410,7 @@ public class ProductManagementController extends HttpServlet {
         String brandName = paramMap.get("brandName")[0];
 
         if (!seriesName.trim().isEmpty()) {
-            //Check if exist
+            //Check if exist (seriesID > 0)
             int id = productDAO.getSeriesIDByName(seriesName);
             //Insert to database if not exist
             boolean isAssignable = id == 0 ? productDAO.addNewMerchSeries(new Series()
@@ -415,10 +427,13 @@ public class ProductManagementController extends HttpServlet {
             if (id > 0) {
                 newMerch.setSeries(new Series(id, seriesName));
             }
+        
+            //Ensure seriesMap in application scope is up to date
+            getServletContext().setAttribute("series", productDAO.getAllSeries());
         }
 
         if (!characterName.trim().isEmpty()) {
-            //Check if exist
+            //Check if exist (characterID > 0)
             int id = productDAO.getCharacterIDByName(characterName);
             //Insert to database if not exist
             boolean isAssignable = id == 0 ? productDAO.addNewMerchCharacter(new OGCharacter()
@@ -435,10 +450,13 @@ public class ProductManagementController extends HttpServlet {
             if (id > 0) {
                 newMerch.setCharacter(new OGCharacter(id, characterName));
             }
+            
+            //Ensure characterMap in application scope is up to date
+            getServletContext().setAttribute("characters", productDAO.getAllCharacters());
         }
 
         if (!brandName.trim().isEmpty()) {
-            //Check if exist
+            //Check if exist (brandID > 0)
             int id = productDAO.getBrandIDByName(brandName);
             //Insert to database if not exist
             boolean isAssignable = id == 0 ? productDAO.addNewMerchBrand(new Brand()
@@ -455,6 +473,9 @@ public class ProductManagementController extends HttpServlet {
             if (id > 0) {
                 newMerch.setBrand(new Brand(id, brandName));
             }
+            
+            //Ensure brandMap in application scope is up to date
+            getServletContext().setAttribute("brands", productDAO.getAllBrands());
         }
 
         //Update Merch
@@ -467,21 +488,38 @@ public class ProductManagementController extends HttpServlet {
 
     private void manageStatus(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        //Prevent unauthorized access
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+        
         String productID = request.getParameter("id");
         String action = request.getParameter("action");
 
         try {
             int id = Integer.parseInt(productID);
+            //Handle null
             if (action == null) {
-                throw new Exception("Cannot identify action value!");
+                throw new Exception("Cannot identify action!");
             }
-
+            
+            //Resolve target status by action
+            //true = active, false = inactive
             String statusString = action.equalsIgnoreCase("activate") ? "true" : action.equalsIgnoreCase("deactivate") ? "false" : "";
-            boolean transactionStatus = productDAO.changeProductStatus(id, Boolean.parseBoolean(statusString));
-            String message = transactionStatus ? "The product has been " + action + "d" + " successfully"
+            
+            //Execute activation or deactivation
+            boolean transactionState = productDAO.changeProductStatus(id, Boolean.parseBoolean(statusString));
+            
+            //Send meaningful messages to view based on transactionState
+            // true = success, false = failed
+            String message = transactionState ? "The product has been " + action + "d" + " successfully"
                     : "Failed to " + action + " the product!";
-            request.setAttribute(transactionStatus ? "successfulMessage" : "failedMessage", message);
-
+            request.setAttribute(transactionState ? "successfulMessage" : "failedMessage", message);
+            
             request.getRequestDispatcher("manageProductList").forward(request, response);
 
         } catch (Exception e) {

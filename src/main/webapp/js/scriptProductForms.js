@@ -8,26 +8,20 @@ function toggleForm() {
     }
     
 //    Categories
-    const bookCtgr = document.getElementById("cat-gr-book");
-    const merchCtgr = document.getElementById("cat-gr-merch");
-    if (bookCtgr && merchCtgr) {
-        bookCtgr.classList?.toggle("hidden", generalCategory.value !== "book");
-        bookCtgr.classList?.toggle("flex", generalCategory.value === "book");
-        merchCtgr.classList?.toggle("hidden", generalCategory.value !== "merch");
-        merchCtgr.classList?.toggle("flex", generalCategory.value === "merch");
+    const allCtgr = document.querySelectorAll(".cat-select-gr select option");
+    const bookCtgr = document.querySelectorAll(".cat-select-gr select option.cat-opt-book");
+    const merchCtgr = document.querySelectorAll(".cat-select-gr select option.cat-opt-merch");
+    if (allCtgr) {
+        bookCtgr.forEach(opt=>{
+            opt.classList?.toggle("hidden",generalCategory.value !== "book");
+        });
+        merchCtgr.forEach(opt=>{
+            opt.classList?.toggle("hidden", generalCategory.value !== "merch");
+        });
+        allCtgr.forEach(opt=>{
+            opt.selected = opt.classList?.contains('hidden') ? false : true;
+        });
         
-        const bookOpts = bookCtgr.querySelectorAll('select option');
-        const merchOpts = merchCtgr.querySelectorAll('select option');
-        
-        if (bookOpts && merchOpts) {
-           bookOpts.forEach(opt=>{
-               opt.disabled =  bookCtgr.classList?.contains('hidden') ? true : false;
-           });
-           
-           merchOpts.forEach(opt=>{
-               opt.disabled =  merchCtgr.classList?.contains('hidden') ? true : false;
-           });
-        }
     }
     
     //Creators
@@ -85,8 +79,6 @@ function toggleForm() {
         submitBtn.value = generalCategory.value === "merch" ? "addMerch" : generalCategory.value === "book" ? "addBook" : "";
 
     }
-    
-    
     
     
 }

@@ -80,13 +80,23 @@
                 if(reqMessage){
                     Swal.fire({
                         icon: 'success',
-                        text: reqMessage
+                        html: reqMessage,
+                        confirmButtonText:'Back to Product List'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'manageProductList';
+                        }
                     });
                 }
                 if(errMessage){
                     Swal.fire({
-                        icon: 'Error',
-                        text: errMessage
+                        icon: 'error',
+                        html: errMessage,
+                        confirmButtonText:'Back to Product List'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'manageProductList';
+                        }
                     });
                 }
             });

@@ -1088,6 +1088,9 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", "The product is not available right now!");
                 request.getRequestDispatcher("home").forward(request, response);
             } else {
+                //Handle linebreak for html display
+                requestedProduct.setDescription(requestedProduct.getDescription().replaceAll("\r\n|\r|\n", "<br>"));
+                
                 //Get creators
                 HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
                 request.setAttribute("creatorMap", creatorMap);

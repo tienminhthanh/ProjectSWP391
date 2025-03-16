@@ -35,23 +35,17 @@
         <div class="form-group">
             <label>Filters:</label>
             <div class="pair-group">
-                <span class="hidden" id="cat-gr-book">
+                <span class="flex cat-select-gr">
                     <label for="categoryBook">Category:</label>
                     <select id="categoryBook" name="category" required>
                         <c:forEach var="catEntry" items="${applicationScope.categories}">
                             <c:if test="${catEntry.key.generalCategory eq 'book'}">
-                                <option value="${catEntry.key.categoryID}">${catEntry.key.categoryName}</option>
+                                <option class="cat-opt-book" value="${catEntry.key.categoryID}">${catEntry.key.categoryName}</option>
                             </c:if>
-                        </c:forEach>
-                    </select>
-                </span>
-                <span class="hidden" id="cat-gr-merch">
-                   <label for="categoryMerch">Category:</label>
-                    <select id="categoryMerch" name="category" required>
-                        <c:forEach var="catEntry" items="${applicationScope.categories}">
-                            <c:if test="${catEntry.key.generalCategory eq 'merch'}">
-                                <option value="${catEntry.key.categoryID}">${catEntry.key.categoryName}</option>
+                             <c:if test="${catEntry.key.generalCategory eq 'merch'}">
+                                <option class="cat-opt-merch" value="${catEntry.key.categoryID}">${catEntry.key.categoryName}</option>
                             </c:if>
+                                
                         </c:forEach>
                     </select>
                 </span>

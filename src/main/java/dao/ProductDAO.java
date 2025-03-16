@@ -1239,38 +1239,64 @@ public class ProductDAO {
     }
 
     public boolean updateBooks(Book updatedBook) throws SQLException {
-        String sql = "update book set publisherID = ?, duration = ?\n"
-                + "where bookID = ?";
-        Object[] params = {updatedBook.getPublisher().getPublisherID(), updatedBook.getDuration(), updatedBook.getProductID()};
-        return context.exeNonQuery(sql, params) > 0;
+        StringBuilder sql = new StringBuilder("update book set\n");
+        List<Object> paramList = new ArrayList<>();
+        if(updatedBook.getPublisher() != null){
+            sql.append("publisherID = ?,\n");
+            paramList.add(updatedBook.getPublisher().getPublisherID());
+        }
+        sql.append("duration = ? where bookID = ?\n");
+        paramList.add(updatedBook.getDuration());
+        paramList.add(updatedBook.getProductID());
+        Object[] params =paramList.toArray();
+        return context.exeNonQuery(sql.toString(), params) > 0;
     }
 
     public boolean updateMerch(Merchandise updatedMerch) throws SQLException {
-        String sql = "UPDATE [dbo].[Merchandise]\n"
-                + "   SET [seriesID] = ?\n"
-                + "      ,[characterID] = ?\n"
-                + "      ,[brandID] = ?\n"
-                + "      ,[size] = ?\n"
-                + "      ,[scaleLevel] = ?\n"
-                + "      ,[material] = ?\n"
-                + "WHERE [merchandiseID] = ?";
+        List<Object> paramList  = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("UPDATE [dbo].[Merchandise] SET\n");
+        
+        if(updatedMerch.getSeries() != null){
+            sql.append("[seriesID] = ?,\n");
+            paramList.add(updatedMerch.getSeries().getSeriesID());
+        }
+        
+        if(updatedMerch.getCharacter() != null){
+            sql.append("[characterID] = ?,\n");
+            paramList.add(updatedMerch.getCharacter().getCharacterID());
+        }
+        
+        if(updatedMerch.getBrand() != null){
+            sql.append("[brandID] = ?,\n");
+            paramList.add(updatedMerch.getBrand().getBrandID());
+        }
+        
+        sql.append("[size] = ?, [scaleLevel] = ?, [material] = ? WHERE [merchandiseID] = ?\n");
+        paramList.add(updatedMerch.getSize());
+        paramList.add(updatedMerch.getScaleLevel());
+        paramList.add(updatedMerch.getMaterial());
+        paramList.add(updatedMerch.getProductID());
 
-        Object[] params = {
-            updatedMerch.getSeries().getSeriesID(), // For [seriesID]
-            updatedMerch.getCharacter().getCharacterID(), // For [characterID]
-            updatedMerch.getBrand().getBrandID(), // For [brandID]
-            updatedMerch.getSize(), // For [size]
-            updatedMerch.getScaleLevel(), // For [scaleLevel]
-            updatedMerch.getMaterial(), // For [material]
-            updatedMerch.getProductID()// For WHERE [merchandiseID]
-        };
+        Object[] params = paramList.toArray();
 
-        return context.exeNonQuery(sql, params) > 0;
+        return context.exeNonQuery(sql.toString(), params) > 0;
     }
 
     
     public boolean updateProducts(Product updatedProduct) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        //WIP
+        return true;
     }
 
     public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
