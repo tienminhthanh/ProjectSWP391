@@ -36,8 +36,8 @@
                 background-color: #2d3748; /* Màu nền khi hover */
             }
             .main-content {
-                margin-left: 10px; /* Dịch nội dung chính sang phải, tránh bị sidebar che */
-                padding: 20px;
+                /*                margin-left: 250px;  Dịch nội dung chính sang phải, tránh bị sidebar che 
+                                padding: 20px;*/
                 flex: 1; /* Chiếm toàn bộ không gian còn lại */
             }
             .header {
@@ -130,11 +130,11 @@
     </head>
 
     <body>
-        <div class="w-64 bg-orange-400 text-white min-h-screen fixed top-0 left-0">
+
+        <div class="w-64 bg-orange-400 text-white min-h-screen">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
-
-        <div class="main-content ml-64">
+        <div class="main-content">
             <div class="header">
                 <div class="flex items-center">
 
@@ -144,35 +144,32 @@
                 <div class="flex items-center">
                     <i class="fas fa-bell mr-4"></i>
                     <a href="readAccount" class="fas fa-user-circle mr-4"></a>
-                    <span>Staff</span>
+                    <span>${account.role}</span>
                     <a href="logout" class="fas fa-sign-out-alt ml-4"></a>
                 </div>
             </div>
 
             <div >
                 <div class="bg-white rounded shadow">
-                    <div class="flex-1  overflow-y-auto">
+                    <div class="flex-1 max-h-[630px] overflow-y-auto">
 
                         <!-- Thanh Navbar trạng thái -->
                         <div class="flex justify-between items-center mb-6 bg-white p-4 shadow rounded-lg">
                             <div class="flex items-center space-x-2">
                                 <!--                                <input id="dateRangePicker" class="border rounded px-2 py-1" type="text" placeholder="Select date range" />-->
                             </div>
-                            <div class="flex space-x-4">
-                                <a href="OrderListForStaffController" class="px-4 py-2 rounded-lg text-white
-                                   ${empty                       param.status ? 'bg-blue-600' : 'bg-gray-400'}">All</a>
+                            <div class="flex space-x-4">                              
+                                <a href="OrderListForStaffController?status=pending" class="px-4 py-2 rounded-lg text-white
+                                   ${currentStatus == 'pending' ? 'bg-blue-600' : 'bg-gray-400'}">Pending</a>
 
-                                <a href="OrderListForStaffController?status=Pending" class="px-4 py-2 rounded-lg text-white
-                                   ${param.status == 'Pending' ? 'bg-blue-600' : 'bg-gray-400'}">Pending</a>
+                                <a href="OrderListForStaffController?status=shipped" class="px-4 py-2 rounded-lg text-white
+                                   ${currentStatus == 'shipped' ? 'bg-blue-600' : 'bg-gray-400'}">Shipped</a>
 
-                                <a href="OrderListForStaffController?status=Shipped" class="px-4 py-2 rounded-lg text-white
-                                   ${param.status == 'Shipped' ? 'bg-blue-600' : 'bg-gray-400'}">Shipped</a>
+                                <a href="OrderListForStaffController?status=completed" class="px-4 py-2 rounded-lg text-white
+                                   ${currentStatus == 'completed' ? 'bg-blue-600' : 'bg-gray-400'}">Completed</a>
 
-                                <a href="OrderListForStaffController?status=Completed" class="px-4 py-2 rounded-lg text-white
-                                   ${param.status == 'Completed' ? 'bg-blue-600' : 'bg-gray-400'}">Completed</a>
-
-                                <a href="OrderListForStaffController?status=Canceled" class="px-4 py-2 rounded-lg text-white
-                                   ${param.status == 'Canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
+                                <a href="OrderListForStaffController?status=canceled" class="px-4 py-2 rounded-lg text-white
+                                   ${currentStatus == 'canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
                             </div>
                         </div>
 
@@ -223,6 +220,6 @@
                     </div>
                 </div>
             </div>
-
+        </div>
     </body>
 </html>

@@ -109,13 +109,13 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
-                                response.sendRedirect("OrderListController.jsp");
+                                response.sendRedirect("OrderListForStaffController");
                                 break;
                             case "shipper":
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
-                                response.sendRedirect("dashboardShipper.jsp");
+                                response.sendRedirect("OrderListForShipperController");
                                 break;
                             default:
                                 session.invalidate();

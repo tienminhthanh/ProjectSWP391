@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import model.Account;
 import model.DeliveryOption;
 import model.Notification;
@@ -74,8 +75,14 @@ public class OrderListForStaffController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        OrderDAO orderDAO = new OrderDAO();
+
         List<OrderInfo> orderList = null;
         OrderInfo orderInfo = new OrderInfo();
         Map<Integer, Account> customerMap = new HashMap<>(); // Lưu orderID -> Account
@@ -83,9 +90,15 @@ public class OrderListForStaffController extends HttpServlet {
         DeliveryOption delivery = new DeliveryOption();
 
         String status = request.getParameter("status");
+        if (status == null || status.isEmpty()) {
+            status = "pending";
+        }
         try {
             orderList = orderDAO.getAllOrders();
-
+            final String finalStatus = status;
+            orderList = orderList.stream()
+                    .filter(order -> finalStatus.equals(order.getOrderStatus()))
+                    .collect(Collectors.toList());
             for (OrderInfo order : orderList) {
                 Account customer = orderDAO.getInfoCustomerByOrderID(order.getOrderID());
                 if (customer != null) {
@@ -107,21 +120,12 @@ public class OrderListForStaffController extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        if (status != null && !status.isEmpty()) {
-            try {
-                orderList = orderDAO.getOrdersByStatus(status);
-            } catch (SQLException ex) {
-                Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
         shipperList = orderDAO.getAllShippers();
-        request.setAttribute("status", status);
+        request.setAttribute("currentStatus", status);
         request.setAttribute("shipperList", shipperList);
         request.setAttribute("orderList", orderList);
         request.setAttribute("orderInfo", orderList);
-        session.setAttribute("orderInfo", orderInfo);
+        request.setAttribute("account", account);
         request.setAttribute("customerMap", customerMap); // Gửi Map sang JSP
         request.getRequestDispatcher("OrderListForStaffView.jsp").forward(request, response);
     }
@@ -149,8 +153,13 @@ public class OrderListForStaffController extends HttpServlet {
             return;
         }
         try {
-            String status = "Shipped";
+            String status = "shipped";
+            if(account.getRole().equals("staff")){
             orderDAO.updateStaffAndShipperForOrder(orderID, account.getAccountID(), shipperID);
+            }else{
+                orderDAO.updateAdminAndShipperForOrder(orderID, account.getAccountID(), shipperID);
+            }
+            
             orderDAO.updateDeliverystatus(orderID, status);
             orderDAO.updateOrderstatus(orderID, status);
             session.setAttribute("orderID", orderID);

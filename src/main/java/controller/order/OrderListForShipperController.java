@@ -20,9 +20,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
+import model.Shipper;
 
 /**
  *
@@ -71,9 +73,14 @@ public class OrderListForShipperController extends HttpServlet {
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
+        String status = request.getParameter("status");
         Account account = (Account) session.getAttribute("account");
         DeliveryOption delivery = new DeliveryOption();
+        if (status == null || status.isEmpty()) {
+            status = "shipped";
+        }
         try {
+
             List<OrderInfo> orderList = orderDAO.getOrdersByShipperID(account.getAccountID());
             List<Account> accountList = new ArrayList<>();
             // Duyệt qua từng đơn hàng để lấy thông tin khách hàng
@@ -83,9 +90,13 @@ public class OrderListForShipperController extends HttpServlet {
                     accountList.add(acc); // Chỉ thêm nếu không null
                 }
             }
+            final String finalStatus = status;
+            orderList = orderList.stream()
+                    .filter(order -> finalStatus.equals(order.getDeliveryStatus()))
+                    .collect(Collectors.toList());
+
             for (OrderInfo orderInfo : orderList) {
                 int deliveryTimeInDays;
-
                 delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
                 deliveryTimeInDays = delivery.getEstimatedTime();
                 Calendar calendar = Calendar.getInstance();
@@ -100,6 +111,7 @@ public class OrderListForShipperController extends HttpServlet {
            
              // Đặt dữ liệu vào requestScope
             request.setAttribute("accountList", accountList);
+            request.setAttribute("currentStatus", status);
             request.getRequestDispatcher("OrderListForShipperView.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -119,11 +131,30 @@ public class OrderListForShipperController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        System.out.println(orderID);
+        Account account = new Account();
         OrderDAO orderDao = new OrderDAO();
+        Shipper accShipper = null;
+        try {
+             account = orderDao.getShipperByOrderID(orderID); // Lấy thông tin từ DAO
+            if (account instanceof Shipper) { // Kiểm tra xem có đúng là Shipper không
+                accShipper = (Shipper) account;
+            } else {
+                System.out.println("Error: Retrieved account is not a Shipper.");
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderListForShipperController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        int totalDeliveries;
+
         String status = "delivered";
+
         try {
             orderDao.updateDeliverystatus(orderID, status);
+//            accshipper = orderDao.getShipperByOrderID(orderID);
+            totalDeliveries = accShipper.getTotalDeliveries();
+            totalDeliveries = totalDeliveries + 1;
+            orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForShipperController.class.getName()).log(Level.SEVERE, null, ex);
         }
