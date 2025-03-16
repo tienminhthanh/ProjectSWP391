@@ -218,14 +218,17 @@
                         <p><strong>Order Status:</strong> ${orderInfo.orderStatus}</p>
 
                         <h3 class="text-lg font-semibold mt-4">Products</h3>
+                        
+                        <c:set var="count" value="1"/>                              
                         <c:forEach var="item" items="${orderInfo.orderProductList}">
-                            <p><strong>Product Name:</strong> ${item.product.productName}</p>
+                            <p><strong>${count} </strong> ${item.product.productName}</p>
                             <p><strong>Quantity:</strong> ${item.quantity}</p>
                             <p><strong>Price:</strong> 
                                 <fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ
                             </p>
 
                             <hr class="my-2">
+                              <c:set var="count" value="${count + 1}"/>
                         </c:forEach>
                         <p><strong>Shipping Fee: </strong>  
                             <fmt:formatNumber value="${delivery.optionCost}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ

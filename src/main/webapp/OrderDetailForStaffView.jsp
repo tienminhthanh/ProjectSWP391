@@ -120,29 +120,26 @@
                     <a href="logout" class="fas fa-sign-out-alt ml-4"></a>
                 </div>
             </div>  
-
-
             <div class="p-4">
                 <div class="bg-white p-4 rounded shadow">
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
-                        <h2 class="text-xl font-bold">Order ID: <span>${orderInfo.orderID}</span></h2>
                         <div class="space-x-2">
-
                             <c:if test="${ account.role eq 'admin'}">
                                 <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel();">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                     <input type="hidden" name="action" value="cancel">
-                                    <button type="submit" class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
+                                    <c:if test="${ orderInfo.orderStatus eq 'pending'}">
+                                        <button type="submit" class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
+                                    </c:if>
                                 </form>
                             </c:if>
 
-                            <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
                         </div>
                     </div>
 
                     <div class="order-info">
                         <div>
-                            <h1 class="text-2xl font-bold mb-2">Order Information</h1>
+                            <h1 class="text-2xl font-bold mb-2">Order Information (orderID: ${orderInfo.orderID}) </h1>
                             <p><i class="fas fa-user icon"></i> Customer: ${customer.firstName} ${customer.lastName}</p>
                             <p><i class="fas fa-phone icon"></i> Phone: ${customer.phoneNumber}</p>
                             <p><i class="fas fa-map-marker-alt icon"></i> Address: ${orderInfo.deliveryAddress}</p>
@@ -164,16 +161,25 @@
                             <h1 class="text-2xl font-bold mb-2"> Payment Information</h1>
                             <p><i class="fas fa-tags icon"></i> Discount: <fmt:formatNumber value="${valueVoucher}" pattern="#,##0"/> đ</p>
                             <p><i class="fas fa-coins icon"></i> Total Amount: <fmt:formatNumber value="${orderInfo.preVoucherAmount}" pattern="#,##0"/> đ</p>
-                            <p><i class="fas fa-check-circle icon"></i> Payment Status: ${orderInfo.paymentStatus}</p>
+                            <p><i class="fas fa-check-circle icon mb-2""></i> Payment Status: ${orderInfo.paymentStatus}</p>
+
+                            
+                            
+                            <c:if test="${account.role eq 'admin' and orderInfo.orderStatus ne 'pending' }">
+                                <h1 class="text-2xl font-bold ">Order Processing Information</h1>  
+                                <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>  
+                                <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p> 
+                                <c:if test="${orderInfo.orderStatus ne 'canceled' }">
+                                    <p class="text-lg">Assigned Shipper: <span>${accShipper.lastName} ${accShipper.firstName}</span></p>  
+                                    <p class="text-lg">Shipper ID: <span>${accShipper.accountID}</span></p>
+                                </c:if>
+
+                            </c:if>
+
                         </div>
                     </div>
 
-                    <div class="border-b pb-2 mb-4">
-                        <div class="flex space-x-4">
-                            <button class="border-b-2 border-orange-500 pb-2">Products</button>
-                            <button class="pb-2">Other Information</button>
-                        </div>
-                    </div>
+
 
                     <table class="w-full text-left">
                         <thead>
@@ -181,7 +187,7 @@
                                 <th>Product Image</th>
                                 <th>Product Name</th>
                                 <th>Quantity</th>
-                                <th>Price With Quantity</th>
+                                <th>Price </th>
                             </tr>
                         </thead>
                         <tbody>

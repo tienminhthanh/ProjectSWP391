@@ -78,28 +78,26 @@ public class OrderDetailForStaffController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
+        Account accShipper = new Account();
         if (account == null) {
             response.sendRedirect("login");
             return;
         }
         OrderDAO orderDAO = new OrderDAO();
         DeliveryOption delivery = new DeliveryOption();
-        List<OrderInfo> orderList = null;
-        List<Shipper> shipperList = new ArrayList<>();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = null;
-
+        Account handler = null;
         String orderID = request.getParameter("id");
         int valueVoucher = 0;
         try {
             if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
                 int id = Integer.parseInt(orderID);
-
                 customer = orderDAO.getCustomerByOrderID(id);
-
+                handler = orderDAO.getOrderHandlerByOrderID(id);
+                accShipper = orderDAO.getShipperByOrderID(id);
                 if (customer != null) {
                     int idcus = customer.getAccountID();
-
                     orderInfo = orderDAO.getOrderByID(id, idcus);
                     valueVoucher = orderDAO.getVoucherValueByOrderID(id);
                 }
@@ -122,13 +120,11 @@ public class OrderDetailForStaffController extends HttpServlet {
         Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
         orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
         request.setAttribute("account", account);
+        request.setAttribute("handler", handler);
+        request.setAttribute("accShipper", accShipper);
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
-        shipperList = orderDAO.getAllShippers();
-        request.setAttribute("shipperList", shipperList);
-        request.setAttribute("orderList", orderList);
         request.setAttribute("valueVoucher", valueVoucher);
-
         request.getRequestDispatcher("OrderDetailForStaffView.jsp").forward(request, response);
     }
 
@@ -144,7 +140,7 @@ public class OrderDetailForStaffController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-           Account account = (Account) session.getAttribute("account");
+        Account account = (Account) session.getAttribute("account");
         if (account == null) {
             response.sendRedirect("login");
             return;
@@ -154,11 +150,11 @@ public class OrderDetailForStaffController extends HttpServlet {
         String status = "canceled";
         try {
             orderDao.updateOrderstatus(orderID, status);
-            orderDao.updateAdminIdForOrderInfo(account.getAccountID(),orderID);
+            orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
         } catch (SQLException ex) {
             Logger.getLogger(OrderDetailForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        response.sendRedirect("OrderDetailForStaffController?id=" +orderID);
+        response.sendRedirect("OrderDetailForStaffController?id=" + orderID);
 
     }
 

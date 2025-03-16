@@ -12,6 +12,11 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
         <link href="css/styleFooter.css" rel="stylesheet">
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">  
+        <!--Header css-->
+        <link href="css/styleHeader.css" rel="stylesheet">
 
         <script src="js/OrderSummaryView.js"></script>
 
@@ -76,36 +81,56 @@
                 border-radius: 4px;
                 margin-right: 10px;
             }
+            .breadcrumb-container {
+                background-color: #f8f9fa;  /* Màu nền */
+                padding: 10px 20px;
+                font-size: 12px;
+
+                color: #e3a100;  /* Màu chữ vàng giống ảnh */
+            }
+
+            .breadcrumb-container a {
+                text-decoration: none;
+                color: #e3a100; /* Màu chữ vàng */
+                transition: color 0.3s ease-in-out;
+            }
+
+            .breadcrumb-container a:hover {
+                color: #d38d00; /* Đổi màu khi hover */
+            }
+
+            .breadcrumb-container .active {
+                color: #e3a100; /* Giữ màu vàng cho trang hiện tại */
+            }
+            
         </style>
     </head>
     <body class="bg-gray-100">
-        <header class="bg-white shadow">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <div class="logo">
-                    <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
-                </div>
-                <a href="logout" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Sign-out
-                </a>
+        <header>
+            <div class="header-container">
+                <jsp:include page="header.jsp" flush="true"/> 
+<!--
+                <nav class="breadcrumb-container">
+                    <a href="/">Home</a> >
+                    <a href="/cart">Cart</a> >
+                    <span class="active">Payment</span>
+                </nav>-->
             </div>
         </header>
         <main class="container mx-auto px-4 py-6">
             <div class="bg-white shadow rounded-lg p-4">
                 <h2 class="text-2xl font-bold mb-4">Payment</h2>
+                <!-- Hiển thị thông báo lỗi nếu có -->
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> ${errorMessage}
+                    </div>
+                </c:if>
 
-                <!-- Trạng thái: 1 Cart, 2 Settlement, 3 Complete -->
-                <div class="status-container">
-                    <div class="status-item ">1 Cart</div>
-                    <div class="status-item active">2 Settlement</div>
-                    <div class="status-item">3 Complete</div>
-                </div>
-                <div class="title-custom">
-                    <p>Please check your customer and cart information before placing an order.</p>
-                </div>
                 <div class="content">
                     <div class="left-content" style="width: 60%">
                         <h2>Shipping Information</h2> <hr>
-                        <form action="OrderController" method="POST">
+                        <form action="OrderController" method="POST" onsubmit="return updateOrderTotal()">
                             <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
                             <div class="input-custom">
                                 <label for="name">Full Name</label><br>
@@ -162,8 +187,9 @@
                             </div> <hr>
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="home" class="btn btn-secondary">Back to Home</a>
-                                <button type="submit" class="btn btn-primary" id="placeOrderBtn"  onclick="disableButton()">Place Order</button>
                                 <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
+                                <button type="submit" class="btn btn-primary" id="placeOrderBtn" onclick="disableButton()">Place Order</button>
+
                             </div>
                         </form>
                     </div>
@@ -208,7 +234,6 @@
 
                                     <div class="price-item">
                                         <p>Discount: <span id="discount"><fmt:formatNumber value="${voucherValue}" pattern="#,##0 đ"/></span></p>
-
                                     </div>
                                     <div class="price-item">
                                         <p>Total: <span id="totalAmount"><fmt:formatNumber value="${orderTotalAmount}" pattern="#,##0 đ"/></span></p>
@@ -224,21 +249,20 @@
         <jsp:include page="footer.jsp"/>
         <script>
             function updateOrderTotal() {
-                let totalAmount = document.getElementById("totalAmount").innerText.replace(/[^\d]/g, ""); // Lấy số từ chuỗi
+                let totalAmountText = document.getElementById("totalAmount").innerText;
+                let totalAmount = totalAmountText.replace(/[^\d]/g, ""); // Lọc chỉ lấy số
                 document.getElementById("hiddenOrderTotal").value = totalAmount; // Cập nhật vào input hidden
+                return true; // Đảm bảo form tiếp tục submit
             }
 
-            // Cập nhật ngay khi trang tải
             document.addEventListener("DOMContentLoaded", function () {
-                updateOrderTotal();
+                updateOrderTotal(); // Cập nhật ngay khi tải trang
             });
 
-            // Cập nhật khi người dùng chọn voucher hoặc phương thức giao hàng
             document.getElementById("voucherSelect").addEventListener("change", updateOrderTotal);
             document.querySelectorAll('input[name="shippingOption"]').forEach(radio => {
                 radio.addEventListener("change", updateOrderTotal);
             });
         </script>
-
     </body>
 </html>

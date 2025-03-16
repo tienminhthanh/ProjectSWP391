@@ -36,8 +36,8 @@
                 background-color: #2d3748; /* Màu nền khi hover */
             }
             .main-content {
-/*                margin-left: 250px;  Dịch nội dung chính sang phải, tránh bị sidebar che 
-                padding: 20px;*/
+                /*                margin-left: 250px;  Dịch nội dung chính sang phải, tránh bị sidebar che 
+                                padding: 20px;*/
                 flex: 1; /* Chiếm toàn bộ không gian còn lại */
             }
             .header {
@@ -151,7 +151,7 @@
 
             <div >
                 <div class="bg-white rounded shadow">
-                    <div class="flex-1  overflow-y-auto">
+                    <div class="flex-1 max-h-[630px] overflow-y-auto">
 
                         <!-- Thanh Navbar trạng thái -->
                         <div class="flex justify-between items-center mb-6 bg-white p-4 shadow rounded-lg">

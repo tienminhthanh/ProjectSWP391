@@ -152,8 +152,13 @@ public class OrderListForStaffController extends HttpServlet {
             return;
         }
         try {
-            String status = "Shipped";
+            String status = "shipped";
+            if(account.getRole().equals("staff")){
             orderDAO.updateStaffAndShipperForOrder(orderID, account.getAccountID(), shipperID);
+            }else{
+                orderDAO.updateAdminAndShipperForOrder(orderID, account.getAccountID(), shipperID);
+            }
+            
             orderDAO.updateDeliverystatus(orderID, status);
             orderDAO.updateOrderstatus(orderID, status);
             session.setAttribute("orderID", orderID);

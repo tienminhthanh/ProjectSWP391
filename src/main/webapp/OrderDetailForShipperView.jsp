@@ -8,6 +8,14 @@
         <title>Delivery</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <style>
+            .description {
+                max-width: 200px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        </style>
     </head>
 
     <body class="bg-gray-100">
@@ -36,8 +44,8 @@
                     <h2 class="text-xl font-bold">Delivery Information / <span>${orderInfo.orderID}</span></h2>
                     <div class="space-x-2">
                         <form action="OrderListForShipperController" method="post" class="inline">
-                            <input type="hidden" name="orderID" value="${order.orderID}">
-                            <c:if test="${ orderInfo.deliveryStatus eq 'Shipped'}">      
+                            <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                            <c:if test="${ orderInfo.deliveryStatus eq 'shipped'}">      
                                 <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
                             </c:if>
                         </form>
@@ -72,7 +80,7 @@
                 <div class="border-b pb-2 mb-4">
                     <div class="flex space-x-4">
                         <button class="border-b-2 border-orange-500 pb-2">Products</button>
-                        <button class="pb-2">Other Information</button>
+                     
                     </div>
                 </div>
 
@@ -83,7 +91,7 @@
                             <th class="py-2">Description</th>
                             <th class="py-2">Quantity</th>
                             <!--<th class="py-2">Unit Price</th>-->
-                            <th class="py-2">Total Price</th>
+                            <th class="py-2">Price</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,9 +99,9 @@
                             <tr class="border-b">
                                 <td class="py-2 flex items-center">
                                     <img src="${item.product.imageURL}" alt="${item.product.productName}" class="w-16 h-16 object-cover mr-2">
-                                    <span>${item.product.productName}</span>
+                                    <span>   ${item.product.productName}</span>
                                 </td>
-                                <td class="py-2">${item.product.description}</td>
+                                <td class="py-2 description">${item.product.description}</td>
                                 <td class="py-2">${item.quantity}</td>
 <!--                                <td class="py-2"><fmt:formatNumber value="${item.product.price}" pattern="#,##0"/> đ</td>-->
                                 <td class="py-2"><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>

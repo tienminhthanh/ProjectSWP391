@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
+import model.Shipper;
 
 /**
  *
@@ -76,7 +77,7 @@ public class OrderListForShipperController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         DeliveryOption delivery = new DeliveryOption();
         if (status == null || status.isEmpty()) {
-            status = "Shipped";
+            status = "shipped";
         }
         try {
 
@@ -128,11 +129,30 @@ public class OrderListForShipperController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        System.out.println(orderID);
+        Account account = new Account();
         OrderDAO orderDao = new OrderDAO();
+        Shipper accShipper = null;
+        try {
+             account = orderDao.getShipperByOrderID(orderID); // Lấy thông tin từ DAO
+            if (account instanceof Shipper) { // Kiểm tra xem có đúng là Shipper không
+                accShipper = (Shipper) account;
+            } else {
+                System.out.println("Error: Retrieved account is not a Shipper.");
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderListForShipperController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        int totalDeliveries;
+
         String status = "delivered";
+
         try {
             orderDao.updateDeliverystatus(orderID, status);
+//            accshipper = orderDao.getShipperByOrderID(orderID);
+            totalDeliveries = accShipper.getTotalDeliveries();
+            totalDeliveries = totalDeliveries + 1;
+            orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForShipperController.class.getName()).log(Level.SEVERE, null, ex);
         }
