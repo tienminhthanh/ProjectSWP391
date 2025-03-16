@@ -4,16 +4,16 @@
  */
 package controller.order;
 
+import dao.NotificationDAO;
 import dao.OrderDAO;
-import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.Array;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import model.Account;
 import model.DeliveryOption;
+import model.Notification;
 import model.OrderInfo;
-import model.OrderProduct;
 import model.Shipper;
 
 /**
@@ -126,6 +126,7 @@ public class OrderListForStaffController extends HttpServlet {
         request.setAttribute("orderList", orderList);
         request.setAttribute("orderInfo", orderList);
         request.setAttribute("account", account);
+        session.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customerMap", customerMap); // Gửi Map sang JSP
         request.getRequestDispatcher("OrderListForStaffView.jsp").forward(request, response);
     }
@@ -145,6 +146,7 @@ public class OrderListForStaffController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         int shipperID = Integer.parseInt(request.getParameter("shipperID"));
         int orderID = Integer.parseInt(request.getParameter("orderID"));
+        NotificationDAO notificationDAO = new NotificationDAO();
 
         OrderDAO orderDAO = new OrderDAO();
         if (account == null) {
@@ -155,14 +157,29 @@ public class OrderListForStaffController extends HttpServlet {
             String status = "shipped";
             if(account.getRole().equals("staff")){
             orderDAO.updateStaffAndShipperForOrder(orderID, account.getAccountID(), shipperID);
+
             }else{
                 orderDAO.updateAdminAndShipperForOrder(orderID, account.getAccountID(), shipperID);
             }
-            
+   
             orderDAO.updateDeliverystatus(orderID, status);
             orderDAO.updateOrderstatus(orderID, status);
             session.setAttribute("orderID", orderID);
             System.out.println();
+            // Send notification to shipper
+            if (request.getParameter("shipperID") != null) {
+                Notification notification = new Notification();
+                notification.setSenderID(1); // Staff who assigned the order
+                notification.setReceiverID(7); // Shipper's account ID
+                notification.setNotificationDetails("You have a new order to deliver! Order ID: " + orderID);
+                notification.setDateCreated(new Date(System.currentTimeMillis()));
+                notification.setDeleted(false);
+                notification.setNotificationTitle("New Delivery Assignment");
+                notification.setRead(false);
+
+                notificationDAO.insertNotification(notification);
+
+            }
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }

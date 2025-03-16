@@ -200,7 +200,7 @@
                             <c:forEach var="item" items="${cartItems}">
                                 <div class="product-item">
                                     <span class="product-infor">
-                                        <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
+                                            <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
                                     <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>

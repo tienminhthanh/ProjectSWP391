@@ -177,14 +177,8 @@ public class OrderController extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            if (product.getDiscountPercentage() > 0) {
-                Double priceWithDiscount = 0.0;
-                priceWithDiscount = product.getPrice() * (100 - product.getDiscountPercentage()) / 100;
-                product.setPrice(priceWithDiscount);
-            }
 
-            Double sum = product.getPrice() * quantity;
-
+            Double sum = product.getDiscountPercentage() > 0 ? (quantity * product.getPrice() * (100-product.getDiscountPercentage())/100) : (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();

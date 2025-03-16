@@ -32,6 +32,17 @@ public class Notification {
         this.isRead = isRead;
     }
 
+    public Notification(int senderID, int receiverID, String notificationDetails, Date dateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
+        this.senderID = senderID;
+        this.receiverID = receiverID;
+        this.notificationDetails = notificationDetails;
+        this.dateCreated = dateCreated;
+        this.isDeleted = isDeleted;
+        this.notificationTitle = notificationTitle;
+        this.isRead = isRead;
+    }
+
+    
     public Notification() {
     }
 

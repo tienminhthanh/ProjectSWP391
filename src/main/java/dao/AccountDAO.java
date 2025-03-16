@@ -1,10 +1,18 @@
 package dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Account;
+import model.Admin;
+import model.Customer;
+import model.Shipper;
+import model.Staff;
+import utils.DBContext;
 
 public class AccountDAO {
 
@@ -75,6 +83,7 @@ public class AccountDAO {
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
 
+
     public Account getIDByUsername(String username) throws SQLException {
         String sql = "SELECT accountID FROM Account WHERE username = ?";
         Object[] params = {username};
@@ -135,13 +144,21 @@ public class AccountDAO {
     /**
      * Lấy danh sách tất cả tài khoản
      */
-    public List<Account> getAllAccounts() throws SQLException {
+    public List<Account> getAllAccounts(String roleFilter) throws SQLException {
         List<Account> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM Account";
-        ResultSet rs = context.exeQuery(sql, null);
+        StringBuilder sql = new StringBuilder("SELECT * FROM Account");
+
+        // If a role is selected, filter the accounts by role
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" WHERE role = ?");
+        }
+
+        ResultSet rs = context.exeQuery(sql.toString(), roleFilter != null && !roleFilter.isEmpty() ? new Object[]{roleFilter} : null);
+
         while (rs.next()) {
             accounts.add(mapResultSetToAccount(rs));
         }
+
         return accounts;
     }
 
@@ -151,22 +168,232 @@ public class AccountDAO {
         return context.exeNonQuery(sql, params) > 0;
     }
 
+    public List<Account> getAccountsPaginated(String roleFilter, int page, int pageSize) throws SQLException {
+        List<Account> accounts = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Account");
+
+      
+        Object[] params;
+        int offset = (page - 1) * pageSize;
+
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" WHERE role = ?");
+            sql.append(" ORDER BY accountID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            params = new Object[]{roleFilter, offset, pageSize};
+        } else {
+            sql.append(" ORDER BY accountID DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            params = new Object[]{offset, pageSize};
+        }
+
+        ResultSet rs = context.exeQuery(sql.toString(), params);
+
+        while (rs.next()) {
+            accounts.add(mapResultSetToAccount(rs));
+        }
+
+        return accounts;
+    }
+
+ 
+    public int getTotalAccounts(String roleFilter) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Account");
+        Object[] params = null;
+
+        // Thêm điều kiện lọc theo role nếu có
+        if (roleFilter != null && !roleFilter.isEmpty()) {
+            sql.append(" WHERE role = ?");
+            params = new Object[]{roleFilter};
+        }
+
+        ResultSet rs = context.exeQuery(sql.toString(), params);
+        return rs.next() ? rs.getInt(1) : 0;
+    }
+
+    public int getTotalActiveAccounts() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Account WHERE isActive = 1";
+        ResultSet rs = context.exeQuery(sql, null);
+        return rs.next() ? rs.getInt(1) : 0;
+    }
+
+    // Lấy số tài khoản mới theo khoảng thời gian (day, week, month)
+    public int getNewAccountsByPeriod(String period) throws SQLException {
+        String sql;
+        switch (period.toLowerCase()) {
+            case "day":
+                sql = "SELECT COUNT(*) FROM Account WHERE dateAdded >= DATEADD(day, -1, GETDATE())";
+                break;
+            case "week":
+                sql = "SELECT COUNT(*) FROM Account WHERE dateAdded >= DATEADD(week, -1, GETDATE())";
+                break;
+            case "month":
+                sql = "SELECT COUNT(*) FROM Account WHERE dateAdded >= DATEADD(month, -1, GETDATE())";
+                break;
+            default:
+                return 0;
+        }
+        ResultSet rs = context.exeQuery(sql, null);
+        return rs.next() ? rs.getInt(1) : 0;
+    }
+
+    public Map<String, Integer> getAccountsByRole() throws SQLException {
+        Map<String, Integer> roleStats = new HashMap<>();
+        String sql = "SELECT role, COUNT(*) as count FROM Account GROUP BY role";
+        ResultSet rs = context.exeQuery(sql, null);
+
+        while (rs.next()) {
+            roleStats.put(rs.getString("role"), rs.getInt("count"));
+        }
+        return roleStats;
+    }
+
+    public Map<String, Integer> getMonthlyAccountGrowth() throws SQLException {
+        Map<String, Integer> monthlyGrowth = new HashMap<>();
+        String sql = "SELECT FORMAT(dateAdded, 'yyyy-MM') as month, COUNT(*) as count "
+                + "FROM Account "
+                + "WHERE dateAdded >= DATEADD(month, -1, GETDATE()) "
+                + "GROUP BY FORMAT(dateAdded, 'yyyy-MM') "
+                + "ORDER BY month";
+        ResultSet rs = context.exeQuery(sql, null);
+
+        while (rs.next()) {
+            monthlyGrowth.put(rs.getString("month"), rs.getInt("count"));
+        }
+        return monthlyGrowth;
+    }
+
     /**
      * Chuyển đổi ResultSet thành đối tượng Account
      */
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
-        return new Account(
-                rs.getInt("accountID"),
-                rs.getString("username"),
-                rs.getString("password"),
-                rs.getString("role"),
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("email"),
-                rs.getString("phoneNumber"),
-                rs.getString("birthDate"),
-                rs.getBoolean("isActive")
-        );
+        String role= rs.getString("role");
+        switch (role) {
+            case "admin":
+                return new Admin(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            case "customer":
+                return new Customer(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            case "staff":
+                return new Staff(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            case "shipper":
+                return new Shipper(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+            default:
+                return new Account(
+                        rs.getInt("accountID"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        rs.getString("birthDate"),
+                        rs.getBoolean("isActive")
+                );
+        }
+    }
+//     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
+//        return new Account(
+//                rs.getInt("accountID"),
+//                rs.getString("username"),
+//                rs.getString("password"),
+//                rs.getString("role"),
+//                rs.getString("firstName"),
+//                rs.getString("lastName"),
+//                rs.getString("email"),
+//                rs.getString("phoneNumber"),
+//                rs.getString("birthDate"),
+//                rs.getBoolean("isActive")
+//        );
+//    }
+
+    public Account getAdditionalInfo(Account account) throws SQLException {
+        String sql = "";
+        switch (account.getRole()) {
+            case "admin":
+                sql = "SELECT * from Admin where adminID = ?";
+                break;
+            case "customer":
+                sql = "SELECT * from Customer where customerID = ?";
+                break;
+            case "staff":
+                sql = "SELECT * from Customer where staffID = ?";
+                break;
+            case "shipper":
+                sql = "SELECT * from Customer where shipperID = ?";
+                break;
+        }
+
+        Object[] params = {account.getAccountID()};
+        ResultSet rs = context.exeQuery(sql, params);
+        if (rs.next()) {
+            switch (account.getRole()) {
+                case "customer":
+                    Customer customer = (Customer) account;
+                    customer.setDefaultDeliveryAddress(rs.getString("defaultDeliveryAddress"));
+                    customer.setTotalPurchasePoints(rs.getDouble("totalPurchasePoints"));
+                    return customer;
+                case "admin":
+                    Admin ad = (Admin) account;
+                    ad.setTotalEvents(rs.getInt("totalEvents"));
+                    ad.setTotalVouchers(rs.getInt("totalVouchers"));
+                    return ad;
+                case "shipper":
+                    Shipper shipper = (Shipper) account;
+                    shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
+                    shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
+                    return shipper;
+                case "staff":
+                    Staff staff = (Staff) account;
+                    staff.setTotalOrders(rs.getInt("totalOrders"));
+                    staff.setWorkShift(rs.getString("workShift"));
+                    return staff;
+            }
+        }
+
+        return account;
     }
 
     public List<Account> getAllCustomers() throws SQLException {
@@ -194,4 +421,9 @@ public class AccountDAO {
         }
         return customers;
     }
+
+    public static void main(String[] args) {
+        System.out.println("cúp điện");
+    }
+
 }

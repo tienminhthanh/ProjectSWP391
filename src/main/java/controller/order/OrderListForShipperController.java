@@ -108,6 +108,8 @@ public class OrderListForShipperController extends HttpServlet {
                 System.out.println(orderInfo.getExpectedDeliveryDate());
             }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
+           
+             // Đặt dữ liệu vào requestScope
             request.setAttribute("accountList", accountList);
             request.setAttribute("currentStatus", status);
             request.getRequestDispatcher("OrderListForShipperView.jsp").forward(request, response);

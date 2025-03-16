@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 @WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/updateAccount"})
-public class UpdateAccountServlet extends HttpServlet {
+public class UpdateAccountController extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -63,7 +63,6 @@ public class UpdateAccountServlet extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
 
         try {
-
             boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate, role);
 
             if (success) {

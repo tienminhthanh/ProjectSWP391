@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import model.Account;
 
 @WebServlet(name = "ForgotPasswordServlet", urlPatterns = {"/forgotPassword"})
-public class ForgotPasswordServlet extends HttpServlet {
+public class ForgotPasswordController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,7 +34,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         try {
             account = accountDAO.getAccountByEmail(email);
         } catch (SQLException ex) {
-            Logger.getLogger(ForgotPasswordServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ForgotPasswordController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (account == null) {

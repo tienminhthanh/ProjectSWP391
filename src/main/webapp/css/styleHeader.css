@@ -44,14 +44,8 @@ a{
     padding: 10px;
     flex-wrap: wrap;
     width: 100%;
-    /*    position: fixed;
-        top: 0;
-        left: 0;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  Optional shadow 
-        z-index: 1000;*/
-    background-color: #ecc942; /* Keep the background */
     transition: top 0.3s ease-in-out;
-
+    background-color: #ecc942;
 
 }
 

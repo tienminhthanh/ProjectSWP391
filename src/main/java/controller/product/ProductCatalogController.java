@@ -4,8 +4,7 @@
  */
 package controller.product;
 
-import dao.ProductDAO;
-import dao.VoucherDAO;
+import dao.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -43,13 +42,18 @@ import utils.Utility;
 
 public class ProductCatalogController extends HttpServlet {
 
+    private static final Set<String> MERCH_FILTERS = Set.of("ftSrs", "ftBrn", "ftChr");
+    private static final Set<String> BOOK_FITLERS = Set.of("ftGnr", "ftPbl");
+    private static final Set<String> SINGLE_FILTERS = Set.of("ftCtg", "ftPbl", "ftSrs", "ftBrn", "ftChr");
+
     private ProductDAO productDAO;
     private VoucherDAO vDao;
+    private EventDAO eDao;
 
     @Override
     public void init() throws ServletException {
         vDao = new VoucherDAO();
-        productDAO = (ProductDAO) getServletContext().getAttribute("productDAO");
+        productDAO = new ProductDAO();
 
     }
 
@@ -65,7 +69,6 @@ public class ProductCatalogController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
         String path = request.getServletPath();
 
         switch (path) {
@@ -161,6 +164,7 @@ public class ProductCatalogController extends HttpServlet {
         //For redirect back to original page after logging in or adding items to cart
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
+        StringBuilder message = new StringBuilder();
         //Handling filters
         Map<String, String> filterMap = new HashMap<>();
         if (paramMap != null) {
@@ -168,13 +172,22 @@ public class ProductCatalogController extends HttpServlet {
                 String name = entry.getKey();
                 String[] values = entry.getValue();
 
+                //Skip non-filter params
                 if (!name.startsWith("ft") || filterMap.containsKey(name)) {
                     continue;
                 }
 
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
                 if (name.equals("ftPrc")) {
                     filterMap.put(name, values[0] + "-" + values[1]);
                 } else {
+                    //Normal case
                     filterMap.put(name, values[0]);
                 }
             }
@@ -212,7 +225,13 @@ public class ProductCatalogController extends HttpServlet {
             // Set up the product list
             if (productList.isEmpty()) {
                 // No result found
-                request.setAttribute("message", getNoResultMessage(type));
+                message.setLength(0);
+                message.append(getNoResultMessage(type));
+
+                //If filter are selected
+                if (!filterMap.isEmpty()) {
+                    message.append("Or deselect some filter if any!\n");
+                }
             } else {
                 request.setAttribute("productList", productList);
                 // For displaying current sort criteria
@@ -221,13 +240,16 @@ public class ProductCatalogController extends HttpServlet {
             }
 
             //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
             request.setAttribute("currentURL", currentURL);
             request.setAttribute("type", type);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
@@ -256,9 +278,9 @@ public class ProductCatalogController extends HttpServlet {
     private String getNoResultMessage(String type) {
         String message = "";
         if (type.equals("book")) {
-            message = "No result found! Try entering series title, name of author/artist, categories or genre!";
+            message = "No result found! Try entering series title, name of author/artist, categories or genre.\n";
         } else if (type.equals("merch")) {
-            message = "No result found! Try entering series title, name of sculptor/artist/character/brand or category!";
+            message = "No result found! Try entering series title, name of sculptor/artist/character/brand or category.\n";
         }
         return message;
     }
@@ -271,6 +293,8 @@ public class ProductCatalogController extends HttpServlet {
         //For redirect back to original page after logging in or adding items to cart
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
+        StringBuilder message = new StringBuilder();
+
         //Handling filters
         Map<String, String> filterMap = new HashMap<>();
         if (paramMap != null) {
@@ -278,13 +302,22 @@ public class ProductCatalogController extends HttpServlet {
                 String name = entry.getKey();
                 String[] values = entry.getValue();
 
+                //Skip non-filter params
                 if (!name.startsWith("ft") || filterMap.containsKey(name)) {
                     continue;
                 }
 
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
                 if (name.equals("ftPrc")) {
                     filterMap.put(name, values[0] + "-" + values[1]);
                 } else {
+                    //Normal case
                     filterMap.put(name, values[0]);
                 }
 
@@ -309,10 +342,11 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "ctg", selectedCategory.getGeneralCategory());
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "ctg", selectedCategory.getGeneralCategory(), "");
             if (productList.isEmpty()) {
                 //No result found
-                request.setAttribute("message", "No result found! Please deselect some filter if any.");
+                message.setLength(0);
+                message.append("No result found! Please deselect some filter if any.");
             } else {
                 request.setAttribute("productList", productList);
                 //For displaying current sort criteria
@@ -320,13 +354,16 @@ public class ProductCatalogController extends HttpServlet {
             }
 
             //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
             request.setAttribute("type", selectedCategory.getGeneralCategory());
             request.setAttribute("currentURL", currentURL);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
@@ -349,18 +386,28 @@ public class ProductCatalogController extends HttpServlet {
                 String name = entry.getKey();
                 String[] values = entry.getValue();
 
+                //Skip non-filter params
                 if (!name.startsWith("ft") || filterMap.containsKey(name)) {
                     continue;
                 }
 
-                if (name.equals("ftSrs") || name.equals("ftChr") || name.equals("ftBrn")) {
+                //Prevent MERCH_FITLERS from being applied to Books
+                if (MERCH_FILTERS.contains(name)) {
                     message.append("Cannot apply this filter to Books!");
                     continue;
                 }
 
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
                 if (name.equals("ftPrc")) {
                     filterMap.put(name, values[0] + "-" + values[1]);
                 } else {
+                    //Normal case
                     filterMap.put(name, values[0]);
                 }
 
@@ -373,20 +420,21 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
-            
+
             //Parse id string to integer
             int id = Integer.parseInt(genreID);
 
             //            Set up breadCrumb and page title
-            String breadCrumb = "<a href='home'>Home</a>";
             Genre selectedGenre = productDAO.getGenreById(id);
             String genreName = selectedGenre.getGenreName();
-            breadCrumb += String.format(" > <a href='genre?id=%s'>%s</a>", id, genreName);
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(" > <a href='search?type=book'>Books</a>");
+            breadCrumb.append(String.format(" > <a href='genre?id=%s'>%s</a>", id, genreName));
             request.setAttribute("pageTitle", genreName);
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "gnr", "book");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "gnr", "book", "");
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -406,15 +454,101 @@ public class ProductCatalogController extends HttpServlet {
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
 
     private void handlePublisher(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for publisher functionality
+        String publisherID = request.getParameter("id");
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent MERCH_FITLERS from being applied to Books
+                if (MERCH_FILTERS.contains(name)) {
+                    message.append("Cannot apply this filter to Books!");
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+
+            //Parse id string to integer
+            int id = Integer.parseInt(publisherID);
+
+            //            Set up breadCrumb and page title
+            Publisher selectedPublisher = productDAO.getPublisherById(id);
+            String publisherName = selectedPublisher.getPublisherName();
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(" > <a href='search?type=book'>Books</a>");
+            breadCrumb.append(String.format(" > <a href='publisher?id=%s'>%s</a>", id, publisherName));
+            request.setAttribute("pageTitle", publisherName);
+            request.setAttribute("breadCrumb", breadCrumb);
+
+            //Get product list
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "pbl", "book", "");
+            if (productList.isEmpty()) {
+                //No result found
+                message.setLength(0);
+                message.append("No result found! Please deselect some filter if any.");
+            } else {
+                request.setAttribute("productList", productList);
+                //For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("type", "book");
+            request.setAttribute("currentURL", currentURL);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleCreator(HttpServletRequest request, HttpServletResponse response)
@@ -425,6 +559,7 @@ public class ProductCatalogController extends HttpServlet {
         //For redirect back to original page after logging in or adding items to cart
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
+        StringBuilder message = new StringBuilder();
         //Handling filters
         Map<String, String> filterMap = new HashMap<>();
         if (paramMap != null) {
@@ -432,13 +567,22 @@ public class ProductCatalogController extends HttpServlet {
                 String name = entry.getKey();
                 String[] values = entry.getValue();
 
+                //Skip non-filter params
                 if (!name.startsWith("ft") || filterMap.containsKey(name)) {
                     continue;
                 }
 
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
                 if (name.equals("ftPrc")) {
                     filterMap.put(name, values[0] + "-" + values[1]);
                 } else {
+                    //Normal case
                     filterMap.put(name, values[0]);
                 }
 
@@ -463,10 +607,12 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "crt", selectedCreator.getGeneralCategory());
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "crt", selectedCreator.getGeneralCategory(), "");
             if (productList.isEmpty()) {
                 //No result found
-                request.setAttribute("message", "No result found! Please deselect some filter if any.");
+                message.setLength(0);
+                message.append("No result found! Please deselect some filter if any.");
+
             } else {
                 request.setAttribute("productList", productList);
                 //For displaying current sort criteria
@@ -474,13 +620,16 @@ public class ProductCatalogController extends HttpServlet {
             }
 
             //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
             request.setAttribute("type", selectedCreator.getGeneralCategory());
             request.setAttribute("currentURL", currentURL);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
@@ -502,12 +651,176 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleNewRelease(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for new content functionality
+        String type = request.getParameter("type");
+
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+
+            // Set up breadCrumb and page Title
+            // Get product list
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type)));
+            breadCrumb.append(String.format(" > <a href='new?type=%s'>New Release</a>", type));
+            List<Product> productList = productDAO.getProductsByCondition(0, sortCriteria, filterMap, "new", type, "");
+
+            // Set up the product list
+            if (productList.isEmpty()) {
+                // No result
+                message.setLength(0);
+
+                //If filter too tight
+                if (!filterMap.isEmpty()) {
+                    message.append("No result found! Please deselect some filter if any!\n");
+                } else {
+                    message.append("No new releases available right now. More interesting products coming soon!\n");
+                }
+
+            } else {
+                request.setAttribute("productList", productList);
+                // For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("type", type);
+            request.setAttribute("breadCrumb", breadCrumb);
+            request.setAttribute("pageTitle", "New Release - " + getDisplayTextBasedOnType(type));
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleOnSale(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Implementation for sale functionality
+        String type = request.getParameter("type");
+
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+
+            // Set up breadCrumb and page Title
+            // Get product list
+            StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
+            breadCrumb.append(String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type)));
+            breadCrumb.append(String.format(" > <a href='sale?type=%s'>On Sale</a>", type));
+            List<Product> productList = productDAO.getProductsByCondition(0, sortCriteria, filterMap, "sale", type, "");
+
+            // Set up the product list
+            if (productList.isEmpty()) {
+                // No result
+                message.setLength(0);
+
+                //If filter too tight
+                if (!filterMap.isEmpty()) {
+                    message.append("No result found! Please deselect some filter if any!\n");
+                } else {
+                    message.append("All discounted items are sold out! Stay tuned for the next sale.\n");
+                }
+
+            } else {
+                request.setAttribute("productList", productList);
+                // For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("type", type);
+            request.setAttribute("breadCrumb", breadCrumb);
+            request.setAttribute("pageTitle", "On Sale - " + getDisplayTextBasedOnType(type));
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     private void handleDetails(HttpServletRequest request, HttpServletResponse response)
@@ -521,79 +834,86 @@ public class ProductCatalogController extends HttpServlet {
 
             Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id);
             if (requestedProduct == null) {
-                throw new Exception("The product is not available right now!");
+                request.setAttribute("message", "The product is not available right now!");
+                request.getRequestDispatcher("home").forward(request, response);
+            } else {
+                //Get creators
+                HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
+                request.setAttribute("creatorMap", creatorMap);
+
+                //Get genres if product is a book
+                if (requestedProduct.getGeneralCategory().equals("book")) {
+                    List<Genre> genreList = productDAO.getGenresOfThisBook(id);
+                    request.setAttribute("genreList", genreList);
+                }
+
+                //Construct breadCrumb
+                String breadCrumb = String.format("<a href='home'>Home</a> > <a href='search?type=%s'>%s</a> > <a href='category?id=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
+                        requestedProduct.getGeneralCategory(), getDisplayTextBasedOnType(requestedProduct.getGeneralCategory()), requestedProduct.getSpecificCategory().getCategoryID(), requestedProduct.getSpecificCategory().getCategoryName(), id, requestedProduct.getGeneralCategory(), requestedProduct.getProductName());
+                request.setAttribute("breadCrumb", breadCrumb);
+                request.setAttribute("product", requestedProduct);
+                request.setAttribute("type", type);
+                request.setAttribute("currentURL", currentURL);
+
+                request.getRequestDispatcher("productDetails.jsp").forward(request, response);
             }
 
-            //Get creators
-            HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
-
-            //Get genres if product is a book
-            if (requestedProduct.getGeneralCategory().equals("book")) {
-                List<Genre> genreList = productDAO.getGenresOfThisBook(id);
-                request.setAttribute("genreList", genreList);
-            }
-
-            //Construct breadCrumb
-            String breadCrumb = String.format("<a href='home'>Home</a> > <a href='search?type=%s'>%s</a> > <a href='catalog?category=%s'>%s</a> > <a href='productDetails?id=%s&type=%s'>%s</a>",
-                    requestedProduct.getGeneralCategory(), getDisplayTextBasedOnType(requestedProduct.getGeneralCategory()), requestedProduct.getSpecificCategory().getCategoryID(), requestedProduct.getSpecificCategory().getCategoryName(), id, requestedProduct.getGeneralCategory(), requestedProduct.getProductName());
-
-            request.setAttribute("type", requestedProduct.getGeneralCategory());
-            request.setAttribute("currentURL", currentURL);
-            request.setAttribute("breadCrumb", breadCrumb);
-            request.setAttribute("product", requestedProduct);
-            request.setAttribute("creatorMap", creatorMap);
-
-            request.getRequestDispatcher("productDetails.jsp").forward(request, response);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
+            e.printStackTrace();
+            request.setAttribute("errorMessage", e.toString());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
 
     private void handleHomepage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("account") != null) {
-            Account account = (Account) session.getAttribute("account");
-            switch (account.getRole()) {
-                case "staff":
-                    response.sendRedirect("dashboard.jsp");
-                    break;
-                case "shipper":
-                    response.sendRedirect("shipperDashboard.jsp");
-                    break;
-                case "admin":
-                    response.sendRedirect("listAccount"); // Điều hướng đến danh sách tài khoản
-                    break;
-            }
-            if (!account.getRole().equals("customer")) {
-                return;
-            }
-        }
-
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
         try {
-            showProductsInHomepage(request, response);
-            showVouchersInHomepage(request, response);
+            if (account != null && account.getRole().equals("customer")) {
+                CartItemDAO cartDAO = new CartItemDAO();
+                List<CartItem> listCart = session.getAttribute("cartItems") != null ? (List<CartItem>) session.getAttribute("cartItems") : cartDAO.getCartItemsByCustomer(account.getAccountID());
+                session.setAttribute("cartItems", listCart);
+            }
 
+            showProductsInHomepage(session);
+            showVouchersInHomepage(request);
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            request.setAttribute("errorMessage", e.getMessage());
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
     }
 
-    private void showProductsInHomepage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<Product> productList = productDAO.get10RandomActiveProducts("book");
+    private void showProductsInHomepage(HttpSession session) throws Exception {
 
-        if (productList.isEmpty()) {
-            throw new Exception("Found no products in the catalog!");
-        }
-        request.setAttribute("productList", productList);
+        List<Product> newBookHome = session.getAttribute("newBookHome") != null ? (List<Product>) session.getAttribute("newBookHome") : productDAO.getProductsByCondition(0, "releaseDate", null, "new", "book", "home");
+        List<Product> newMerchHome = session.getAttribute("newMerchHome") != null ? (List<Product>) session.getAttribute("newMerchHome") : productDAO.getProductsByCondition(0, "releaseDate", null, "new", "merch", "home");
+        List<Product> saleBookHome = session.getAttribute("saleBookHome") != null ? (List<Product>) session.getAttribute("saleBookHome") : productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "book", "home");
+        List<Product> saleMerchHome = session.getAttribute("saleMerchHome") != null ? (List<Product>) session.getAttribute("saleMerchHome") : productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "merch", "home");
+        List<Product> animeBookHome = session.getAttribute("animeBookHome") != null ? (List<Product>) session.getAttribute("animeBookHome") : productDAO.getProductsByCondition(18, "releaseDate", null, "gnr", "book", "home");
+        List<Product> holoMerchHome = session.getAttribute("holoMerchHome") != null ? (List<Product>) session.getAttribute("holoMerchHome") : productDAO.getProductsByCondition(1, "releaseDate", null, "srs", "merch", "home");
+
+        session.setAttribute("newBookHome", newBookHome);
+        session.setAttribute("newMerchHome", newMerchHome);
+        session.setAttribute("saleBookHome", saleBookHome);
+        session.setAttribute("saleMerchHome", saleMerchHome);
+        session.setAttribute("animeBookHome", animeBookHome);
+        session.setAttribute("holoMerchHome", holoMerchHome);
+
     }
+    
+//    private void showBannerInHomepage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//        List<String> bannerList = eDao.getBannerEvent();
+//
+//        if (bannerList.isEmpty()) {
+//            throw new Exception("Found no products in the catalog!");
+//        }
+//        request.setAttribute("bannerList", bannerList);
+//    }
 
-    private void showVouchersInHomepage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void showVouchersInHomepage(HttpServletRequest request) throws Exception {
 
         List<Voucher> listVoucher = vDao.getListVoucher();
         request.setAttribute("listVoucher", listVoucher);
@@ -604,7 +924,7 @@ public class ProductCatalogController extends HttpServlet {
             throws ServletException, IOException {
         // Implementation for ranking functionality
     }
-    
+
     private String formatURL(String encodedURL, Set<String> invalidParams) throws UnsupportedEncodingException, MalformedURLException {
 
         Map<String, String> decodedURLParts = new HashMap<>();
@@ -627,15 +947,15 @@ public class ProductCatalogController extends HttpServlet {
         for (String param : params) {
             String[] keyValue = param.split("=");           //Split param name and value
             String key = keyValue[0];
-            
+
             //Skip if invalid params found
             if (invalidParams.contains(key)) {
                 continue;
             }
-            
+
             //Ensure value never null
             String value = keyValue.length > 1 ? keyValue[1] : "";
-            
+
             //Put only valid param
             decodedURLParts.put(key, value);
         }

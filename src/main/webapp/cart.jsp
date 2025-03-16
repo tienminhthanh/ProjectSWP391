@@ -54,6 +54,17 @@
                 border-radius: 4px;
                 margin-right: 10px;
             }
+
+            /* Các style hiện có giữ nguyên */
+            .total-section {
+                position: sticky;
+                bottom: 0;
+                background-color: white; /* Đảm bảo nền không trong suốt */
+                padding: 10px;
+                border-top: 0.5px solid #ddd; /* Thêm viền trên để phân cách */
+                z-index: 10; /* Đảm bảo nằm trên các phần tử khác */
+            }
+
         </style>
     </head>
     <body class="bg-gray-100">
@@ -130,7 +141,7 @@
                 </c:if>
 
                 <!-- Tổng cộng và nút thanh toán -->
-                <div class="flex justify-between items-center mt-4">
+                <div class="flex justify-between items-center mt-4 total-section">
                     <button onclick="history.back()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">Back</button>
                     <div class="text-lg font-bold">
                         Total: 

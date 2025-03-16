@@ -96,9 +96,54 @@ public class NotificationDAO {
         }
         return notifications;
     }
+    public List<Notification> getNotificationsByReceiverDESC(int receiverID) throws SQLException {
+        String sql = "SELECT * FROM Notification WHERE receiverID = ? AND isDeleted = 0 ORDER BY dateCreated DESC, isRead DESC";
+        Object[] params = {receiverID};
+        ResultSet rs = context.exeQuery(sql, params);
+        List<Notification> notifications = new ArrayList<>();
+
+        try {
+            while (rs.next()) {
+                Notification notification = new Notification(
+                        rs.getInt("notificationID"),
+                        rs.getInt("senderID"),
+                        rs.getInt("receiverID"),
+                        rs.getString("notificationDetails"),
+                        rs.getDate("dateCreated"),
+                        rs.getBoolean("isDeleted"),
+                        rs.getString("notificationTitle"),
+                        rs.getBoolean("isRead")
+                );
+                notifications.add(notification);
+            }
+        } finally {
+            rs.close();
+        }
+        return notifications;
+    }
 
     public List<Notification> getAllNotifications() throws SQLException {
         String sql = "SELECT MAX(notificationID) AS notificationID, notificationTitle, notificationDetails, MAX(dateCreated) AS dateCreated FROM Notification GROUP BY notificationTitle, notificationDetails ORDER BY dateCreated DESC, notificationID DESC";
+        ResultSet rs = context.exeQuery(sql, new Object[]{});
+        List<Notification> notifications = new ArrayList<>();
+
+        try {
+            while (rs.next()) {
+                Notification notification = new Notification(
+                        rs.getInt("notificationID"),
+                        rs.getString("notificationTitle"),
+                        rs.getString("notificationDetails"),
+                        rs.getDate("dateCreated")
+                );
+                notifications.add(notification);
+            }
+        } finally {
+            rs.close();
+        }
+        return notifications;
+    }
+    public List<Notification> getAllNotificationsForStaff() throws SQLException {
+        String sql = "SELECT MAX(notificationID) AS notificationID, notificationTitle, notificationDetails, MAX(dateCreated) AS dateCreated FROM Notification Where senderID !=1  GROUP BY notificationTitle, notificationDetails ORDER BY dateCreated DESC, notificationID DESC";
         ResultSet rs = context.exeQuery(sql, new Object[]{});
         List<Notification> notifications = new ArrayList<>();
 

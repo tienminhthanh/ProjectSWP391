@@ -16,13 +16,18 @@
     .logo:hover {
         box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Bóng đổ đậm hơn khi hover */
     }
+    
 </style>
 
 <div class="p-4">
     <img alt="Company Logo" class="mb-4 logo" height="100" src="./img/logo.png" width="300"/>
 </div>
-<nav class="space-y-2">
+<nav class="space-y-2 side-nav">
     <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() == 'admin'}">
+        <a class="flex items-center p-2 hover:bg-orange-800" href="readAccount">
+            <i class="fas fa-user-circle mr-2"></i> 
+            My information
+        </a>
 
         <a class="flex items-center p-2 hover:bg-orange-800" href="#">
             <i class="fas fa-tachometer-alt mr-2"></i>

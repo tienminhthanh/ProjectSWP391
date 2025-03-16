@@ -217,7 +217,7 @@
                                     <div class="inline-block">
                                         <p>${chat.messageContent}</p>
                                         <span class="text-xs">
-                                            <fmt:formatDate value="${chat.sentAt}" pattern="dd/MM HH:mm"/>
+                                            <fmt:formatDate value="${chat.sentAt}" pattern="HH:mm"/>
                                         </span>
                                     </div>
                                 </div>

@@ -16,9 +16,8 @@ public class Staff extends Account{
     public Staff() {
     }
 
-    public Staff(String workShift, int totalOrders) {
-        this.workShift = workShift;
-        this.totalOrders = totalOrders;
+    public Staff(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
     }
 
     public Staff(String workShift, int totalOrders, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {

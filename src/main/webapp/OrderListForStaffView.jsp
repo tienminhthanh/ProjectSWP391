@@ -36,8 +36,10 @@
                 background-color: #2d3748; /* Màu nền khi hover */
             }
             .main-content {
-                /*                margin-left: 250px;  Dịch nội dung chính sang phải, tránh bị sidebar che 
-                                padding: 20px;*/
+
+                margin-left: 10px; /* Dịch nội dung chính sang phải, tránh bị sidebar che */
+                padding: 20px;
+
                 flex: 1; /* Chiếm toàn bộ không gian còn lại */
             }
             .header {
@@ -131,10 +133,11 @@
 
     <body>
 
-        <div class="w-64 bg-orange-400 text-white min-h-screen">
+        <div class="w-64 bg-orange-400 text-white min-h-screen fixed top-0 left-0">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
-        <div class="main-content">
+
+        <div class="main-content ml-64">
             <div class="header">
                 <div class="flex items-center">
 

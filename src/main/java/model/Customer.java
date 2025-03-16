@@ -17,9 +17,8 @@ public class Customer  extends Account{
     public Customer() {
     }
 
-    public Customer(double totalPurchasePoints, String defaultDeliveryAddress) {
-        this.totalPurchasePoints = totalPurchasePoints;
-        this.defaultDeliveryAddress = defaultDeliveryAddress;
+    public Customer(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
     }
 
     public Customer(double totalPurchasePoints, String defaultDeliveryAddress, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {

@@ -25,9 +25,9 @@
                     <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddEvent">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
-                    <c:if test="${not empty errorMessage}">
+                    <c:if test="${not empty message}">
                         <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                            <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
+                            <i class="fas fa-exclamation-circle mr-2"></i>${message}
                         </p>
                     </c:if>
                 </div>
@@ -40,7 +40,8 @@
                                 <th class="px-4 py-3 border border-b w-[80px]">No.</th>
                                 <th class="px-4 py-3 border border-b w-[200]">Event Name</th>
                                 <th class="px-4 py-3 border border-b w-[200]">Banner</th>
-                                <th class="px-4 py-3 border border-b w-[200">Desciption</th>
+                                <th class="px-4 py-3 border border-b w-[200">Description</th>
+                                <th class="px-4 py-3 border border-b w-[150]">Expiry</th>
                                 <th class="px-4 py-3 border border-b w-[150]">Status</th>
                             </tr>
                         </thead>
@@ -56,11 +57,28 @@
                                     <td class="px-4 py-3 border border-b text-left">${event.description}</td>
                                     <td class="px-4 py-3 border border-b text-center">
                                         <c:choose>
-                                            <c:when test="${event.isActive}">
+                                            <c:when test="${event.expiry}">
                                                 <span class="text-green-700">Available</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-red-700">Expired</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td class="px-2 py-3 border border-b text-center">
+                                        <c:choose>
+                                            <c:when test="${event.expiry}">
+                                                <c:choose>
+                                                    <c:when test="${event.isActive}">
+                                                        <span class="text-green-600">Active</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="text-red-600">Deactivate</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-red-600">Deactivate</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
