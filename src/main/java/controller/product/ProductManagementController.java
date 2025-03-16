@@ -181,7 +181,7 @@ public class ProductManagementController extends HttpServlet {
                 
                 
                 //Check if product is currently featured in an event
-                request.setAttribute("productEventStatus", requestedProduct.getEventEndDate() == null || LocalDate.now().isAfter(requestedProduct.getEventEndDate())? "notInEvent" : "inEvent");
+                request.setAttribute("productEventStatus", requestedProduct.getEventEndDate() == null || LocalDate.now().isAfter(requestedProduct.getEventEndDate()) ? "notInEvent" : "inEvent");
                 request.setAttribute("product", requestedProduct);
                 request.setAttribute("type", type);
                 request.setAttribute("currentURL", currentURL);

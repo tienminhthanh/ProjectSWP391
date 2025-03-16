@@ -640,11 +640,9 @@ public class ProductDAO {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
 
         LocalDate eventEndDate = null;
-        LocalDate eventStartDate = null;
         int discountPercentage = 0;
         java.sql.Date sqlDateStarted = rs.getDate("dateStarted");
         if (sqlDateStarted != null) {
-            eventStartDate = sqlDateStarted.toLocalDate();
             eventEndDate = sqlDateStarted.toLocalDate().plusDays(rs.getInt("eventDuration"));
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
@@ -671,7 +669,7 @@ public class ProductDAO {
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
-                        eventEndDate).setSalesRank(rs.getInt("salesRank")).setEventStartDate(eventStartDate);
+                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
             case "merch":
                 // For merch details
                 Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
@@ -695,7 +693,7 @@ public class ProductDAO {
                         rs.getBoolean("isActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
-                        eventEndDate).setSalesRank(rs.getInt("salesRank")).setEventStartDate(eventStartDate);
+                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
 
             default:
                 //For listing, sort, search, filter

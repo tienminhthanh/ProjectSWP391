@@ -27,8 +27,6 @@ public class Product {
     private String imageURL;
     private int discountPercentage;
     private LocalDate eventEndDate;
-    private LocalDate eventStartDate;
-    private int eventDuration;
     private int salesRank;
 
     /**
@@ -292,27 +290,6 @@ public class Product {
         return this;
     }
 
-    public LocalDate getEventStartDate() {
-        return eventStartDate;
-    }
-
-    public Product setEventStartDate(LocalDate eventStartDate) {
-        this.eventStartDate = eventStartDate;
-        return this;
-    }
-
-    public int getEventDuration() {
-        return eventDuration;
-    }
-
-    public Product setEventDuration(int eventDuration) {
-        this.eventDuration = eventDuration;
-        return this;
-    }
-
-  
-
-    
     
     
 }
