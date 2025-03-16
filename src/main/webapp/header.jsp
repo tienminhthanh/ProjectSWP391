@@ -20,7 +20,6 @@
         <!--Search-->
         <div class="search-nav-container">
             <div class="search-bar">
-                <!--style this shit properly man, it's killing me-->
                 <form action="search" method="get">
                     <select name="type" id="searchType">
                         <option value="book">Books</option>
@@ -31,7 +30,6 @@
                 </form>
             </div>
 
-            <!--Hide this shit on mobile view bro -->
             <nav> 
                 <ul>
                     <c:forEach var="cat" items="${applicationScope.categories.keySet()}">
@@ -48,7 +46,7 @@
                     <i class="fa-regular fa-bell"></i>
                     <c:set var="unreadCount" value="0" />
                     <c:forEach var="notification" items="${sessionScope.notifications}">
-                        <c:if test="${!notification.isRead}">
+                        <c:if test="${!notification.isRead()}">
                             <c:set var="unreadCount" value="${unreadCount + 1}" />
                         </c:if>
                     </c:forEach>
@@ -96,13 +94,22 @@
                         <li class="border-b-2 border-white p-4 rounded-b-lg">
                             <!-- Notification -->
                             <a class="flex items-center gap-3" href="notification?action=list&receiverID=${sessionScope.account.accountID}">
-                                <div class="w-6 h-6 flex items-center justify-center">
+                                <div class="w-6 h-6 flex relative items-center justify-center">
                                     <i class="fa-regular fa-bell text-lg"></i>
+                                    <c:set var="unreadCount" value="0" />
+                                    <c:forEach var="notification" items="${sessionScope.notifications}">
+                                        <c:if test="${!notification.isRead()}">
+                                            <c:set var="unreadCount" value="${unreadCount + 1}" />
+                                        </c:if>
+                                    </c:forEach>
+                                    <c:if test="${unreadCount > 0}">
+                                        <span class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2
+                                              bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5
+                                              flex items-center justify-center">${unreadCount}</span>
+                                    </c:if>
                                 </div>
                                 <span>Notification</span>
-                                <c:if test="${unreadCount > 0}">
-                                    <span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 inline-flex items-center justify-center ml-2">${unreadCount}</span>
-                                </c:if>
+
                             </a>
                         </li>
 
@@ -120,7 +127,7 @@
                                     </c:if>
                                 </div>
                                 <span>Cart</span>
-                              
+
                             </a>
                         </li>
 

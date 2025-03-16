@@ -79,6 +79,7 @@
                     <div class="w-full">
                         <div class="gap-4 w-full overflow-x-auto">
                             <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                <c:set var="currentURL" value="${currentURL}" scope="request"/>
                                 <c:forEach var="currentProduct" items="${productList}">
                                     <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                     <jsp:include page="productCard.jsp"/>

@@ -10,11 +10,11 @@ body{
     font-family: Arial, sans-serif;
 }
 .popular-search-area, .voucher-area{
-    order:0;
+    order:999;
 }
 
-@media (max-width:768px){
+@media (min-width:768px){
     .popular-search-area, .voucher-area{
-        order:999;
+        order:0;
     }
 }

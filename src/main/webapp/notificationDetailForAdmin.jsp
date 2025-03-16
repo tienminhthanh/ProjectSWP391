@@ -16,13 +16,13 @@
                 background-color: #f1f5f9;
             }
             .detail-container {
-                background-color: #1e293b;
+                background-color: #ffffff;
                 border-radius: 8px;
                 padding: 20px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 max-width: 800px;
                 margin: 20px auto;
-                color: white;
+               
             }
             .btn-primary {
                 background-color: rgb(251, 146, 60);
@@ -52,13 +52,13 @@
                
                 <c:choose>
                     <c:when test="${empty notification}">
-                        <p class="text-gray-300">No notification found.</p>
+                        <p>No notification found.</p>
                     </c:when>
                     <c:otherwise>
                         <div class="mb-4">
                             <h3 class="font-bold text-lg">${notification.notificationTitle}</h3><br>
-                            <p class="text-gray-300">${notification.notificationDetails}</p><br>
-                            <p class="text-gray-400 text-sm mt-2">
+                            <p>${notification.notificationDetails}</p><br>
+                            <p class="text-sm mt-2">
                                 Date Created: <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
                             </p>
                         </div>

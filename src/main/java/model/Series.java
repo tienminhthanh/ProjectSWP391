@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 /**
@@ -12,7 +8,7 @@ public class Series {
     private int seriesID;
     private String seriesName;
 
-    // Constructor
+    // Constructors
     public Series() {}
 
     public Series(int seriesID, String seriesName) {
@@ -20,11 +16,18 @@ public class Series {
         this.seriesName = seriesName;
     }
 
-    // Getters and Setters
+    // Getters
     public int getSeriesID() { return seriesID; }
-    public void setSeriesID(int seriesID) { this.seriesID = seriesID; }
-
     public String getSeriesName() { return seriesName; }
-    public void setSeriesName(String seriesName) { this.seriesName = seriesName; }
-}
 
+    // Fluent Setters
+    public Series setSeriesID(int seriesID) {
+        this.seriesID = seriesID;
+        return this;
+    }
+
+    public Series setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
+        return this;
+    }
+}

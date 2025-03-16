@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -60,7 +61,7 @@
         <div id="chatContainer" class="chat-container flex flex-col">
             <div class="bg-orange-500 p-1 border-b flex justify-between items-center">
                 <h2 class="text-white font-bold">Chat with WiBook</h2>
-                <button id="closeChat" class="text-black text-xl">x</button>
+                <button id="closeChat" class="text-white text-xl font-bold mr-2">x</button>
             </div>
 
             <div id="chatMessages" class="flex-1 p-4 overflow-y-auto bg-gray-100">

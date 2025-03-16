@@ -7,6 +7,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <style>
+    html{
+        font-size:13px;
+    }
     .logo {
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
         border-radius: 8px; /* Bo góc hình ảnh */
@@ -42,24 +45,13 @@
             Event List
         </a>
 
-        <a class="flex items-center p-2 hover:bg-orange-800" href="#">
-            <i class="fas fa-comments mr-2"></i>
-            Dialogue List
-        </a>
-
-
         <a class="flex items-center p-2 hover:bg-orange-800" href="voucherList">
             <i class="fas fa-gift mr-2"></i>
             Voucher List
         </a>
 
-        <a class="flex items-center p-2 hover:bg-orange-800" href="chat">
-            <i class="fas fa-comment-dots mr-2"></i>
-            Chat
-        </a>
-
     </c:if>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="#">
+    <a class="flex items-center p-2 hover:bg-orange-800" href="manageProductList">
         <i class="fas fa-cogs mr-2"></i>
         Product List
     </a>

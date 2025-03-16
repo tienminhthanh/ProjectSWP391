@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 /**
@@ -29,26 +25,31 @@ public class Creator {
         this.creatorRole = creatorRole;
         this.generalCategory = generalCategory;
     }
-    
 
-    // Getters and Setters
+    // Getters
     public int getCreatorID() { return creatorID; }
-    public void setCreatorID(int creatorID) { this.creatorID = creatorID; }
-
     public String getCreatorName() { return creatorName; }
-    public void setCreatorName(String creatorName) { this.creatorName = creatorName; }
-
     public String getCreatorRole() { return creatorRole; }
-    public void setCreatorRole(String creatorRole) { this.creatorRole = creatorRole; }
+    public String getGeneralCategory() { return generalCategory; }
 
-    public String getGeneralCategory() {
-        return generalCategory;
+    // Fluent Setters
+    public Creator setCreatorID(int creatorID) { 
+        this.creatorID = creatorID; 
+        return this; 
     }
 
-    public void setGeneralCategory(String generalCategory) {
-        this.generalCategory = generalCategory;
+    public Creator setCreatorName(String creatorName) { 
+        this.creatorName = creatorName; 
+        return this; 
     }
-    
-    
+
+    public Creator setCreatorRole(String creatorRole) { 
+        this.creatorRole = creatorRole; 
+        return this; 
+    }
+
+    public Creator setGeneralCategory(String generalCategory) { 
+        this.generalCategory = generalCategory; 
+        return this; 
+    }
 }
-

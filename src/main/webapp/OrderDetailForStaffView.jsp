@@ -36,8 +36,8 @@
                 background-color: #2d3748; /* Màu nền khi hover */
             }
             .main-content {
-                margin-left: 250px; /* Dịch nội dung chính sang phải, tránh bị sidebar che */
-                padding: 20px;
+                /*                margin-left: 250px;  Dịch nội dung chính sang phải, tránh bị sidebar che 
+                                padding: 20px;*/
                 flex: 1; /* Chiếm toàn bộ không gian còn lại */
             }
             .header {
@@ -103,129 +103,49 @@
     </head>
 
     <body>
-        <div class="sidebar">
-            <div class="p-4">
-                <a href="home"><img src="img/logo.png" alt="WIBOOKS" /></a> 
-            </div>
-            <nav class="space-y-2">
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-tachometer-alt mr-2"></i>
-                    Dashboard
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="listAccount">
-                    <i class="fas fa-users mr-2"></i>
-                    Account List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="eventList">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    Event List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-cogs mr-2"></i>
-                    Product List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comments mr-2"></i>
-                    Dialogue List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="OrderListForStaffController">
-                    <i class="fas fa-box mr-2"></i>
-                    Order List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-gift mr-2"></i>
-                    Voucher List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-bell mr-2"></i>
-                    Notification List
-                </a>
-                <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                    <i class="fas fa-comment-dots mr-2"></i>
-                    Chat
-                </a>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold">SETTINGS</h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-cogs mr-2"></i>
-                        Configuration
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users-cog mr-2"></i>
-                        Management
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="logout">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        Logout
-                    </a>
-                </div>
-                <div class="mt-4">
-                    <h3 class="px-2 text-sm font-semibold">REPORTS</h3>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-phone-alt mr-2"></i>
-                        Call history
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-headset mr-2"></i>
-                        Call queue
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-users mr-2"></i>
-                        Agents performance
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-file-invoice-dollar mr-2"></i>
-                        Commission report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-calendar mr-2"></i>
-                        Scheduled report
-                    </a>
-                    <a class="flex items-center p-2 hover:bg-blue-800" href="#">
-                        <i class="fas fa-history mr-2"></i>
-                        Chat history
-                    </a>
-                    <a class="flex items-center p-2 bg-blue-800" href="#">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        Performance report
-                    </a>
-                </div>
-            </nav>
+        <div class="w-64 bg-orange-400 text-white min-h-screen">
+            <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <div class="main-content">
             <div class="header">
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold ml-4">Order Detail</h1>
-              
+
                 </div>
                 <div class="flex items-center">
                     <i class="fas fa-bell mr-4"></i>
                     <a href="readAccount" class="fas fa-user-circle mr-4"></a>
-                    <span>Staff</span>
+                    <span>${account.role}</span>
                     <a href="logout" class="fas fa-sign-out-alt ml-4"></a>
                 </div>
-            </div>
-
+            </div>  
             <div class="p-4">
                 <div class="bg-white p-4 rounded shadow">
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
-                        <h2 class="text-xl font-bold">Order ID: <span>${orderInfo.orderID}</span></h2>
                         <div class="space-x-2">
-                            <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
-                            <button class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
-                            <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
+                            <c:if test="${ account.role eq 'admin'}">
+                                <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel();">
+                                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                    <input type="hidden" name="customerID" value="${customer.accountID}">
+                                    <input type="hidden" name="action" value="cancel">
+                                    <c:if test="${ orderInfo.orderStatus eq 'pending'}">
+                                        <button type="submit" class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
+                                    </c:if>
+                                </form>
+                            </c:if>
+
                         </div>
                     </div>
 
                     <div class="order-info">
                         <div>
-                            <h1 class="text-2xl font-bold mb-2">Order Information</h1>
+                            <h1 class="text-2xl font-bold mb-2">Order Information (orderID: ${orderInfo.orderID}) </h1>
                             <p><i class="fas fa-user icon"></i> Customer: ${customer.firstName} ${customer.lastName}</p>
                             <p><i class="fas fa-phone icon"></i> Phone: ${customer.phoneNumber}</p>
                             <p><i class="fas fa-map-marker-alt icon"></i> Address: ${orderInfo.deliveryAddress}</p>
                             <p><i class="fas fa-truck icon"></i> Status: ${orderInfo.orderStatus}</p>
-                
+
                             <p>
                                 <i class="fas fa-calendar-alt icon"></i> Order Date: 
                                 <fmt:formatDate value="${orderInfo.orderDate}" pattern="dd/MM/yyyy"/>
@@ -240,19 +160,27 @@
                         </div>
                         <div>
                             <h1 class="text-2xl font-bold mb-2"> Payment Information</h1>
-                            <p><i class="fas fa-tags icon"></i> Discount:<fmt:formatNumber value="${valueVoucher}" pattern="#,##0"/> đ</p>
+                            <p><i class="fas fa-tags icon"></i> Discount: <fmt:formatNumber value="${valueVoucher}" pattern="#,##0"/> đ</p>
                             <p><i class="fas fa-coins icon"></i> Total Amount: <fmt:formatNumber value="${orderInfo.preVoucherAmount}" pattern="#,##0"/> đ</p>
-                            <p><i class="fas fa-check-circle icon"></i> Payment Status:${orderInfo.paymentStatus}</p>
-                            <p><strong>Delivery Deadline:</strong> <span class="font-bold">17/02/2022 07:00:00</span></p>
+                            <p><i class="fas fa-check-circle icon mb-2""></i> Payment Status: ${orderInfo.paymentStatus}</p>
+
+                            
+                            
+                            <c:if test="${account.role eq 'admin' and orderInfo.orderStatus ne 'pending' }">
+                                <h1 class="text-2xl font-bold ">Order Processing Information</h1>  
+                                <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>  
+                                <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p> 
+                                <c:if test="${orderInfo.orderStatus ne 'canceled' }">
+                                    <p class="text-lg">Assigned Shipper: <span>${accShipper.lastName} ${accShipper.firstName}</span></p>  
+                                    <p class="text-lg">Shipper ID: <span>${accShipper.accountID}</span></p>
+                                </c:if>
+
+                            </c:if>
+
                         </div>
                     </div>
 
-                    <div class="border-b pb-2 mb-4">
-                        <div class="flex space-x-4">
-                            <button class="border-b-2 border-orange-500 pb-2">Products</button>
-                            <button class="pb-2">Other Information</button>
-                        </div>
-                    </div>
+
 
                     <table class="w-full text-left">
                         <thead>
@@ -260,7 +188,7 @@
                                 <th>Product Image</th>
                                 <th>Product Name</th>
                                 <th>Quantity</th>
-                                <th>Price With Quantity</th>
+                                <th>Price </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -279,5 +207,16 @@
                 </div>
             </div>
         </div>
+        <script>
+            function confirmCancel(event) {
+                if (confirm("Are you sure you want to cancel this order?")) {
+                    alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
+                    return true; // Tiếp tục submit form
+                } else {
+                    event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
+                    return false;
+                }
+            }
+        </script>
     </body>
 </html>

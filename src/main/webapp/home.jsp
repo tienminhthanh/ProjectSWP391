@@ -52,21 +52,12 @@
 
             <!--Main section-->
             <main class="w-full md:w-5/6 p-3 flex flex-col">
-                <!--Popup message from servlet -->
-                <c:if test="${not empty message}">
-                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
-                        <p>
-                            ${message}
-                        </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
-                    </div>
-                </c:if>
+                    
                 <!--Popular Searches-->
                 <div class="my-4 bg-white popular-search-area border-t-4 border-orange-500">
 
                     <div class="w-full flex flex-col lg:flex-row items-center justify-center p-8 gap-8">
-                        <div class="w-full md:flex-1 h-64">
+                        <div class="w-full lg:w-1/3 h-64">
                             <h2 class="text-xl font-bold relative pb-4 text-center text-red-500">
                                 On Sale
                             </h2>
@@ -74,15 +65,15 @@
                                 <a href="sale?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img  class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-merch.png" alt="On-Sale Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
-                                    <img class="h-40 w-full object-contain" src="img/popular_search_img/sale-label.png" alt="On-Sale Label"/>
+                                <span class=" w-1/3">
+                                    <img class="h-40 w-full object-contain lg:object-cover" src="img/popular_search_img/sale-label.png" alt="On-Sale Label"/>
                                 </span>
                                 <a href="sale?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-book.png" alt="On-Sale Books"/>
                                 </a>
                             </div>
                         </div>
-                        <div class="w-full md:flex-1 h-64">
+                        <div class="w-full lg:w-1/3 h-64">
                             <h2 class="text-xl font-bold relative pb-4 text-center text-amber-500">
                                 Monthly Ranking
                             </h2>
@@ -90,27 +81,27 @@
                                 <a href="ranking?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-merch.png" alt="Top Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
-                                    <img class="h-40 w-full object-contain" src="img/popular_search_img/top-label.png" alt="Top Label"/>
+                                <span class=" w-1/3">
+                                    <img class="h-40 w-full object-contain lg:object-cover" src="img/popular_search_img/top-label.png" alt="Top Label"/>
                                 </span>
                                 <a href="ranking?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-book.png" alt="Top Books"/>
                                 </a>
                             </div>
                         </div>
-                        <div class="w-full md:flex-1 h-64">
+                        <div class="w-full lg:w-1/3 h-64">
                             <h2 class="text-xl font-bold relative pb-4 text-center text-sky-400">
                                 Trending
                             </h2>
                             <div class="w-full rounded-lg border-4 border-sky-300 flex flex-row items-center justify-center gap-2 px-2 ">
                                 <a href="series?id=1" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
-                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-merch.png" alt="Top Merch"/>
+                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-merch.png" alt="Special Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
-                                    <img class="max-h-40 w-full object-contain" src="img/popular_search_img/special-label.png" alt="Top Label"/>
+                                <span class=" w-1/3">
+                                    <img class="max-h-40 w-full object-contain" src="img/popular_search_img/special-label.png" alt="Special Label"/>
                                 </span>
                                 <a href="genre?id=18" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
-                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-book.png" alt="Top Books"/>
+                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-book.png" alt="Special Books"/>
                                 </a>
                             </div>
                         </div>
@@ -118,7 +109,7 @@
 
                 </div>
 
-                <!--Div2-->
+                <!--Voucher-->
                 <div class="mb-4 bg-white voucher-area border-t-4 border-orange-500">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Available Now
@@ -398,22 +389,12 @@
                 </div>
 
 
-
                 <!--Popup unauthorized users-->
                 <c:if test="${empty sessionScope.account or sessionScope.account.getRole() ne 'customer'}">
                     <jsp:include page="popuplogin.jsp"/>
                 </c:if>
 
-                <!--Popup message from servlet -->
-                <c:if test="${not empty message}">
-                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
-                        <p>
-                            ${message}
-                        </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
-                    </div>
-                </c:if>
+               
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
@@ -421,23 +402,34 @@
         <!-- Nút mở chat -->
         <!-- Chat Button -->
         <div class="fixed bottom-4 left-4 z-50">
-            <button id="openChat" class="bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-yellow-600 transition">
+            <button id="openChat1" class="bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-yellow-600 transition">
                 🤖 WIBOOKS AI
             </button>
         </div>
 
         <!-- Chat Popup -->
-        <div id="chatPopup" class="z-50 fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
-            <div class="flex justify-between items-center bg-blue-500 text-white px-4 py-2 rounded-t-lg">
+        <div id="chatPopup1" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
+            <div class="flex justify-between items-center bg-orange-500 text-white px-4 py-2 rounded-t-lg">
                 <span>WIBOOKS AI</span>
-                <span id="closeChatAI" class="cursor-pointer text-xl">❌</span>
+                <span id="closeChatAI1" class="cursor-pointer text-xl">❌</span>
             </div>
             <div class="flex-grow overflow-y-auto border p-2 bg-gray-200 rounded-lg shadow-lg">
                 <jsp:include page="chatAI.jsp"/>
             </div>
         </div>
 
+        <script>
+            document.getElementById("openChat1").addEventListener("click", function () {
+                document.getElementById("chatPopup1").classList.remove("hidden");
+            });
 
+            document.getElementById("closeChatAI1").addEventListener("click", function () {
+                document.getElementById("chatPopup1").classList.add("hidden");
+            });
+        </script>
+
+
+        
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
@@ -459,15 +451,44 @@
                         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
                 crossorigin="anonymous"></script>-->
 
-        <!--Tailwind-->
-        <script src="https://cdn.tailwindcss.com">
-        </script>
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
 
         <!--Voucher Date End-->
         <script src="js/scriptVoucherDateEnd.js"></script>
+        
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com">
+        </script>
+        
+         <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+        <script>
+            
+//            Pop-up message
+            document.addEventListener('DOMContentLoaded',function(){
+                const reqMessage = `${requestScope.message}`;
+                if(reqMessage){
+                    Swal.fire({
+                        icon: 'warning',
+                        text: reqMessage
+                    });
+                }
+            });
+
+            
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.remove("hidden");
+            });
+
+            document.getElementById("closeChatAI").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.add("hidden");
+            });
+
+        </script>
 
     </body>
 </html>

@@ -116,4 +116,10 @@ public class Notification {
     public void setRead(boolean isRead) {
         this.isRead = isRead;
     }
+
+    @Override
+    public String toString() {
+        return "Notification{" + "notificationID=" + notificationID + ", senderID=" + senderID + ", receiverID=" + receiverID + ", notificationDetails=" + notificationDetails + ", dateCreated=" + dateCreated + ", isDeleted=" + isDeleted + ", notificationTitle=" + notificationTitle + ", isRead=" + isRead + '}';
+    }
+    
 }

@@ -19,6 +19,8 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
+         <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
     </head>
     <body class="bg-gray-50 min-h-screen flex">
         <!-- Sidebar -->
@@ -144,7 +146,7 @@
                 </div>
 
             </div>
-        </main>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
                function filterProducts() {
@@ -202,5 +204,6 @@
                 }, 3000);
             </script>
         </c:if>
+            <script src="js/scriptProductCard.js"></script>
 </body>
 </html>

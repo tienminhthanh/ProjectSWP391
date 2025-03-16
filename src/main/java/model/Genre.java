@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 /**
@@ -12,7 +8,7 @@ public class Genre {
     private int genreID;
     private String genreName;
 
-    // Constructor
+    // Constructors
     public Genre() {}
 
     public Genre(int genreID, String genreName) {
@@ -20,11 +16,18 @@ public class Genre {
         this.genreName = genreName;
     }
 
-    // Getters and Setters
+    // Getters
     public int getGenreID() { return genreID; }
-    public void setGenreID(int genreID) { this.genreID = genreID; }
-
     public String getGenreName() { return genreName; }
-    public void setGenreName(String genreName) { this.genreName = genreName; }
-}
 
+    // Fluent Setters
+    public Genre setGenreID(int genreID) {
+        this.genreID = genreID;
+        return this;
+    }
+
+    public Genre setGenreName(String genreName) {
+        this.genreName = genreName;
+        return this;
+    }
+}

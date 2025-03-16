@@ -96,6 +96,39 @@ public class EventDAO {
         }
         return listEvent;
     }
+    
+    
+    public List<Event> getListActiveEvents() {
+        List<Event> listEvent = new ArrayList<>();
+        String sql = "SELECT * FROM [dbo].[Event] where isActive = 1";
+        try {
+
+            ResultSet rs = context.exeQuery(sql, null);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String dateCreated = rs.getString(3);
+                int duration = rs.getInt(4);
+                String banner = rs.getString(5);
+                String description = rs.getString(6);
+                int adminID = rs.getInt(7);
+                boolean isActive = rs.getBoolean(8);
+                String dateStarted = rs.getString(9);
+                //Handling null
+                LocalDate expiryDate = dateStarted != null ? LocalDate.parse(dateStarted, formatter).plusDays(duration) : LocalDate.EPOCH;
+                Event event = new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
+                //Only add non-expired events
+                if (event.isExpiry()) {
+                    listEvent.add(event);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listEvent;
+    }
 
     public Event getEventByID(int eventID) {
         try {

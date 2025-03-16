@@ -27,6 +27,7 @@ public class Product {
     private String imageURL;
     private int discountPercentage;
     private LocalDate eventEndDate;
+    private int salesRank;
 
     /**
      * EMPTY - Set attributes later
@@ -35,7 +36,7 @@ public class Product {
     }
     
     /**
-     * FULL - FOR SELECT
+     * Omit salesRank, set later if query for Leaderboard - For Catalog
      * @param productID
      * @param productName
      * @param price
@@ -76,8 +77,10 @@ public class Product {
         this.eventEndDate = eventEndDate;
     }
     
+    
+    
     /**
-     * Omit lastModifiedTime, averageRating, numberOfRating, discountPercentage, eventEndDate - For Add/Update
+     * Omit discountPercentage, eventEndDate, salesRank - For Management
      * @param productID
      * @param productName
      * @param price
@@ -85,6 +88,9 @@ public class Product {
      * @param specificCategory
      * @param description
      * @param releaseDate
+     * @param lastModifiedTime
+     * @param averageRating
+     * @param numberOfRating
      * @param specialFilter
      * @param adminID
      * @param keywords
@@ -92,7 +98,7 @@ public class Product {
      * @param isActive
      * @param imageURL 
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -100,6 +106,9 @@ public class Product {
         this.specificCategory = specificCategory;
         this.description = description;
         this.releaseDate = releaseDate;
+        this.lastModifiedTime = lastModifiedTime;
+        this.averageRating = averageRating;
+        this.numberOfRating = numberOfRating;
         this.specialFilter = specialFilter;
         this.adminID = adminID;
         this.keywords = keywords;
@@ -107,168 +116,187 @@ public class Product {
         this.isActive = isActive;
         this.imageURL = imageURL;
     }
-    
-   
-    
-    
-    
-    
-    
-    
-   
-
-    
-
-
-    
-    
 
     public int getProductID() {
         return productID;
-    }
-
-    public void setProductID(int productID) {
-        this.productID = productID;
     }
 
     public String getProductName() {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public double getPrice() {
         return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public int getStockCount() {
         return stockCount;
     }
 
-    public void setStockCount(int stockCount) {
-        this.stockCount = stockCount;
-    }
-
     public Category getSpecificCategory() {
         return specificCategory;
-    }
-
-    public void setSpecificCategory(Category specificCategory) {
-        this.specificCategory = specificCategory;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public LocalDate getReleaseDate() {
         return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
     }
 
     public LocalDateTime getLastModifiedTime() {
         return lastModifiedTime;
     }
 
-    public void setLastModifiedTime(LocalDateTime lastModifiedTime) {
-        this.lastModifiedTime = lastModifiedTime;
-    }
-
     public double getAverageRating() {
         return averageRating;
-    }
-
-    public void setAverageRating(double averageRating) {
-        this.averageRating = averageRating;
     }
 
     public int getNumberOfRating() {
         return numberOfRating;
     }
 
-    public void setNumberOfRating(int numberOfRating) {
-        this.numberOfRating = numberOfRating;
-    }
-
     public String getSpecialFilter() {
         return specialFilter;
-    }
-
-    public void setSpecialFilter(String specialFilter) {
-        this.specialFilter = specialFilter;
     }
 
     public int getAdminID() {
         return adminID;
     }
 
-    public void setAdminID(int adminID) {
-        this.adminID = adminID;
-    }
-
     public String getKeywords() {
         return keywords;
-    }
-
-    public void setKeywords(String keywords) {
-        this.keywords = keywords;
     }
 
     public String getGeneralCategory() {
         return generalCategory;
     }
 
-    public void setGeneralCategory(String generalCategory) {
-        this.generalCategory = generalCategory;
-    }
-
-    public boolean getIsActive() {
+    public boolean isIsActive() {
         return isActive;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-
     public String getImageURL() {
         return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
     }
 
     public int getDiscountPercentage() {
         return discountPercentage;
     }
 
-    public void setDiscountPercentage(int discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
-
     public LocalDate getEventEndDate() {
         return eventEndDate;
     }
 
-    public void setEventEndDate(LocalDate eventEndDate) {
-        this.eventEndDate = eventEndDate;
+    public int getSalesRank() {
+        return salesRank;
+    }
+    
+
+    // Fluent Setters
+    public Product setProductID(int productID) {
+        this.productID = productID;
+        return this;
     }
 
+    public Product setProductName(String productName) {
+        this.productName = productName;
+        return this;
+    }
+
+    public Product setPrice(double price) {
+        this.price = price;
+        return this;
+    }
+
+    public Product setStockCount(int stockCount) {
+        this.stockCount = stockCount;
+        return this;
+    }
+
+    public Product setSpecificCategory(Category specificCategory) {
+        this.specificCategory = specificCategory;
+        return this;
+    }
+
+    public Product setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public Product setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+        return this;
+    }
+
+    public Product setLastModifiedTime(LocalDateTime lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime;
+        return this;
+    }
+
+    public Product setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+        return this;
+    }
+
+    public Product setNumberOfRating(int numberOfRating) {
+        this.numberOfRating = numberOfRating;
+        return this;
+    }
+
+    public Product setSpecialFilter(String specialFilter) {
+        this.specialFilter = specialFilter;
+        return this;
+    }
+
+    public Product setAdminID(int adminID) {
+        this.adminID = adminID;
+        return this;
+    }
+
+    public Product setKeywords(String keywords) {
+        this.keywords = keywords;
+        return this;
+    }
+
+    public Product setGeneralCategory(String generalCategory) {
+        this.generalCategory = generalCategory;
+        return this;
+    }
+
+    public Product setIsActive(boolean isActive) {
+        this.isActive = isActive;
+        return this;
+    }
+
+    public Product setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+        return this;
+    }
+
+    public Product setDiscountPercentage(int discountPercentage) {
+        this.discountPercentage = discountPercentage;
+        return this;
+    }
+
+    public Product setEventEndDate(LocalDate eventEndDate) {
+        this.eventEndDate = eventEndDate;
+        return this;
+    }
+
+    public Product setSalesRank(int salesRank) {
+        this.salesRank = salesRank;
+        return this;
+    }
 
     
     
 }
+    
+
+    
+
+
+    
+    

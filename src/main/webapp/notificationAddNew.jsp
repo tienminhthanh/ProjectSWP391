@@ -13,38 +13,38 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <style>
             body {
-                background-color: #f1f5f9;
+                background-color: #f1f5f9; /* Nền xám nhạt */
             }
             .admin-container {
-                background-color: #1e293b;
-                color: white;
+                background-color: #ffffff; /* Nền trắng thay vì #1e293b */
+                color: black; /* Đổi từ trắng sang đen để khớp với nền trắng */
                 border-radius: 8px;
                 padding: 20px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
-            .form-label {
-                color: #e2e8f0;
-            }
+           
             .btn-primary {
-                background-color: #3b82f6;
                 border: none;
+                color: #ffffff; /* Chữ trắng */
             }
             .btn-primary:hover {
-                background-color: #2563eb;
+                background-color: #f97316; /* Orange-500 khi hover */
             }
             .btn-secondary {
-                background-color: #64748b;
+                background-color: #fb923c; /* Orange-400 thay vì #64748b */
                 border: none;
+                color: #ffffff; /* Chữ trắng */
             }
             .btn-secondary:hover {
-                background-color: #475569;
+                background-color: #f97316; /* Orange-500 khi hover */
             }
             .btn-success {
-                background-color: #10b981;
+                background-color: #fb923c; /* Orange-400 thay vì #10b981 */
                 border: none;
+                color: #ffffff; /* Chữ trắng */
             }
             .btn-success:hover {
-                background-color: #059669;
+                background-color: #f97316; /* Orange-500 khi hover */
             }
             .customer-row {
                 cursor: pointer;
@@ -53,7 +53,7 @@
                 transition: background-color 0.2s;
             }
             .customer-row:hover {
-                background-color: #334155;
+                background-color: #cccccc; /* Xám nhạt như notification-item */
             }
             .customer-list-container {
                 position: relative;
@@ -62,23 +62,29 @@
                 max-height: 0;
                 overflow-y: auto;
                 transition: max-height 0.3s ease-out;
-                background-color: #1e293b;
-                border: 1px solid #475569;
+                background-color: #ffffff; /* Nền trắng thay vì #1e293b */
+                border: 1px solid #fb923c; /* Viền orange-400 thay vì #475569 */
                 border-radius: 5px;
                 margin-top: 5px;
             }
             .customer-list.expanded {
-                max-height: 300px; /* Adjust height as needed */
+                max-height: 300px; /* Giữ nguyên */
             }
             .customer-list::-webkit-scrollbar {
                 width: 8px;
             }
             .customer-list::-webkit-scrollbar-thumb {
-                background-color: #64748b;
+                background-color: #cccccc; /* Xám nhạt thay vì #64748b */
                 border-radius: 4px;
             }
             .customer-list::-webkit-scrollbar-thumb:hover {
-                background-color: #475569;
+                background-color: #f97316; /* Orange-500 khi hover */
+            }
+            .text-orange-400 {
+                color: #fb923c; /* Thêm để dùng nếu cần */
+            }
+            .text-orange-500 {
+                color: #f97316; /* Thêm để dùng nếu cần */
             }
         </style>
     </head>
@@ -90,10 +96,10 @@
             </div> 
             <main class="flex-1 p-4">
                 <div class="admin-container">
-                    <h1 class="text-2xl font-bold mb-4">Create New Notification</h1>
+                    <h1 class="text-2xl font-bold mb-4 text-orange-400">Create New Notification</h1> <!-- Đổi màu tiêu đề -->
                     <!-- Display error message if present -->
                     <c:if test="${not empty error}">
-                        <div class="alert alert-danger" role="alert">
+                        <div class="alert alert-danger text-orange-500" role="alert"> <!-- Đổi màu chữ lỗi -->
                             ${error}
                         </div>
                     </c:if>
@@ -104,7 +110,7 @@
                             <label for="senderID" class="form-label">Sender ID</label>
                             <c:choose>
                                 <c:when test="${not empty sessionScope.account.accountID}">
-                                    <input type="number" class="form-control" id="senderID" name="senderID" 
+                                    <input type="number" class="form-control bg-gray-200" id="senderID" name="senderID" 
                                            value="${sessionScope.account.accountID}" readonly>
                                 </c:when>
                                 <c:otherwise>
@@ -118,14 +124,13 @@
                             <div class="customer-list" id="customerList">
                                 <button type="button" class="btn btn-success mt-2" onclick="selectAll()">Select All</button> 
                                 <c:forEach var="customer" items="${customers}">
-                                    <div class="customer-row" onclick="toggleCheckbox(this)">
+                                    <div class="customer-row">
                                         <input type="checkbox" name="receiverID" value="${customer.accountID}" 
                                                class="mr-2">
                                         <span>${customer.lastName} ${customer.firstName} (ID: ${customer.accountID})</span>
                                     </div>
                                 </c:forEach>
                             </div>
-
                         </div>
                         <div>
                             <label for="notificationTitle" class="form-label">Notification Title</label>
@@ -151,22 +156,22 @@
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
         <script src="/js/scriptHeader.js"></script>
         <script>
-                                        function toggleCheckbox(row) {
-                                            const checkbox = row.querySelector('input[type="checkbox"]');
-                                            if (event.target !== checkbox) { // Avoid double toggle if clicking checkbox directly
-                                                checkbox.checked = !checkbox.checked;
-                                            }
+                                    function toggleCheckbox(row) {
+                                        const checkbox = row.querySelector('input[type="checkbox"]');
+                                        if (event.target !== checkbox) { // Avoid double toggle if clicking checkbox directly
+                                            checkbox.checked = !checkbox.checked;
                                         }
+                                    }
 
-                                        function toggleCustomerList() {
-                                            const customerList = document.getElementById('customerList');
-                                            customerList.classList.toggle('expanded');
-                                        }
+                                    function toggleCustomerList() {
+                                        const customerList = document.getElementById('customerList');
+                                        customerList.classList.toggle('expanded');
+                                    }
 
-                                        function selectAll() {
-                                            const checkboxes = document.querySelectorAll('input[name="receiverID"]');
-                                            checkboxes.forEach(checkbox => checkbox.checked = true);
-                                        }
+                                    function selectAll() {
+                                        const checkboxes = document.querySelectorAll('input[name="receiverID"]');
+                                        checkboxes.forEach(checkbox => checkbox.checked = true);
+                                    }
         </script>
     </body>
 </html>

@@ -47,7 +47,7 @@ public class NotificationShipperController extends HttpServlet {
             String receiverIDParam = request.getParameter("receiverID");
             int receiverID = Integer.parseInt(receiverIDParam);
             List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
-            request.setAttribute("notifications", notifications);
+            session.setAttribute("notifications", notifications);
             
             request.getRequestDispatcher("notificationListShipper.jsp").forward(request, response);
         } catch (SQLException ex) {

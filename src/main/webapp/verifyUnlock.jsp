@@ -11,7 +11,6 @@
     </head>
     <body class="bg-gray-100">
 
-        <!-- Header -->
         <header class="bg-white shadow w-full">
             <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <img alt="WIBOOKS Logo" class="h-10" src="./img/logoWibooks-removebg-preview.png"/>

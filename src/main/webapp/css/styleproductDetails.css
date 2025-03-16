@@ -121,7 +121,6 @@ body {
 .purchase-form button {
     padding: 15px;
     border: none;
-    background-color: blue;
     color: white;
     cursor: pointer;
     width: 100%;
@@ -131,6 +130,10 @@ body {
 
 .purchase-form button:hover{
     opacity: 0.8;
+}
+
+.purchase-form button.pre-order{
+     background-color: blue;
 }
 
 .info-area h3 {

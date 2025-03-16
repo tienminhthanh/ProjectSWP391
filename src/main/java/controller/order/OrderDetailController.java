@@ -73,13 +73,12 @@ public class OrderDetailController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-        DeliveryOption delivery = new DeliveryOption();
         try {
             String orderID = request.getParameter("id");
             OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
             //set ngày giao
             int deliveryTimeInDays;
-            delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
+            DeliveryOption delivery = orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
             deliveryTimeInDays = delivery.getEstimatedTime();
             Calendar calendar = Calendar.getInstance();
             Date orderDate = orderInfo.getOrderDate();
@@ -93,11 +92,13 @@ public class OrderDetailController extends HttpServlet {
             request.setAttribute("orderInfo", orderInfo); // Đặt dữ liệu vào requestScope
             request.setAttribute("delivery", delivery);
             request.setAttribute("voucher", voucher);
-
             // Chuyển hướng đến OrderListView.jsp
             request.getRequestDispatcher("OrderDetailView.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
+              request.setAttribute("errorMessage1", "Something went wrong. Please try again later!");
+//            response.sendRedirect("error.jsp");
+            request.getRequestDispatcher("OrderListView.jsp").forward(request, response);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching order list.");
         }
     }
@@ -134,7 +135,7 @@ public class OrderDetailController extends HttpServlet {
                     }
                     case "review": {
                         int productID = Integer.parseInt(request.getParameter("productID"));
-                        String reviewContent = request.getParameter("reviewContent");                      
+                        String reviewContent = request.getParameter("reviewContent");
                         orderDao.updateCommentForProduct(orderID, productID, reviewContent);
                         break;
                     }

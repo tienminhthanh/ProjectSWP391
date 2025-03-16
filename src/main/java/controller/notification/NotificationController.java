@@ -38,11 +38,12 @@ public class NotificationController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         try {
             String receiverIDParam = request.getParameter("receiverID");
             int receiverID = Integer.parseInt(receiverIDParam);
-            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
-            request.setAttribute("notifications", notifications);
+            List<Notification> notifications = notificationDAO.getNotificationsByReceiverDESC(receiverID);
+            session.setAttribute("notifications", notifications);
             request.getRequestDispatcher("notification.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
