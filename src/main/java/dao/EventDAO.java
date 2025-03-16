@@ -125,7 +125,9 @@ public class EventDAO {
 
     public List<String> getBannerEvent() {
         String sql = "SELECT [banner]\n"
-                + "  FROM [dbo].[Event]";
+                + "  FROM [dbo].[Event]"
+                + "  WHERE [isActive] = 1"
+                + "  ORDER BY [dateStarted]";
         List<String> listBanner = new ArrayList<>();
         try {
             ResultSet rs = context.exeQuery(sql, null);

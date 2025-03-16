@@ -30,6 +30,8 @@ public class EventProductDAO {
         context = new utils.DBContext();
     }
 
+//    public int getDiscountOfProductInEvent()
+    
     public boolean deleteProductFromEvent(int eventId, int productId) {
         String sql = "DELETE FROM [dbo].[Event_Product]\n"
                 + "      WHERE eventID = ? and productID = ?";
