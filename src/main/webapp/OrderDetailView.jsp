@@ -218,14 +218,17 @@
                         <p><strong>Order Status:</strong> ${orderInfo.orderStatus}</p>
 
                         <h3 class="text-lg font-semibold mt-4">Products</h3>
+                        
+                        <c:set var="count" value="1"/>                              
                         <c:forEach var="item" items="${orderInfo.orderProductList}">
-                            <p><strong>Product Name:</strong> ${item.product.productName}</p>
+                            <p><strong>${count} </strong> ${item.product.productName}</p>
                             <p><strong>Quantity:</strong> ${item.quantity}</p>
                             <p><strong>Price:</strong> 
                                 <fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ
                             </p>
 
                             <hr class="my-2">
+                              <c:set var="count" value="${count + 1}"/>
                         </c:forEach>
                         <p><strong>Shipping Fee: </strong>  
                             <fmt:formatNumber value="${delivery.optionCost}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
@@ -257,7 +260,7 @@
                                 </form>
                             </c:if>
                             <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
-                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'Shipped'}">                              
+                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'delivered'}">                              
                                 <form action="OrderDetailController" method="POST">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                     <input type="hidden" name="action" value="confirm"> 
@@ -320,7 +323,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form action="OrderDetailController" method="POST" ">
+                                    <form action="OrderDetailController" method="POST" >
                                         <input type="hidden" name="orderID" id="popupOrderID">
                                         <input type="hidden" name="productID" id="popupProductID">
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">

@@ -58,11 +58,10 @@
         </div>
 
         <!-- Order Filter Navbar -->
-        <!-- Order Filter Navbar -->
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 py-2 flex justify-around">
-                <a href="OrderListForShipperController?status=Shipped" 
-                   class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'Shipped' ? 'text-orange-600' : ''}">
+                <a href="OrderListForShipperController?status=shipped" 
+                   class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'shipped' ? 'text-orange-600' : ''}">
                     Shipping
                 </a>
                 <a href="OrderListForShipperController?status=delivered" 
@@ -95,16 +94,12 @@
 
                             <div class="mt-3">
                                 <a href="OrderDetailForShipperController?id=${order.orderID}" 
-                                   class="inline-block px-4 py-2 text-lg bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm transition-transform transform hover:scale-105 duration-200 mr-3">
-                                    <i class="fas fa-eye mr-2"></i> Details
-                                </a>
-
-                                <form action="OrderListForShipperController" method="post">
+                                   class="inline-block px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm">Details</a>
+                                <form action="OrderListForShipperController" method="post" class="inline" onsubmit="return confirmUpdate()">
                                     <input type="hidden" name="orderID" value="${order.orderID}">
-                                    <c:if test="${ orderInfo.deliveryStatus eq 'Shipped'}">      
+                                    <c:if test="${ order.deliveryStatus eq 'shipped'}">      
                                         <button type="submit" class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm">Update</button>
                                     </c:if>
-
                                 </form>
                             </div>
                         </div>
@@ -119,5 +114,10 @@
                 <p>&copy; 2023 Shipper Dashboard. All rights reserved.</p>
             </div>
         </footer>
+        <script>
+            function confirmUpdate() {
+                return confirm("Are you sure you want to update this order?");
+            }
+        </script>
     </body>
 </html>
