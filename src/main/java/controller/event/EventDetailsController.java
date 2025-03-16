@@ -47,6 +47,9 @@ public class EventDetailsController extends HttpServlet {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
         EventProductDAO epDao = new EventProductDAO();
+        
+        //For redirect back to original page
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
         try {
             String action = request.getParameter("action");
@@ -94,7 +97,7 @@ public class EventDetailsController extends HttpServlet {
                         updatedProductList.add(product);
                     }
                 }
-
+                request.setAttribute("currentURL", currentURL);
                 request.setAttribute("productList", updatedProductList);
                 String dateStarted = event.getDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);

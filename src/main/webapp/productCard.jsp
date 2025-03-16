@@ -110,7 +110,8 @@
         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
         <input type="hidden" name="priceWithQuantity">
-        <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order' && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp')}">
+        <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order' 
+                      && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
             <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </c:if>
     </form>
