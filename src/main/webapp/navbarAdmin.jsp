@@ -29,7 +29,7 @@
             My information
         </a>
 
-        <a class="flex items-center p-2 hover:bg-orange-800" href="#">
+        <a class="flex items-center p-2 hover:bg-orange-800" href="dashboard">
             <i class="fas fa-tachometer-alt mr-2"></i>
             Dashboard
         </a>

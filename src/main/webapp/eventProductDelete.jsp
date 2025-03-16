@@ -20,7 +20,7 @@
 
         <div class="flex-1 p-6">
             <div class="mb-8 w-full max-w-full bg-white p-8 shadow-lg rounded-lg">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Available Products for Event</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Select Products to Remove</h1>
                 <hr class="mb-6 border-gray-300"/>
                 <div class="mt-6 flex flex-col items-start"> 
                     <c:if test="${not empty message}">
