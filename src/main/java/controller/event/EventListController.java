@@ -4,7 +4,7 @@
  */
 package controller.event;
 
-import dao.EventDAO;
+import dao.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Event;
 
 /**
@@ -37,9 +39,35 @@ public class EventListController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = EVENT_LIST_PAGE;
+        int page = 1;
+        int pageSize = 5;
+        String pageStr = request.getParameter("page");
+        if (pageStr != null) {
+            try {
+                page = Integer.parseInt(pageStr);
+            } catch (Exception e) {
+                page = 1;
+            }
+        }
         try {
             EventDAO eDao = new EventDAO();
-            List<Event> listEvent = eDao.getListEvent();
+            EventProductDAO epDao = new EventProductDAO();
+            List<Event> listEvent = eDao.getEventByPage(page, pageSize);
+            int totalEvent = eDao.getTotalEvent();
+            int totalPages = (int) Math.ceil((double) totalEvent / pageSize);
+
+            // 🔥 Tạo Map để lưu số lượng sản phẩm của mỗi sự kiện
+            Map<Integer, Integer> eventProductCountMap = new HashMap<>();
+
+            // 🌟 Lặp qua danh sách sự kiện và lấy số lượng sản phẩm cho từng event
+            for (Event event : listEvent) {
+                int eventID = event.getEventID();
+                int productCount = epDao.getTotalProductInAnEvent(eventID);
+                eventProductCountMap.put(eventID, productCount);
+            }
+            request.setAttribute("EVENT_PRODUCT_COUNT", eventProductCountMap);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPage", totalPages);
             request.setAttribute("LIST_EVENT", listEvent);
         } catch (Exception ex) {
             log("VoucherListServlet error:" + ex.getMessage());

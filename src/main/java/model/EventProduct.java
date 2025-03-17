@@ -9,15 +9,14 @@ package model;
  * @author anhkc
  */
 public class EventProduct {
+
     private int eventID;
     private int productID;
     private int discountPercentage;
 
     public EventProduct() {
     }
-    
-    
-    
+
     public EventProduct(int eventID, int productID, int discountPercentage) {
         this.eventID = eventID;
         this.productID = productID;
@@ -48,8 +47,4 @@ public class EventProduct {
         this.discountPercentage = discountPercentage;
     }
 
-   
-    
-    
-    
 }

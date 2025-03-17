@@ -50,19 +50,6 @@
         </c:if>
         <ul id="popList" class="text-xs leading-loose">
             <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">New Release</div>
-                <div class="hidden links pl-4 ">
-                    <a href="new?type=book" class="flex flex-row items-center hover:font-bold">
-                        <span class="w-[calc(90%)]">Books</span>
-                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                    </a>
-                    <a href="new?type=merch" class="flex flex-row items-center hover:font-bold ">
-                        <span class="w-[calc(90%)]">Merchandise</span>
-                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                    </a>
-                </div>
-            </li>
-            <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
                 <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">On Sale</div>
                 <div class="hidden links pl-4">
                     <a href="sale?type=book" class="flex flex-row items-center hover:font-bold">
@@ -76,7 +63,21 @@
                 </div>
             </li>
             <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">Special Choices</div>
+                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">Ranking</div>
+                <div class="hidden links pl-4">
+                    <a href="ranking?type=book" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Books</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                    <a href="ranking?type=merch" class="flex flex-row items-center hover:font-bold">
+                        <span class="w-[calc(90%)]">Merchandise</span>
+                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
+                    </a>
+                    
+                </div>
+            </li>
+            <li class="p-2 mb-2 rounded-md mx-2 cursor-pointer">
+                <div class="pop-label font-semibold p-2 rounded-md bg-gray-100 hover:bg-gray-200">Trending</div>
                 <div class="hidden links pl-4">
                     <a href="genre?id=18" class="flex flex-row items-center hover:font-bold">
                         <span class="w-[calc(90%)]">Animated Series</span>
@@ -86,10 +87,7 @@
                         <span class="w-[calc(90%)]">Hololive Merchandise</span>
                         <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                     </a>
-                    <a href="#" class="flex flex-row items-center hover:font-bold">
-                        <span class="w-[calc(90%)]">Ranking</span>
-                        <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
-                    </a>
+                    
                 </div>
             </li>
         </ul>

@@ -1,6 +1,5 @@
 package model;
 
-
 /**
  *
  * @author trungtinh
@@ -22,6 +21,21 @@ public class Voucher {
     private String dateStarted;
 
     public Voucher() {
+    }
+
+    public Voucher(String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
+        this.voucherName = voucherName;
+        this.voucherValue = voucherValue;
+        this.quantity = quantity;
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
+        this.dateCreated = dateCreated;
+        this.duration = duration;
+        this.adminID = adminID;
+        this.isActive = isActive;
+        this.expiry = expiry;
+        this.voucherType = voucherType;
+        this.maxDiscountAmount = maxDiscountAmount;
+        this.dateStarted = dateStarted;
     }
 
     public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
@@ -64,7 +78,6 @@ public class Voucher {
         this.voucherName = voucherName;
     }
 
-
     public double getVoucherValue() {
         return voucherValue;
     }
@@ -89,7 +102,6 @@ public class Voucher {
         this.minimumPurchaseAmount = minimumPurchaseAmount;
     }
 
-
     public String getDateCreated() {
         return dateCreated;
     }
@@ -113,7 +125,6 @@ public class Voucher {
     public void setAdminID(int adminID) {
         this.adminID = adminID;
     }
-
 
     public boolean isIsActive() {
         return isActive;

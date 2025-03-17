@@ -16,6 +16,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import model.*;
 
@@ -44,32 +45,60 @@ public class EventDetailsController extends HttpServlet {
         /* TODO output your page here. You may use following sample code. */
         String url = EVENT_DETAILS_ADMIN_PAGE;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        EventDAO eDao = new EventDAO();
+        EventProductDAO epDao = new EventProductDAO();
+        
+        //For redirect back to original page
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
         try {
             String action = request.getParameter("action");
             if (action == null) {
                 int id = Integer.parseInt(request.getParameter("eventId"));
-                EventDAO eDao = new EventDAO();
                 Event eventDetails = eDao.getEventByID(id);
                 request.setAttribute("EVENT_DETAILS", eventDetails);
+
+                List<EventProduct> listEventProduct = epDao.getListEventProduct(id);
+
+                List<Product> updatedProductList = new ArrayList<>();
+                ProductDAO pDao = new ProductDAO();
+                for (EventProduct ep : listEventProduct) {
+                    Product product = pDao.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID
+                    if (product != null) {
+                        product.setDiscountPercentage(ep.getDiscountPercentage()); // Gán discount từ event
+                        updatedProductList.add(product);
+                    }
+                }
+                request.setAttribute("listEventProduct", updatedProductList);
 
                 String dateStarted = eventDetails.getDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
                 LocalDate dateEnd = createDate.plusDays(eventDetails.getDuration());
                 request.setAttribute("dateEnd", dateEnd);
+
             } else if (action.equals("home")) {
                 ProductDAO productDAO = new ProductDAO();
-                List<Product> productList = productDAO.get10RandomActiveProducts("book");
-                request.setAttribute("productList", productList);
 
                 String banner = request.getParameter("banner");
                 if (banner != null) {
                     banner = URLDecoder.decode(banner, StandardCharsets.UTF_8);
                 }
                 request.setAttribute("banner", banner);
-                EventDAO eDao = new EventDAO();;
+
                 Event event = eDao.getEventByBanner(banner);
                 request.setAttribute("eventDetails", event);
 
+                List<EventProduct> listEventProduct = epDao.getListEventProduct(event.getEventID());
+                List<Product> updatedProductList = new ArrayList<>();
+                for (EventProduct ep : listEventProduct) {
+                    Product product = productDAO.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID
+                    if (product != null) {
+                        product.setDiscountPercentage(ep.getDiscountPercentage()); // Gán discount từ event
+                        updatedProductList.add(product);
+                    }
+                }
+                request.setAttribute("currentURL", currentURL);
+                request.setAttribute("productList", updatedProductList);
                 String dateStarted = event.getDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
                 LocalDate dateEnd = createDate.plusDays(event.getDuration());

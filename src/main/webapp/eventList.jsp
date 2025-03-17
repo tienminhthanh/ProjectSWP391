@@ -22,12 +22,12 @@
                 <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Event List</h1>
                 <hr class="mb-6 border-gray-300"/>
                 <div class="mt-6 flex flex-col items-start"> 
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddEvent">
+                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddNew">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
-                    <c:if test="${not empty message}">
+                    <c:if test="${not empty errorMessage}">
                         <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
-                            <i class="fas fa-exclamation-circle mr-2"></i>${message}
+                            <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
                         </p>
                     </c:if>
                 </div>
@@ -38,11 +38,12 @@
                         <thead class="bg-orange-400 text-white">
                             <tr>
                                 <th class="px-4 py-3 border border-b w-[80px]">No.</th>
-                                <th class="px-4 py-3 border border-b w-[200]">Event Name</th>
-                                <th class="px-4 py-3 border border-b w-[200]">Banner</th>
-                                <th class="px-4 py-3 border border-b w-[200">Description</th>
-                                <th class="px-4 py-3 border border-b w-[150]">Expiry</th>
-                                <th class="px-4 py-3 border border-b w-[150]">Status</th>
+                                <th class="px-4 py-3 border border-b w-[250px]">Event Name</th>
+                                <th class="px-4 py-3 border border-b w-[350px]">Banner</th>
+                                <th class="px-4 py-3 border border-b w-[250px]">Description</th>
+                                <th class="px-4 py-3 border border-b w-[100px]">Expiry</th>
+                                <th class="px-4 py-3 border border-b w-[100px]">Status</th>
+                                <th class="px-4 py-3 border border-b w-[120px]">Total Products</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,20 +68,16 @@
                                     </td>
                                     <td class="px-2 py-3 border border-b text-center">
                                         <c:choose>
-                                            <c:when test="${event.expiry}">
-                                                <c:choose>
-                                                    <c:when test="${event.isActive}">
-                                                        <span class="text-green-600">Active</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="text-red-600">Deactivate</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <c:when test="${event.isActive}">
+                                                <span class="text-green-600">Active</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-red-600">Deactivate</span>
                                             </c:otherwise>
                                         </c:choose>
+                                    </td>
+                                    <td class="px-2 py-3 border border-b text-center">
+                                        ${EVENT_PRODUCT_COUNT[event.eventID]}
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -97,7 +94,7 @@
                         <nav class="flex space-x-2">
                             <!-- Nút Previous -->
                             <c:if test="${currentPage> 1}">
-                                <a href="voucherList?page=${currentPage - 1}"
+                                <a href="eventList?page=${currentPage - 1}"
                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
                                     &laquo; Previous
                                 </a>
@@ -105,7 +102,7 @@
 
                             <!-- Hiển thị các trang -->
                             <c:forEach var="i" begin="1" end="${totalPage}">
-                                <a href="voucherList?page=${i}"
+                                <a href="eventList?page=${i}"
                                    class="px-4 py-2 rounded ${i == currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
                                     ${i}
                                 </a>
@@ -113,7 +110,7 @@
 
                             <!-- Nút Next -->
                             <c:if test="${currentPage < totalPage}">
-                                <a href="voucherList?page=${currentPage + 1}"
+                                <a href="eventList?page=${currentPage + 1}"
                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
                                     Next &raquo;
                                 </a>
@@ -124,14 +121,6 @@
             </div>
         </main>
 
-        <!-- FOOTER -->
-        <footer class="bg-gray-200 py-4 mt-8 w-full">
-            <div class="container mx-auto px-4 text-center text-sm text-gray-600">
-                <a class="mr-4 hover:text-gray-800" href="#">Privacy</a>
-                <a class="hover:text-gray-800" href="#">Terms & Conditions</a>
-                <p class="mt-2">© BOOK WALKER Co.,Ltd.</p>
-            </div>
-        </footer>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
                                         function confirmAction(message, url) {
@@ -153,6 +142,23 @@
                                             window.location = 'eventDetails?eventId=' + eventID;
                                         }
         </script>
+        <c:if test="${not empty sessionScope.message}">
+            <div id="popupMessage" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
+                <strong>${sessionScope.message}</strong>
+            </div>
+            <c:remove var="message" scope="session"/>
+            <c:remove var="messageType" scope="session"/>
 
+            <script>
+                // Tự động biến mất sau 3 giây
+                setTimeout(() => {
+                    let popup = document.getElementById("popupMessage");
+                    if (popup) {
+                        popup.style.opacity = "0";
+                        setTimeout(() => popup.remove(), 500); // Xóa khỏi DOM sau khi animation kết thúc
+                    }
+                }, 3000);
+            </script>
+        </c:if>
 </body>
 </html>

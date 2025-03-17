@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 /**
@@ -12,7 +8,7 @@ public class Brand {
     private int brandID;
     private String brandName;
 
-    // Constructor
+    // Constructors
     public Brand() {}
 
     public Brand(int brandID, String brandName) {
@@ -20,11 +16,18 @@ public class Brand {
         this.brandName = brandName;
     }
 
-    // Getters and Setters
+    // Getters
     public int getBrandID() { return brandID; }
-    public void setBrandID(int brandID) { this.brandID = brandID; }
-
     public String getBrandName() { return brandName; }
-    public void setBrandName(String brandName) { this.brandName = brandName; }
-}
 
+    // Fluent Setters
+    public Brand setBrandID(int brandID) {
+        this.brandID = brandID;
+        return this;
+    }
+
+    public Brand setBrandName(String brandName) {
+        this.brandName = brandName;
+        return this;
+    }
+}

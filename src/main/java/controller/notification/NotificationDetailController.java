@@ -28,7 +28,10 @@ public class NotificationDetailController extends HttpServlet {
         try {
             int notificationID = Integer.parseInt(request.getParameter("notificationID"));
             String receiverID = request.getParameter("receiverID");
-
+            // Kiểm tra vai trò người dùng từ session
+            HttpSession session = request.getSession();
+            Account account = (Account) session.getAttribute("account");
+            String role = account.getRole();
             // Fetch notification
             Notification notification = notificationDAO.getNotificationById(notificationID);
 //            if (notification == null || (receiverID != null && notification.getReceiverID() != Integer.parseInt(receiverID))) {
@@ -38,15 +41,11 @@ public class NotificationDetailController extends HttpServlet {
 //            }
 
             // Mark as read if not already read
-            if (!notification.isRead()) {
+            if (!notification.isRead() && !(role.equals("admin") || role.equals("staff"))) {
                 notificationDAO.markAsRead(notificationID);
                 notification.setRead(true); // Update local object to reflect change
             }
 
-            // Kiểm tra vai trò người dùng từ session
-            HttpSession session = request.getSession();
-            Account account = (Account) session.getAttribute("account");
-            String role = account.getRole();
             // Chuyển hướng dựa trên vai trò
             String destinationPage;
             if (role.equals("admin") || role.equals("staff")) {
@@ -83,14 +82,14 @@ public class NotificationDetailController extends HttpServlet {
                 if (success) {
                     response.sendRedirect("listnotification" + (receiverID != null ? "?receiverID=" + receiverID : ""));
                 } else {
-                    request.setAttribute("error", "Không thể xóa thông báo.");
+                    request.setAttribute("error", "Delete fail!");
                     doGet(request, response); // Reload the detail page with error
                 }
             } catch (SQLException e) {
-                request.setAttribute("error", "Lỗi xóa thông báo: " + e.getMessage());
+                request.setAttribute("error", "Delete fail: " + e.getMessage());
                 doGet(request, response); // Reload with error
             } catch (NumberFormatException e) {
-                request.setAttribute("error", "ID thông báo không hợp lệ.");
+                request.setAttribute("error", "Notification invalid.");
                 doGet(request, response); // Reload with error
             }
         }

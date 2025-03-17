@@ -20,7 +20,6 @@
         <!--Search-->
         <div class="search-nav-container">
             <div class="search-bar">
-                <!--style this shit properly man, it's killing me-->
                 <form action="search" method="get">
                     <select name="type" id="searchType">
                         <option value="book">Books</option>
@@ -31,7 +30,6 @@
                 </form>
             </div>
 
-            <!--Hide this shit on mobile view bro -->
             <nav> 
                 <ul>
                     <c:forEach var="cat" items="${applicationScope.categories.keySet()}">

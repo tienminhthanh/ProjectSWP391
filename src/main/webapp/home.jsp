@@ -4,16 +4,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
 <fmt:setLocale value="en_US"/>
-<%
-    String bannerPath = application.getRealPath("/img/banner_event/");
-    File folder = new File(bannerPath);
-    String[] files = folder.list(new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.matches(".*\\.(jpg|jpeg|png|gif)");
-        }
-    });
-%>
+
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -53,7 +44,7 @@
         </div>
 
         <div class="banner-container">
-            <jsp:include page="banner.jsp" flush="true"/> 
+                <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -61,21 +52,12 @@
 
             <!--Main section-->
             <main class="w-full md:w-5/6 p-3 flex flex-col">
-                <!--Popup message from servlet -->
-                <c:if test="${not empty message}">
-                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
-                        <p>
-                            ${message}
-                        </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
-                    </div>
-                </c:if>
+                    
                 <!--Popular Searches-->
                 <div class="my-4 bg-white popular-search-area border-t-4 border-orange-500">
 
                     <div class="w-full flex flex-col lg:flex-row items-center justify-center p-8 gap-8">
-                        <div class="w-full md:flex-1 h-64">
+                        <div class="w-full lg:w-1/3 h-64">
                             <h2 class="text-xl font-bold relative pb-4 text-center text-red-500">
                                 On Sale
                             </h2>
@@ -83,15 +65,15 @@
                                 <a href="sale?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img  class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-merch.png" alt="On-Sale Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
-                                    <img class="h-40 w-full object-contain" src="img/popular_search_img/sale-label.png" alt="On-Sale Label"/>
+                                <span class=" w-1/3">
+                                    <img class="h-40 w-full object-contain lg:object-cover" src="img/popular_search_img/sale-label.png" alt="On-Sale Label"/>
                                 </span>
                                 <a href="sale?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/sale-book.png" alt="On-Sale Books"/>
                                 </a>
                             </div>
                         </div>
-                        <div class="w-full md:flex-1 h-64">
+                        <div class="w-full lg:w-1/3 h-64">
                             <h2 class="text-xl font-bold relative pb-4 text-center text-amber-500">
                                 Monthly Ranking
                             </h2>
@@ -99,27 +81,27 @@
                                 <a href="ranking?type=merch" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-merch.png" alt="Top Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
-                                    <img class="h-40 w-full object-contain" src="img/popular_search_img/top-label.png" alt="Top Label"/>
+                                <span class=" w-1/3">
+                                    <img class="h-40 w-full object-contain lg:object-cover" src="img/popular_search_img/top-label.png" alt="Top Label"/>
                                 </span>
                                 <a href="ranking?type=book" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
                                     <img class="max-h-36 w-full object-contain" src="img/popular_search_img/top-book.png" alt="Top Books"/>
                                 </a>
                             </div>
                         </div>
-                        <div class="w-full md:flex-1 h-64">
+                        <div class="w-full lg:w-1/3 h-64">
                             <h2 class="text-xl font-bold relative pb-4 text-center text-sky-400">
                                 Trending
                             </h2>
                             <div class="w-full rounded-lg border-4 border-sky-300 flex flex-row items-center justify-center gap-2 px-2 ">
                                 <a href="series?id=1" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
-                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-merch.png" alt="Top Merch"/>
+                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-merch.png" alt="Special Merch"/>
                                 </a>
-                                <span class="absoloute top-0 left-0 w-1/3">
-                                    <img class="max-h-40 w-full object-contain" src="img/popular_search_img/special-label.png" alt="Top Label"/>
+                                <span class=" w-1/3">
+                                    <img class="max-h-40 w-full object-contain" src="img/popular_search_img/special-label.png" alt="Special Label"/>
                                 </span>
                                 <a href="genre?id=18" class="w-1/3 max-h-full hover:shadow-xl hover:bg-gray-200 rounded-lg">
-                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-book.png" alt="Top Books"/>
+                                    <img class="max-h-36 w-full object-contain"src="img/popular_search_img/special-book.png" alt="Special Books"/>
                                 </a>
                             </div>
                         </div>
@@ -127,7 +109,7 @@
 
                 </div>
 
-                <!--Div2-->
+                <!--Voucher-->
                 <div class="mb-4 bg-white voucher-area border-t-4 border-orange-500">
                     <h2 class="text-xl font-bold relative pt-4 pb-4 text-center">
                         Available Now
@@ -407,22 +389,12 @@
                 </div>
 
 
-
                 <!--Popup unauthorized users-->
                 <c:if test="${empty sessionScope.account or sessionScope.account.getRole() ne 'customer'}">
                     <jsp:include page="popuplogin.jsp"/>
                 </c:if>
 
-                <!--Popup message from servlet -->
-                <c:if test="${not empty message}">
-                    <div class="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-49" id="warning-popup-overlay" onclick="closeMessagePopup()"></div>
-                    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-md border-2 text-center z-50 rounded-lg" id="warning-popup-container">
-                        <p>
-                            ${message}
-                        </p>
-                        <button onclick="closeMessagePopup()" class="mt-2 p-2 mx-4 text-white border-0 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg">Close</button>
-                    </div>
-                </c:if>
+               
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
@@ -479,75 +451,42 @@
                         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
                 crossorigin="anonymous"></script>-->
 
-        <!--Tailwind-->
-        <script src="https://cdn.tailwindcss.com">
-        </script>
 
         <!--Product Card-->
         <script src="js/scriptProductCard.js"></script>
 
         <!--Voucher Date End-->
         <script src="js/scriptVoucherDateEnd.js"></script>
-
+        
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com">
+        </script>
+        
+         <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let banners = [
-            <% for (String file : files) {%>
-                    {img: "/img/banner_event/<%= file%>"},
-            <% }%>
-                ];
-
-                let current = 0;
-                const bannerImg = document.getElementById("banner-img");
-                const bannerLink = document.getElementById("banner-link");
-                const dotsContainer = document.getElementById("dots-container");
-                const prev_btn = document.getElementById("prev-btn");
-                const next_btn = document.getElementById("next-btn");
-
-                function updateBanner() {
-                    bannerImg.src = banners[current].img;
-                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
-
-                    dotsContainer.innerHTML = "";
-                    banners.forEach((_, index) => {
-                        const dot = document.createElement("div");
-                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
-                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
-                        dot.onclick = () => {
-                            current = index;
-                            updateBanner();
-                        };
-                        dotsContainer.appendChild(dot);
+            
+//            Pop-up message
+            document.addEventListener('DOMContentLoaded',function(){
+                const reqMessage = `${requestScope.message}`;
+                if(reqMessage){
+                    Swal.fire({
+                        icon: 'warning',
+                        text: reqMessage
                     });
                 }
-
-                function next() {
-                    current = (current + 1) % banners.length;
-                    updateBanner();
-                }
-
-                function prev() {
-                    current = (current - 1 + banners.length) % banners.length;
-                    updateBanner();
-                }
-
-                if (prev_btn)
-                    prev_btn.addEventListener("click", prev);
-                if (next_btn)
-                    next_btn.addEventListener("click", next);
-
-                // Chỉ gọi setInterval một lần duy nhất
-                setInterval(next, 3000);
-
-                updateBanner();
             });
 
-            function closeMessagePopup() {
-                document.getElementById('warning-popup-overlay').classList.add("hidden");
-                document.getElementById('warning-popup-container').classList.add("hidden");
-            }
+            
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.remove("hidden");
+            });
+
+            document.getElementById("closeChatAI").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.add("hidden");
+            });
 
         </script>
 

@@ -177,7 +177,14 @@ public class OrderController extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            Double sum = product.getDiscountPercentage() > 0 ? (quantity * product.getPrice() * (100-product.getDiscountPercentage())/100) : (product.getPrice() * quantity);
+            if (product.getDiscountPercentage() > 0) {
+                Double priceWithDiscount = 0.0;
+                priceWithDiscount = product.getPrice() * (100 - product.getDiscountPercentage()) / 100;
+                product.setPrice(priceWithDiscount);
+            }
+
+            Double sum = product.getPrice() * quantity;
+
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
@@ -239,97 +246,50 @@ public class OrderController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        OrderInfo orderInfo = new OrderInfo();
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
-        DeliveryOption delivery = new DeliveryOption();
-        int estimatedTime = 0;
-        if (cartItems == null) {
-            cartItems = new ArrayList<>();
-        }
-
+        String orderTotalStr = request.getParameter("orderTotal");
+        Double orderTotal = Double.parseDouble(orderTotalStr);
         Account account = (Account) session.getAttribute("account");
+        String voucherIDParam = request.getParameter("voucherID");
+
+        OrderDAO orderDAO = new OrderDAO();
+        VoucherDAO voucherDAO = new VoucherDAO();
         if (account == null) {
             response.sendRedirect("login");
             return;
         }
-
-        Double subtotal = 0.0;
-        Double preOrderPrice = 0.0;
-        for (CartItem item : cartItems) {
-            subtotal += item.getPriceWithQuantity().doubleValue();
-            preOrderPrice = subtotal;
-
-        }
-        OrderDAO orderDAO = new OrderDAO();
-        String deliveryOptionID = request.getParameter("shippingOption");
-
-        if (deliveryOptionID != null) {
-            try {
-                int ID = Integer.parseInt(deliveryOptionID);
-                delivery = orderDAO.getDeliveryOption(ID);
-
-                if (delivery != null && delivery.getDeliveryOptionID() == ID) {
-                    subtotal += delivery.getOptionCost(); // Cộng phí giao hàng vào tổng tiền
-
-                } else {
-                    System.out.println("Không tìm thấy phương thức giao hàng với ID: " + ID);
-                }
-            } catch (SQLException | NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-
-        String voucherIDParam = request.getParameter("voucherID");
-        VoucherDAO voucherDAO = new VoucherDAO();
-        int tempVoucherID = Integer.parseInt(voucherIDParam);
-
         Integer voucherID = null; // Mặc định là null nếu không chọn voucher
-
-        if (tempVoucherID > 0 && !voucherIDParam.trim().isEmpty()) {
-            try {
-                double valueOfVoucher = 0;
-                Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
-                voucherID = voucher.getVoucherID();
-                if (voucherID != null && voucher.isIsActive() && preOrderPrice >= voucher.getMinimumPurchaseAmount()) {
-                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
-                        valueOfVoucher = voucher.getVoucherValue();
-                    } else {
-                        valueOfVoucher = (subtotal * voucher.getVoucherValue()) / 100;
-                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
-                            valueOfVoucher = voucher.getMaxDiscountAmount();
-                        }
-                    }
-                    subtotal -= valueOfVoucher;
-                    voucherID = tempVoucherID; // Chỉ gán khi voucher hợp lệ
-                    voucher.setQuantity(voucher.getQuantity() - 1);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid voucher ID format: " + voucherIDParam);
-                voucherID = null;
-            }
+        if (!voucherIDParam.trim().isEmpty()) {
+            int tempVoucherID = Integer.parseInt(voucherIDParam);
+            Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
+            voucherID = voucher.getVoucherID();
         }
-
         try {
-            OrderInfo orderInfo = new OrderInfo();
             orderInfo.setCustomerID(account.getAccountID());
             orderInfo.setDeliveryAddress(request.getParameter("addr"));
             orderInfo.setDeliveryOptionID(Integer.parseInt(request.getParameter("shippingOption")));
             orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
-            orderInfo.setPreVoucherAmount(subtotal);
+            orderInfo.setPreVoucherAmount(orderTotal);
             orderInfo.setVoucherID(voucherID);
-
+            orderDAO.updatePreVoucherAmount(orderInfo.getOrderID(), orderTotal);
+            if (voucherID != null) {
+                orderDAO.updateQuantityVoucher(voucherID);
+            }
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
                 OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);
-
             orderDAO.insertOrderInfo(orderInfo);
             session.removeAttribute("cartItems");
             response.sendRedirect("OrderListController");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            response.sendRedirect("error.jsp");
+            request.setAttribute("errorMessage1", "Something went wrong. Please try again later!");
+//            response.sendRedirect("error.jsp");
+            request.getRequestDispatcher("OrderSummaryView.jsp").forward(request, response);
         }
     }
 
