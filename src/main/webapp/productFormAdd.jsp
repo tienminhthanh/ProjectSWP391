@@ -24,8 +24,8 @@
         <div class="form-group">
             <label>Details:</label>
             <div class="pair-group">
-                <label for="priceBook">Price(VND):</label>
-                <input type="number" id="priceBook" name="price" step="500" min="1000" max="10000000" required>
+                <label for="priceBook">Price(x1000 VND):</label>
+                <input type="number" id="priceBook" name="price" step="0.5" min="1" max="10000" required>
                 <label for="stockCountBook">Stock Count:</label>
                 <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" required>
             </div>

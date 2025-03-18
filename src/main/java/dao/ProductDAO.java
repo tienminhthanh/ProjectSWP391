@@ -1096,6 +1096,7 @@ public class ProductDAO {
             return false;
         }
     }
+    
 
     public int getCreatorIDByNameAndRole(String name, String role) throws SQLException {
         String sql = "SELECT creatorID from Creator\n"
@@ -1109,33 +1110,48 @@ public class ProductDAO {
         return 0;
     }
 
-    public boolean assignCreatorsToProduct(int productID, int creatorID) {
+    public boolean assignCreatorsToProduct(int productID, int creatorID, String action) {
         try {
-            String sql = "INSERT INTO [dbo].[Product_Creator]\n"
-                    + "           ([productID]\n"
-                    + "           ,[creatorID])\n"
-                    + "     VALUES\n"
-                    + "           (?,?)";
+            String sql;
+            if (action.equals("insert")) {
+                sql = "INSERT INTO [dbo].[Product_Creator]\n"
+                        + "           ([productID]\n"
+                        + "           ,[creatorID])\n"
+                        + "     VALUES\n"
+                        + "           (?,?)";
+            }
+            else{
+                sql = "UPDATE....";
+            }
             Object[] params = {productID, creatorID};
             return context.exeNonQuery(sql, params) > 0;
         } catch (SQLException ex) {
             return false;
         }
     }
-
-    public boolean assignGenresToBook(int bookID, int genreID) {
+    
+    
+    public boolean assignGenresToBook(int bookID, int genreID, String action) {
         try {
-            String sql = "INSERT INTO [dbo].[Book_Genre]\n"
+            String sql;
+            if(action.equals("insert")){
+                sql = "INSERT INTO [dbo].[Book_Genre]\n"
                     + "           ([bookID]\n"
                     + "           ,[genreID])\n"
                     + "     VALUES\n"
                     + "           (?,?)";
+            }
+            else{
+                sql = "UPDATE....";
+            }
             Object[] params = {bookID, genreID};
             return context.exeNonQuery(sql, params) > 0;
         } catch (SQLException ex) {
             return false;
         }
     }
+    
+    
 
     public int getPublisherIDByName(String publisherName) throws SQLException {
         String sql = "SELECT publisherID\n"
@@ -1162,6 +1178,7 @@ public class ProductDAO {
             return false;
         }
     }
+    
     
     public int getSeriesIDByName(String seriesName) throws SQLException {
         String sql = "SELECT seriesID\n"
@@ -1286,21 +1303,12 @@ public class ProductDAO {
     }
 
     
-    public boolean updateProducts(Product updatedProduct) {
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        return true;
-    }
+    public boolean updateProducts(Product updatedProduct) throws SQLException {
+    String sql = "UPDATE Product SET categoryID = ?, adminID = ?, keywords = ?, generalCategory = ?, " +
+                 "isActive = ?, imageURL = ?, description = ?, releaseDate = ?, specialFilter = ?, " +
+                 "productName = ?, price = ?, stockCount = ? WHERE productID = ?";
+    return false;
+}
 
     public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
         String sql = "UPDATE Product SET isActive = ? WHERE productID = ?";

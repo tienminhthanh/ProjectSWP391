@@ -212,10 +212,29 @@ public class ProductManagementController extends HttpServlet {
             retrieveProduct(request, response);
             return;
         } else {
+            
+            //Update general info
+            //
+            //For related entities, keep the input type=text, then use either one of these 2 approaches:
+                //Easy (maybe) but require more database connection:
+                    //Use where contains(name,formatQueryTight('inputText')) to dynammically fetch full-text search from database
+                    //After submission, check if exist ( double check )
+                    //If not, add new
+                    //If exist -> re-associate if the association is new
+                    //NOT includes update existing entries of related entities
+                    
+                //Difficult, less database connection:
+                    //Use the entityMap in applicationScope and similarity check with Levenshtein and Jaro-Winkler instead of database search
+                    //After submission, check if exist with full-text search ( double check )
+                    //If not, add new
+                    //If exist -> re-associate if the association is new
+                    //NOT includes update existing entries of related entities
             switch (action) {
                 case "updateBook":
+//                    updateBook(request, response, paramMap, newBook);
                     break;
                 case "updateMerch":
+//                    updateMerch(request, response, paramMap, newBook);
                     break;
                 default:
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid product management action: " + action);
@@ -225,11 +244,23 @@ public class ProductManagementController extends HttpServlet {
 
     private void retrieveProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        //Retrieve product info from database based on id and generalCategory (product type)
+        //Set the formAction to ensure the page show the correct form
         request.setAttribute("formAction", "update");
-        request.setAttribute("type", "merch");
-        request.setAttribute("formTitle", "Merch");
         request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
+    }
+    
+    private void updateBook(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
+            throws Exception {
+//       Handle book specific attributes and related entities
+
+    }
+    
+    private void updateMerch(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
+            throws Exception {
+        
+//       Handle merch specific attributes and related entities
 
     }
 
@@ -312,7 +343,7 @@ public class ProductManagementController extends HttpServlet {
                     creatorID = creatorID > 0 ? creatorID : productDAO.getCreatorIDByNameAndRole(creatorNames[i], creatorRoles[i]);
                     if (creatorID > 0 && productID > 0) {
                         //Insert to junction table
-                        if (!productDAO.assignCreatorsToProduct(productID, creatorID)) {
+                        if (!productDAO.assignCreatorsToProduct(productID, creatorID,"insert")) {
                             throw new SQLException("Error assigning creatorID " + creatorID + " to productID " + productID);
                         }
                     }
@@ -353,7 +384,7 @@ public class ProductManagementController extends HttpServlet {
         for (String genre : genres) {
             int genreID = Integer.parseInt(genre);
             //Insert to junction table
-            if (!productDAO.assignGenresToBook(newBook.getProductID(), genreID)) {
+            if (!productDAO.assignGenresToBook(newBook.getProductID(), genreID,"insert")) {
                 throw new SQLException("Error assigning genreID " + genreID + " to productID " + newBook.getProductID());
             }
         }

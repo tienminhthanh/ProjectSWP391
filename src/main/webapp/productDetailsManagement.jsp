@@ -135,9 +135,9 @@
                                 <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() eq 'admin'}">
                                     <c:set var="p_e_status" value="${productEventStatus}"/>
                                     <form  class="flex flex-row items-stretch px-2" action="event" method="post" onsubmit="return checkAvailability(`${p_e_status}`, event)">
-                                        <input type="hidden" name="productID" value="${product.productID}"/>
+                                        <input type="hidden" name="selectedProducts" value="${product.productID}"/>
                                         <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                        <select class="w-3/5 p-4 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="event">
+                                        <select class="w-3/5 p-4 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="eventId">
                                             <c:forEach var="event" items="${eventList}">
                                                 <option value="${event.eventID}">${event.eventName}</option>
                                             </c:forEach>
