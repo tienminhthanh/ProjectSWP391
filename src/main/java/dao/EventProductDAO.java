@@ -31,7 +31,6 @@ public class EventProductDAO {
     }
 
 //    public int getDiscountOfProductInEvent()
-    
     public boolean deleteProductFromEvent(int eventId, int productId) {
         String sql = "DELETE FROM [dbo].[Event_Product]\n"
                 + "      WHERE eventID = ? and productID = ?";
@@ -225,6 +224,18 @@ public class EventProductDAO {
         return listEventProduct;
     }
 
+    public boolean deleteListProductInEvent(int eventId) {
+        String sql = "DELETE FROM [dbo].[Event_Product]\n"
+                + "      WHERE [eventID] = ?";
+        try {
+            Object[] params = {eventId};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
     public int getTotalProductInAnEvent(int eventId) {
         String sql = "SELECT COUNT (*)\n"
                 + "FROM [WIBOOKS].[dbo].[Event_Product]\n"
@@ -243,6 +254,6 @@ public class EventProductDAO {
 
     public static void main(String[] args) {
         EventProductDAO ep = new EventProductDAO();
-        System.out.println(ep.getListProductToAddForEvent(41).size());
+        System.out.println(ep.deleteListProductInEvent(9));
     }
 }

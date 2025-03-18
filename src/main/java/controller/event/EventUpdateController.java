@@ -5,6 +5,7 @@
 package controller.event;
 
 import dao.EventDAO;
+import dao.EventProductDAO;
 import dao.VoucherDAO;
 import jakarta.servlet.ServletContext;
 import java.io.IOException;
@@ -179,15 +180,26 @@ public class EventUpdateController extends HttpServlet {
                 fileName = banner;
             }
 
-            boolean isActive = existingEvent.isIsActive();
-
             // Tạo đối tượng Event và cập nhật
             Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
                     existingEvent.isIsActive(), dateStarted.toString(), existingEvent.isExpiry());
-            if (dateStarted.isAfter(LocalDate.parse(dateCreated, formatter))) {
-                event.setIsActive(!isActive);
+
+            LocalDate today = LocalDate.now();
+            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getDuration());
+
+            boolean isActive = false;
+            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getDateStarted())).isAfter(today)) {
+                isActive = true;
             }
-            if (eDao.updateEvent(event)) {
+
+            EventProductDAO epDAO = new EventProductDAO();
+
+            if (eDao.updateEvent(event) && !isActive) {
+                epDAO.deleteListProductInEvent(event.getEventID());
+                session.setAttribute("message", "Event updated successfully! List Product is removed");
+                session.setAttribute("messageType", "success");
+            } else if (eDao.updateEvent(event) && isActive) {
                 session.setAttribute("message", "Event updated successfully!");
                 session.setAttribute("messageType", "success");
             } else {

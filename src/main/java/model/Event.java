@@ -131,4 +131,9 @@ public class Event {
         this.isActive = isActive;
     }
 
+    @Override
+    public String toString() {
+        return "Event{" + "eventID=" + eventID + ", eventName=" + eventName + ", dateCreated=" + dateCreated + ", duration=" + duration + ", banner=" + banner + ", description=" + description + ", adminID=" + adminID + ", isActive=" + isActive + ", dateStarted=" + dateStarted + ", expiry=" + expiry + '}';
+    }
+
 }

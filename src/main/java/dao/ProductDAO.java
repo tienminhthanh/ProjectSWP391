@@ -731,6 +731,7 @@ public class ProductDAO {
             }
         }
         return null;
+
     }
 
     public Map<Category, Integer> getAllCategories() throws SQLException {
@@ -1162,7 +1163,7 @@ public class ProductDAO {
             return false;
         }
     }
-    
+
     public int getSeriesIDByName(String seriesName) throws SQLException {
         String sql = "SELECT seriesID\n"
                 + "FROM     Series\n"
@@ -1244,36 +1245,36 @@ public class ProductDAO {
     public boolean updateBooks(Book updatedBook) throws SQLException {
         StringBuilder sql = new StringBuilder("update book set\n");
         List<Object> paramList = new ArrayList<>();
-        if(updatedBook.getPublisher() != null){
+        if (updatedBook.getPublisher() != null) {
             sql.append("publisherID = ?,\n");
             paramList.add(updatedBook.getPublisher().getPublisherID());
         }
         sql.append("duration = ? where bookID = ?\n");
         paramList.add(updatedBook.getDuration());
         paramList.add(updatedBook.getProductID());
-        Object[] params =paramList.toArray();
+        Object[] params = paramList.toArray();
         return context.exeNonQuery(sql.toString(), params) > 0;
     }
 
     public boolean updateMerch(Merchandise updatedMerch) throws SQLException {
-        List<Object> paramList  = new ArrayList<>();
+        List<Object> paramList = new ArrayList<>();
         StringBuilder sql = new StringBuilder("UPDATE [dbo].[Merchandise] SET\n");
-        
-        if(updatedMerch.getSeries() != null){
+
+        if (updatedMerch.getSeries() != null) {
             sql.append("[seriesID] = ?,\n");
             paramList.add(updatedMerch.getSeries().getSeriesID());
         }
-        
-        if(updatedMerch.getCharacter() != null){
+
+        if (updatedMerch.getCharacter() != null) {
             sql.append("[characterID] = ?,\n");
             paramList.add(updatedMerch.getCharacter().getCharacterID());
         }
-        
-        if(updatedMerch.getBrand() != null){
+
+        if (updatedMerch.getBrand() != null) {
             sql.append("[brandID] = ?,\n");
             paramList.add(updatedMerch.getBrand().getBrandID());
         }
-        
+
         sql.append("[size] = ?, [scaleLevel] = ?, [material] = ? WHERE [merchandiseID] = ?\n");
         paramList.add(updatedMerch.getSize());
         paramList.add(updatedMerch.getScaleLevel());
@@ -1285,7 +1286,6 @@ public class ProductDAO {
         return context.exeNonQuery(sql.toString(), params) > 0;
     }
 
-    
     public boolean updateProducts(Product updatedProduct) {
         //WIP
         //WIP
@@ -1307,8 +1307,6 @@ public class ProductDAO {
         Object[] params = {newStatus, productID};
         return context.exeNonQuery(sql, params) > 0;
     }
-    
-
 
     public static void main(String[] args) {
         try {
