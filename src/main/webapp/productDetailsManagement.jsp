@@ -76,8 +76,8 @@
                                     <p class="category w-full">${product.specificCategory.categoryName}</p>
                                 </div>
                                 <div class="creator-top text-xs">
-                                    <c:forEach var="creator" items ="${creatorMap}" varStatus="loopStatus">
-                                        <c:out value="${creator.value.creatorName}"/>
+                                    <c:forEach var="creator" items ="${creatorList}" varStatus="loopStatus">
+                                        <c:out value="${creator.creatorName}"/>
                                         <c:if test="${!loopStatus.last}"> - </c:if>
                                     </c:forEach>
                                 </div>
@@ -171,12 +171,29 @@
                                 <c:when test="${type=='book'}">
                                     <table class="m-2">
                                         <tr><td>Title</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
+                                        <tr class="cre-details-gr"><td>Author</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'author' ? cre.creatorName : ''}
+                                                </c:forEach>
 
-                                        <tr><td>Author</td><td>${not empty creatorMap.author ? creatorMap.author.creatorName : 'Unknown'}</td></tr>
+                                            </td>
+                                        </tr>
 
-                                        <tr><td>Artist</td><td>${not empty creatorMap.artist ? creatorMap.artist.creatorName : 'Unknown'}</td></tr>
+                                        <tr class="cre-details-gr"><td>Artist</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
+                                                </c:forEach>
 
-                                        <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
+                                            </td>
+                                        </tr>
+
+                                        <tr><td>Publisher</td>
+                                            <td>${not empty product.publisher && not empty product.publisher.publisherName ? product.publisher.publisherName : 'Unknown'}</td>
+                                        </tr>
 
                                         <tr>
                                             <td>Genre</td>
@@ -213,8 +230,26 @@
                                 <c:when test= "${type=='merch'}">
                                     <table class="m-2">
                                         <tr><td>Product Name</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
-                                        <tr><td>Sculptor</td><td>${not empty creatorMap.sculptor and not empty creatorMap.sculptor.creatorName ? creatorMap.sculptor.creatorName : 'Unknown'}</td></tr>
-                                        <tr><td>Artist</td><td>${not empty creatorMap.artist and not empty creatorMap.artist.creatorName ? creatorMap.artist.creatorName : 'Unknown'}</td></tr>
+                                        <tr class="cre-details-gr"><td>Sculptor</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'sculptor' ? cre.creatorName : ''}
+                                                </c:forEach>
+
+                                            </td>
+                                        </tr>
+
+
+                                        <tr class="cre-details-gr"><td>Artist</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
+                                                </c:forEach>
+
+                                            </td>
+                                        </tr>
 
                                         <tr><td>Brand</td><td>${not empty product.brand and not empty product.brand.brandName ? product.brand.brandName : 'Unknown'}</td></tr>
                                         <tr><td>Series</td><td>${not empty product.series and not empty product.series.seriesName ? product.series.seriesName : 'Unknown'}</td></tr>
@@ -434,9 +469,22 @@
                                                 return false;
                                             }
                                             return true;
-                                        }
+                                        };
+                                        
 
-
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const creators = document.querySelectorAll('.cre-details-gr');
+                                            if (creators) {
+                                                creators.forEach(cre => {
+                                                    let content = cre.querySelector('td:nth-child(2)');
+                                                    if (content) {
+                                                        let text = content.innerText.trim();
+                                                        text = text !== '' ? text : 'Unknown';
+                                                        content.innerText = text;
+                                                    }
+                                                });
+                                            }
+                                        });
 
 
         </script>

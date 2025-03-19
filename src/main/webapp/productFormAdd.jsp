@@ -24,7 +24,7 @@
         <div class="form-group">
             <label>Details:</label>
             <div class="pair-group">
-                <label for="priceBook">Price(x1000 VND):</label>
+                <label for="priceBook">Price:</label>
                 <input type="number" id="priceBook" name="price" step="0.5" min="1" max="10000" required>
                 <label for="stockCountBook">Stock Count:</label>
                 <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" required>
@@ -95,12 +95,11 @@
         <!--Creators-->
         <div class="creator-wrapper">
             <div class="creator-section">
-                <div class="creator-group" id="creGrBook0">
+                <div class="creator-group" id="cre-gr-0">
                     <label for="creatorNameBook0">Creator Name:</label>
-                    <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100">
+                    <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100" required>
                     <label for="creatorRoleBook0">Creator Role:</label>
-                    <select id="creatorRoleBook0" name="creatorRole">
-                        <option value="unset">Unset</option>
+                    <select id="creatorRoleBook0" name="creatorRole" required>
                         <option class="hidden" value="author">Author</option>
                         <option class="hidden" value="sculptor">Sculptor</option>
                         <option value="artist">Artist</option>
