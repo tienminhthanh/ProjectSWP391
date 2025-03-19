@@ -134,7 +134,7 @@ function createCreatorElement(index, roles = [], type = "", creatorName = "", cr
     const nameInput = document.createElement("input");
     nameInput.type = "text";
     nameInput.id = `creatorName${type}${index}`;
-    nameInput.name = "creatorName[]";
+    nameInput.name = "creatorName";
     nameInput.maxLength = 100;
     nameInput.value = creatorName;
 
@@ -146,7 +146,7 @@ function createCreatorElement(index, roles = [], type = "", creatorName = "", cr
     // Role Select
     const roleSelect = document.createElement("select");
     roleSelect.id = `creatorRole${type}${index}`;
-    roleSelect.name = "creatorRole[]";
+    roleSelect.name = "creatorRole";
 
     // Options
     roles.forEach(role => {

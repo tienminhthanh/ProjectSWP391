@@ -6,7 +6,6 @@ package utils;
      * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 import java.sql.*;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,6 +77,38 @@ public class DBContext {
             return rowsAffected;
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Non-query execution failed: " + query, ex);
+            throw ex;
+        }
+    }
+    
+    //Overload
+    public int exeNonQuery(Connection connection, String sql, Object[] params) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)){
+            if (params != null && params.length > 0) {
+                for (int i = 0; i < params.length; i++) {
+                    if(params[i] instanceof String){
+                        preparedStatement.setString(i+1, (String)params[i]);
+                    }
+                    else {
+                        preparedStatement.setObject(i + 1, params[i]);
+                    
+                    }
+                }
+            }
+            int rowsAffected = preparedStatement.executeUpdate();
+            LOGGER.log(Level.INFO,String.format("Query affected %d rows: %s", rowsAffected, sql));
+            
+            //Return generated PK for INSERT STATEMENT if any
+            if (rowsAffected > 0 && sql.trim().toUpperCase().startsWith("INSERT")) {
+                ResultSet rs = preparedStatement.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1) > 0 ? rs.getInt(1) : rowsAffected;
+                }
+            }
+            
+            return rowsAffected;
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Non-query execution failed: " + sql, ex);
             throw ex;
         }
     }

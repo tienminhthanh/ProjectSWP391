@@ -95,7 +95,7 @@
         <!--Creators-->
         <div class="creator-wrapper">
             <div class="creator-section">
-                <div class="creator-group" id="creGrBook0">
+                <div class="creator-group" id="cre-gr-0">
                     <label for="creatorNameBook0">Creator Name:</label>
                     <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100">
                     <label for="creatorRoleBook0">Creator Role:</label>
