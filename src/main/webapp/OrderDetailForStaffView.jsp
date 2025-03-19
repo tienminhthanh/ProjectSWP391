@@ -111,26 +111,32 @@
             <div class="header">
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold ml-4">Order Detail</h1>
-
                 </div>
-                <div class="flex items-center">
-                    <i class="fas fa-bell mr-4"></i>
-                    <a href="readAccount" class="fas fa-user-circle mr-4"></a>
-                    <span>${account.role}</span>
-                    <a href="logout" class="fas fa-sign-out-alt ml-4"></a>
-                </div>
+                
             </div>  
             <div class="p-4">
                 <div class="bg-white p-4 rounded shadow">
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
                         <div class="space-x-2">
                             <c:if test="${ account.role eq 'admin'}">
-                                <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel();">
+                                <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel(event);">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                     <input type="hidden" name="action" value="cancel">
                                     <c:if test="${ orderInfo.orderStatus eq 'pending'}">
                                         <button type="submit" class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
                                     </c:if>
+                                </form>
+                            </c:if>
+                            <c:if test="${order.orderStatus eq 'pending'}">
+                                <form action="OrderListForStaffController" method="POST" class="inline" onsubmit="return confirmUpdate()">
+                                    <input type="hidden" name="orderID" value="${order.orderID}"/>
+                                    <select name="shipperID" class="select" required>
+                                        <option value="">Choose Shipper</option>
+                                        <c:forEach var="shipper" items="${shipperList}">
+                                            <option value="${shipper.accountID}">${shipper.username} (${shipper.totalDeliveries})</option>
+                                        </c:forEach>
+                                    </select>
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Assign</button>
                                 </form>
                             </c:if>
 
@@ -163,8 +169,8 @@
                             <p><i class="fas fa-coins icon"></i> Total Amount: <fmt:formatNumber value="${orderInfo.preVoucherAmount}" pattern="#,##0"/> đ</p>
                             <p><i class="fas fa-check-circle icon mb-2""></i> Payment Status: ${orderInfo.paymentStatus}</p>
 
-                            
-                            
+
+
                             <c:if test="${account.role eq 'admin' and orderInfo.orderStatus ne 'pending' }">
                                 <h1 class="text-2xl font-bold ">Order Processing Information</h1>  
                                 <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>  

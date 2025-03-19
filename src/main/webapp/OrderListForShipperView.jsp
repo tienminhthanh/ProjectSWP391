@@ -37,19 +37,12 @@
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
                 <h1 class="text-lg font-semibold">Deliver</h1>
             </div>
-<<<<<<< HEAD
-            <div class="flex items-center space-x-4">
-                <i class="fas fa-bell text-lg"></i>
-                <a href="readAccount" class="fas fa-user-circle text-lg"></a>
-                <span class="text-base">Shipper</span>
-                <a href="logout" class="fas fa-sign-out-alt text-lg"></a>
-=======
+
             <div class="flex items-center space-x-6">
                 <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>
                 <a href="readAccount" class="fas fa-user-circle text-2xl"></a>
                 <span class="text-xl">Shipper</span>
                 <a href="logout" class="fas fa-sign-out-alt text-2xl"></a>
->>>>>>> 005fcaa016ded092a1db654a0858789ba41b98a9
             </div>
         </div>
 

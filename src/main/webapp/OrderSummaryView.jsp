@@ -102,19 +102,19 @@
             .breadcrumb-container .active {
                 color: #e3a100; /* Giữ màu vàng cho trang hiện tại */
             }
-            
+
         </style>
     </head>
     <body class="bg-gray-100">
         <header>
             <div class="header-container">
                 <jsp:include page="header.jsp" flush="true"/> 
-<!--
-                <nav class="breadcrumb-container">
-                    <a href="/">Home</a> >
-                    <a href="/cart">Cart</a> >
-                    <span class="active">Payment</span>
-                </nav>-->
+                <!--
+                                <nav class="breadcrumb-container">
+                                    <a href="/">Home</a> >
+                                    <a href="/cart">Cart</a> >
+                                    <span class="active">Payment</span>
+                                </nav>-->
             </div>
         </header>
         <main class="container mx-auto px-4 py-6">
@@ -130,7 +130,7 @@
                 <div class="content">
                     <div class="left-content" style="width: 60%">
                         <h2>Shipping Information</h2> <hr>
-                        <form action="OrderController" method="POST" onsubmit="return updateOrderTotal()">
+                        <form id="orderForm" action="VNPayController" method="POST" onsubmit="return updateOrderTotal()">
                             <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
                             <div class="input-custom">
                                 <label for="name">Full Name</label><br>
@@ -152,8 +152,7 @@
                             <div class="payment-custom">
                                 <h2>Payment Method</h2>
                                 <label><input type="radio" name="paymentMethod" value="COD" checked/> Cash on Delivery (COD)</label><br>  
-                                <!--<label><input type="radio" name="paymentMethod" value="online" checked/> Cash on Delivery (COD)</label><br>  -->
-
+                                <label><input type="radio" name="paymentMethod" value="VNPay" /> Pay via VNPay </label><br>
                             </div> <hr>
 
                             <!-- Voucher Selection -->
@@ -200,7 +199,7 @@
                             <c:forEach var="item" items="${cartItems}">
                                 <div class="product-item">
                                     <span class="product-infor">
-                                            <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
+                                        <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
                                     <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
@@ -264,5 +263,18 @@
                 radio.addEventListener("change", updateOrderTotal);
             });
         </script>
+        <script>
+            function updatePaymentAction() {
+                var form = document.getElementById("orderForm");
+                var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+                if (paymentMethod === "VNPay") {
+                    form.action = "VNPayController"; // Chuyển hướng sang VNPayController
+                } else {
+                    form.action = "OrderController"; // Giữ nguyên cho COD
+                }
+            }
+        </script>
+
     </body>
 </html>

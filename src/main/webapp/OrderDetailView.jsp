@@ -188,7 +188,7 @@
                 <a href="/">Home</a> >
                 <a href="/readAccount">Account</a> >
                 <a href="/OrderListController">Order List</a> >
-                <span class="active">Order Detail (Order ID: ${orderInfo.orderID})  </span>
+                <span href="/OrderDetailController?id=${orderInfo.orderID}" class="active">Order Detail (Order ID: ${orderInfo.orderID})  </span>
             </nav>
 
         </header>
@@ -218,7 +218,7 @@
                         <p><strong>Order Status:</strong> ${orderInfo.orderStatus}</p>
 
                         <h3 class="text-lg font-semibold mt-4">Products</h3>
-                        
+
                         <c:set var="count" value="1"/>                              
                         <c:forEach var="item" items="${orderInfo.orderProductList}">
                             <p><strong>${count} </strong> ${item.product.productName}</p>
@@ -228,7 +228,7 @@
                             </p>
 
                             <hr class="my-2">
-                              <c:set var="count" value="${count + 1}"/>
+                            <c:set var="count" value="${count + 1}"/>
                         </c:forEach>
                         <p><strong>Shipping Fee: </strong>  
                             <fmt:formatNumber value="${delivery.optionCost}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
@@ -260,7 +260,7 @@
                                 </form>
                             </c:if>
                             <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
-                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'Shipped'}">                              
+                            <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'delivered'}">                              
                                 <form action="OrderDetailController" method="POST">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                     <input type="hidden" name="action" value="confirm"> 
@@ -291,13 +291,16 @@
                                     <c:if test="${ orderInfo.orderStatus eq 'completed'}">                               
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                         <input type="hidden" name="productID" value="${item.product.productID}">
-                                        <button type="submit" id="rateButton_${item.product.productID}" 
-                                                onclick="openRatingPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
-                                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
-                                            Rate
-                                        </button>
+                                        <c:if test="${ item.rating eq 0 }">
+                                            
+                                            <button type="submit" id="rateButton_${item.product.productID}" 
+                                                    onclick="openRatingPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
+                                                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
+                                                Rate
+                                            </button>
+                                        </c:if>
                                     </c:if>
-                                    <c:if test="${ orderInfo.orderStatus eq 'completed'}">      
+                                    <c:if test="${ orderInfo.orderStatus eq 'completed' and (item.comment eq null or item.comment eq '') }">      
                                         <button type="button" 
                                                 id="reviewButton_${item.product.productID}"
                                                 onclick="openReviewPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"

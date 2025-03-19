@@ -149,7 +149,9 @@ public class OrderDetailForStaffController extends HttpServlet {
         OrderDAO orderDao = new OrderDAO();
         String status = "canceled";
         try {
+             orderDao.restoreProductStockByOrderID(orderID);
             orderDao.updateOrderstatus(orderID, status);
+           
             orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
         } catch (SQLException ex) {
             Logger.getLogger(OrderDetailForStaffController.class.getName()).log(Level.SEVERE, null, ex);
