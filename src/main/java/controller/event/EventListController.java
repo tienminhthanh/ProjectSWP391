@@ -42,6 +42,8 @@ public class EventListController extends HttpServlet {
         int page = 1;
         int pageSize = 5;
         String pageStr = request.getParameter("page");
+        String isActiveParam = request.getParameter("isActive");
+        String searchKeyword = request.getParameter("search");
         if (pageStr != null) {
             try {
                 page = Integer.parseInt(pageStr);
@@ -52,8 +54,8 @@ public class EventListController extends HttpServlet {
         try {
             EventDAO eDao = new EventDAO();
             EventProductDAO epDao = new EventProductDAO();
-            List<Event> listEvent = eDao.getEventByPage(page, pageSize);
-            int totalEvent = eDao.getTotalEvent();
+            List<Event> listEvent = eDao.getEventByPage(page, pageSize, isActiveParam, searchKeyword);
+            int totalEvent = eDao.getTotalEvent(searchKeyword, isActiveParam);
             int totalPages = (int) Math.ceil((double) totalEvent / pageSize);
 
             // 🔥 Tạo Map để lưu số lượng sản phẩm của mỗi sự kiện
@@ -65,10 +67,19 @@ public class EventListController extends HttpServlet {
                 int productCount = epDao.getTotalProductInAnEvent(eventID);
                 eventProductCountMap.put(eventID, productCount);
             }
+
+            Boolean isActive = null;
+            if (isActiveParam != null && !isActiveParam.isEmpty()) {
+                isActive = Boolean.parseBoolean(isActiveParam);
+            }
+
             request.setAttribute("EVENT_PRODUCT_COUNT", eventProductCountMap);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPage", totalPages);
             request.setAttribute("LIST_EVENT", listEvent);
+            request.setAttribute("searchKeyword", searchKeyword);
+            request.setAttribute("isActiveParam", isActiveParam);
+
         } catch (Exception ex) {
             log("VoucherListServlet error:" + ex.getMessage());
         } finally {

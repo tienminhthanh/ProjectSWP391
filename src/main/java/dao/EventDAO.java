@@ -27,12 +27,37 @@ public class EventDAO {
         context = new utils.DBContext();
     }
 
-    public List<Event> getEventByPage(int page, int pageSize) {
+//    public List<Event>
+    public List<Event> getEventByPage(int page, int pageSize, String filtered, String searchKeyword) {
         List<Event> list = new ArrayList<>();
-        String sql = "SELECT * FROM [dbo].[Event] ORDER BY eventID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try {
+        String sql = "SELECT * FROM [dbo].[Event] WHERE 1=1"; // Mặc định có điều kiện true
 
-            ResultSet rs = context.exeQuery(sql, new Object[]{(page - 1) * pageSize, pageSize});
+        List<Object> paramsList = new ArrayList<>();
+
+        // Lọc theo trạng thái (isActive)
+        if (filtered != null && !filtered.isEmpty()) {
+            sql += " AND isActive = ?";
+            paramsList.add(Boolean.parseBoolean(filtered));
+        }
+
+        // Tìm kiếm theo tất cả các cột
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            sql += " AND (eventName LIKE ? OR description LIKE ? OR CAST(eventID AS VARCHAR) LIKE ?)";
+            String keywordPattern = "%" + searchKeyword.trim() + "%";
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+        }
+
+        // Thêm phân trang
+        sql += " ORDER BY eventID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        paramsList.add((page - 1) * pageSize);
+        paramsList.add(pageSize);
+
+        try {
+            Object[] params = paramsList.toArray();
+            ResultSet rs = context.exeQuery(sql, params);
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             while (rs.next()) {
@@ -59,15 +84,33 @@ public class EventDAO {
         return list;
     }
 
-    public int getTotalEvent() {
-        String sql = "SELECT COUNT(*) FROM Event";
+    public int getTotalEvent(String searchKeyword, String filtered) {
+        String sql = "SELECT COUNT(*) FROM [dbo].[Event] WHERE 1=1";
+        List<Object> paramsList = new ArrayList<>();
+
+        // Lọc theo trạng thái (isActive)
+        if (filtered != null && !filtered.isEmpty()) {
+            sql += " AND isActive = ?";
+            paramsList.add(Boolean.parseBoolean(filtered));
+        }
+
+        // Tìm kiếm theo từ khóa
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            sql += " AND (eventName LIKE ? OR description LIKE ? OR CAST(eventID AS VARCHAR) LIKE ?)";
+            String keywordPattern = "%" + searchKeyword.trim() + "%";
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+        }
+
         try {
-            ResultSet rs = context.exeQuery(sql, null);
+            Object[] params = paramsList.toArray();
+            ResultSet rs = context.exeQuery(sql, params);
             if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         return 0;
     }
@@ -301,7 +344,7 @@ public class EventDAO {
             }
 
             boolean isActive = false;
-            if (!(today.isAfter(expiryDate)) && !today.isAfter(LocalDate.parse(event.getDateStarted()))) {
+            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getDateStarted()).isEqual(today)) {
                 isActive = true;
             }
 

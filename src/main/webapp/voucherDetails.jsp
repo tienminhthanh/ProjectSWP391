@@ -94,65 +94,58 @@
                                                         <span class="text-red-600">Deactivate</span>
                                                     </c:otherwise>
                                                 </c:choose>
-                                        </span>
-                                    </p>
-                                    <p><strong>Admin ID:</strong> <span id="adminID">${VOUCHER_DETAILS.adminID}</span></p>
-                                </div>
-                                <div class="mt-6 flex justify-center space-x-4">
-                                    <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200">
-                                        Update
-                                    </a>
-                                    <c:choose>
-                                        <c:when test="${VOUCHER_DETAILS.isActive}">
-                                            <a class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}&action=delete')">
-                                                Delete
-                                            </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}&action=unlock')">
-                                                Unlock
-                                            </a>
-                                        </c:otherwise>
-                                    </c:choose>
+                                            </span>
+                                        </p>
+                                        <p><strong>Admin ID:</strong> <span id="adminID">${VOUCHER_DETAILS.adminID}</span></p>
+                                    </div>
+                                    <div class="mt-6 flex justify-center space-x-4">
+                                        <a href="voucherUpdate?voucherID=${VOUCHER_DETAILS.voucherID}" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200">
+                                            Update
+                                        </a>
+                                        <c:choose>
+                                            <c:when test="${VOUCHER_DETAILS.isActive}">
+                                                <a class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}&action=delete')">
+                                                    Delete
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}&action=unlock')">
+                                                    Unlock
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <div class="text-center text-gray-500 italic p-4">No voucher found.</div>
-                    </c:otherwise>
-                </c:choose>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="text-center text-gray-500 italic p-4">No voucher found.</div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
-        </div>
-        <div class="mt-6">
-            <button>
-                <a class="text-orange-400 hover:underline" href="voucherList">
-                    <i class="fas fa-arrow-left mr-2"></i> <strong>Back to Voucher List</strong>
-                </a>
-            </button>
-        </div>
-    </main>
+        </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
-    <script>
-                                                function confirmAction(message, url) {
-                                                    Swal.fire({
-                                                        title: 'Are you sure?',
-                                                        text: message,
-                                                        icon: 'warning',
-                                                        showCancelButton: true,
-                                                        confirmButtonText: 'Yes, do it!',
-                                                        cancelButtonText: 'Cancel',
-                                                        reverseButtons: true
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            window.location.href = url;
-                                                        }
-                                                    });
-                                                }
-                                                function navigateToUpdate(voucherId) {
-                                                    window.location = 'listAccount?voucherId=' + voucherId;
-                                                }
-    </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
+        <script>
+                                                    function confirmAction(message, url) {
+                                                        Swal.fire({
+                                                            title: 'Are you sure?',
+                                                            text: message,
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes, do it!',
+                                                            cancelButtonText: 'Cancel',
+                                                            reverseButtons: true
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                window.location.href = url;
+                                                            }
+                                                        });
+                                                    }
+                                                    function navigateToUpdate(voucherId) {
+                                                        window.location = 'listAccount?voucherId=' + voucherId;
+                                                    }
+        </script>
 </body>
 </html>
