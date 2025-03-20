@@ -258,7 +258,7 @@ public class EventDAO {
             String sql = "UPDATE [dbo].[Event]\n"
                     + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
-            Object[] params = {!event.isEventIsActive(), id};
+            Object[] params = {!event.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -272,16 +272,16 @@ public class EventDAO {
             Event event = getEventByID(id);
             LocalDate today = LocalDate.now();
 
-            if ((!event.isExpiry() && !event.isEventIsActive())) {
+            if ((!event.isExpiry() && !event.isIsActive())) {
                 return false;
-            } else if (today.isBefore(LocalDate.parse(event.getEventDateStarted()))) {
+            } else if (today.isBefore(LocalDate.parse(event.getDateStarted()))) {
                 return false;
             }
 
             String sql = "UPDATE [dbo].[Event]\n"
                     + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
-            Object[] params = {!event.isEventIsActive(), id};
+            Object[] params = {!event.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -307,13 +307,13 @@ public class EventDAO {
 //                banner = "img/banner_event/" + banner;
 //            }
             Object[] params = {event.getEventName(),
-                event.getEventDateCreated(),
-                event.getEventDuration(),
+                event.getDateCreated(),
+                event.getDuration(),
                 event.getBanner(),
                 event.getDescription(),
                 event.getAdminID(),
-                event.isEventIsActive(),
-                event.getEventDateStarted()
+                event.isIsActive(),
+                event.getDateStarted()
             };
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
@@ -336,23 +336,23 @@ public class EventDAO {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(event.getEventDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(event.getEventDuration());
+            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getDuration());
             String banner = event.getBanner();
             if (!banner.startsWith("img/")) {
                 banner = "img/banner_event/" + banner;
             }
 
             boolean isActive = false;
-            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getEventDateStarted()).isEqual(today)) {
+            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getDateStarted()).isEqual(today)) {
                 isActive = true;
             }
 
             Object params[] = {event.getEventName(),
-                event.getEventDuration(),
+                event.getDuration(),
                 banner,
                 event.getDescription(),
-                event.getEventDateStarted(),
+                event.getDateStarted(),
                 isActive,
                 event.getEventID()};
 

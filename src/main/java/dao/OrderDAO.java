@@ -73,8 +73,7 @@ public class OrderDAO {
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
     }
-    
-    
+
 // insert row vao bang Order_product
     //choose
     public void insertOrderProduct(Object[] params) throws SQLException {
@@ -692,12 +691,11 @@ public class OrderDAO {
                 + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
                 + "                  Account ON Customer.customerID = Account.accountID\n"
                 + "				  where productID = ? AND (rating is not null OR comment is not null)";
-        Object [] params = {productID};
-        try(Connection connection = context.getConnection();
-                ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)){
+        Object[] params = {productID};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             Map<String, String[]> reviewMap = new HashMap<>();
             while (rs.next()) {
-                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "",rs.getString("comment")});
+                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "", rs.getString("comment")});
             }
             return reviewMap;
         }

@@ -102,7 +102,7 @@ public class OrderController extends HttpServlet {
             List<Voucher> validVouchers = new ArrayList<>();
             double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
-                if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isVoucherIsActive()) {
+                if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
                     validVouchers.add(voucher);
                     if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
                         valueOfVoucher = voucher.getVoucherValue();
@@ -191,7 +191,7 @@ public class OrderController extends HttpServlet {
             List<Voucher> validVouchers = new ArrayList<>();
             double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
-                if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isVoucherIsActive()) {
+                if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
                     validVouchers.add(voucher);
                     if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
                         valueOfVoucher = voucher.getVoucherValue();
