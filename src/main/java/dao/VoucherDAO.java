@@ -240,7 +240,7 @@ public class VoucherDAO {
     public List<Voucher> getListVoucherAvailableNow() {
         List<Voucher> listVoucher = new ArrayList<>();
         String sql = "SELECT * FROM Voucher \n"
-                + "WHERE dateStarted <= ? \n"
+                + "WHERE voucherDateStarted <= ? \n"
                 + "AND DATEADD(DAY, voucherDuration, voucherDateStarted) >= ?";
 
         try {

@@ -279,7 +279,7 @@ public class EventDAO {
             }
 
             String sql = "UPDATE [dbo].[Event]\n"
-                    + "   SET [isActive] = ?\n"
+                    + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
             Object[] params = {!event.isEventIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);

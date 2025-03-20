@@ -30,9 +30,12 @@
             <div class="mt-6 flex flex-col items-start">
                 <!-- Add New Product Button -->
                 <div class="flex items-center space-x-6">
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="addProduct">
-                        <i class="fas fa-plus mr-2"></i> Add New Product
-                    </a>
+                    <c:if test="${not empty sessionScope.account and sessionScope.account.role eq 'admin'}">
+
+                        <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="addProduct">
+                            <i class="fas fa-plus mr-2"></i> Add New Product
+                        </a>
+                    </c:if>
 
                     <!--Search Field--> 
                     <form action="" method="get" class="flex items-center space-x-4 mb-4 ">
@@ -132,7 +135,7 @@
                                 <!--Actions-->
                                 <c:if test="${sessionScope.account ne null and sessionScope.account.role eq 'admin'}">
                                     <td class="px-2 py-3 border-b text-left w-[10%]">
-                                        <a href="updateProduct?id=${product.productID}" class="text-blue-500 hover:text-blue-700">
+                                        <a href="updateProduct?id=${product.productID}&type=${product.generalCategory}" class="text-blue-500 hover:text-blue-700">
                                             <i class="fas fa-edit"></i> Update
                                         </a>
                                         <br/>
@@ -200,90 +203,90 @@
         <script src="https://cdn.tailwindcss.com"></script>       
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-            function confirmAction(message, url) {
-                Swal.fire({
-                    title: 'Confirmation',
-                    text: message,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, do it!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = url;
-                    }
-                });
-            }
-            ;
+                                                    function confirmAction(message, url) {
+                                                        Swal.fire({
+                                                            title: 'Confirmation',
+                                                            text: message,
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonText: 'Yes, do it!',
+                                                            cancelButtonText: 'Cancel',
+                                                            reverseButtons: true
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                window.location.href = url;
+                                                            }
+                                                        });
+                                                    }
+                                                    ;
 
-            //Format date display
-            document.addEventListener('DOMContentLoaded', function () {
-                const releaseDates = document.querySelectorAll('.release-date');
-                const modifiedTimes = document.querySelectorAll('.modified-time');
+                                                    //Format date display
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const releaseDates = document.querySelectorAll('.release-date');
+                                                        const modifiedTimes = document.querySelectorAll('.modified-time');
 
-                // Formatting functions for Vietnam locale
-                const formatDate = (date) =>
-                    new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
-                const formatTime = (date) =>
-                    new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
+                                                        // Formatting functions for Vietnam locale
+                                                        const formatDate = (date) =>
+                                                            new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                                                        const formatTime = (date) =>
+                                                            new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
 
-                //ReleaseDate
-                if (releaseDates) {
-                    releaseDates.forEach(rlsDate => {
-                        const rlsDateObj = new Date(rlsDate.innerText.trim());
-                        if (!isNaN(rlsDateObj)) {
-                            rlsDate.innerText = formatDate(rlsDateObj);
-                        }
-                    });
-                }
+                                                        //ReleaseDate
+                                                        if (releaseDates) {
+                                                            releaseDates.forEach(rlsDate => {
+                                                                const rlsDateObj = new Date(rlsDate.innerText.trim());
+                                                                if (!isNaN(rlsDateObj)) {
+                                                                    rlsDate.innerText = formatDate(rlsDateObj);
+                                                                }
+                                                            });
+                                                        }
 
-                //Last modified time
-                if (modifiedTimes) {
-                    modifiedTimes.forEach(strDate => {
-                        const dateObj = new Date(strDate.innerText.trim());
-                        if (!isNaN(dateObj)) {
-                            const today = new Date();
-                            // Remove time from today's date for accurate comparison
-                            today.setHours(0, 0, 0, 0);
+                                                        //Last modified time
+                                                        if (modifiedTimes) {
+                                                            modifiedTimes.forEach(strDate => {
+                                                                const dateObj = new Date(strDate.innerText.trim());
+                                                                if (!isNaN(dateObj)) {
+                                                                    const today = new Date();
+                                                                    // Remove time from today's date for accurate comparison
+                                                                    today.setHours(0, 0, 0, 0);
 
-                            // Show time if today, otherwise show formatted date
-                            const formattedDate = dateObj.toDateString() === today.toDateString()
-                                    ? formatTime(dateObj)
-                                    : formatDate(dateObj);
-                            console.log('DATE', formattedDate);
-                            strDate.innerText = formattedDate;
-                        }
-                    });
-                }
+                                                                    // Show time if today, otherwise show formatted date
+                                                                    const formattedDate = dateObj.toDateString() === today.toDateString()
+                                                                            ? formatTime(dateObj)
+                                                                            : formatDate(dateObj);
+                                                                    console.log('DATE', formattedDate);
+                                                                    strDate.innerText = formattedDate;
+                                                                }
+                                                            });
+                                                        }
 
-            });
-            
-            //            Pop-up message
-            document.addEventListener('DOMContentLoaded',function(){
-                const reqMessage = `${requestScope.message}`;
-                const successfulMessage = `${requestScope.successfulMessage}`;
-                const failedMessage = `${requestScope.failedMessage}`;
-                if(reqMessage){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Product not found',
-                        text: reqMessage
-                    });
-                }
-                if(successfulMessage){
-                    Swal.fire({
-                        icon: 'success',
-                        text: successfulMessage
-                    });
-                }
-                if(failedMessage){
-                    Swal.fire({
-                        icon: 'warning',
-                        text: failedMessage
-                    });
-                }
-            });
+                                                    });
+
+                                                    //            Pop-up message
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        const reqMessage = `${requestScope.message}`;
+                                                        const successfulMessage = `${requestScope.successfulMessage}`;
+                                                        const failedMessage = `${requestScope.failedMessage}`;
+                                                        if (reqMessage) {
+                                                            Swal.fire({
+                                                                icon: 'error',
+                                                                title: 'Product not found',
+                                                                text: reqMessage
+                                                            });
+                                                        }
+                                                        if (successfulMessage) {
+                                                            Swal.fire({
+                                                                icon: 'success',
+                                                                text: successfulMessage
+                                                            });
+                                                        }
+                                                        if (failedMessage) {
+                                                            Swal.fire({
+                                                                icon: 'warning',
+                                                                text: failedMessage
+                                                            });
+                                                        }
+                                                    });
 
         </script>
         <!--Script for include icons-->
