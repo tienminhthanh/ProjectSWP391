@@ -19,7 +19,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
-         <!--Script for include icons-->
+        <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
     </head>
     <body class="bg-gray-50 min-h-screen flex">
@@ -97,7 +97,7 @@
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'eventDelete?id=${EVENT_DETAILS.eventID}&action=delete')">
+                                                <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'eventDelete?id=${EVENT_DETAILS.eventID}&action=unlock')">
                                                     Unlock
                                                 </a>
                                             </c:otherwise>
@@ -123,12 +123,14 @@
 
                 <div class="mt-6 mb-8 flex items-center space-x-4 ml-10">
                     <a class="bg-green-500 text-white p-4 rounded-lg hover:bg-green-500 flex items-center justify-start transition duration-300 ease-in-out transform hover:scale-105"
-                       href="eventProductAddNew?eventId=${EVENT_DETAILS.eventID}">
+                       href="javascript:void(0);"
+                       onclick="checkEventStatus('${EVENT_DETAILS.isActive}', '${EVENT_DETAILS.eventID}')">
                         <i class="fas fa-plus mr-2"></i> Add New Product on Event
                     </a>
 
                     <a class="bg-red-500 text-white p-4 rounded-lg hover:bg-red-600 flex items-center justify-start transition duration-300 ease-in-out transform hover:scale-105"
-                       href="eventProductDelete?eventId=${EVENT_DETAILS.eventID}">
+                       href="javascript:void(0);"
+                       onclick="checkDeleteStatus('${EVENT_DETAILS.isActive}', '${empty listEventProduct}', '${EVENT_DETAILS.eventID}')">
                         <i class="fas fa-trash mr-2"></i> Delete Product from Event
                     </a>
                 </div>
@@ -149,19 +151,19 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-               function filterProducts() {
-                   let input = document.getElementById("searchInput").value.toLowerCase();
-                   let productCards = document.querySelectorAll(".grid.grid-flow-col.auto-cols-max > div");
+       function filterProducts() {
+           let input = document.getElementById("searchInput").value.toLowerCase();
+           let productCards = document.querySelectorAll(".grid.grid-flow-col.auto-cols-max > div");
 
-                   productCards.forEach(product => {
-                       let productName = product.innerText.toLowerCase();  // Lấy văn bản hiển thị của sản phẩm
-                       if (productName.includes(input)) {  // Kiểm tra xem tên sản phẩm có chứa chuỗi tìm kiếm không
-                           product.style.display = "block";  // Nếu có, hiển thị sản phẩm
-                       } else {
-                           product.style.display = "none";  // Nếu không, ẩn sản phẩm
-                       }
-                   });
+           productCards.forEach(product => {
+               let productName = product.innerText.toLowerCase();  // Lấy văn bản hiển thị của sản phẩm
+               if (productName.includes(input)) {  // Kiểm tra xem tên sản phẩm có chứa chuỗi tìm kiếm không
+                   product.style.display = "block";  // Nếu có, hiển thị sản phẩm
+               } else {
+                   product.style.display = "none";  // Nếu không, ẩn sản phẩm
                }
+           });
+       }
 
 
         </script>
@@ -186,6 +188,42 @@
                 window.location = 'eventList?eventId=' + eventId;
             }
         </script>
+        <script>
+            function checkEventStatus(isActive, eventId) {
+                if (isActive === 'false') {
+                    Swal.fire({
+                        title: 'Event is inactive!',
+                        text: 'You cannot add products to an inactive event.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    window.location.href = 'eventProductAddNew?eventId=' + eventId;
+                }
+            }
+        </script>
+        <script>
+            function checkDeleteStatus(isActive, isEmpty, eventId) {
+                if (isActive === 'false') {
+                    Swal.fire({
+                        title: 'Event is inactive!',
+                        text: 'You cannot delete products from an inactive event.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                } else if (isEmpty === 'true') {
+                    Swal.fire({
+                        title: 'No products found!',
+                        text: 'There are no products to delete from this event.',
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    window.location.href = 'eventProductDelete?eventId=' + eventId;
+                }
+            }
+
+        </script>
         <c:if test="${not empty sessionScope.message}">
             <div id="popupMessage" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
                 <strong>${sessionScope.message}</strong>
@@ -204,6 +242,6 @@
                 }, 3000);
             </script>
         </c:if>
-            <script src="js/scriptProductCard.js"></script>
-</body>
+        <script src="js/scriptProductCard.js"></script>
+    </body>
 </html>

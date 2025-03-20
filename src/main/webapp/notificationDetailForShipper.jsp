@@ -76,14 +76,11 @@
                 <h2 class="text-2xl font-bold mb-4">
                     <i class="fas fa-bell mr-2"></i> Notification Details
                 </h2>
-
-                <!-- Display error message if present -->
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger" role="alert">
                         ${error}
                     </div>
                 </c:if>
-
                 <c:choose>
                     <c:when test="${empty notification}">
                         <p class="text-gray-600">No notification found.</p>
@@ -97,15 +94,13 @@
                                 Click here to view order detail.
                             </a>
                             <p class="text-gray-400 text-sm mt-2">
-                                Date Created: <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
+                                Date Created: <fmt:formatDate value="${notification.notificationDateCreated}" pattern="dd/MM/yyyy"/>
                             </p>
                             <p class="text-gray-400 text-sm">
                                 From: WIBOOK | To: ${sessionScope.account.firstName}
                             </p>
                         </div>
-
                         <div class="flex justify-end space-x-4">
-                            <!-- Form to delete notification -->
                             <form action="notificationdetail" method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="notificationID" value="${notification.notificationID}">

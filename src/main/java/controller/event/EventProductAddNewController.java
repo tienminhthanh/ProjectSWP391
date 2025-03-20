@@ -74,13 +74,15 @@ public class EventProductAddNewController extends HttpServlet {
         ProductDAO pDao = new ProductDAO();
         EventProductDAO epDao = new EventProductDAO();
         EventDAO eDao = new EventDAO();
+
         try {
             int id = Integer.parseInt(request.getParameter("eventId"));
-
+            String category = request.getParameter("category");
+            String searchKeyword = request.getParameter("search");
             String eventName = eDao.getEventByID(id).getEventName();
             request.setAttribute("eventName", eventName);
 
-            List<Product> listProductForEvent = epDao.getListProductToAddForEvent(id);
+            List<Product> listProductForEvent = epDao.getListProductToAddForEvent(id, searchKeyword, category);
             request.setAttribute("productList", listProductForEvent);
             request.getRequestDispatcher(EVENT_PRODUCT_ADDNEW_PAGE).forward(request, response);
         } catch (Exception e) {

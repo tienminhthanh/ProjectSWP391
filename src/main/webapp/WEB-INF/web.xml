@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-    <filter>
+     <filter>
         <filter-name>AuthorizationFilter</filter-name>
-        <filter-class>AuthorizationFilter</filter-class>
+        <filter-class>Filter.AuthorizationFilter</filter-class>
     </filter>
+
     <filter-mapping>
         <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/*</url-pattern>
@@ -11,6 +12,10 @@
     <listener>
         <description>ServletContextListener</description>
         <listener-class>listener.DataCacheListener</listener-class>
+    </listener>
+    <listener>
+        <description>ServletContextListener</description>
+        <listener-class>listener.AppStartupListener</listener-class>
     </listener>
     <session-config>
         <session-timeout>

@@ -8,13 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import dao.NotificationDAO;
 import jakarta.servlet.http.HttpSession;
-import model.Notification;
 import java.sql.SQLException;
+import model.Notification;
 import model.Account;
 
 @WebServlet(name = "NotificationDetailController", urlPatterns = {"/notificationdetail"})
 public class NotificationDetailController extends HttpServlet {
-
     private NotificationDAO notificationDAO;
 
     @Override
@@ -28,25 +27,17 @@ public class NotificationDetailController extends HttpServlet {
         try {
             int notificationID = Integer.parseInt(request.getParameter("notificationID"));
             String receiverID = request.getParameter("receiverID");
-            // Kiểm tra vai trò người dùng từ session
             HttpSession session = request.getSession();
             Account account = (Account) session.getAttribute("account");
             String role = account.getRole();
-            // Fetch notification
-            Notification notification = notificationDAO.getNotificationById(notificationID);
-//            if (notification == null || (receiverID != null && notification.getReceiverID() != Integer.parseInt(receiverID))) {
-//                request.setAttribute("error", "Không tìm thấy thông báo hoặc bạn không có quyền xem.");
-//                request.getRequestDispatcher("/notificationDetail.jsp").forward(request, response);
-//                return;
-//            }
 
-            // Mark as read if not already read
+            Notification notification = notificationDAO.getNotificationById(notificationID);
+
             if (!notification.isRead() && !(role.equals("admin") || role.equals("staff"))) {
                 notificationDAO.markAsRead(notificationID);
-                notification.setRead(true); // Update local object to reflect change
+                notification.setRead(true);
             }
 
-            // Chuyển hướng dựa trên vai trò
             String destinationPage;
             if (role.equals("admin") || role.equals("staff")) {
                 destinationPage = "/notificationDetailForAdmin.jsp";
@@ -77,20 +68,19 @@ public class NotificationDetailController extends HttpServlet {
                 int notificationID = Integer.parseInt(request.getParameter("notificationID"));
                 String receiverID = request.getParameter("receiverID");
 
-                // Delete notification
                 boolean success = notificationDAO.deleteNotification(notificationID);
                 if (success) {
                     response.sendRedirect("listnotification" + (receiverID != null ? "?receiverID=" + receiverID : ""));
                 } else {
                     request.setAttribute("error", "Delete fail!");
-                    doGet(request, response); // Reload the detail page with error
+                    doGet(request, response);
                 }
             } catch (SQLException e) {
                 request.setAttribute("error", "Delete fail: " + e.getMessage());
-                doGet(request, response); // Reload with error
+                doGet(request, response);
             } catch (NumberFormatException e) {
                 request.setAttribute("error", "Notification invalid.");
-                doGet(request, response); // Reload with error
+                doGet(request, response);
             }
         }
     }

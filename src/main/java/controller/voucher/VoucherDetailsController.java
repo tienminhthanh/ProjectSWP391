@@ -46,9 +46,9 @@ public class VoucherDetailsController extends HttpServlet {
             Voucher voucherDetails = vDao.getVoucherByID(id);
             request.setAttribute("VOUCHER_DETAILS", voucherDetails);
 
-            String dateStarted = voucherDetails.getDateStarted();
+            String dateStarted = voucherDetails.getVoucherDateStarted();
             LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-            LocalDate dateEnd = createDate.plusDays(voucherDetails.getDuration());
+            LocalDate dateEnd = createDate.plusDays(voucherDetails.getVoucherDuration());
             request.setAttribute("dateEnd", dateEnd);
 
         } catch (Exception ex) {

@@ -5,6 +5,7 @@
 package controller.event;
 
 import dao.EventDAO;
+import dao.EventProductDAO;
 import dao.VoucherDAO;
 import jakarta.servlet.ServletContext;
 import java.io.IOException;
@@ -95,6 +96,7 @@ public class EventUpdateController extends HttpServlet {
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
+        Event e = new Event();
 
         try {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");
@@ -147,7 +149,7 @@ public class EventUpdateController extends HttpServlet {
             // Lấy thông tin từ database nếu cần
             Event existingEvent = eDao.getEventByID(id);
             if (existingEvent != null) {
-                dateCreated = existingEvent.getDateCreated();
+                dateCreated = existingEvent.getEventDateCreated();
                 adminID = existingEvent.getAdminID();
                 banner = existingEvent.getBanner();
             }
@@ -180,17 +182,37 @@ public class EventUpdateController extends HttpServlet {
 
             // Tạo đối tượng Event và cập nhật
             Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
-                    existingEvent.isIsActive(), dateStarted.toString(), existingEvent.isExpiry());
+                    existingEvent.isEventIsActive(), dateStarted.toString(), existingEvent.isExpiry());
 
-            if (eDao.updateEvent(event)) {
+            LocalDate today = LocalDate.now();
+            LocalDate createDate = LocalDate.parse(event.getEventDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getEventDuration());
+
+            boolean isActive = false;
+            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getEventDateStarted())).isAfter(today)) {
+                isActive = true;
+            }
+
+            EventProductDAO epDAO = new EventProductDAO();
+
+            if (eDao.updateEvent(event) && !isActive) {
+                epDAO.deleteListProductInEvent(event.getEventID());
+                if (epDAO.getListProductInEvent(event.getEventID()).isEmpty()) {
+                    session.setAttribute("message", "Event updated successfully! List Product is removed");
+                    session.setAttribute("messageType", "success");
+                } else {
+                    session.setAttribute("message", "Event updated successfully!");
+                    session.setAttribute("messageType", "success");
+                }
+            } else if (eDao.updateEvent(event) && isActive) {
                 session.setAttribute("message", "Event updated successfully!");
                 session.setAttribute("messageType", "success");
             } else {
                 session.setAttribute("message", "Failed to update event.");
                 session.setAttribute("messageType", "error");
             }
-        } catch (Exception e) {
-            session.setAttribute("message", "Error: " + e.getMessage());
+        } catch (Exception ex) {
+            session.setAttribute("message", "Error: " + ex.getMessage());
             session.setAttribute("messageType", "error");
         }
 

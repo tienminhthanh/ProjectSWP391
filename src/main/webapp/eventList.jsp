@@ -21,23 +21,54 @@
             <div class="w-full max-w-full bg-white p-8 shadow-lg rounded-lg">
                 <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Event List</h1>
                 <hr class="mb-6 border-gray-300"/>
-                <div class="mt-6 flex flex-col items-start"> 
-                    <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-48 transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="eventAddNew">
+                <div class="mt-6 flex flex-col space-y-4 w-full">
+                    <!-- Button Add New Event -->
+                    <a href="eventAddNew" 
+                       class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 flex items-center justify-center w-52 transition duration-300 ease-in-out transform hover:scale-105">
                         <i class="fas fa-plus mr-2"></i> Add New Event
                     </a>
+
+                    <!-- Error Message -->
                     <c:if test="${not empty errorMessage}">
-                        <p class="text-red-600 text-center mt-4 text-sm font-semibold p-2 border border-red-500 rounded bg-red-100 w-full">
+                        <p class="text-red-600 text-sm font-semibold p-3 border border-red-500 rounded bg-red-100 w-full text-center">
                             <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
                         </p>
                     </c:if>
+
+                    <!-- Search and Filter Form -->
+                    <form action="eventList" method="get" class="flex flex-wrap items-center gap-4 bg-gray-100 p-4 rounded-lg shadow-md w-full">
+                        <!-- Status Filter -->
+                        <div class="flex items-center space-x-2">
+                            <label class="text-gray-700 font-semibold">Status:</label>
+                            <select name="isActive" onchange="this.form.submit()" 
+                                    class="p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" ${empty param.isActive ? 'selected' : ''}>All</option>
+                                <option value="true" ${param.isActive == 'true' ? 'selected' : ''}>Active</option>
+                                <option value="false" ${param.isActive == 'false' ? 'selected' : ''}>Deactivate</option>
+                            </select>
+                        </div>
+
+                        <!-- Search Input -->
+                        <div class="flex-grow">
+                            <input type="text" name="search" placeholder="Search events..." value="${param.search}" 
+                                   class="w-full p-2 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"/>
+                        </div>
+
+                        <!-- Search Button -->
+                        <button type="submit" 
+                                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200 flex items-center">
+                            🔍 Search
+                        </button>
+                    </form>
                 </div>
+
 
                 <!-- TABLE -->
                 <div class="overflow-x-auto rounded-lg shadow-md">
                     <table class="table-fixed min-w-full bg-white border border-gray-200">
                         <thead class="bg-orange-400 text-white">
                             <tr>
-                                <th class="px-4 py-3 border border-b w-[80px]">No.</th>
+                                <th class="px-4 py-3 border border-b w-[80px]">ID</th>
                                 <th class="px-4 py-3 border border-b w-[250px]">Event Name</th>
                                 <th class="px-4 py-3 border border-b w-[350px]">Banner</th>
                                 <th class="px-4 py-3 border border-b w-[250px]">Description</th>
@@ -50,7 +81,7 @@
                             <c:forEach var="event" items="${LIST_EVENT}" varStatus="status">
                                 <tr class="hover:bg-gray-100 transition duration-300 cursor-pointer"
                                     onclick="navigateToUpdate(${event.eventID})">
-                                    <td class="px-4 py-3 border border-b text-center">${status.index + 1}</td>
+                                    <td class="px-4 py-3 border border-b text-center">${event.eventID}</td>
                                     <td class="px-4 py-3 border border-b text-left">${event.eventName}</td>
                                     <td class="px-4 py-3 border border-b text-center w-48">
                                         <img src="${event.banner}" alt="Banner" class="w-full h-auto max-h-24 object-contain mx-auto">
@@ -93,8 +124,8 @@
                     <div class="flex justify-center mt-6">
                         <nav class="flex space-x-2">
                             <!-- Nút Previous -->
-                            <c:if test="${currentPage> 1}">
-                                <a href="eventList?page=${currentPage - 1}"
+                            <c:if test="${currentPage > 1}">
+                                <a href="eventList?page=${currentPage - 1}&search=${searchKeyword}&isActive=${isActiveParam}"
                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
                                     &laquo; Previous
                                 </a>
@@ -102,7 +133,7 @@
 
                             <!-- Hiển thị các trang -->
                             <c:forEach var="i" begin="1" end="${totalPage}">
-                                <a href="eventList?page=${i}"
+                                <a href="eventList?page=${i}&search=${searchKeyword}&isActive=${isActiveParam}"
                                    class="px-4 py-2 rounded ${i == currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
                                     ${i}
                                 </a>
@@ -110,11 +141,12 @@
 
                             <!-- Nút Next -->
                             <c:if test="${currentPage < totalPage}">
-                                <a href="eventList?page=${currentPage + 1}"
+                                <a href="eventList?page=${currentPage + 1}&search=${searchKeyword}&isActive=${isActiveParam}"
                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
                                     Next &raquo;
                                 </a>
                             </c:if>
+
                         </nav>
                     </div>
                 </c:if>
