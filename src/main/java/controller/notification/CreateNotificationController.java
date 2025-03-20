@@ -18,7 +18,6 @@ import model.Notification;
 
 @WebServlet(name = "CreateNotificationController", urlPatterns = {"/createnotification"})
 public class CreateNotificationController extends HttpServlet {
-
     private NotificationDAO notificationDAO;
     private AccountDAO accountDAO;
 
@@ -37,13 +36,11 @@ public class CreateNotificationController extends HttpServlet {
             throws ServletException, IOException {
         String senderStr = request.getParameter("senderID");
         try {
-            // Set senderID if provided
             if (senderStr != null && !senderStr.trim().isEmpty()) {
                 int senderID = Integer.parseInt(senderStr);
                 request.setAttribute("senderID", senderID);
             }
 
-            // Fetch all customers for the checkbox list
             List<Account> customers = accountDAO.getAllCustomers();
             request.setAttribute("customers", customers);
 
@@ -61,9 +58,8 @@ public class CreateNotificationController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            // Input validation
             String senderStr = request.getParameter("senderID");
-            String[] receiverIDs = request.getParameterValues("receiverID"); // Array of selected receiver IDs
+            String[] receiverIDs = request.getParameterValues("receiverID");
             String notificationTitle = request.getParameter("notificationTitle");
             String notificationDetails = request.getParameter("notificationDetails");
 
@@ -75,7 +71,6 @@ public class CreateNotificationController extends HttpServlet {
             int senderID = Integer.parseInt(senderStr);
 
             if (receiverIDs != null && receiverIDs.length > 0) {
-                // Send to selected customers
                 for (String receiverIDStr : receiverIDs) {
                     int receiverID = Integer.parseInt(receiverIDStr);
                     Notification notification = new Notification(senderID, receiverID, notificationDetails.trim(), new Date(System.currentTimeMillis()), false, notificationTitle.trim(), false);

@@ -1,55 +1,45 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.sql.Date;
 
-/**
- *
- * @author ADMIN
- */
 public class Notification {
-
     private int notificationID;
     private int senderID;
     private int receiverID;
     private String notificationDetails;
-    private Date dateCreated;
+    private Date notificationDateCreated;
     private boolean isDeleted;
     private String notificationTitle;
     private boolean isRead;
 
-    public Notification(int notificationID, int senderID, int receiverID, String notificationDetails, Date dateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
+    public Notification(int notificationID, int senderID, int receiverID, String notificationDetails, Date notificationDateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
         this.notificationID = notificationID;
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.notificationDetails = notificationDetails;
-        this.dateCreated = dateCreated;
+        this.notificationDateCreated = notificationDateCreated;
         this.isDeleted = isDeleted;
         this.notificationTitle = notificationTitle;
         this.isRead = isRead;
     }
 
-    public Notification(int senderID, int receiverID, String notificationDetails, Date dateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
+    public Notification(int senderID, int receiverID, String notificationDetails, Date notificationDateCreated, boolean isDeleted, String notificationTitle, boolean isRead) {
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.notificationDetails = notificationDetails;
-        this.dateCreated = dateCreated;
+        this.notificationDateCreated = notificationDateCreated;
         this.isDeleted = isDeleted;
         this.notificationTitle = notificationTitle;
         this.isRead = isRead;
     }
 
-    
     public Notification() {
     }
 
-    public Notification(int notificationID, String notificationTitle, String notificationDetails, Date dateCreated) {
+    public Notification(int notificationID, String notificationTitle, String notificationDetails, Date notificationDateCreated) {
         this.notificationID = notificationID;
         this.notificationDetails = notificationDetails;
-        this.dateCreated = dateCreated;
+        this.notificationDateCreated = notificationDateCreated;
         this.notificationTitle = notificationTitle;
     }
 
@@ -85,12 +75,12 @@ public class Notification {
         this.notificationDetails = notificationDetails;
     }
 
-    public Date getDateCreated() {
-        return dateCreated;
+    public Date getNotificationDateCreated() {
+        return notificationDateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
+    public void setNotificationDateCreated(Date notificationDateCreated) {
+        this.notificationDateCreated = notificationDateCreated;
     }
 
     public boolean isDeleted() {
@@ -119,7 +109,6 @@ public class Notification {
 
     @Override
     public String toString() {
-        return "Notification{" + "notificationID=" + notificationID + ", senderID=" + senderID + ", receiverID=" + receiverID + ", notificationDetails=" + notificationDetails + ", dateCreated=" + dateCreated + ", isDeleted=" + isDeleted + ", notificationTitle=" + notificationTitle + ", isRead=" + isRead + '}';
+        return "Notification{" + "notificationID=" + notificationID + ", senderID=" + senderID + ", receiverID=" + receiverID + ", notificationDetails=" + notificationDetails + ", notificationDateCreated=" + notificationDateCreated + ", isDeleted=" + isDeleted + ", notificationTitle=" + notificationTitle + ", isRead=" + isRead + '}';
     }
-    
 }
