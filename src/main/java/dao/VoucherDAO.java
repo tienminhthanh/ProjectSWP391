@@ -136,8 +136,8 @@ public class VoucherDAO {
     public List<Voucher> getListVoucherComeSoon() {
         List<Voucher> listVoucher = new ArrayList<>();
         String sql = "SELECT * FROM [dbo].[Voucher]  \n"
-                + "WHERE dateStarted BETWEEN ? AND ?  \n"
-                + "ORDER BY dateStarted ASC;";
+                + "WHERE voucherDateStarted BETWEEN ? AND ?  \n"
+                + "ORDER BY voucherDateStarted ASC;";
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -175,8 +175,8 @@ public class VoucherDAO {
     public List<Voucher> getListVoucherAvailableNow() {
         List<Voucher> listVoucher = new ArrayList<>();
         String sql = "SELECT * FROM Voucher \n"
-                + "WHERE dateStarted <= ? \n"
-                + "AND DATEADD(DAY, duration, dateStarted) >= ?";
+                + "WHERE voucherDateStarted <= ? \n"
+                + "AND DATEADD(DAY, voucherDuration, voucherDateStarted) >= ?";
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -214,12 +214,12 @@ public class VoucherDAO {
         String sql = "UPDATE [dbo].[Voucher]\n"
                 + "   SET [voucherName] = ?\n"
                 + "      ,[voucherValue] = ?\n"
-                + "      ,[quantity] = ?\n"
+                + "      ,[voucherQuantity] = ?\n"
                 + "      ,[minimumPurchaseAmount] = ?\n"
-                + "      ,[duration] = ?\n"
+                + "      ,[voucherDuration] = ?\n"
                 + "      ,[voucherType] = ?\n"
                 + "      ,[maxDiscountAmount] = ?\n"
-                + "      ,[dateStarted] = ?\n"
+                + "      ,[voucherDateStarted] = ?\n"
                 + "      WHERE [voucherID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -256,7 +256,7 @@ public class VoucherDAO {
             }
 
             String sql = "UPDATE [dbo].[Voucher]\n"
-                    + "   SET [isActive] = ?\n"
+                    + "   SET [voucherIsActive] = ?\n"
                     + " WHERE [voucherID] = ?";
             Object[] params = {!voucher.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
@@ -270,8 +270,8 @@ public class VoucherDAO {
     public boolean addVoucher(Voucher voucher) {
         try {
             String sql = "INSERT INTO [dbo].[Voucher]"
-                    + "([voucherName], [voucherValue], [quantity], [minimumPurchaseAmount],"
-                    + "[dateCreated], [duration], [adminID], [isActive], [voucherType], [maxDiscountAmount], [dateStarted]) "
+                    + "([voucherName], [voucherValue], [voucherQuantity], [minimumPurchaseAmount],"
+                    + "[voucherDateCreated], [voucherDuration], [adminID], [voucherIsActive], [voucherType], [maxDiscountAmount], [voucherDateStarted]) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             Object[] params = {

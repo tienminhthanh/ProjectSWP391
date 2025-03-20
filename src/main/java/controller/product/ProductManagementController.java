@@ -162,7 +162,7 @@ public class ProductManagementController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,true);
             if (requestedProduct == null) {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);
@@ -262,7 +262,7 @@ public class ProductManagementController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,true);
             if (requestedProduct == null) {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);

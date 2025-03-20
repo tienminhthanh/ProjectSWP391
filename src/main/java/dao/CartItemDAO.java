@@ -20,14 +20,14 @@ public class CartItemDAO {
     }
 
     public boolean addCartItem(CartItem cartItem) throws SQLException {
-        String sql = "INSERT INTO CartItem (customerID, productID, quantity, priceWithQuantity) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO CartItem (customerID, productID, cartItemQuantity, cartItemPrice) VALUES (?, ?, ?, ?)";
         Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getQuantity(), cartItem.getPriceWithQuantity()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 
     public boolean updateCartItem(CartItem cartItem) throws SQLException {
-        String sql = "UPDATE CartItem SET quantity = ? WHERE itemID = ?";
+        String sql = "UPDATE CartItem SET cartItemQuantity = ? WHERE itemID = ?";
         Object[] params = {cartItem.getQuantity(), cartItem.getItemID()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
@@ -87,8 +87,8 @@ public class CartItemDAO {
                 rs.getInt("itemID"),
                 rs.getInt("customerID"),
                 rs.getInt("productID"),
-                rs.getInt("quantity"),
-                rs.getBigDecimal("priceWithQuantity")
+                rs.getInt("cartItemQuantity"),
+                rs.getBigDecimal("cartItemPrice")
         );
         cartItem.setProduct(product);
         return cartItem;

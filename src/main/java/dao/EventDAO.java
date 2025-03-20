@@ -100,7 +100,7 @@ public class EventDAO {
     
     public List<Event> getListActiveEvents() {
         List<Event> listEvent = new ArrayList<>();
-        String sql = "SELECT * FROM [dbo].[Event] where isActive = 1";
+        String sql = "SELECT * FROM [dbo].[Event] where eventIsActive = 1";
         try {
 
             ResultSet rs = context.exeQuery(sql, null);
@@ -159,8 +159,8 @@ public class EventDAO {
     public List<String> getBannerEvent() {
         String sql = "SELECT [banner]\n"
                 + "  FROM [dbo].[Event]"
-                + "  WHERE [isActive] = 1"
-                + "  ORDER BY [dateStarted]";
+                + "  WHERE [eventIsActive] = 1"
+                + "  ORDER BY [eventDateStarted]";
         List<String> listBanner = new ArrayList<>();
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -212,7 +212,7 @@ public class EventDAO {
             }
 
             String sql = "UPDATE [dbo].[Event]\n"
-                    + "   SET [isActive] = ?\n"
+                    + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
             Object[] params = {!event.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
@@ -227,13 +227,13 @@ public class EventDAO {
         try {
             String sql = "INSERT INTO [dbo].[Event]\n"
                     + "           ([eventName]\n"
-                    + "           ,[dateCreated]\n"
-                    + "           ,[duration]\n"
+                    + "           ,[eventDateCreated]\n"
+                    + "           ,[eventDuration]\n"
                     + "           ,[banner]\n"
                     + "           ,[description]\n"
                     + "           ,[adminID]\n"
-                    + "           ,[isActive]\n"
-                    + "           ,[dateStarted])\n"
+                    + "           ,[eventIsActive]\n"
+                    + "           ,[eventDateStarted])\n"
                     + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 //            String banner = event.getBanner();
 //            if (!banner.startsWith("img/")) {
@@ -260,11 +260,11 @@ public class EventDAO {
     public boolean updateEvent(Event event) {
         String sql = "UPDATE [dbo].[Event]\n"
                 + "   SET [eventName] = ?\n"
-                + "      ,[duration] = ?\n"
+                + "      ,[eventDuration] = ?\n"
                 + "      ,[banner] = ?\n"
                 + "      ,[description] = ?\n"
-                + "      ,[dateStarted] = ?\n"
-                + "      ,[isActive] = ?\n"
+                + "      ,[eventDateStarted] = ?\n"
+                + "      ,[eventIsActive] = ?\n"
                 + " WHERE [eventID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

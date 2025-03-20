@@ -1085,7 +1085,7 @@ public class ProductCatalogController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,false);
             if (requestedProduct == null) {
                 request.setAttribute("message", "The product is not available right now!");
                 request.getRequestDispatcher("home").forward(request, response);

@@ -51,14 +51,14 @@ public class ProductDAO {
         StringBuilder sql = getCTETables(null).append("SELECT P.*, \n"
                 + "       C.categoryName, \n"
                 + "       PD.discountPercentage, \n"
-                + "       PD.dateStarted,\n"
+                + "       PD.eventDateStarted,\n"
                 + "	   PD.eventDuration\n"
                 + "FROM Product AS P\n"
                 + "LEFT JOIN ProductDiscount PD \n"
                 + "    ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
-                + "WHERE P.isActive = 1 AND P.productID = ?\n");
+                + "WHERE P.productIsActive = 1 AND P.productID = ?\n");
 
         Object[] params = {productID};
         ResultSet rs = context.exeQuery(sql.toString(), params);
@@ -76,15 +76,16 @@ public class ProductDAO {
      *
      * @param type
      * @param productID
+     * @param isManagement
      * @return
      * @throws SQLException
      */
-    public Product callGetProductByTypeAndId(String type, int productID) throws SQLException {
+    public Product callGetProductByTypeAndId(String type, int productID, boolean isManagement) throws SQLException {
         switch (type) {
             case "merch":
-                return getMerchById(productID);
+                return getMerchById(productID, isManagement);
             case "book":
-                return getBookById(productID);
+                return getBookById(productID, isManagement);
             default:
                 return null;
         }
@@ -94,10 +95,11 @@ public class ProductDAO {
      * For view merch details
      *
      * @param productID
+     * @param isManagement
      * @return
      * @throws SQLException
      */
-    public Product getMerchById(int productID) throws SQLException {
+    public Product getMerchById(int productID, boolean isManagement) throws SQLException {
         StringBuilder sql = getCTETables("rank").append("SELECT\n"
                 + "P.*,\n"
                 + "C.categoryName,\n"
@@ -111,7 +113,7 @@ public class ProductDAO {
                 + "Ch.characterName,\n"
                 + "B.brandName,\n"
                 + "PD.discountPercentage,\n"
-                + "PD.dateStarted,\n"
+                + "PD.eventDateStarted,\n"
                 + "PD.eventDuration,\n"
                 + "TS.salesRank\n"
                 + "FROM Product AS P\n"
@@ -122,8 +124,11 @@ public class ProductDAO {
                 + "LEFT JOIN Brand AS B ON M.brandID = B.brandID\n"
                 + "LEFT JOIN Character AS Ch ON M.characterID = Ch.characterID\n"
                 + "LEFT JOIN Series AS S ON M.seriesID = S.seriesID\n"
-                + "WHERE P.isActive = 1\n"
-                + "AND P.productID = ? \n");
+                + "WHERE P.productID = ?\n");
+
+        if (!isManagement) {
+            sql.append(" AND P.productIsActive = 1\n");
+        }
 
         //Print the final query to console
         System.out.println(sql);
@@ -145,18 +150,22 @@ public class ProductDAO {
      * @return
      * @throws SQLException
      */
-    public Product getBookById(int productID) throws SQLException {
+    public Product getBookById(int productID, boolean isManagement) throws SQLException {
 
         StringBuilder sql = getCTETables("rank").append("SELECT\n"
-                + "P.*, C.categoryName, B.publisherID, B.duration,\n"
-                + "Pub.publisherName, PD.discountPercentage,PD.dateStarted,PD.eventDuration,TS.salesRank\n"
+                + "P.*, C.categoryName, B.publisherID, B.bookDuration,\n"
+                + "Pub.publisherName, PD.discountPercentage,PD.eventDateStarted,PD.eventDuration,TS.salesRank\n"
                 + "FROM Product AS P\n"
                 + "JOIN Book AS B ON P.productID = B.bookID\n"
                 + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
                 + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
                 + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
-                + "WHERE P.isActive = 1 AND P.productID = ?");
+                + "WHERE P.productID = ?\n");
+
+        if (!isManagement) {
+            sql.append(" AND P.productIsActive = 1\n");
+        }
 
         //Print the final query to console
         System.out.println(sql);
@@ -219,7 +228,7 @@ public class ProductDAO {
         sql.append("SELECT P.*, \n"
                 + "       C.categoryName, \n"
                 + "       PD.discountPercentage, \n"
-                + "       PD.dateStarted,\n"
+                + "       PD.eventDateStarted,\n"
                 + "	   PD.eventDuration\n"
                 + "FROM Product AS P\n");
 
@@ -239,7 +248,7 @@ public class ProductDAO {
                 + "    ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
-                + "WHERE P.isActive = 1\n");
+                + "WHERE P.productIsActive = 1\n");
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -298,7 +307,7 @@ public class ProductDAO {
         sql.append("SELECT P.*,");
         sql.append("\n       C.categoryName,");
         sql.append("\n       PD.discountPercentage,");
-        sql.append("\n       PD.dateStarted,");
+        sql.append("\n       PD.eventDateStarted,");
         sql.append("\n       PD.eventDuration,");
         sql.append("\n       KEY_TBL.RANK AS relevance_score");
         sql.append("\nFROM Product AS P");
@@ -319,7 +328,7 @@ public class ProductDAO {
         sql.append("\n    ON P.productID = PD.productID AND PD.rn = 1");
         sql.append("\nLEFT JOIN Category AS C");
         sql.append("\n    ON C.categoryID = P.categoryID");
-        sql.append("\nWHERE P.isActive = 1");
+        sql.append("\nWHERE P.productIsActive = 1");
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -418,7 +427,7 @@ public class ProductDAO {
     public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location) throws SQLException {
         StringBuilder sql = getCTETables(null);
         sql.append(location.equals("home") ? "SELECT TOP 7\n" : "SELECT\n");
-        sql.append("P.*, C.categoryName, PD.discountPercentage, PD.dateStarted, PD.eventDuration\n"
+        sql.append("P.*, C.categoryName, PD.discountPercentage, PD.eventDateStarted, PD.eventDuration\n"
                 + "FROM Product AS P\n");
 
         //Conditional joins
@@ -430,7 +439,7 @@ public class ProductDAO {
         );
 
         //Initialize where clause
-        sql.append("WHERE P.isActive = 1\n").append(getInitialWhereClause(condition, conditionID, location));
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, location));
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -583,7 +592,7 @@ public class ProductDAO {
         StringBuilder sql = getCTETables("rank").append("SELECT P.*,\n"
                 + "C.categoryName,\n"
                 + "PD.discountPercentage,\n"
-                + "PD.dateStarted,\n"
+                + "PD.eventDateStarted,\n"
                 + "PD.eventDuration,\n"
                 + "TS.salesRank\n"
                 + "FROM Product AS P\n"
@@ -595,7 +604,7 @@ public class ProductDAO {
         //Common part
         sql.append("LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-                + "WHERE P.isActive = 1 \n"
+                + "WHERE P.productIsActive = 1 \n"
                 + "ORDER BY TS.salesRank ;");
 
         //Print the final query to console
@@ -628,15 +637,15 @@ public class ProductDAO {
         }
         return cte.append("ProductDiscount AS (\n"
                 + "SELECT ep.productID,\n"
-                + "e.dateStarted,\n"
-                + "e.duration as eventDuration,\n"
+                + "e.eventDateStarted,\n"
+                + "e.eventDuration,\n"
                 + "ep.discountPercentage,\n"
-                + "ROW_NUMBER() OVER (PARTITION BY ep.productID ORDER BY e.dateStarted DESC, ep.eventID DESC) AS rn\n"
+                + "ROW_NUMBER() OVER (PARTITION BY ep.productID ORDER BY e.eventDateStarted DESC, ep.eventID DESC) AS rn\n"
                 + "FROM Event e\n"
                 + "JOIN Event_Product ep ON e.eventID = ep.eventID\n"
-                + "WHERE e.isActive = 1\n"
-                + "AND GETDATE() <= DATEADD(day, e.duration, e.dateStarted)\n"
-                + "AND GETDATE() >= e.dateStarted\n"
+                + "WHERE e.eventIsActive = 1\n"
+                + "AND GETDATE() <= DATEADD(day, e.eventDuration, e.eventDateStarted)\n"
+                + "AND GETDATE() >= e.eventDateStarted\n"
                 + ")\n");
     }
 
@@ -645,7 +654,7 @@ public class ProductDAO {
 
         LocalDate eventEndDate = null;
         int discountPercentage = 0;
-        java.sql.Date sqlDateStarted = rs.getDate("dateStarted");
+        java.sql.Date sqlDateStarted = rs.getDate("eventDateStarted");
         if (sqlDateStarted != null) {
             eventEndDate = sqlDateStarted.toLocalDate().plusDays(rs.getInt("eventDuration"));
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
@@ -655,7 +664,7 @@ public class ProductDAO {
             case "book":
                 // For book details
                 Publisher publisher = new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
-                return new Book(publisher, rs.getString("duration"),
+                return new Book(publisher, rs.getString("bookDuration"),
                         rs.getInt("productID"),
                         rs.getString("productName"),
                         rs.getDouble("price"),
@@ -670,7 +679,7 @@ public class ProductDAO {
                         rs.getInt("adminID"),
                         rs.getString("keywords"),
                         rs.getString("generalCategory"),
-                        rs.getBoolean("isActive"),
+                        rs.getBoolean("productIsActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
                         eventEndDate).setSalesRank(rs.getInt("salesRank"));
@@ -694,7 +703,7 @@ public class ProductDAO {
                         rs.getInt("adminID"),
                         rs.getString("keywords"),
                         rs.getString("generalCategory"),
-                        rs.getBoolean("isActive"),
+                        rs.getBoolean("productIsActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
                         eventEndDate).setSalesRank(rs.getInt("salesRank"));
@@ -715,7 +724,7 @@ public class ProductDAO {
                         rs.getInt("adminID"),
                         rs.getString("keywords"),
                         rs.getString("generalCategory"),
-                        rs.getBoolean("isActive"),
+                        rs.getBoolean("productIsActive"),
                         rs.getString("imageURL"),
                         discountPercentage,
                         eventEndDate);
@@ -741,7 +750,7 @@ public class ProductDAO {
         String sql = "SELECT c.*, COUNT(p.productID) AS productCount  \n"
                 + "FROM Category AS c  \n"
                 + "LEFT JOIN Product AS p  \n"
-                + "    ON p.categoryID = c.categoryID AND p.isActive = 1  \n"
+                + "    ON p.categoryID = c.categoryID AND p.productIsActive = 1  \n"
                 + "GROUP BY c.categoryID, c.categoryName, c.generalCategory;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -780,7 +789,7 @@ public class ProductDAO {
                 + "    ON c.creatorID = pc.creatorID\n"
                 + "LEFT JOIN Product p\n"
                 + "    ON pc.productID = p.productID \n"
-                + "    AND p.isActive = 1  \n"
+                + "    AND p.productIsActive = 1  \n"
                 + "GROUP BY c.creatorID, c.creatorName, c.creatorRole;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -813,7 +822,7 @@ public class ProductDAO {
                 + "FROM Genre g  \n"
                 + "JOIN Book_Genre bg ON g.genreID = bg.genreID  \n"
                 + "JOIN Book b ON bg.bookID = b.bookID  \n"
-                + "LEFT JOIN Product p ON b.bookID = p.productID AND p.isActive = 1\n"
+                + "LEFT JOIN Product p ON b.bookID = p.productID AND p.productIsActive = 1\n"
                 + "GROUP BY g.genreID, g.genreName;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -844,7 +853,7 @@ public class ProductDAO {
                 + "    COUNT(pr.productID) AS productCount\n"
                 + "FROM Publisher p\n"
                 + "JOIN Book b ON p.publisherID = b.publisherID\n"
-                + "LEFT JOIN Product pr ON b.bookID = pr.productID AND pr.isActive = 1\n"
+                + "LEFT JOIN Product pr ON b.bookID = pr.productID AND pr.productIsActive = 1\n"
                 + "GROUP BY p.publisherID, p.publisherName;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -875,7 +884,7 @@ public class ProductDAO {
                 + "    COUNT(pr.productID) AS productCount\n"
                 + "FROM Series s\n"
                 + "JOIN Merchandise m ON m.seriesID = s.seriesID\n"
-                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.isActive = 1\n"
+                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.productIsActive = 1\n"
                 + "GROUP BY s.seriesID, s.seriesName";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -906,7 +915,7 @@ public class ProductDAO {
                 + "    COUNT(pr.productID) AS productCount\n"
                 + "FROM Character ch\n"
                 + "JOIN Merchandise m ON m.characterID = ch.characterID\n"
-                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.isActive = 1\n"
+                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.productIsActive = 1\n"
                 + "GROUP BY ch.characterID, ch.characterName";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -937,7 +946,7 @@ public class ProductDAO {
                 + "    COUNT(pr.productID) AS productCount\n"
                 + "FROM Brand br\n"
                 + "JOIN Merchandise m ON m.brandID = br.brandID\n"
-                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.isActive = 1\n"
+                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.productIsActive = 1\n"
                 + "GROUP BY br.brandID, br.brandName";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
@@ -969,7 +978,7 @@ public class ProductDAO {
         sql.append("SELECT P.*");
         sql.append("\n       ,C.categoryName");
         sql.append("\n       ,PD.discountPercentage");
-        sql.append("\n       ,PD.dateStarted");
+        sql.append("\n       ,PD.eventDateStarted");
         sql.append("\n       ,PD.eventDuration");
         sql.append(query != null && !query.trim().isEmpty() ? "\n       ,KEY_TBL.RANK AS relevance_score" : "");
         sql.append("\nFROM Product AS P");
@@ -1080,13 +1089,13 @@ public class ProductDAO {
             }
 
             newProduct.setProductID(insertedProductID);
-            
+
             Set<Integer> associatedCreatorIDs = new HashSet<>();
             for (Object dataObj : dataArray) {
                 if (dataObj instanceof Creator) {
                     Creator creator = (Creator) dataObj;
                     creatorID = getCreatorIDByNameAndRole(creator.getCreatorName(), creator.getCreatorRole());
-                    
+
                     if (creatorID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "creator");
                         creatorID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
@@ -1096,11 +1105,10 @@ public class ProductDAO {
 
                         }
                     }
-                    
 
                     if (creatorID > 0 && !associatedCreatorIDs.contains(creatorID) && insertedProductID > 0) {
                         stmtEntry = generateInsertStatement(new Object[]{insertedProductID, creatorID}, "product_creator");
-                        if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),false) == 0) {
+                        if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
                             throw new SQLException("Error assigning creatorID " + creatorID + " to productID " + insertedProductID);
                         }
                         associatedCreatorIDs.add(creatorID);
@@ -1111,7 +1119,7 @@ public class ProductDAO {
                     genreID = genre.getGenreID();
                     if (genreID > 0 && insertedProductID > 0) {
                         stmtEntry = generateInsertStatement(new Object[]{insertedProductID, genreID}, "book_genre");
-                        if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),false) == 0) {
+                        if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
                             throw new SQLException("Error assigning genreID " + genreID + " to productID " + insertedProductID);
                         }
                     }
@@ -1120,7 +1128,7 @@ public class ProductDAO {
                     int publisherID = getPublisherIDByName(publisher.getPublisherName());
                     if (publisherID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "publisher");
-                        publisherID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),true);
+                        publisherID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (publisherID == 0) {
                             throw new SQLException("Error adding publisher: " + publisher.getPublisherName());
@@ -1134,7 +1142,7 @@ public class ProductDAO {
                     int seriesID = getSeriesIDByName(series.getSeriesName());
                     if (seriesID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "series");
-                        seriesID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),true);
+                        seriesID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (seriesID == 0) {
                             throw new SQLException("Error adding merch series: " + series.getSeriesName());
@@ -1148,7 +1156,7 @@ public class ProductDAO {
                     int brandID = getBrandIDByName(brand.getBrandName());
                     if (brandID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "brand");
-                        brandID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),true);
+                        brandID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (brandID == 0) {
                             throw new SQLException("Error adding merch brand: " + brand.getBrandName());
@@ -1162,7 +1170,7 @@ public class ProductDAO {
                     int characterID = getCharacterIDByName(character.getCharacterName());
                     if (characterID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "character");
-                        characterID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),true);
+                        characterID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (characterID == 0) {
                             throw new SQLException("Error adding merch character: " + character.getCharacterName());
@@ -1186,7 +1194,7 @@ public class ProductDAO {
 
             stmtEntry = generateUpdateStatement(new Object[]{newProduct}, className);
 
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),false) > 0) {
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0) {
                 connection.commit();
                 return true;
             } else {
@@ -1216,7 +1224,6 @@ public class ProductDAO {
 
         }
     }
-    
 
     private SimpleEntry<String, Object[]> generateInsertStatement(Object[] newObjects, String classNames) {
         newObjects = newObjects != null ? newObjects : new Object[0];
@@ -1227,7 +1234,7 @@ public class ProductDAO {
             case "product":
                 if (newObjects[0] instanceof Product) {
                     Product newProduct = (Product) newObjects[0];
-                    sql.append("INSERT INTO Product (categoryID, adminID, keywords, generalCategory, isActive, imageURL, description, releaseDate, specialFilter, productName, price, stockCount) "
+                    sql.append("INSERT INTO Product (categoryID, adminID, keywords, generalCategory, productIsActive, imageURL, description, releaseDate, specialFilter, productName, price, stockCount) "
                             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     paramList.add(newProduct.getSpecificCategory().getCategoryID());
                     paramList.add(newProduct.getAdminID());
@@ -1345,7 +1352,7 @@ public class ProductDAO {
                         sql.append("publisherID = ?,\n");
                         paramList.add(updatedBook.getPublisher().getPublisherID());
                     }
-                    sql.append("duration = ? WHERE bookID = ?\n");
+                    sql.append("bookDuration = ? WHERE bookID = ?\n");
                     paramList.add(updatedBook.getDuration());
                     paramList.add(updatedBook.getProductID());
                 }
@@ -1385,8 +1392,6 @@ public class ProductDAO {
         return new SimpleEntry<>(sql.toString(), paramList.toArray());
     }
 
-
-
     public int getCreatorIDByNameAndRole(String name, String role) throws SQLException {
         String sql = "SELECT creatorID from Creator\n"
                 + "WHERE contains(creatorName, ?) AND creatorRole = ?";
@@ -1398,8 +1403,6 @@ public class ProductDAO {
         }
         return 0;
     }
-
-
 
     public int getPublisherIDByName(String publisherName) throws SQLException {
         String sql = "SELECT publisherID\n"
@@ -1413,7 +1416,6 @@ public class ProductDAO {
         }
         return 0;
     }
-
 
     public int getSeriesIDByName(String seriesName) throws SQLException {
         String sql = "SELECT seriesID\n"
@@ -1454,9 +1456,6 @@ public class ProductDAO {
         return 0;
     }
 
-
-
-
     public boolean updateProducts(Product updatedProduct) {
         //WIP
         //WIP
@@ -1474,7 +1473,7 @@ public class ProductDAO {
     }
 
     public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
-        String sql = "UPDATE Product SET isActive = ? WHERE productID = ?";
+        String sql = "UPDATE Product SET productIsActive = ? WHERE productID = ?";
         Object[] params = {newStatus, productID};
         return context.exeNonQuery(sql, params) > 0;
     }
@@ -1486,7 +1485,7 @@ public class ProductDAO {
             SimpleEntry<String, Object[]> stmtEntry;
 
             stmtEntry = productDAO.generateInsertStatement(new Object[]{new Creator().setCreatorName("sayaka anuman").setCreatorRole("author")}, "creator");
-            int id = productDAO.context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(),true);
+            int id = productDAO.context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
             System.out.println(id);
             connection.setAutoCommit(true);
         } catch (SQLException ex) {
