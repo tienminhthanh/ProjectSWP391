@@ -95,9 +95,8 @@
                     </form>
                 </div>
             </div>
-            <!-- Display error message if present -->
             <c:if test="${not empty error}">
-                <p class="text-orange-500">${error}</p> <!-- Màu lỗi orange-500 -->
+                <p class="text-orange-500">${error}</p>
             </c:if>
             <div class="notification-scroll">
                 <c:choose>
@@ -108,7 +107,7 @@
                         <c:forEach var="notification" items="${notifications}">
                             <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
                                style="text-decoration: none;">
-                                <div class="notification-item ">
+                                <div class="notification-item">
                                     <div class="flex items-start">
                                         <img alt="Notification icon" class="mr-4" 
                                              src="https://icon-library.com/images/icon-notification/icon-notification-3.jpg" 
@@ -117,7 +116,7 @@
                                             <h2 class="font-bold">${notification.notificationTitle}</h2>
                                             <p>Click to see details.</p>
                                             <p class="text-sm">
-                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
+                                                <fmt:formatDate value="${notification.notificationDateCreated}" pattern="dd/MM/yyyy"/>
                                             </p>
                                         </div>
                                     </div>

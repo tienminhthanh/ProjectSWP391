@@ -49,7 +49,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
 
         <!-- SweetAlert2 -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
 
 
         <!--Forms-->

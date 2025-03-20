@@ -93,7 +93,7 @@ public class OrderController extends HttpServlet {
             }
 
             for (CartItem item : cartItems) {
-                BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
+                BigDecimal priceWithQuantity = item.getCartItemPrice().multiply(BigDecimal.valueOf(item.getCartItemQuantity()));
                 subtotal += priceWithQuantity.doubleValue();
             }
 
@@ -102,7 +102,7 @@ public class OrderController extends HttpServlet {
             List<Voucher> validVouchers = new ArrayList<>();
             double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
-                if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
+                if (subtotal >= voucher.getMinimumPurchaseAmount() && voucher.isVoucherIsActive()) {
                     validVouchers.add(voucher);
                     if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
                         valueOfVoucher = voucher.getVoucherValue();
@@ -191,7 +191,7 @@ public class OrderController extends HttpServlet {
             List<Voucher> validVouchers = new ArrayList<>();
             double valueOfVoucher = 0;
             for (Voucher voucher : listVoucher) {
-                if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isIsActive()) {
+                if (sum >= voucher.getMinimumPurchaseAmount() && voucher.isVoucherIsActive()) {
                     validVouchers.add(voucher);
                     if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
                         valueOfVoucher = voucher.getVoucherValue();
@@ -278,7 +278,7 @@ public class OrderController extends HttpServlet {
             }
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
-                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
+                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getCartItemQuantity(), item.getCartItemPrice().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);

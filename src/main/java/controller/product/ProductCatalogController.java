@@ -20,6 +20,8 @@ import java.util.Map;
 import model.*;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
 
 /**
@@ -1083,7 +1085,7 @@ public class ProductCatalogController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,false);
             if (requestedProduct == null) {
                 request.setAttribute("message", "The product is not available right now!");
                 request.getRequestDispatcher("home").forward(request, response);
@@ -1091,9 +1093,10 @@ public class ProductCatalogController extends HttpServlet {
                 //Handle linebreak for html display
                 requestedProduct.setDescription(requestedProduct.getDescription().replaceAll("\r\n|\r|\n", "<br>"));
                 
-                //Get creators
-                HashMap<String, Creator> creatorMap = productDAO.getCreatorsOfThisProduct(id);
-                request.setAttribute("creatorMap", creatorMap);
+                //Get and creators
+                List<Creator> creatorList = productDAO.getCreatorsOfThisProduct(id);
+                Collections.sort(creatorList,Comparator.comparing(c -> c.getCreatorName()));
+                request.setAttribute("creatorList",creatorList);
 
                 //Get comments & ratings
                 Map<String, String[]> reviewMap = orderDAO.getRatingsAndCommentsByProduct(id);
@@ -1140,6 +1143,7 @@ public class ProductCatalogController extends HttpServlet {
             }
             showProductsInHomepage(session);
             showVouchersInHomepage(request);
+            showVouchersAvalaibleInHomepage(request);
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -1177,8 +1181,14 @@ public class ProductCatalogController extends HttpServlet {
 //    }
     private void showVouchersInHomepage(HttpServletRequest request) throws Exception {
 
-        List<Voucher> listVoucher = vDao.getListVoucher();
+        List<Voucher> listVoucher = vDao.getListVoucherAvailableNow();
         request.setAttribute("listVoucher", listVoucher);
+
+    }
+    private void showVouchersAvalaibleInHomepage(HttpServletRequest request) throws Exception {
+
+        List<Voucher> listVoucher = vDao.getListVoucherComeSoon();
+        request.setAttribute("listVoucherComeSoon", listVoucher);
 
     }
 
