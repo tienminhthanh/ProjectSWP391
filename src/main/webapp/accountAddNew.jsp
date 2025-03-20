@@ -60,8 +60,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="sr-only" for="role">Role</label>
-                            <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role">
-                                <option value="customer">Customer</option>
+                            <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role">                            
                                 <option value="staff">Staff</option>
                                 <option value="shipper">Shipper</option>
                             </select>
