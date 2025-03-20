@@ -17,7 +17,7 @@
         <link href="css/styleCustomerSidebar.css" rel="stylesheet">
         <link rel="stylesheet" href="css/styleProductCard.css"/>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+        <link rel="stylesheet" href="htztps://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
         <!--Script for include icons-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
@@ -151,19 +151,19 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-       function filterProducts() {
-           let input = document.getElementById("searchInput").value.toLowerCase();
-           let productCards = document.querySelectorAll(".grid.grid-flow-col.auto-cols-max > div");
+                           function filterProducts() {
+                               let input = document.getElementById("searchInput").value.toLowerCase();
+                               let productCards = document.querySelectorAll(".grid.grid-flow-col.auto-cols-max > div");
 
-           productCards.forEach(product => {
-               let productName = product.innerText.toLowerCase();  // Lấy văn bản hiển thị của sản phẩm
-               if (productName.includes(input)) {  // Kiểm tra xem tên sản phẩm có chứa chuỗi tìm kiếm không
-                   product.style.display = "block";  // Nếu có, hiển thị sản phẩm
-               } else {
-                   product.style.display = "none";  // Nếu không, ẩn sản phẩm
-               }
-           });
-       }
+                               productCards.forEach(product => {
+                                   let productName = product.innerText.toLowerCase();  // Lấy văn bản hiển thị của sản phẩm
+                                   if (productName.includes(input)) {  // Kiểm tra xem tên sản phẩm có chứa chuỗi tìm kiếm không
+                                       product.style.display = "block";  // Nếu có, hiển thị sản phẩm
+                                   } else {
+                                       product.style.display = "none";  // Nếu không, ẩn sản phẩm
+                                   }
+                               });
+                           }
 
 
         </script>

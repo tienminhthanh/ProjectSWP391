@@ -149,7 +149,7 @@ public class EventUpdateController extends HttpServlet {
             // Lấy thông tin từ database nếu cần
             Event existingEvent = eDao.getEventByID(id);
             if (existingEvent != null) {
-                dateCreated = existingEvent.getEventDateCreated();
+                dateCreated = existingEvent.getDateCreated();
                 adminID = existingEvent.getAdminID();
                 banner = existingEvent.getBanner();
             }
@@ -182,14 +182,14 @@ public class EventUpdateController extends HttpServlet {
 
             // Tạo đối tượng Event và cập nhật
             Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
-                    existingEvent.isEventIsActive(), dateStarted.toString(), existingEvent.isExpiry());
+                    existingEvent.isIsActive(), dateStarted.toString(), existingEvent.isExpiry());
 
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(event.getEventDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(event.getEventDuration());
+            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getDuration());
 
             boolean isActive = false;
-            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getEventDateStarted())).isAfter(today)) {
+            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getDateStarted())).isAfter(today)) {
                 isActive = true;
             }
 

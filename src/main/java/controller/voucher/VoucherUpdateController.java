@@ -92,7 +92,7 @@ public class VoucherUpdateController extends HttpServlet {
             double value = Double.parseDouble(request.getParameter("voucherValue"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             int minimum = Integer.parseInt(request.getParameter("minimumPurchaseAmount"));
-            String dateCreated = vDao.getVoucherByID(id).getVoucherDateCreated();
+            String dateCreated = vDao.getVoucherByID(id).getDateCreated();
             int duration = Integer.parseInt(request.getParameter("duration"));
             int adminID = vDao.getVoucherByID(id).getAdminID();
             Double maxDiscountAmount = null;
@@ -108,7 +108,7 @@ public class VoucherUpdateController extends HttpServlet {
             LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
 
             Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID,
-                    vDao.getVoucherByID(id).isVoucherIsActive(), vDao.getVoucherByID(id).isExpiry(), type, maxDiscountAmount, dateStarted.toString());
+                    vDao.getVoucherByID(id).isIsActive(), vDao.getVoucherByID(id).isExpiry(), type, maxDiscountAmount, dateStarted.toString());
 
             if (vDao.updateVoucher(voucher)) {
                 session.setAttribute("message", "Voucher updated successfully!");

@@ -408,7 +408,7 @@
         </div>
 
         <!-- Chat Popup -->
-        <div id="chatPopup1" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden">
+        <div id="chatPopup1" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden zindex-10000">
             <div class="flex justify-between items-center bg-orange-500 text-white px-4 py-2 rounded-t-lg">
                 <span>WIBOOKS AI</span>
                 <span id="closeChatAI1" class="cursor-pointer text-xl">❌</span>
