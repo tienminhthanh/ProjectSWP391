@@ -36,7 +36,7 @@ public class VoucherDAO {
             sql += " AND (voucherName LIKE ? OR voucherType LIKE ? \n"
                     + "    OR CONVERT(VARCHAR, voucherID) LIKE ? \n"
                     + "    OR CONVERT(VARCHAR, voucherValue) LIKE ? \n"
-                    + "    OR CONVERT(VARCHAR, quantity) LIKE ? \n"
+                    + "    OR CONVERT(VARCHAR, voucherQuantity) LIKE ? \n"
                     + "    OR CONVERT(VARCHAR, [minimumPurchaseAmount]) LIKE ?)";
 
             String keywordPattern = "%" + searchKeyword.trim() + "%";
@@ -49,7 +49,7 @@ public class VoucherDAO {
         }
 
         if (filtered != null && !filtered.isEmpty()) {
-            sql += "AND isActive = ? ";
+            sql += "AND voucherIsActive = ? ";
             paramsList.add(Boolean.parseBoolean(filtered));
         }
         if (searchType != null && !searchType.isEmpty()) {
@@ -105,7 +105,7 @@ public class VoucherDAO {
             sql += " AND (voucherName LIKE ? OR voucherType LIKE ? \n"
                     + "    OR CONVERT(VARCHAR, voucherID) LIKE ? \n"
                     + "    OR CONVERT(VARCHAR, voucherValue) LIKE ? \n"
-                    + "    OR CONVERT(VARCHAR, quantity) LIKE ? \n"
+                    + "    OR CONVERT(VARCHAR, voucherQuantity) LIKE ? \n"
                     + "    OR CONVERT(VARCHAR, [minimumPurchaseAmount]) LIKE ?)";
             String keywordPattern = "%" + searchName.trim() + "%";
             paramsList.add(keywordPattern);
@@ -120,7 +120,7 @@ public class VoucherDAO {
             paramsList.add(searchType);
         }
         if (filtered != null && !filtered.isEmpty()) {
-            sql += "AND isActive = ? ";
+            sql += "AND voucherIsActive = ? ";
             paramsList.add(Boolean.parseBoolean(filtered));
         }
 
@@ -201,8 +201,8 @@ public class VoucherDAO {
     public List<Voucher> getListVoucherComeSoon() {
         List<Voucher> listVoucher = new ArrayList<>();
         String sql = "SELECT * FROM [dbo].[Voucher]  \n"
-                + "WHERE dateStarted BETWEEN ? AND ?  \n"
-                + "ORDER BY dateStarted ASC;";
+                + "WHERE voucherDateStarted BETWEEN ? AND ?  \n"
+                + "ORDER BY voucherDateStarted ASC;";
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -241,7 +241,7 @@ public class VoucherDAO {
         List<Voucher> listVoucher = new ArrayList<>();
         String sql = "SELECT * FROM Voucher \n"
                 + "WHERE dateStarted <= ? \n"
-                + "AND DATEADD(DAY, duration, dateStarted) >= ?";
+                + "AND DATEADD(DAY, voucherDuration, voucherDateStarted) >= ?";
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -279,28 +279,28 @@ public class VoucherDAO {
         String sql = "UPDATE [dbo].[Voucher]\n"
                 + "   SET [voucherName] = ?\n"
                 + "      ,[voucherValue] = ?\n"
-                + "      ,[quantity] = ?\n"
+                + "      ,[voucherQuantity] = ?\n"
                 + "      ,[minimumPurchaseAmount] = ?\n"
-                + "      ,[duration] = ?\n"
+                + "      ,[voucherDuration] = ?\n"
                 + "      ,[voucherType] = ?\n"
                 + "      ,[maxDiscountAmount] = ?\n"
-                + "      ,[dateStarted] = ?\n"
-                + "      ,[isActive] = ?\n"
+                + "      ,[voucherDateStarted] = ?\n"
+                + "      ,[voucherIsActive] = ?\n"
                 + "      WHERE [voucherID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(voucher.getDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(voucher.getDuration());
+            LocalDate createDate = LocalDate.parse(voucher.getVoucherDateCreated(), formatter);
+            LocalDate expiryDate = createDate.plusDays(voucher.getVoucherDuration());
 
             Object[] params = {voucher.getVoucherName(),
                 voucher.getVoucherValue(),
-                voucher.getQuantity(),
+                voucher.getVoucherQuantity(),
                 voucher.getMinimumPurchaseAmount(),
-                voucher.getDuration(),
+                voucher.getVoucherDuration(),
                 voucher.getVoucherType(),
                 voucher.getMaxDiscountAmount(),
-                voucher.getDateStarted(),
+                voucher.getVoucherDateStarted(),
                 !LocalDate.now().isAfter(expiryDate),
                 voucher.getVoucherID()};
 
@@ -317,14 +317,14 @@ public class VoucherDAO {
         try {
             Voucher voucher = getVoucherByID(id);
 
-            if (!voucher.isExpiry() && !voucher.isIsActive()) {
+            if (!voucher.isExpiry() && !voucher.isVoucherIsActive()) {
                 return false;
             }
 
             String sql = "UPDATE [dbo].[Voucher]\n"
-                    + "   SET [isActive] = ?\n"
+                    + "   SET [voucherIsActive] = ?\n"
                     + " WHERE [voucherID] = ?";
-            Object[] params = {!voucher.isIsActive(), id};
+            Object[] params = {!voucher.isVoucherIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -336,22 +336,22 @@ public class VoucherDAO {
     public boolean addVoucher(Voucher voucher) {
         try {
             String sql = "INSERT INTO [dbo].[Voucher]"
-                    + "([voucherName], [voucherValue], [quantity], [minimumPurchaseAmount],"
-                    + "[dateCreated], [duration], [adminID], [isActive], [voucherType], [maxDiscountAmount], [dateStarted]) "
+                    + "([voucherName], [voucherValue], [voucherQuantity], [minimumPurchaseAmount],"
+                    + "[voucherDateCreated], [voucherDuration], [adminID], [voucherIsActive], [voucherType], [maxDiscountAmount], [voucherDateStarted]) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             Object[] params = {
                 voucher.getVoucherName(),
                 voucher.getVoucherValue(),
-                voucher.getQuantity(),
+                voucher.getVoucherQuantity(),
                 voucher.getMinimumPurchaseAmount(),
-                voucher.getDateCreated(),
-                voucher.getDuration(),
+                voucher.getVoucherDateCreated(),
+                voucher.getVoucherDuration(),
                 voucher.getAdminID(),
-                voucher.isIsActive(),
+                voucher.isVoucherIsActive(),
                 voucher.getVoucherType(),
                 voucher.getMaxDiscountAmount(),
-                voucher.getDateStarted(),};
+                voucher.getVoucherDateStarted()};
 
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;

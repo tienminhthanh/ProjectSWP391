@@ -14,57 +14,41 @@ public class Event {
 
     private int eventID;
     private String eventName;
-    private String dateCreated;
-    private int duration;
+    private String eventDateCreated;
+    private int eventDuration;
     private String banner;
     private String description;
     private int adminID;
-    private boolean isActive;
-    private String dateStarted;
+    private boolean eventIsActive;
+    private String eventDateStarted;
     private boolean expiry;
 
     public Event() {
     }
 
-    public Event(String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
+    public Event(String eventName, String eventDateCreated, int eventDuration, String banner, String description, int adminID, boolean eventIsActive, String eventDateStarted, boolean expiry) {
         this.eventName = eventName;
-        this.dateCreated = dateCreated;
-        this.duration = duration;
+        this.eventDateCreated = eventDateCreated;
+        this.eventDuration = eventDuration;
         this.banner = banner;
         this.description = description;
         this.adminID = adminID;
-        this.isActive = isActive;
-        this.dateStarted = dateStarted;
+        this.eventIsActive = eventIsActive;
+        this.eventDateStarted = eventDateStarted;
         this.expiry = expiry;
     }
 
-    public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
+    public Event(int eventID, String eventName, String eventDateCreated, int eventDuration, String banner, String description, int adminID, boolean eventIsActive, String eventDateStarted, boolean expiry) {
         this.eventID = eventID;
         this.eventName = eventName;
-        this.dateCreated = dateCreated;
-        this.duration = duration;
+        this.eventDateCreated = eventDateCreated;
+        this.eventDuration = eventDuration;
         this.banner = banner;
         this.description = description;
         this.adminID = adminID;
-        this.isActive = isActive;
-        this.dateStarted = dateStarted;
+        this.eventIsActive = eventIsActive;
+        this.eventDateStarted = eventDateStarted;
         this.expiry = expiry;
-    }
-
-    public boolean isExpiry() {
-        return expiry;
-    }
-
-    public void setExpiry(boolean expiry) {
-        this.expiry = expiry;
-    }
-
-    public String getDateStarted() {
-        return dateStarted;
-    }
-
-    public void setDateStarted(String dateStarted) {
-        this.dateStarted = dateStarted;
     }
 
     public int getEventID() {
@@ -83,20 +67,20 @@ public class Event {
         this.eventName = eventName;
     }
 
-    public String getDateCreated() {
-        return dateCreated;
+    public String getEventDateCreated() {
+        return eventDateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
-        this.dateCreated = dateCreated;
+    public void setEventDateCreated(String eventDateCreated) {
+        this.eventDateCreated = eventDateCreated;
     }
 
-    public int getDuration() {
-        return duration;
+    public int getEventDuration() {
+        return eventDuration;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setEventDuration(int eventDuration) {
+        this.eventDuration = eventDuration;
     }
 
     public String getBanner() {
@@ -123,17 +107,28 @@ public class Event {
         this.adminID = adminID;
     }
 
-    public boolean isIsActive() {
-        return isActive;
+    public boolean isEventIsActive() {
+        return eventIsActive;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setEventIsActive(boolean eventIsActive) {
+        this.eventIsActive = eventIsActive;
     }
 
-    @Override
-    public String toString() {
-        return "Event{" + "eventID=" + eventID + ", eventName=" + eventName + ", dateCreated=" + dateCreated + ", duration=" + duration + ", banner=" + banner + ", description=" + description + ", adminID=" + adminID + ", isActive=" + isActive + ", dateStarted=" + dateStarted + ", expiry=" + expiry + '}';
+    public String getEventDateStarted() {
+        return eventDateStarted;
+    }
+
+    public void setEventDateStarted(String eventDateStarted) {
+        this.eventDateStarted = eventDateStarted;
+    }
+
+    public boolean isExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(boolean expiry) {
+        this.expiry = expiry;
     }
 
 }

@@ -36,7 +36,7 @@ public class EventDAO {
 
         // Lọc theo trạng thái (isActive)
         if (filtered != null && !filtered.isEmpty()) {
-            sql += " AND isActive = ?";
+            sql += " AND eventIsActive = ?";
             paramsList.add(Boolean.parseBoolean(filtered));
         }
 
@@ -90,7 +90,7 @@ public class EventDAO {
 
         // Lọc theo trạng thái (isActive)
         if (filtered != null && !filtered.isEmpty()) {
-            sql += " AND isActive = ?";
+            sql += " AND eventIsActive = ?";
             paramsList.add(Boolean.parseBoolean(filtered));
         }
 
@@ -146,7 +146,7 @@ public class EventDAO {
 
     public List<Event> getListActiveEvents() {
         List<Event> listEvent = new ArrayList<>();
-        String sql = "SELECT * FROM [dbo].[Event] where isActive = 1";
+        String sql = "SELECT * FROM [dbo].[Event] where eventIsActive = 1";
         try {
 
             ResultSet rs = context.exeQuery(sql, null);
@@ -206,8 +206,8 @@ public class EventDAO {
     public List<String> getBannerEvent() {
         String sql = "SELECT [banner]\n"
                 + "  FROM [dbo].[Event]"
-                + "  WHERE [isActive] = 1"
-                + "  ORDER BY [dateStarted]";
+                + "  WHERE [eventIsActive] = 1"
+                + "  ORDER BY [eventDateStarted]";
         List<String> listBanner = new ArrayList<>();
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -256,9 +256,9 @@ public class EventDAO {
             LocalDate today = LocalDate.now();
 
             String sql = "UPDATE [dbo].[Event]\n"
-                    + "   SET [isActive] = ?\n"
+                    + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
-            Object[] params = {!event.isIsActive(), id};
+            Object[] params = {!event.isEventIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -272,16 +272,16 @@ public class EventDAO {
             Event event = getEventByID(id);
             LocalDate today = LocalDate.now();
 
-            if ((!event.isExpiry() && !event.isIsActive())) {
+            if ((!event.isExpiry() && !event.isEventIsActive())) {
                 return false;
-            } else if (today.isBefore(LocalDate.parse(event.getDateStarted()))) {
+            } else if (today.isBefore(LocalDate.parse(event.getEventDateStarted()))) {
                 return false;
             }
 
             String sql = "UPDATE [dbo].[Event]\n"
                     + "   SET [isActive] = ?\n"
                     + " WHERE [eventID] = ?";
-            Object[] params = {!event.isIsActive(), id};
+            Object[] params = {!event.isEventIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -294,26 +294,26 @@ public class EventDAO {
         try {
             String sql = "INSERT INTO [dbo].[Event]\n"
                     + "           ([eventName]\n"
-                    + "           ,[dateCreated]\n"
-                    + "           ,[duration]\n"
+                    + "           ,[eventDateCreated]\n"
+                    + "           ,[eventDuration]\n"
                     + "           ,[banner]\n"
                     + "           ,[description]\n"
                     + "           ,[adminID]\n"
-                    + "           ,[isActive]\n"
-                    + "           ,[dateStarted])\n"
+                    + "           ,[eventIsActive]\n"
+                    + "           ,[eventDateStarted])\n"
                     + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 //            String banner = event.getBanner();
 //            if (!banner.startsWith("img/")) {
 //                banner = "img/banner_event/" + banner;
 //            }
             Object[] params = {event.getEventName(),
-                event.getDateCreated(),
-                event.getDuration(),
+                event.getEventDateCreated(),
+                event.getEventDuration(),
                 event.getBanner(),
                 event.getDescription(),
                 event.getAdminID(),
-                event.isIsActive(),
-                event.getDateStarted()
+                event.isEventIsActive(),
+                event.getEventDateStarted()
             };
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
@@ -327,32 +327,32 @@ public class EventDAO {
     public boolean updateEvent(Event event) {
         String sql = "UPDATE [dbo].[Event]\n"
                 + "   SET [eventName] = ?\n"
-                + "      ,[duration] = ?\n"
+                + "      ,[eventDuration] = ?\n"
                 + "      ,[banner] = ?\n"
                 + "      ,[description] = ?\n"
-                + "      ,[dateStarted] = ?\n"
-                + "      ,[isActive] = ?\n"
+                + "      ,[eventDateStarted] = ?\n"
+                + "      ,[eventIsActive] = ?\n"
                 + " WHERE [eventID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(event.getDuration());
+            LocalDate createDate = LocalDate.parse(event.getEventDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getEventDuration());
             String banner = event.getBanner();
             if (!banner.startsWith("img/")) {
                 banner = "img/banner_event/" + banner;
             }
 
             boolean isActive = false;
-            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getDateStarted()).isEqual(today)) {
+            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getEventDateStarted()).isEqual(today)) {
                 isActive = true;
             }
 
             Object params[] = {event.getEventName(),
-                event.getDuration(),
+                event.getEventDuration(),
                 banner,
                 event.getDescription(),
-                event.getDateStarted(),
+                event.getEventDateStarted(),
                 isActive,
                 event.getEventID()};
 
