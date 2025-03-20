@@ -85,7 +85,7 @@ public class RemoveEmailFromLockedAccountController extends HttpServlet {
             AccountDAO accountDAO = new AccountDAO();
             Account account = accountDAO.getAccountByEmail(email);
 
-            if (account != null && !account.getIsActive()) {
+            if (account != null && !account.getAccountIsActive()) {
                 // Remove email from the account using the new method
                 boolean success = accountDAO.removeEmailFromAccount(account.getUsername());
                 if (success) {

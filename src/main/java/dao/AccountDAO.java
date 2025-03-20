@@ -25,9 +25,9 @@ public class AccountDAO {
     /**
      * Cập nhật trạng thái tài khoản (kích hoạt hoặc vô hiệu hóa)
      */
-    public boolean updateAccountStatus(String username, boolean isActive) throws SQLException {
-        String sql = "UPDATE Account SET isActive = ? WHERE username = ?";
-        Object[] params = {isActive, username};
+    public boolean updateAccountStatus(String username, boolean accountIsActive) throws SQLException {
+        String sql = "UPDATE Account SET accountIsActive = ? WHERE username = ?";
+        Object[] params = {accountIsActive, username};
         return context.exeNonQuery(sql, params) > 0;
     }
 
@@ -53,7 +53,7 @@ public class AccountDAO {
             return false; // Chỉ cho phép các quyền hợp lệ
         }
 
-        String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive, dateAdded) "
+        String sql = "INSERT INTO Account (username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive, dateAdded) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, GETDATE())";
         Object[] params = {username, password, role, firstName, lastName, email, phoneNumber, birthDate};
         return context.exeNonQuery(sql, params) > 0;
@@ -82,7 +82,6 @@ public class AccountDAO {
         ResultSet rs = context.exeQuery(sql, params);
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
-
 
     public Account getIDByUsername(String username) throws SQLException {
         String sql = "SELECT accountID FROM Account WHERE username = ?";
@@ -127,14 +126,14 @@ public class AccountDAO {
             return false; // Không có gì để cập nhật
         }
         sql.setLength(sql.length() - 2); // Xóa dấu ", " cuối cùng
-        sql.append(" WHERE username = ? AND isActive = 1");
+        sql.append(" WHERE username = ? AND accountIsActive = 1");
         params.add(username);
 
         return context.exeNonQuery(sql.toString(), params.toArray()) > 0;
     }
 
     public boolean updatePassword(String username, String newPassword) throws SQLException {
-        String sql = "UPDATE Account SET password = ? WHERE username = ? AND isActive = 1"; // Check if account is active
+        String sql = "UPDATE Account SET password = ? WHERE username = ? AND accountIsActive = 1"; // Check if account is active
         Object[] params = {newPassword, username}; // Parameters to pass into the query
 
         // Execute the query
@@ -168,11 +167,21 @@ public class AccountDAO {
         return context.exeNonQuery(sql, params) > 0;
     }
 
+    public boolean updateCustomerAddress(int accountID, String newAddress) throws SQLException {
+        String sql = "UPDATE Customer "
+                + "SET defaultDeliveryAddress = ? "
+                + "FROM Customer c "
+                + "JOIN Account a ON c.customerID = a.accountID "
+                + "WHERE a.accountID = ?";  // Cập nhật dựa trên accountID từ bảng Account
+
+        Object[] params = {newAddress, accountID};  // Tham số cho câu lệnh SQL
+        return context.exeNonQuery(sql, params) > 0;  // Thực thi câu lệnh SQL
+    }
+
     public List<Account> getAccountsPaginated(String roleFilter, int page, int pageSize) throws SQLException {
         List<Account> accounts = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Account");
 
-      
         Object[] params;
         int offset = (page - 1) * pageSize;
 
@@ -194,7 +203,6 @@ public class AccountDAO {
         return accounts;
     }
 
- 
     public int getTotalAccounts(String roleFilter) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Account");
         Object[] params = null;
@@ -210,7 +218,7 @@ public class AccountDAO {
     }
 
     public int getTotalActiveAccounts() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Account WHERE isActive = 1";
+        String sql = "SELECT COUNT(*) FROM Account WHERE accountIsActive = 1";
         ResultSet rs = context.exeQuery(sql, null);
         return rs.next() ? rs.getInt(1) : 0;
     }
@@ -265,7 +273,7 @@ public class AccountDAO {
      * Chuyển đổi ResultSet thành đối tượng Account
      */
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
-        String role= rs.getString("role");
+        String role = rs.getString("role");
         switch (role) {
             case "admin":
                 return new Admin(
@@ -278,7 +286,7 @@ public class AccountDAO {
                         rs.getString("email"),
                         rs.getString("phoneNumber"),
                         rs.getString("birthDate"),
-                        rs.getBoolean("isActive")
+                        rs.getBoolean("accountIsActive")
                 );
             case "customer":
                 return new Customer(
@@ -291,7 +299,7 @@ public class AccountDAO {
                         rs.getString("email"),
                         rs.getString("phoneNumber"),
                         rs.getString("birthDate"),
-                        rs.getBoolean("isActive")
+                        rs.getBoolean("accountIsActive")
                 );
             case "staff":
                 return new Staff(
@@ -304,7 +312,7 @@ public class AccountDAO {
                         rs.getString("email"),
                         rs.getString("phoneNumber"),
                         rs.getString("birthDate"),
-                        rs.getBoolean("isActive")
+                        rs.getBoolean("accountIsActive")
                 );
             case "shipper":
                 return new Shipper(
@@ -317,7 +325,7 @@ public class AccountDAO {
                         rs.getString("email"),
                         rs.getString("phoneNumber"),
                         rs.getString("birthDate"),
-                        rs.getBoolean("isActive")
+                        rs.getBoolean("accountIsActive")
                 );
             default:
                 return new Account(
@@ -330,7 +338,7 @@ public class AccountDAO {
                         rs.getString("email"),
                         rs.getString("phoneNumber"),
                         rs.getString("birthDate"),
-                        rs.getBoolean("isActive")
+                        rs.getBoolean("accountIsActive")
                 );
         }
     }
@@ -345,7 +353,7 @@ public class AccountDAO {
 //                rs.getString("email"),
 //                rs.getString("phoneNumber"),
 //                rs.getString("birthDate"),
-//                rs.getBoolean("isActive")
+//                rs.getBoolean("accountIsActive")
 //        );
 //    }
 
@@ -397,7 +405,7 @@ public class AccountDAO {
     }
 
     public List<Account> getAllCustomers() throws SQLException {
-        String sql = "SELECT * FROM Account WHERE role = 'customer' AND isActive = 1";
+        String sql = "SELECT * FROM Account WHERE role = 'customer' AND accountIsActive = 1";
         ResultSet rs = context.exeQuery(sql, new Object[]{});
         List<Account> customers = new ArrayList<>();
 
@@ -413,7 +421,7 @@ public class AccountDAO {
                 account.setEmail(rs.getString("email"));
                 account.setPhoneNumber(rs.getString("phoneNumber"));
                 account.setBirthDate(rs.getString("birthDate"));
-                account.setIsActive(rs.getBoolean("isActive"));
+                account.setAccountIsActive(rs.getBoolean("accountIsActive"));
                 customers.add(account);
             }
         } finally {
