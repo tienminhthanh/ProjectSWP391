@@ -744,6 +744,7 @@ public class ProductDAO {
             }
         }
         return null;
+
     }
 
     public Map<Category, Integer> getAllCategories() throws SQLException {
@@ -1454,6 +1455,89 @@ public class ProductDAO {
             }
         }
         return 0;
+    }
+
+    public boolean addNewMerchSeries(Series newSeries) {
+        try {
+            String sql = "INSERT INTO [dbo].[Series]\n"
+                    + "           ([seriesName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newSeries.getSeriesName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean addNewMerchBrand(Brand newBrand) {
+        try {
+            String sql = "INSERT INTO [dbo].[Brand]\n"
+                    + "           ([brandName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newBrand.getBrandName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean addNewMerchCharacter(OGCharacter newCharacter) {
+        try {
+            String sql = "INSERT INTO [dbo].[Character]\n"
+                    + "           ([characterName])\n"
+                    + "     VALUES\n"
+                    + "           (?)";
+            Object[] params = {newCharacter.getCharacterName()};
+            return context.exeNonQuery(sql, params) > 0;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+    public boolean updateBooks(Book updatedBook) throws SQLException {
+        StringBuilder sql = new StringBuilder("update book set\n");
+        List<Object> paramList = new ArrayList<>();
+        if (updatedBook.getPublisher() != null) {
+            sql.append("publisherID = ?,\n");
+            paramList.add(updatedBook.getPublisher().getPublisherID());
+        }
+        sql.append("duration = ? where bookID = ?\n");
+        paramList.add(updatedBook.getDuration());
+        paramList.add(updatedBook.getProductID());
+        Object[] params = paramList.toArray();
+        return context.exeNonQuery(sql.toString(), params) > 0;
+    }
+
+    public boolean updateMerch(Merchandise updatedMerch) throws SQLException {
+        List<Object> paramList = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("UPDATE [dbo].[Merchandise] SET\n");
+
+        if (updatedMerch.getSeries() != null) {
+            sql.append("[seriesID] = ?,\n");
+            paramList.add(updatedMerch.getSeries().getSeriesID());
+        }
+
+        if (updatedMerch.getCharacter() != null) {
+            sql.append("[characterID] = ?,\n");
+            paramList.add(updatedMerch.getCharacter().getCharacterID());
+        }
+
+        if (updatedMerch.getBrand() != null) {
+            sql.append("[brandID] = ?,\n");
+            paramList.add(updatedMerch.getBrand().getBrandID());
+        }
+
+        sql.append("[size] = ?, [scaleLevel] = ?, [material] = ? WHERE [merchandiseID] = ?\n");
+        paramList.add(updatedMerch.getSize());
+        paramList.add(updatedMerch.getScaleLevel());
+        paramList.add(updatedMerch.getMaterial());
+        paramList.add(updatedMerch.getProductID());
+
+        Object[] params = paramList.toArray();
+
+        return context.exeNonQuery(sql.toString(), params) > 0;
     }
 
     public boolean updateProducts(Product updatedProduct) {

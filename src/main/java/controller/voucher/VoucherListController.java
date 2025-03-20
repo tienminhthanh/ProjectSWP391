@@ -47,15 +47,23 @@ public class VoucherListController extends HttpServlet {
                 page = 1;
             }
         }
+        // Lấy tham số tìm kiếm
+        String searchKeyword = request.getParameter("search");
+        String voucherType = request.getParameter("voucherType");
+        String isActiveParam = request.getParameter("isActive");
 
         try {
             VoucherDAO vDao = new VoucherDAO();
-            List<Voucher> listVoucher = vDao.getVoucherByPage(page, pageSize);
-            int totalVouchers = vDao.getTotalVoucher();
+            List<Voucher> listVoucher = vDao.getVoucherByPage(searchKeyword, voucherType, isActiveParam, page, pageSize);
+            int totalVouchers = vDao.getTotalVoucher(searchKeyword, voucherType, isActiveParam);
             int totalPages = (int) Math.ceil((double) totalVouchers / pageSize);
+
             request.setAttribute("LIST_VOUCHER", listVoucher);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPage", totalPages);
+            request.setAttribute("searchName", searchKeyword);
+            request.setAttribute("voucherType", voucherType);
+            request.setAttribute("isActiveParam", isActiveParam);
         } catch (Exception ex) {
             log("VoucherListServlet error:" + ex.getMessage());
         } finally {

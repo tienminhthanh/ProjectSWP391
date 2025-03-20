@@ -4,7 +4,7 @@
  */
 package controller.event;
 
-import dao.EventDAO;
+import dao.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.*;
 
 /**
  *
@@ -40,22 +41,39 @@ public class EventDeleteController extends HttpServlet {
 
         try {
             int id = Integer.parseInt(request.getParameter("id"));
+            String action = request.getParameter("action");
             EventDAO eDao = new EventDAO();
-            if (eDao.deleteEvent(id)) {
-                session.setAttribute("message", "Event deleted successfully!");
-                session.setAttribute("messageType", "success");
-            } else {
-                session.setAttribute("message", "Failed to delete Event.");
-                session.setAttribute("messageType", "error");
+            EventProductDAO epDao = new EventProductDAO();
+            if (action.equals("delete")) {
+                if (epDao.deleteListProductInEvent(id) && eDao.deleteEvent(id)) {
+                    session.setAttribute("message", "Event and Products deleted successfully!");
+                    session.setAttribute("messageType", "success");
+                } else if (!(epDao.deleteListProductInEvent(id)) && eDao.deleteEvent(id)) {
+                    session.setAttribute("message", "Event deleted successfully!");
+                    session.setAttribute("messageType", "error");
+                } else {
+                    session.setAttribute("message", "Failed to delete Event.");
+                    session.setAttribute("messageType", "error");
+                }
+            } else if (action.equals("unlock")) {
+                if (eDao.unlockEvent(id)) {
+                    session.setAttribute("message", "Event unlock successfully!");
+                    session.setAttribute("messageType", "success");
+                } else {
+                    session.setAttribute("message", "Failed to unlock Event.");
+                    session.setAttribute("messageType", "error");
+                }
             }
+
         } catch (Exception e) {
             session.setAttribute("message", "Error: " + e.getMessage());
             session.setAttribute("messageType", "error");
         }
+
         response.sendRedirect(url);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
