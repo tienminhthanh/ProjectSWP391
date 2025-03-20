@@ -239,6 +239,8 @@ public class ProductManagementController extends HttpServlet {
             //If not, add new
             //If exist -> re-associate if the association is new
             //NOT includes update existing entries of related entities
+            
+            
             switch (action) {
                 case "updateBook":
 //                    updateBook(request, response, paramMap, newBook);
