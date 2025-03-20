@@ -56,28 +56,33 @@
         <script src="js/scriptProductForms.js"></script>
         <script>
             //Initial display on load
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function (){
                 const formAction = `${requestScope.formAction}`;
-
                 if (formAction === 'add') {
                     toggleForm();
-                } else if (formAction === 'update') {
-                    const activeForm = `${requestScope.type}` === 'book' ? document.getElementById("bookForm")
-                            : `${requestScope.type}` === 'merch' ? document.getElementById("merchForm")
-                            : '';
-                    if (activeForm) {
-                        activeForm.classList.add('active');
+                } 
+                else if (formAction === 'update') {
+                    const creatorSection = document.querySelector(".creator-section");
+                    if (creatorSection && creatorSection.children.length > 0) {
+                       [...creatorSection.children].forEach(child=>{
+                            const options = [...child.querySelectorAll('select option')].filter(option => option.value !== 'artist');
+                            if (options) {
+                                options.forEach(option => {
+                                    option.classList.toggle("hidden", (`${requestScope.type}` === "book" && option.value === 'sculptor') || (`${requestScope.type}` === 'merch' && option.value === 'author'));
+                                    option.selected = option.classList.contains('hidden') ? false : true;
+                                });
+                            }
+                        });
                     }
                 }
-
-
             });
             
+            
             //            Pop-up message
-            document.addEventListener('DOMContentLoaded',function(){
+            document.addEventListener('DOMContentLoaded', function(){
                 const reqMessage = `${requestScope.message}`;
                 const errMessage = `${requestScope.errorMessage}`;
-                if(reqMessage){
+                if (reqMessage){
                     Swal.fire({
                         icon: 'success',
                         html: reqMessage,
@@ -88,7 +93,7 @@
                         }
                     });
                 }
-                if(errMessage){
+                if (errMessage){
                     Swal.fire({
                         icon: 'error',
                         html: errMessage,
