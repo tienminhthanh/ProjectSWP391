@@ -259,5 +259,3 @@ document.addEventListener("input", function (event) {
         }
     }
 });
-
-

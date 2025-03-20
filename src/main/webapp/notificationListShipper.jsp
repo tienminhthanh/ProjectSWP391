@@ -90,7 +90,6 @@
                         <i class="fas fa-bell mr-2"></i>
                         Notifications
                     </h2>
-
                     <form action="notificationshipper" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                         <input type="hidden" name="action" value="markAsAllRead">
                         <input type="hidden" name="receiverID" value="${param.receiverID}">
@@ -106,7 +105,6 @@
                         <c:otherwise>
                             <c:forEach var="notification" items="${notifications}">
                                 <div class="flex items-start p-4 rounded-md notification-item ${notification.isRead() ? 'read' : 'unread'}">
-                                    <!-- Wrap the entire item in an anchor tag pointing to the detail page -->
                                     <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
                                        class="flex items-start w-full">
                                         <img alt="Notification icon" class="mr-4" 
@@ -114,19 +112,16 @@
                                              width="100" height="100"/>
                                         <div class="flex-1">
                                             <h3 class="font-bold">
-                                                <!-- Remove the inner <a> tag since the whole div is now clickable -->
                                                 <span class="text-blue-600 hover:underline">${notification.notificationTitle}</span>
                                             </h3>
                                             <p class="text-gray-600">Click to see details.</p>
                                             <p class="text-gray-400 text-sm">
-                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
+                                                <fmt:formatDate value="${notification.notificationDateCreated}" pattern="dd/MM/yyyy"/>
                                             </p>
                                         </div>
                                     </a>
-                                    <!-- Keep the buttons outside the <a> tag to avoid them triggering the link -->
                                     <div class="flex space-x-2">
                                         <c:if test="${not notification.read}">
-                                            <!-- Form to mark notification as read -->
                                             <form action="notificationshipper" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                                 <input type="hidden" name="action" value="markAsRead">
                                                 <input type="hidden" name="notificationID" value="${notification.notificationID}">
@@ -134,7 +129,6 @@
                                                 <button type="submit" class="text-blue-500 hover:underline" onclick="event.stopPropagation();">Mark as read</button>
                                             </form>
                                         </c:if>
-                                        <!-- Form to delete notification -->
                                         <form action="notificationshipper" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="notificationID" value="${notification.notificationID}">
