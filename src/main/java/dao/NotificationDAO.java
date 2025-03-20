@@ -59,7 +59,7 @@ public class NotificationDAO {
             notification.getSenderID(),
             notification.getReceiverID(),
             notification.getNotificationDetails(),
-            notification.getNotificationDateCreated(),
+            notification.getDateCreated(),
             notification.isDeleted(),
             notification.getNotificationTitle(),
             notification.isRead()

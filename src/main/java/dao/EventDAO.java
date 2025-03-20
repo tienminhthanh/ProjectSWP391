@@ -4,6 +4,7 @@
  */
 package dao;
 
+import com.oracle.wls.shaded.org.apache.xpath.axes.LocPathIterator;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,12 +27,37 @@ public class EventDAO {
         context = new utils.DBContext();
     }
 
-    public List<Event> getEventByPage(int page, int pageSize) {
+//    public List<Event>
+    public List<Event> getEventByPage(int page, int pageSize, String filtered, String searchKeyword) {
         List<Event> list = new ArrayList<>();
-        String sql = "SELECT * FROM [dbo].[Event] ORDER BY eventID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-        try {
+        String sql = "SELECT * FROM [dbo].[Event] WHERE 1=1"; // Mặc định có điều kiện true
 
-            ResultSet rs = context.exeQuery(sql, new Object[]{(page - 1) * pageSize, pageSize});
+        List<Object> paramsList = new ArrayList<>();
+
+        // Lọc theo trạng thái (isActive)
+        if (filtered != null && !filtered.isEmpty()) {
+            sql += " AND eventIsActive = ?";
+            paramsList.add(Boolean.parseBoolean(filtered));
+        }
+
+        // Tìm kiếm theo tất cả các cột
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            sql += " AND (eventName LIKE ? OR description LIKE ? OR CAST(eventID AS VARCHAR) LIKE ?)";
+            String keywordPattern = "%" + searchKeyword.trim() + "%";
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+        }
+
+        // Thêm phân trang
+        sql += " ORDER BY eventID OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        paramsList.add((page - 1) * pageSize);
+        paramsList.add(pageSize);
+
+        try {
+            Object[] params = paramsList.toArray();
+            ResultSet rs = context.exeQuery(sql, params);
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             while (rs.next()) {
@@ -43,10 +69,13 @@ public class EventDAO {
                 String description = rs.getString(6);
                 int adminID = rs.getInt(7);
                 boolean isActive = rs.getBoolean(8);
-                String dateStarted = rs.getString(9);
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
-                LocalDate expiryDate = createDate.plusDays(duration);
-                Event event = new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
+                String dateStarted_raw = rs.getString(9);
+
+                LocalDate today = LocalDate.now();
+                LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
+                LocalDate expiryDate = dateStarted.plusDays(duration);
+
+                Event event = new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
                 list.add(event);
             }
         } catch (Exception e) {
@@ -55,15 +84,33 @@ public class EventDAO {
         return list;
     }
 
-    public int getTotalEvent() {
-        String sql = "SELECT COUNT(*) FROM Event";
+    public int getTotalEvent(String searchKeyword, String filtered) {
+        String sql = "SELECT COUNT(*) FROM [dbo].[Event] WHERE 1=1";
+        List<Object> paramsList = new ArrayList<>();
+
+        // Lọc theo trạng thái (isActive)
+        if (filtered != null && !filtered.isEmpty()) {
+            sql += " AND eventIsActive = ?";
+            paramsList.add(Boolean.parseBoolean(filtered));
+        }
+
+        // Tìm kiếm theo từ khóa
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            sql += " AND (eventName LIKE ? OR description LIKE ? OR CAST(eventID AS VARCHAR) LIKE ?)";
+            String keywordPattern = "%" + searchKeyword.trim() + "%";
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+        }
+
         try {
-            ResultSet rs = context.exeQuery(sql, null);
+            Object[] params = paramsList.toArray();
+            ResultSet rs = context.exeQuery(sql, params);
             if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         return 0;
     }
@@ -96,11 +143,10 @@ public class EventDAO {
         }
         return listEvent;
     }
-    
-    
+
     public List<Event> getListActiveEvents() {
         List<Event> listEvent = new ArrayList<>();
-        String sql = "SELECT * FROM [dbo].[Event] where isActive = 1";
+        String sql = "SELECT * FROM [dbo].[Event] where eventIsActive = 1";
         try {
 
             ResultSet rs = context.exeQuery(sql, null);
@@ -145,11 +191,12 @@ public class EventDAO {
                 String description = rs.getString(6);
                 int adminID = rs.getInt(7);
                 boolean isActive = rs.getBoolean(8);
-                String dateStarted = rs.getString(9);
+                String dateStarted_raw = rs.getString(9);
 
-                LocalDate createDate = LocalDate.parse(dateCreated, formatter);
-                LocalDate expiryDate = createDate.plusDays(duration);
-                return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
+                LocalDate today = LocalDate.now();
+                LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
+                LocalDate expiryDate = dateStarted.plusDays(duration);
+                return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
             }
         } catch (Exception e) {
         }
@@ -159,8 +206,8 @@ public class EventDAO {
     public List<String> getBannerEvent() {
         String sql = "SELECT [banner]\n"
                 + "  FROM [dbo].[Event]"
-                + "  WHERE [isActive] = 1"
-                + "  ORDER BY [dateStarted]";
+                + "  WHERE [eventIsActive] = 1"
+                + "  ORDER BY [eventDateStarted]";
         List<String> listBanner = new ArrayList<>();
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -206,13 +253,33 @@ public class EventDAO {
     public boolean deleteEvent(int id) {
         try {
             Event event = getEventByID(id);
+            LocalDate today = LocalDate.now();
 
-            if (!event.isExpiry() && !event.isIsActive()) {
+            String sql = "UPDATE [dbo].[Event]\n"
+                    + "   SET [eventIsActive] = ?\n"
+                    + " WHERE [eventID] = ?";
+            Object[] params = {!event.isIsActive(), id};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(EventDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public boolean unlockEvent(int id) {
+        try {
+            Event event = getEventByID(id);
+            LocalDate today = LocalDate.now();
+
+            if ((!event.isExpiry() && !event.isIsActive())) {
+                return false;
+            } else if (today.isBefore(LocalDate.parse(event.getDateStarted()))) {
                 return false;
             }
 
             String sql = "UPDATE [dbo].[Event]\n"
-                    + "   SET [isActive] = ?\n"
+                    + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
             Object[] params = {!event.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
@@ -227,13 +294,13 @@ public class EventDAO {
         try {
             String sql = "INSERT INTO [dbo].[Event]\n"
                     + "           ([eventName]\n"
-                    + "           ,[dateCreated]\n"
-                    + "           ,[duration]\n"
+                    + "           ,[eventDateCreated]\n"
+                    + "           ,[eventDuration]\n"
                     + "           ,[banner]\n"
                     + "           ,[description]\n"
                     + "           ,[adminID]\n"
-                    + "           ,[isActive]\n"
-                    + "           ,[dateStarted])\n"
+                    + "           ,[eventIsActive]\n"
+                    + "           ,[eventDateStarted])\n"
                     + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 //            String banner = event.getBanner();
 //            if (!banner.startsWith("img/")) {
@@ -260,11 +327,11 @@ public class EventDAO {
     public boolean updateEvent(Event event) {
         String sql = "UPDATE [dbo].[Event]\n"
                 + "   SET [eventName] = ?\n"
-                + "      ,[duration] = ?\n"
+                + "      ,[eventDuration] = ?\n"
                 + "      ,[banner] = ?\n"
                 + "      ,[description] = ?\n"
-                + "      ,[dateStarted] = ?\n"
-                + "      ,[isActive] = ?\n"
+                + "      ,[eventDateStarted] = ?\n"
+                + "      ,[eventIsActive] = ?\n"
                 + " WHERE [eventID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -275,15 +342,19 @@ public class EventDAO {
             if (!banner.startsWith("img/")) {
                 banner = "img/banner_event/" + banner;
             }
+
+            boolean isActive = false;
+            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getDateStarted()).isEqual(today)) {
+                isActive = true;
+            }
+
             Object params[] = {event.getEventName(),
                 event.getDuration(),
                 banner,
                 event.getDescription(),
                 event.getDateStarted(),
-                !LocalDate.now().isAfter(expiryDate),
+                isActive,
                 event.getEventID()};
-
-            event.setExpiry(true);
 
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
@@ -296,5 +367,7 @@ public class EventDAO {
     }
 
     public static void main(String[] args) {
+        EventDAO eDao = new EventDAO();
+        System.out.println(eDao.deleteEvent(6));
     }
 }

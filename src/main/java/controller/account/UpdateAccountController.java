@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import model.Customer;
 
 @WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/updateAccount"})
 public class UpdateAccountController extends HttpServlet {
@@ -56,6 +57,7 @@ public class UpdateAccountController extends HttpServlet {
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
+        String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
 
         // Chỉ admin mới có quyền cập nhật vai trò
         String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("role") : null;
@@ -63,7 +65,15 @@ public class UpdateAccountController extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
 
         try {
+            // Cập nhật thông tin tài khoản chung
             boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate, role);
+
+            // Nếu người dùng là khách hàng, cập nhật địa chỉ giao hàng
+            if (loggedInAccount instanceof Customer && defaultDeliveryAddress != null) {
+                Customer customer = (Customer) loggedInAccount;
+                customer.setDefaultDeliveryAddress(defaultDeliveryAddress);
+                accountDAO.updateCustomerAddress(customer.getAccountID(), defaultDeliveryAddress);
+            }
 
             if (success) {
                 Account updatedAccount = accountDAO.getAccountByUsername(username);

@@ -97,7 +97,7 @@
                                 <td class="px-6 py-3 border-b text-center">${acc.birthDate}</td>
                                 <td class="px-6 py-3 border-b text-center">
                                     <c:choose>
-                                        <c:when test="${acc.isActive}">
+                                        <c:when test="${acc.accountIsActive}">
                                             <span class="bg-green-500 text-white py-1 px-3 rounded">Active</span>
                                         </c:when>
                                         <c:otherwise>
@@ -112,7 +112,7 @@
                                         </a>
                                         <br>
                                         <c:choose>
-                                            <c:when test="${acc.isActive}">
+                                            <c:when test="${acc.accountIsActive}">
                                                 <a class="text-red-500 hover:text-red-700 mr-3 action-btn" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this account?', 'deleteAccount?username=${acc.username}')">
                                                     <i class="fas fa-trash-alt"></i> Block
                                                 </a>

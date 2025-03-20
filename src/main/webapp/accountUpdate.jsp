@@ -1,5 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -54,6 +54,14 @@
                             <input class="w-full p-3 border border-gray-300 rounded" id="birthDate" name="birthDate"
                                    placeholder="Birth Date" required type="date" value="${account.birthDate}"/>
                         </div>
+                        <c:if test="${sessionScope.account.role == 'customer'}">
+                            <div class="mb-4">
+                                <label class="sr-only" for="defaultDeliveryAddress">Default Delivery Address</label>
+                                <input class="w-full p-3 border border-gray-300 rounded" id="defaultDeliveryAddress" name="defaultDeliveryAddress"
+                                       placeholder="Default Delivery Address" type="text" value="${account.defaultDeliveryAddress}"/>
+                            </div>
+                        </c:if>
+
 
                         <!-- Chỉ admin mới thấy phần chọn role -->
                         <c:if test="${sessionScope.account.role eq 'admin'}">

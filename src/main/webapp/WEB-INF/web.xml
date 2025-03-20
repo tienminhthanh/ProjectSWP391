@@ -4,6 +4,10 @@
         <description>ServletContextListener</description>
         <listener-class>listener.DataCacheListener</listener-class>
     </listener>
+    <listener>
+        <description>ServletContextListener</description>
+        <listener-class>listener.AppStartupListener</listener-class>
+    </listener>
     <session-config>
         <session-timeout>
             30

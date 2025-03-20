@@ -71,7 +71,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
             Account account = accountDAO.getAccountByUsername(username);
 
             if (account != null) { // If account exists
-                if (account.getIsActive()) { // Check if the account is active
+                if (account.getAccountIsActive()) { // Check if the account is active
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
                     if (failedAttempts == null) {
                         failedAttempts = 0;
