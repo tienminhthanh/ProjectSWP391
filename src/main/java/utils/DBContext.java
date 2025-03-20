@@ -21,7 +21,7 @@ public class DBContext {
             + "trustServerCertificate=true;"
             + "characterEncoding=UTF-8";
     private static final String USERNAME = "sa";
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "sa123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
     public DBContext() {

@@ -10,15 +10,12 @@ import model.Notification;
 import utils.DBContext;
 
 public class NotificationDAO {
-
     private DBContext context;
 
     public NotificationDAO() {
         context = new DBContext();
     }
 
-    // Existing methods remain unchanged...
-    // New method to get notification by ID
     public Notification getNotificationById(int notificationID) throws SQLException {
         String sql = "SELECT * FROM Notification WHERE notificationID = ?";
         Object[] params = {notificationID};
@@ -44,7 +41,6 @@ public class NotificationDAO {
         return notification;
     }
 
-    // New method to update notification
     public boolean updateNotification(String notificationNewTitle, String notificationNewDetails, String notificationTitle, String notificationDetails) throws SQLException {
         String sql = "UPDATE Notification SET notificationTitle = ?, notificationDetails = ? WHERE notificationTitle = ? AND notificationDetails = ?";
         Object[] params = {
@@ -57,14 +53,13 @@ public class NotificationDAO {
         return rowsAffected > 0;
     }
 
-    // Existing methods...
     public boolean insertNotification(Notification notification) throws SQLException {
         String sql = "INSERT INTO Notification (senderID, receiverID, notificationDetails, notificationDateCreated, isDeleted, notificationTitle, isRead) VALUES (?, ?, ?, ?, ?, ?, ?)";
         Object[] params = {
             notification.getSenderID(),
             notification.getReceiverID(),
             notification.getNotificationDetails(),
-            notification.getDateCreated(),
+            notification.getNotificationDateCreated(),
             notification.isDeleted(),
             notification.getNotificationTitle(),
             notification.isRead()
