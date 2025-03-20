@@ -23,8 +23,8 @@
         <div class="form-group">
             <label>Details:</label>
             <div class="pair-group">
-                <label for="priceBook">Price(VND):</label>
-                <input type="number" id="priceBook" name="price" step="500" min="1000" max="10000000" required value="${product.price}">
+                <label for="priceBook">Price:</label>
+                <input type="number" id="priceBook" name="price" step="0.5" min="1" max="10000" required value="${product.price/1000}">
                 <label for="stockCountBook">Stock Count:</label>
                 <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" required value="${product.stockCount}">
             </div>
@@ -86,25 +86,37 @@
         <!--Creators-->
         <div class="creator-wrapper">
             <div class="creator-section">
-                <c:forEach var="cre" items="${creatorMap}" varStatus="loopStatus">
-                    <div class="creator-group" id="creGrBook${loopStatus.index}">
-                        <label for="creatorNameBook${loopStatus.index}">Creator Name:</label>
-                        <input type="text" id="creatorNameBook${loopStatus.index}" name="creatorName[]" maxlength="100" value="${cre.value.creatorName}">
-                        <label for="creatorRoleBook${loopStatus.index}">Creator Role:</label>
-                        <select class="cre-role-select" id="creatorRoleBook${loopStatus.index}" name="creatorRole[]">
-                            <c:choose>
-                                <c:when test="${requestScope.type eq 'book'}">
-                                    <option value="author" ${cre.key eq 'author' ? 'selected' : ''}>Author</option>
-                                </c:when>
-                                <c:when test="${requestScope.type eq 'merch'}">
-                                    <option value="sculptor" ${cre.key eq 'sculptor' ? 'selected' : ''}>Sculptor</option>
-                                </c:when>
-                            </c:choose>
-                            <option value="artist" ${cre.key eq 'artist' ? 'selected' : ''}>Artist</option>
-                        </select>
-                        <button type="button" class="remove-btn" onclick="removeCreator(this)">Remove</button>
-                    </div>
-                </c:forEach>
+                <c:choose>
+                    <c:when test="${empty creatorList}">
+                        <div class="creator-group" id="cre-gr-0">
+                            <label for="creatorNameBook0">Creator Name:</label>
+                            <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100" required>
+                            <label for="creatorRoleBook0">Creator Role:</label>
+                            <select id="creatorRoleBook0" name="creatorRole">
+                                <option class="hidden" value="author">Author</option>
+                                <option class="hidden" value="sculptor">Sculptor</option>
+                                <option value="artist">Artist</option>
+                            </select>
+                            <button type="button" class="remove-btn" onclick="removeCreator(this)">Remove</button>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                            <div class="creator-group" id="cre-gr-${loopStatus.index}">
+                                <label for="creatorNameBook${loopStatus.index}">Creator Name:</label>
+                                <input type="text" id="creatorNameBook${loopStatus.index}" name="creatorName" maxlength="100" required value="${cre.creatorName}">
+                                <label for="creatorRoleBook${loopStatus.index}">Creator Role:</label>
+                                <select class="cre-role-select" id="creatorRoleBook${loopStatus.index}" name="creatorRole" required>
+                                    <option value="author" ${cre.creatorRole eq 'author' ? 'selected' : ''}>Author</option>
+                                    <option value="sculptor" ${cre.creatorRole eq 'sculptor' ? 'selected' : ''}>Sculptor</option>
+                                    <option value="artist" ${cre.creatorRole eq 'artist' ? 'selected' : ''}>Artist</option>
+                                </select>
+                                <button type="button" class="remove-btn" onclick="removeCreator(this)">Remove</button>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+
             </div>
             <button type="button" class="add-btn" onclick="addCreator('mergedForm')">Add Creator</button>
         </div>
@@ -122,16 +134,19 @@
 
                     <div class="pair-group checkbox-group" id="genreContainer">
                         <c:forEach var="genEntry" items="${applicationScope.genres}" varStatus="loopStatus">
+                            <c:set var="isChecked" value="${not empty genreList and genreList.contains(genEntry.key)}" />
                             <c:choose>
-                                <c:when test="${loopStatus.index < 3}">
+                                <c:when test="${isChecked}">
                                     <div>
-                                        <input type="checkbox" id="genre${loopStatus.index}" name="genre[]" value="${genEntry.key.genreID}"/>
+                                        <input type="checkbox" id="genre${loopStatus.index}" name="genre" 
+                                               value="${genEntry.key.genreID}" ${isChecked ? 'checked' : ''} />
                                         <label for="genre${loopStatus.index}">${genEntry.key.genreName}</label>
                                     </div>
                                 </c:when>
                                 <c:otherwise>
                                     <div class="hidden-genre">
-                                        <input type="checkbox" id="genre${loopStatus.index}" name="genre[]" value="${genEntry.key.genreID}"/>
+                                        <input type="checkbox" id="genre${loopStatus.index}" name="genre" 
+                                               value="${genEntry.key.genreID}" ${isChecked ? 'checked' : ''} />
                                         <label for="genre${loopStatus.index}">${genEntry.key.genreName}</label>
                                     </div>
                                 </c:otherwise>
@@ -143,13 +158,13 @@
                 <!--Publisher-->
                 <div class="form-group">
                     <label for="publisherNameBook">Publisher:</label>
-                    <input type="text" id="publisherNameBook" name="publisherName" maxlength="50">
+                    <input type="text" id="publisherNameBook" name="publisherName" maxlength="50" value="${product.publisher.publisherName}">
                 </div>
 
                 <!--Duration-->
                 <div class="form-group">
                     <label for="durationBook">Duration:</label>
-                    <input type="text" id="durationBook" name="duration" maxlength="40">
+                    <input type="text" id="durationBook" name="duration" maxlength="40" value="${product.duration}">
                 </div>
 
             </c:when>
@@ -159,34 +174,34 @@
                     <label>Specs:</label>
                     <div class="pair-group">
                         <label for="scaleLevelMerch">Scale Level:</label>
-                        <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10">
+                        <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10" value="${product.scaleLevel}">
                         <label for="materialMerch">Material:</label>
-                        <input type="text" id="materialMerch" name="material" maxlength="60">
+                        <input type="text" id="materialMerch" name="material" maxlength="60" value="${product.material}">
                     </div>
                 </div>
 
                 <!--Size-->
                 <div class="form-group">
                     <label for="sizeMerch">Size:</label>
-                    <input type="text" id="sizeMerch" name="size" maxlength="60">
+                    <input type="text" id="sizeMerch" name="size" maxlength="60" value="${product.size}">
                 </div>
 
                 <!--Series-->
                 <div class="form-group">
                     <label for="seriesNameMerch">Series:</label>
-                    <input type="text" id="seriesNameMerch" name="seriesName">
+                    <input type="text" id="seriesNameMerch" name="seriesName"  value="${product.series.seriesName}">
                 </div>
 
                 <!--Character-->
                 <div class="form-group">
                     <label for="characterNameMerch">Character:</label>
-                    <input type="text" id="characterNameMerch" name="characterName">
+                    <input type="text" id="characterNameMerch" name="characterName" value="${product.character.characterName}">
                 </div>
 
                 <!--Brand-->
                 <div class="form-group">
                     <label for="brandNameMerch">Brand:</label>
-                    <input type="text" id="brandNameMerch" name="brandName">
+                    <input type="text" id="brandNameMerch" name="brandName" value="${product.brand.brandName}">
                 </div>
             </c:when>
         </c:choose>
@@ -198,141 +213,3 @@
         </button>
     </form>
 </div>
-<!--End Form 1-->
-
-<!--//-->
-<!--//-->
-<!--//-->
-
-<!-- Form 2: Merch 
-<div id="merchForm" class="form-container">
-    <form action="updateProduct" method="post">
-        
-         ID
-        <div class="form-group">
-            <label for="productIDBook">Product ID:</label>
-            <input type="text" id="productIDBook" name="productID" maxlength="255" readonly required>
-        </div>
-
-        Name
-        <div class="form-group">
-            <label for="productNameMerch">Product Name:</label>
-            <input type="text" id="productNameMerch" name="productName" maxlength="255" pattern=".*\S.*" required>
-        </div>
-
-        Price - stock
-        <div class="form-group">
-            <label>Details:</label>
-            <div class="pair-group">
-                <label for="priceMerch">Price(VND):</label>
-                <input type="number" id="priceMerch" name="price" step="500" min="1000" max="10000000" required>
-                <label for="stockCountMerch">Stock Count:</label>
-                <input type="number" id="stockCountMerch" name="stockCount" min="0" max="1000" required>
-            </div>
-        </div>
-
-        Category -  Special Filter
-        <div class="form-group">
-            <label>Filters:</label>
-            <div class="pair-group">
-                <label for="categoryMerch">Category:</label>
-                <select id="categoryMerch" name="category" required>
-                </select>
-                <label for="specialFilterMerch">Special Filter:</label>
-                <select id="specialFilterMerch" name="specialFilter" required>
-                    <option value="unset">Unset</option>
-                    <option value="pre-order">Pre-order</option>
-                    <option value="new">New</option>
-                </select>
-            </div>
-        </div>
-
-        Description
-        <div class="form-group">
-            <label for="descriptionMerch">Description:</label>
-            <textarea id="descriptionMerch" name="description"></textarea>
-        </div>
-
-        Release date - status
-        <div class="form-group">
-            <label>Availability:</label>
-            <div class="pair-group">
-                <label for="releaseDateMerch">Release Date:</label>
-                <input type="date" id="releaseDateMerch" name="releaseDate" required>
-                <label for="isActiveMerch">Status:</label>
-                <select id="isActiveMerch" name="isActive" required>
-                    <option value="true" selected>Active</option>
-                    <option value="false">Inactive</option>
-                </select>
-            </div>
-        </div>
-
-        Keywords
-        <div class="form-group">
-            <label for="keywordsMerch">Keywords:</label>
-            <textarea id="keywordsMerch" name="keywords"></textarea>
-        </div>
-
-        Image URL
-        <div class="form-group">
-            <label for="imageURLMerch">Image URL:</label>
-            <textarea id="imageURLMerch" name="imageURL" maxlength="512"></textarea>
-        </div>
-
-        Creators
-        <div class="creator-wrapper">
-
-            <div class="creator-section">
-                <div class="creator-group">
-                    <label for="creatorNameMerch1">Creator Name:</label>
-                    <input type="text" id="creatorNameMerch1" name="creatorName[]" maxlength="100">
-                    <label for="creatorRoleMerch1">Creator Role:</label>
-                    <select class="cre-role-select" id="creatorRoleMerch1" name="creatorRole[]">
-                        <option value="sculptor">Sculptor</option>
-                        <option value="artist">Artist</option>
-                    </select>
-                    <button type="button" class="remove-btn" onclick="removeCreator(this)">Remove</button>
-                </div>
-            </div>
-            <button type="button" class="add-btn" onclick="addCreator('merchForm')">Add Creator</button>
-        </div>
-
-        Scale - Mat
-        <div class="form-group">
-            <label>Specs:</label>
-            <div class="pair-group">
-                <label for="scaleLevelMerch">Scale Level:</label>
-                <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10">
-                <label for="materialMerch">Material:</label>
-                <input type="text" id="materialMerch" name="material" maxlength="60">
-            </div>
-        </div>
-
-        Size
-        <div class="form-group">
-            <label for="sizeMerch">Size:</label>
-            <input type="text" id="sizeMerch" name="size" maxlength="60">
-        </div>
-
-        Series
-        <div class="form-group">
-            <label for="seriesNameMerch">Series:</label>
-            <input type="text" id="seriesNameMerch" name="seriesName">
-        </div>
-
-        Character
-        <div class="form-group">
-            <label for="characterNameMerch">Character:</label>
-            <input type="text" id="characterNameMerch" name="characterName">
-        </div>
-
-        Brand
-        <div class="form-group">
-            <label for="brandNameMerch">Brand:</label>
-            <input type="text" id="brandNameMerch" name="brandName">
-        </div>
-
-        Submit
-        <button class="add-product-btn" name="action" type="submit" value="updateMerch">Save</button>
-    </form>
-</div>-->

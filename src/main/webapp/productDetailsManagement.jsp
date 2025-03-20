@@ -76,8 +76,8 @@
                                     <p class="category w-full">${product.specificCategory.categoryName}</p>
                                 </div>
                                 <div class="creator-top text-xs">
-                                    <c:forEach var="creator" items ="${creatorMap}" varStatus="loopStatus">
-                                        <c:out value="${creator.value.creatorName}"/>
+                                    <c:forEach var="creator" items ="${creatorList}" varStatus="loopStatus">
+                                        <c:out value="${creator.creatorName}"/>
                                         <c:if test="${!loopStatus.last}"> - </c:if>
                                     </c:forEach>
                                 </div>
@@ -135,9 +135,9 @@
                                 <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() eq 'admin'}">
                                     <c:set var="p_e_status" value="${productEventStatus}"/>
                                     <form  class="flex flex-row items-stretch px-2" action="event" method="post" onsubmit="return checkAvailability(`${p_e_status}`, event)">
-                                        <input type="hidden" name="productID" value="${product.productID}"/>
+                                        <input type="hidden" name="selectedProducts" value="${product.productID}"/>
                                         <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                        <select class="w-3/5 p-4 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="event">
+                                        <select class="w-3/5 p-4 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="eventId">
                                             <c:forEach var="event" items="${eventList}">
                                                 <option value="${event.eventID}">${event.eventName}</option>
                                             </c:forEach>
@@ -171,12 +171,29 @@
                                 <c:when test="${type=='book'}">
                                     <table class="m-2">
                                         <tr><td>Title</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
+                                        <tr class="cre-details-gr"><td>Author</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'author' ? cre.creatorName : ''}
+                                                </c:forEach>
 
-                                        <tr><td>Author</td><td>${not empty creatorMap.author ? creatorMap.author.creatorName : 'Unknown'}</td></tr>
+                                            </td>
+                                        </tr>
 
-                                        <tr><td>Artist</td><td>${not empty creatorMap.artist ? creatorMap.artist.creatorName : 'Unknown'}</td></tr>
+                                        <tr class="cre-details-gr"><td>Artist</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
+                                                </c:forEach>
 
-                                        <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
+                                            </td>
+                                        </tr>
+
+                                        <tr><td>Publisher</td>
+                                            <td>${not empty product.publisher && not empty product.publisher.publisherName ? product.publisher.publisherName : 'Unknown'}</td>
+                                        </tr>
 
                                         <tr>
                                             <td>Genre</td>
@@ -213,8 +230,26 @@
                                 <c:when test= "${type=='merch'}">
                                     <table class="m-2">
                                         <tr><td>Product Name</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
-                                        <tr><td>Sculptor</td><td>${not empty creatorMap.sculptor and not empty creatorMap.sculptor.creatorName ? creatorMap.sculptor.creatorName : 'Unknown'}</td></tr>
-                                        <tr><td>Artist</td><td>${not empty creatorMap.artist and not empty creatorMap.artist.creatorName ? creatorMap.artist.creatorName : 'Unknown'}</td></tr>
+                                        <tr class="cre-details-gr"><td>Sculptor</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'sculptor' ? cre.creatorName : ''}
+                                                </c:forEach>
+
+                                            </td>
+                                        </tr>
+
+
+                                        <tr class="cre-details-gr"><td>Artist</td>
+                                            <td>
+                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                    ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
+                                                </c:forEach>
+
+                                            </td>
+                                        </tr>
 
                                         <tr><td>Brand</td><td>${not empty product.brand and not empty product.brand.brandName ? product.brand.brandName : 'Unknown'}</td></tr>
                                         <tr><td>Series</td><td>${not empty product.series and not empty product.series.seriesName ? product.series.seriesName : 'Unknown'}</td></tr>
@@ -434,9 +469,22 @@
                                                 return false;
                                             }
                                             return true;
-                                        }
+                                        };
+                                        
 
-
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const creators = document.querySelectorAll('.cre-details-gr');
+                                            if (creators) {
+                                                creators.forEach(cre => {
+                                                    let content = cre.querySelector('td:nth-child(2)');
+                                                    if (content) {
+                                                        let text = content.innerText.trim();
+                                                        text = text !== '' ? text : 'Unknown';
+                                                        content.innerText = text;
+                                                    }
+                                                });
+                                            }
+                                        });
 
 
         </script>

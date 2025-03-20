@@ -47,7 +47,7 @@ public class EventDetailsController extends HttpServlet {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
         EventProductDAO epDao = new EventProductDAO();
-        
+
         //For redirect back to original page
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
@@ -71,9 +71,9 @@ public class EventDetailsController extends HttpServlet {
                 }
                 request.setAttribute("listEventProduct", updatedProductList);
 
-                String dateStarted = eventDetails.getDateStarted();
+                String dateStarted = eventDetails.getEventDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-                LocalDate dateEnd = createDate.plusDays(eventDetails.getDuration());
+                LocalDate dateEnd = createDate.plusDays(eventDetails.getEventDuration());
                 request.setAttribute("dateEnd", dateEnd);
 
             } else if (action.equals("home")) {
@@ -99,9 +99,9 @@ public class EventDetailsController extends HttpServlet {
                 }
                 request.setAttribute("currentURL", currentURL);
                 request.setAttribute("productList", updatedProductList);
-                String dateStarted = event.getDateStarted();
+                String dateStarted = event.getEventDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-                LocalDate dateEnd = createDate.plusDays(event.getDuration());
+                LocalDate dateEnd = createDate.plusDays(event.getEventDuration());
                 request.setAttribute("dateEnd", dateEnd);
                 url = EVENT_DETAILS_CUS_PAGE;
             }

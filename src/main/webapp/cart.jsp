@@ -101,7 +101,6 @@
                     <div class="border border-gray-300 rounded-b-lg">
                         <c:forEach var="item" items="${sessionScope.cartItems}">
                             <div class="flex items-center p-4 border-b border-gray-300">
-                                <!-- Hiển thị hình ảnh sản phẩm -->
                                 <div class="w-13 h-19 bg-gray-200 flex items-center justify-center mr-4">
                                     <a href="productDetails?id=${item.productID}&type=${item.product.generalCategory}" class="product-image">
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="50">
@@ -113,15 +112,15 @@
                                     </a>
                                     <p>Stock: ${item.product.stockCount}</p>
                                 </div>
-                                <p><fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ</p>
+                                <p><fmt:formatNumber value="${item.cartItemPrice}" type="number" groupingUsed="true"/> đ</p>
                                 <!-- Form cập nhật CartItem -->
                                 <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="action" value="update" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" class="quantity-input" required/>
-                                    <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
+                                    <input type="number" name="quantity" value="${item.cartItemQuantity}" min="1" max="${item.product.stockCount}" class="quantity-input" required/>
+                                    <input type="hidden" name="priceWithQuantity" value="${item.cartItemPrice}" />
                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-sync-alt"></i>
@@ -149,14 +148,14 @@
                             <c:out value="${fn:length(sessionScope.cartItems)}"/> Item(s) - 
                             <c:set var="total" value="0" />
                             <c:forEach var="item" items="${sessionScope.cartItems}">
-                                <c:set var="total" value="${total + item.priceWithQuantity * item.quantity}" />
+                                <c:set var="total" value="${total + item.cartItemPrice * item.cartItemQuantity}" />
                             </c:forEach>
                             <fmt:formatNumber value="${total}" type="number" groupingUsed="true"/> đ
                         </span>
                     </div>
                     <form action="OrderController" method="get">
                         <input type="hidden" name="totalAmount" value="${total}" />
-                        <button type="submit" name="action" value="checkOut"  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
+                        <button type="submit" name="action" value="checkOut" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">
                             <i class="fas fa-credit-card"></i> Checkout
                         </button>
                     </form>

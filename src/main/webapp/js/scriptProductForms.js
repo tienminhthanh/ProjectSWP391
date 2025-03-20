@@ -83,6 +83,33 @@ function toggleForm() {
     
 }
 
+//Display price on input
+document.addEventListener('DOMContentLoaded',function(){
+    // Get the price input element and the label element
+    const priceInput = document.querySelector('input[name="price"]');
+    const priceLabel = document.querySelector('label[for="priceBook"]');
+
+    // Function to format number with commas and multiply by 1000
+    function formatPrice(value) {
+        // Convert to number, multiply by 1000
+        const multipliedValue = parseFloat(value) * 1000;
+        if (isNaN(multipliedValue)) return '0 đ'; // Handle invalid input
+        // Format with commas and add ' đ'
+        return multipliedValue.toLocaleString('en-US') + ' đ';
+    }
+
+    // Update the label text on input
+    priceInput.oninput = function() {
+        // Get the current input value
+        const value = this.value;
+        // Update the label, preserving "Price(" and ")" around priceInput
+        priceLabel.textContent = `Price (${formatPrice(value)}):`;
+    };
+
+    // Trigger initial update if there's a default value
+    priceInput.dispatchEvent(new Event('input'));
+});
+
 
 
 // Append a new creator to the form
@@ -101,7 +128,7 @@ function addCreator(formId) {
     
     const roles = [...creatorSection.children[0].querySelectorAll('select option')];
 
-    if (roles.length === 0) {  // Correct way to check if options exist
+    if (roles.length === 0) {  // Check if options exist
         console.log('addCreator: role options not found');
         return;
     }
@@ -134,7 +161,7 @@ function createCreatorElement(index, roles = [], type = "", creatorName = "", cr
     const nameInput = document.createElement("input");
     nameInput.type = "text";
     nameInput.id = `creatorName${type}${index}`;
-    nameInput.name = "creatorName[]";
+    nameInput.name = "creatorName";
     nameInput.maxLength = 100;
     nameInput.value = creatorName;
 
@@ -146,7 +173,7 @@ function createCreatorElement(index, roles = [], type = "", creatorName = "", cr
     // Role Select
     const roleSelect = document.createElement("select");
     roleSelect.id = `creatorRole${type}${index}`;
-    roleSelect.name = "creatorRole[]";
+    roleSelect.name = "creatorRole";
 
     // Options
     roles.forEach(role => {
@@ -259,5 +286,3 @@ document.addEventListener("input", function (event) {
         }
     }
 });
-
-

@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  *
  * @author anhkc
@@ -29,5 +31,19 @@ public class Genre {
     public Genre setGenreName(String genreName) {
         this.genreName = genreName;
         return this;
+    }
+    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Genre)) return false;
+        Genre other = (Genre) obj;
+        return this.genreID == other.genreID; // Compare by genreID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(genreID);
     }
 }

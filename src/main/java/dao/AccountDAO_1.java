@@ -25,15 +25,9 @@ public class AccountDAO {
     /**
      * Cập nhật trạng thái tài khoản (kích hoạt hoặc vô hiệu hóa)
      */
-<<<<<<< HEAD
     public boolean updateAccountStatus(String username, boolean accountIsActive) throws SQLException {
         String sql = "UPDATE Account SET accountIsActive = ? WHERE username = ?";
         Object[] params = {accountIsActive, username};
-=======
-    public boolean updateAccountStatus(String username, boolean isActive) throws SQLException {
-        String sql = "UPDATE Account SET accountIsActive = ? WHERE username = ?";
-        Object[] params = {isActive, username};
->>>>>>> master
         return context.exeNonQuery(sql, params) > 0;
     }
 
@@ -427,11 +421,7 @@ public class AccountDAO {
                 account.setEmail(rs.getString("email"));
                 account.setPhoneNumber(rs.getString("phoneNumber"));
                 account.setBirthDate(rs.getString("birthDate"));
-<<<<<<< HEAD
                 account.setAccountIsActive(rs.getBoolean("accountIsActive"));
-=======
-                account.setIsActive(rs.getBoolean("accountIsActive"));
->>>>>>> master
                 customers.add(account);
             }
         } finally {

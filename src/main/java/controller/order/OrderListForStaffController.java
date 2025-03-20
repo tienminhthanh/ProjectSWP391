@@ -170,7 +170,7 @@ public class OrderListForStaffController extends HttpServlet {
             notification.setSenderID(1); // Staff who assigned the order
             notification.setReceiverID(7); // Shipper's account ID
             notification.setNotificationDetails("You have a new order to deliver! Order ID: " + orderID);
-            notification.setDateCreated(new Date(System.currentTimeMillis()));
+            notification.setNotificationDateCreated(new Date(System.currentTimeMillis()));
             notification.setDeleted(false);
             notification.setNotificationTitle("New Delivery Assignment");
             notification.setRead(false);
