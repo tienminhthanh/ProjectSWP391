@@ -401,7 +401,14 @@ public class ProductManagementController extends HttpServlet {
 
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.toString(), e);
-                request.setAttribute("errorMessage", "Failed to add new product due to:<br>" + e.toString());
+
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+
+                request.setAttribute("errorMessage", "Failed to update the product due to:<br>" + e.toString());
             }
             request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
 
@@ -411,8 +418,6 @@ public class ProductManagementController extends HttpServlet {
     private void retrieveProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //Retrieve product info from database based on id and generalCategory (product type)
-        //Set the formAction to ensure the page show the correct form
-
         String productID = request.getParameter("id");
         String type = request.getParameter("type");
         try {
@@ -437,10 +442,9 @@ public class ProductManagementController extends HttpServlet {
                     request.setAttribute("genreList", genreList);
                 }
 
-                //Check if product is currently featured in an event
                 request.setAttribute("product", requestedProduct);
                 request.setAttribute("type", type);
-
+                //Set the formAction to ensure the page show the correct form
                 request.setAttribute("formAction", "update");
                 request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
             }
@@ -451,18 +455,6 @@ public class ProductManagementController extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
-    }
-
-    private void updateBook(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
-            throws Exception {
-//       Handle book specific attributes and related entities
-
-    }
-
-    private void updateMerch(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
-            throws Exception {
-
-//       Handle merch specific attributes and related entities
     }
 
     private void manageAdd(HttpServletRequest request, HttpServletResponse response)
@@ -515,24 +507,60 @@ public class ProductManagementController extends HttpServlet {
                         continue;
                     }
 
-                    dataList.add(new Creator().setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]));
+                    //Instantitate creator without id
+                    Creator creator = new Creator().setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]);
+
+                    //Check if exist
+                    int id = productDAO.getCreatorIDByNameAndRole(creatorNames[i], creatorRoles[i]);
+
+                    //If exist => assign the found id to creator
+                    if (id > 0) {
+                        creator.setCreatorID(id);
+                    }
+
+                    //Add to dataList
+                    dataList.add(creator);
+
                 }
 
                 //Type-specific atributes
                 if (newProduct instanceof Book) {
                     Book newBook = (Book) newProduct;
+
+                    //Set duration
                     newBook.setDuration(paramMap.get("duration")[0]);
 
-                    String[] genres = paramMap.get("genre") != null ? paramMap.get("genre") : new String[0];
-                    for (String genre : genres) {
-                        int genreID = Integer.parseInt(genre);
-                        dataList.add(new Genre().setGenreID(genreID));
+                    //Handle genres
+                    String[] genres = paramMap.get("genre");
+                    if (genres != null) {
+                        for (String genIdStr : genres) {
+                            //Parse to ensure genIdStr is an integer
+                            int genreID = Integer.parseInt(genIdStr);
+                            //Assign id if valid
+                            Genre genre = new Genre().setGenreID(genreID);
+                            //Add to dataList
+                            dataList.add(genre);
+                        }
                     }
 
+                    //Hanlde publisher
                     if (!paramMap.get("publisherName")[0].trim().isEmpty()) {
-                        dataList.add(new Publisher().setPublisherName(paramMap.get("publisherName")[0]));
+                        //Instantiate publisher without id
+                        Publisher publisher = new Publisher().setPublisherName(paramMap.get("publisherName")[0]);
+
+                        //Check if exist
+                        int id = productDAO.getPublisherIDByName(paramMap.get("publisherName")[0]);
+
+                        //If exist => assign id to publisher
+                        if (id > 0) {
+                            publisher.setPublisherID(id);
+                        }
+
+                        //Add to dataList
+                        dataList.add(publisher);
                     }
 
+                    //Add new book and its related data
                     if (productDAO.addNewProducts(newBook, dataList.toArray())) {
                         LOGGER.log(Level.INFO, "A new Book has been added successfully!");
                         request.setAttribute("message", "A new Book has been added successfully!");
@@ -550,15 +578,43 @@ public class ProductManagementController extends HttpServlet {
 
                     //Handle series,character,brand
                     if (!paramMap.get("seriesName")[0].trim().isEmpty()) {
-                        dataList.add(new Series().setSeriesName(paramMap.get("seriesName")[0]));
+                        //Instantite series without id
+                        Series series = new Series().setSeriesName(paramMap.get("seriesName")[0]);
+                        //Check if exist
+                        int id = productDAO.getSeriesIDByName(paramMap.get("seriesName")[0]);
+                        //If exist => assign id to series
+                        if (id > 0) {
+                            series.setSeriesID(id);
+                        }
+                        //Add to dataList
+                        dataList.add(series);
                     }
                     if (!paramMap.get("characterName")[0].trim().isEmpty()) {
-                        dataList.add(new OGCharacter().setCharacterName(paramMap.get("characterName")[0]));
+                        //Instantiate character without id
+                        OGCharacter character = new OGCharacter().setCharacterName(paramMap.get("characterName")[0]);
+                        //Check if exist
+                        int id = productDAO.getCharacterIDByName(paramMap.get("characterName")[0]);
+                        //If exist => assign id to character
+                        if (id > 0) {
+                            character.setCharacterID(id);
+                        }
+                        //Add to dataList
+                        dataList.add(character);
                     }
                     if (!paramMap.get("brandName")[0].trim().isEmpty()) {
-                        dataList.add(new Brand().setBrandName(paramMap.get("brandName")[0]));
+                        //Instantiate brand without id
+                        Brand brand = new Brand().setBrandName(paramMap.get("brandName")[0]);
+                        //Check if exist
+                        int id = productDAO.getBrandIDByName(paramMap.get("brandName")[0]);
+                        //If exist = > assign id to brand
+                        if (id > 0) {
+                            brand.setBrandID(id);
+                        }
+                        //Add to dataList
+                        dataList.add(brand);
                     }
 
+                    //Add new merch and its related data
                     if (productDAO.addNewProducts(newMerch, dataList.toArray())) {
                         LOGGER.log(Level.INFO, "A new Merchandise has been added successfully!");
                         request.setAttribute("message", "A new Merchandise has been added successfully!");
@@ -577,6 +633,13 @@ public class ProductManagementController extends HttpServlet {
 
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.toString(), e);
+
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+
                 request.setAttribute("errorMessage", "Failed to add new product due to:<br>" + e.toString());
             }
         }

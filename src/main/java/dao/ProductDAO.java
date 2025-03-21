@@ -1091,13 +1091,14 @@ public class ProductDAO {
             }
 
             newProduct.setProductID(insertedProductID);
-
+            
             Set<Integer> associatedCreatorIDs = new HashSet<>();
             for (Object dataObj : dataArray) {
                 if (dataObj instanceof Creator) {
                     Creator creator = (Creator) dataObj;
-                    creatorID = getCreatorIDByNameAndRole(creator.getCreatorName(), creator.getCreatorRole());
+                    creatorID = creator.getCreatorID();
 
+                    //Add new Creator
                     if (creatorID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "creator");
                         creatorID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
@@ -1106,19 +1107,23 @@ public class ProductDAO {
                             throw new SQLException("Error adding creator: " + creator.getCreatorName() + " - " + creator.getCreatorRole());
 
                         }
+                        creator.setCreatorID(creatorID);
                     }
 
+                    //Associate creators with product
                     if (creatorID > 0 && !associatedCreatorIDs.contains(creatorID) && insertedProductID > 0) {
                         stmtEntry = generateInsertStatement(new Object[]{insertedProductID, creatorID}, "product_creator");
                         if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
                             throw new SQLException("Error assigning creatorID " + creatorID + " to productID " + insertedProductID);
                         }
+                        //Track associated ids to ensure only non-duplicate ids are associated
                         associatedCreatorIDs.add(creatorID);
                     }
 
                 } else if (dataObj instanceof Genre) {
                     Genre genre = (Genre) dataObj;
                     genreID = genre.getGenreID();
+                    //Associate genres with book
                     if (genreID > 0 && insertedProductID > 0) {
                         stmtEntry = generateInsertStatement(new Object[]{insertedProductID, genreID}, "book_genre");
                         if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
@@ -1127,64 +1132,67 @@ public class ProductDAO {
                     }
                 } else if (dataObj instanceof Publisher) {
                     publisher = (Publisher) dataObj;
-                    int publisherID = getPublisherIDByName(publisher.getPublisherName());
+                    int publisherID = publisher.getPublisherID();
+
+                    //Add new Publisher
                     if (publisherID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "publisher");
                         publisherID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (publisherID == 0) {
                             throw new SQLException("Error adding publisher: " + publisher.getPublisherName());
-
                         }
+                        publisher.setPublisherID(publisherID);
                     }
-                    publisher.setPublisherID(publisherID);
 
                 } else if (dataObj instanceof Series) {
                     series = (Series) dataObj;
-                    int seriesID = getSeriesIDByName(series.getSeriesName());
+                    int seriesID = series.getSeriesID();
+
+                    //Add new Series
                     if (seriesID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "series");
                         seriesID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (seriesID == 0) {
                             throw new SQLException("Error adding merch series: " + series.getSeriesName());
-
                         }
-
+                        series.setSeriesID(seriesID);
                     }
-                    series.setSeriesID(seriesID);
                 } else if (dataObj instanceof Brand) {
                     brand = (Brand) dataObj;
-                    int brandID = getBrandIDByName(brand.getBrandName());
+                    int brandID = brand.getBrandID();
+
+                    //Add new Brand
                     if (brandID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "brand");
                         brandID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (brandID == 0) {
                             throw new SQLException("Error adding merch brand: " + brand.getBrandName());
-
                         }
-
+                        brand.setBrandID(brandID);
                     }
-                    brand.setBrandID(brandID);
                 } else if (dataObj instanceof OGCharacter) {
                     character = (OGCharacter) dataObj;
-                    int characterID = getCharacterIDByName(character.getCharacterName());
+                    int characterID = character.getCharacterID();
+
+                    //Add new Character
                     if (characterID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "character");
                         characterID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (characterID == 0) {
                             throw new SQLException("Error adding merch character: " + character.getCharacterName());
-
                         }
 
+                        character.setCharacterID(characterID);
                     }
-                    character.setCharacterID(characterID);
                 }
 
             }
-
+            
+            //Handle type-specific data
             String className = "";
             if (newProduct instanceof Book) {
                 ((Book) newProduct).setPublisher(publisher);
@@ -1195,7 +1203,8 @@ public class ProductDAO {
             }
 
             stmtEntry = generateUpdateStatement(new Object[]{newProduct}, className);
-
+            
+            //Update Book or Merch based on type
             if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0) {
                 connection.commit();
                 return true;
@@ -1647,8 +1656,8 @@ public class ProductDAO {
                     throw new SQLException("Failed to delete Product_Creator entries: productID(" + updatedProductID + ") - creatorID " + associatedCreatorIDs.toString());
                 }
             }
-            
-             if (associatedGenreIDs.size() > 0) {
+
+            if (associatedGenreIDs.size() > 0) {
                 Integer[] deletedGenIDs = Stream.concat(Stream.of(updatedProductID), associatedGenreIDs.stream()).toArray(Integer[]::new);
                 stmtEntry = generateDeleteStatement(deletedGenIDs, "book_genre");
                 if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
