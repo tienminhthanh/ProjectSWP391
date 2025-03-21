@@ -124,8 +124,8 @@ public class ProductManagementController extends HttpServlet {
             LOGGER.log(Level.INFO, "Retrieved {0} - {1} of total {2} products!",
                     new Object[]{
                         (page - 1) * pageSize + 1,
-                         (page * pageSize) > totalProducts ? totalProducts : page * pageSize,
-                         totalProducts
+                        (page * pageSize) > totalProducts ? totalProducts : page * pageSize,
+                        totalProducts
                     });
 
             request.setAttribute("productList", productList);
@@ -162,7 +162,7 @@ public class ProductManagementController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,true);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id, true);
             if (requestedProduct == null) {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);
@@ -190,6 +190,12 @@ public class ProductManagementController extends HttpServlet {
                 //Get event list
                 List<Event> eventList = eDAO.getListActiveEvents();
                 request.setAttribute("eventList", eventList);
+
+                Event event = eDAO.getEventByProductID(id);
+                request.setAttribute("event", event);
+
+                boolean isSoldOrPreOrder = productDAO.isSoldOutOrPreOrder(id);
+                request.setAttribute("isSoldOrPreOrder", isSoldOrPreOrder);
 
                 //Check if product is currently featured in an event
                 request.setAttribute("productEventStatus", requestedProduct.getEventEndDate() == null || LocalDate.now().isAfter(requestedProduct.getEventEndDate()) ? "notInEvent" : "inEvent");
@@ -262,7 +268,7 @@ public class ProductManagementController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,true);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id, true);
             if (requestedProduct == null) {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);
@@ -337,7 +343,7 @@ public class ProductManagementController extends HttpServlet {
                         : new Product();
 
                 newProduct.setProductName(paramMap.get("productName")[0])
-                        .setPrice(1000*Integer.parseInt(paramMap.get("price")[0]))  //Multiply prices by 1000
+                        .setPrice(1000 * Integer.parseInt(paramMap.get("price")[0])) //Multiply prices by 1000
                         .setStockCount(Integer.parseInt(paramMap.get("stockCount")[0]))
                         .setSpecificCategory(new Category().setCategoryID(Integer.parseInt(paramMap.get("category")[0])))
                         .setSpecialFilter(paramMap.get("specialFilter")[0])

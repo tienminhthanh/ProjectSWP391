@@ -108,12 +108,13 @@ public class EventProductAddNewController extends HttpServlet {
             request.getRequestDispatcher("eventProductAddNew.jsp").forward(request, response);
             return;
         }
-
+//discount data
         HttpSession session = request.getSession();
 
         // Lấy danh sách sản phẩm đã chọn (dùng getParameterValues để lấy nhiều giá trị)
         String[] selectedProductsArr = request.getParameterValues("selectedProducts");
         String discountDataStr = request.getParameter("discountData");
+        String currentURL = request.getParameter("currentURL");
 
         // Kiểm tra danh sách sản phẩm có hợp lệ không
         if (selectedProductsArr == null || selectedProductsArr.length == 0) {
@@ -183,7 +184,11 @@ public class EventProductAddNewController extends HttpServlet {
 
         session.setAttribute("message", "Product added successfully!");
         session.setAttribute("messageType", "success");
-        response.sendRedirect("eventDetails?eventId=" + eventId);
+        if (currentURL != null && !currentURL.trim().isEmpty()) {
+            response.sendRedirect(currentURL);
+        } else {
+            response.sendRedirect("eventDetails?eventId=" + eventId);
+        }
     }
 
     private Map<Integer, Integer> parseDiscountData(String jsonString) throws Exception {
