@@ -42,13 +42,33 @@ public class VoucherDeleteController extends HttpServlet {
             int id = Integer.parseInt(request.getParameter("id"));
             VoucherDAO vDao = new VoucherDAO();
 
-            if (vDao.deleteVoucher(id)) {
-                session.setAttribute("message", "Voucher deleted successfully!");
-                session.setAttribute("messageType", "success");
-            } else {
-                session.setAttribute("message", "Failed to delete voucher.");
-                session.setAttribute("messageType", "error");
+//            if (vDao.deleteVoucher(id)) {
+//                session.setAttribute("message", "Voucher deleted successfully!");
+//                session.setAttribute("messageType", "success");
+//            } else {
+//                session.setAttribute("message", "Failed to delete voucher.");
+//                session.setAttribute("messageType", "error");
+//            }
+            String action = request.getParameter("action");
+            boolean success = vDao.deleteVoucher(id);
+            if ("delete".equals(action)) {
+                if (success) {
+                    session.setAttribute("message", "Voucher deleted successfully!");
+                    session.setAttribute("messageType", "delete");
+                } else {
+                    session.setAttribute("message", "Failed to delete voucher.");
+                    session.setAttribute("messageType", "error");
+                }
+            } else if ("unlock".equals(action)) {
+                if (success) {
+                    session.setAttribute("message", "Voucher unlocked successfully!");
+                    session.setAttribute("messageType", "unlock");
+                } else {
+                    session.setAttribute("message", "Failed to unlock voucher.");
+                    session.setAttribute("messageType", "error");
+                }
             }
+
         } catch (Exception e) {
             session.setAttribute("message", "Error: " + e.getMessage());
             session.setAttribute("messageType", "error");

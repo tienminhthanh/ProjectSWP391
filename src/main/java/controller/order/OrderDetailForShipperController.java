@@ -4,6 +4,7 @@
  */
 package controller.order;
 
+import dao.NotificationDAO;
 import dao.OrderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
+import model.Notification;
 import model.OrderInfo;
 
 /**
@@ -27,6 +29,8 @@ import model.OrderInfo;
  */
 @WebServlet(name = "OrderDetailForShipperController", urlPatterns = {"/OrderDetailForShipperController"})
 public class OrderDetailForShipperController extends HttpServlet {
+
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

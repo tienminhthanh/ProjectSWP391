@@ -96,7 +96,8 @@ public class OrderController extends HttpServlet {
                 Product product = null;
                 ProductDAO productDAO = new ProductDAO();
 
-                BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
+                BigDecimal priceWithQuantity = item.getCartItemPrice().multiply(BigDecimal.valueOf(item.getCartItemQuantity()));
+
                 subtotal += priceWithQuantity.doubleValue();
                 try {
                     product = productDAO.getProductById(item.getProductID());
@@ -189,7 +190,14 @@ public class OrderController extends HttpServlet {
                 e.printStackTrace();
             }
 
-            Double sum = product.getDiscountPercentage() > 0 ? (quantity * product.getPrice() * (100 - product.getDiscountPercentage()) / 100) : (product.getPrice() * quantity);
+            if (product.getDiscountPercentage() > 0) {
+                Double priceWithDiscount = 0.0;
+                priceWithDiscount = product.getPrice() * (100 - product.getDiscountPercentage()) / 100;
+                product.setPrice(priceWithDiscount);
+            }
+
+            Double sum = product.getPrice() * quantity;
+
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
@@ -283,7 +291,7 @@ public class OrderController extends HttpServlet {
             }
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
-                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
+                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getCartItemQuantity(), item.getCartItemPrice().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);

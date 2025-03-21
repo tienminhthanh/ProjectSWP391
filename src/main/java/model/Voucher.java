@@ -1,6 +1,5 @@
 package model;
 
-
 /**
  *
  * @author trungtinh
@@ -21,9 +20,6 @@ public class Voucher {
     private Double maxDiscountAmount;
     private String dateStarted;
 
-    public Voucher() {
-    }
-
     public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
         this.voucherID = voucherID;
         this.voucherName = voucherName;
@@ -40,12 +36,27 @@ public class Voucher {
         this.dateStarted = dateStarted;
     }
 
-    public String getDateStarted() {
-        return dateStarted;
+    public Voucher() {
     }
 
-    public void setDateStarted(String dateStarted) {
+    public Voucher(String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
+        this.voucherName = voucherName;
+        this.voucherValue = voucherValue;
+        this.quantity = quantity;
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
+        this.dateCreated = dateCreated;
+        this.duration = duration;
+        this.adminID = adminID;
+        this.isActive = isActive;
+        this.expiry = expiry;
+        this.voucherType = voucherType;
+        this.maxDiscountAmount = maxDiscountAmount;
         this.dateStarted = dateStarted;
+    }
+
+    @Override
+    public String toString() {
+        return "Voucher{" + "voucherID=" + voucherID + ", voucherName=" + voucherName + ", voucherValue=" + voucherValue + ", quantity=" + quantity + ", minimumPurchaseAmount=" + minimumPurchaseAmount + ", dateCreated=" + dateCreated + ", duration=" + duration + ", adminID=" + adminID + ", isActive=" + isActive + ", expiry=" + expiry + ", voucherType=" + voucherType + ", maxDiscountAmount=" + maxDiscountAmount + ", dateStarted=" + dateStarted + '}';
     }
 
     public int getVoucherID() {
@@ -63,7 +74,6 @@ public class Voucher {
     public void setVoucherName(String voucherName) {
         this.voucherName = voucherName;
     }
-
 
     public double getVoucherValue() {
         return voucherValue;
@@ -89,7 +99,6 @@ public class Voucher {
         this.minimumPurchaseAmount = minimumPurchaseAmount;
     }
 
-
     public String getDateCreated() {
         return dateCreated;
     }
@@ -113,7 +122,6 @@ public class Voucher {
     public void setAdminID(int adminID) {
         this.adminID = adminID;
     }
-
 
     public boolean isIsActive() {
         return isActive;
@@ -147,9 +155,12 @@ public class Voucher {
         this.maxDiscountAmount = maxDiscountAmount;
     }
 
-    @Override
-    public String toString() {
-        return "Voucher{" + "voucherID=" + voucherID + ", voucherName=" + voucherName + ", voucherValue=" + voucherValue + ", quantity=" + quantity + ", minimumPurchaseAmount=" + minimumPurchaseAmount + ", dateCreated=" + dateCreated + ", duration=" + duration + ", adminID=" + adminID + ", isActive=" + isActive + ", expiry=" + expiry + ", voucherType=" + voucherType + ", maxDiscountAmount=" + maxDiscountAmount + ", dateStarted=" + dateStarted + '}';
+    public String getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(String dateStarted) {
+        this.dateStarted = dateStarted;
     }
 
 }

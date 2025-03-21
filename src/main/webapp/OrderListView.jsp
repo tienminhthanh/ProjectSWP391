@@ -115,7 +115,7 @@
 
                 <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == '#' ? 'active' : ''}">Payment Due</a>
                 <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'pending' ? 'active' : ''}">Pending</a>
-                <a href="OrderListController?status=Shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'Shipped' ? 'active' : ''}">Shipping</a>
+                <a href="OrderListController?status=shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'shipped' ? 'active' : ''}">Shipping</a>
                 <a href="OrderListController?status=delivered" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'delivered' ? 'active' : ''}">Delivered</a>
                 <a href="OrderListController?status=completed" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'completed' ? 'active' : ''}">History</a>
                 <a href="OrderListController?status=canceled" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'canceled' ? 'active' : ''}">Canceled</a>

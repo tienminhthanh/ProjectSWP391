@@ -59,30 +59,28 @@
     </head>
     <body class="bg-gray-100 text-base">
         <!-- Header -->
-
-
-        <div class="bg-orange-600 text-white p-6 flex justify-between items-center">
-            <div class="flex items-center space-x-6">
-                <img src="./img/logo.png" alt="Logo Wibooks" class="h-12">
-                <h1 class="text-xl font-bold">Giao hàng</h1> <!-- Tăng cỡ chữ -->
-
+        <div class="bg-orange-500 text-white p-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
+                <h1 class="text-lg font-semibold">Deliver</h1>
             </div>
             <div class="flex items-center space-x-6">
-                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>
+<!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
+                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}" class="relative">
+                    <i class="fas fa-bell text-2xl"></i>
+                    <c:set var="unreadCount" value="0" />
+                    <c:forEach var="notification" items="${sessionScope.notifications}">
+                        <c:if test="${!notification.isRead()}">
+                            <c:set var="unreadCount" value="${unreadCount + 1}" />
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${unreadCount > -1}">
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${unreadCount}</span>
+                    </c:if>
+                </a>
                 <a href="readAccount" class="fas fa-user-circle text-2xl"></a>
                 <span class="text-xl">Shipper</span>
                 <a href="logout" class="fas fa-sign-out-alt text-2xl"></a>
-            </div>
-        </div>
-
-        <!-- Order Filter Navbar -->
-        <div class="bg-white shadow-md">
-            <div class="container mx-auto flex justify-around py-6">
-                <button class="bg-green-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-green-600">All Orders</button>
-                <button class="bg-yellow-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-yellow-600">Pending</button>
-                <button class="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-blue-600">In Progress</button>
-                <button class="bg-purple-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-purple-600">Completed</button>
-                <button class="bg-red-500 text-white px-6 py-3 rounded-lg text-xl hover:bg-red-600">Cancelled</button>
             </div>
         </div>
         <div class="flex flex-col md:flex-row">
@@ -92,7 +90,6 @@
                         <i class="fas fa-bell mr-2"></i>
                         Notifications
                     </h2>
-
                     <form action="notificationshipper" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                         <input type="hidden" name="action" value="markAsAllRead">
                         <input type="hidden" name="receiverID" value="${param.receiverID}">
@@ -107,28 +104,24 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="notification" items="${notifications}">
-                                <div class="flex items-start p-4 rounded-md notification-item ${notification.read ? 'read' : 'unread'}">
-                                    <!-- Wrap the entire item in an anchor tag pointing to the detail page -->
-                                    <span class="notification" style="display:none;">${notification.notificationDetails}</span>
-                                    <a class="flex items-start w-full link-detail">
+                                <div class="flex items-start p-4 rounded-md notification-item ${notification.isRead() ? 'read' : 'unread'}">
+                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
+                                       class="flex items-start w-full">
                                         <img alt="Notification icon" class="mr-4" 
                                              src="https://i.pinimg.com/222x/5c/61/84/5c61840474f5e4f69ca6a03507c2a569.jpg" 
                                              width="100" height="100"/>
                                         <div class="flex-1">
                                             <h3 class="font-bold">
-                                                <!-- Remove the inner <a> tag since the whole div is now clickable -->
                                                 <span class="text-blue-600 hover:underline">${notification.notificationTitle}</span>
                                             </h3>
-                                            <p class="text-gray-600">${notification.notificationDetails}</p>
+                                            <p class="text-gray-600">Click to see details.</p>
                                             <p class="text-gray-400 text-sm">
-                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
+                                                <fmt:formatDate value="${notification.notificationDateCreated}" pattern="dd/MM/yyyy"/>
                                             </p>
                                         </div>
                                     </a>
-                                    <!-- Keep the buttons outside the <a> tag to avoid them triggering the link -->
                                     <div class="flex space-x-2">
                                         <c:if test="${not notification.read}">
-                                            <!-- Form to mark notification as read -->
                                             <form action="notificationshipper" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                                 <input type="hidden" name="action" value="markAsRead">
                                                 <input type="hidden" name="notificationID" value="${notification.notificationID}">
@@ -136,7 +129,6 @@
                                                 <button type="submit" class="text-blue-500 hover:underline" onclick="event.stopPropagation();">Mark as read</button>
                                             </form>
                                         </c:if>
-                                        <!-- Form to delete notification -->
                                         <form action="notificationshipper" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="notificationID" value="${notification.notificationID}">
@@ -149,6 +141,12 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+                <div class="flex justify space-x-4">
+                    <a href="OrderListForShipperController" 
+                       class="btn btn-primary">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
             </main>
         </div>
 
@@ -156,36 +154,35 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const notifications = document.querySelectorAll(".notification");
-
-                notifications.forEach(notification => {
+            const notifications = document.querySelectorAll(".notification");
+                    notifications.forEach(notification => {
                     // Lấy nội dung text và loại bỏ khoảng trắng thừa
                     const text = notification.textContent.trim();
-                    console.log("Nội dung text:", `"${text}"`); // In chính xác nội dung của text
+                            console.log("Nội dung text:", `"${text}"`); // In chính xác nội dung của text
 
-                    // Kiểm tra và tách Order ID
-                    if (text.includes("Order ID:")) {
+                            // Kiểm tra và tách Order ID
+                            if (text.includes("Order ID:")) {
                     const parts = text.split("Order ID:");
                             console.log("Mảng sau split:", parts); // In mảng để kiểm tra
 
                             // Lấy phần sau "Order ID:" (nếu có)
                             const result = parts[1]?.trim() || "";
-                    console.log("Order ID:", `"${result}"`); // In result để kiểm tra
+                            console.log("Order ID:", `"${result}"`); // In result để kiểm tra
 
-                    // Tiếp tục xử lý với link
-                    const div = notification.closest("div");
+                            // Tiếp tục xử lý với link
+                            const div = notification.closest("div");
                             const link = div?.querySelector("a");
-                    if (link && result) { // Chỉ cập nhật nếu result không rỗng
-                        link.href = "OrderDetailForShipperController?id=" + result;
-                        console.log("Đã cập nhật href:", link.href);
+                            if (link && result) { // Chỉ cập nhật nếu result không rỗng
+                    link.href = "OrderDetailForShipperController?id=" + result;
+                            console.log("Đã cập nhật href:", link.href);
                     } else {
-                        console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
-                        }
+                    console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
+                    }
                     }
                     else {
                     console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
                     }
-                });
+                    });
             });
         </script>
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>

@@ -32,14 +32,26 @@
     </head>
     <body class="bg-gray-100 text-sm"> 
         <!-- Header -->
-        <div class="bg-orange-600 text-white p-4 flex justify-between items-center">
+        <div class="bg-orange-500 text-white p-4 flex justify-between items-center">
             <div class="flex items-center space-x-4">
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
                 <h1 class="text-lg font-semibold">Deliver</h1>
             </div>
 
             <div class="flex items-center space-x-6">
-                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>
+<!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
+                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}" class="relative">
+                    <i class="fas fa-bell text-2xl"></i>
+                    <c:set var="unreadCount" value="0" />
+                    <c:forEach var="notification" items="${sessionScope.notifications}">
+                        <c:if test="${!notification.isRead()}">
+                            <c:set var="unreadCount" value="${unreadCount + 1}" />
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${unreadCount > -1}">
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${unreadCount}</span>
+                    </c:if>
+                </a>
                 <a href="readAccount" class="fas fa-user-circle text-2xl"></a>
                 <span class="text-xl">Shipper</span>
                 <a href="logout" class="fas fa-sign-out-alt text-2xl"></a>

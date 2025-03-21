@@ -83,7 +83,7 @@ public class OrderListController extends HttpServlet {
             if (status != null && !status.isEmpty()) {
                 final String finalStatus = status;
                 orderList = orderList.stream()
-                        .filter(order -> finalStatus.equals(order.getOrderStatus()))
+                        .filter(order -> finalStatus.equals(order.getOrderStatus().toLowerCase()))
                         .collect(Collectors.toList());
             }
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope

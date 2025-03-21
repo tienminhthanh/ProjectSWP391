@@ -4,10 +4,13 @@
  */
 package dao;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Account;
 import model.Admin;
 import model.Customer;
@@ -37,7 +40,7 @@ public class OrderDAO {
     public boolean insertOrderInfo(OrderInfo orderInfo) throws SQLException {
         String sql = "INSERT INTO OrderInfo ("
                 + "  deliveryAddress, deliveryOptionID, customerID, "
-                + "preVoucherAmount,  deliveryStatus, "
+                + "finalAmount,  deliveryStatus, "
                 + "orderStatus, deliveredAt, paymentMethod, paymentExpiredTime, paymentStatus,voucherID"
                 + ") VALUES (  ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = {
@@ -74,7 +77,7 @@ public class OrderDAO {
 // insert row vao bang Order_product
     //choose
     public void insertOrderProduct(Object[] params) throws SQLException {
-        String sql = "INSERT INTO Order_Product (orderID, productID, quantity, priceWithQuantity)  \n"
+        String sql = "INSERT INTO Order_Product (orderID, productID, orderProductQuantity, orderProductPrice)  \n"
                 + "VALUES (?, ?, ?, ?);";
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " rows affected");
@@ -266,7 +269,7 @@ public class OrderDAO {
                 acc.setPhoneNumber(rs.getString("phoneNumber"));
                 acc.setBirthDate(rs.getDate("birthDate") != null ? rs.getDate("birthDate").toString() : null);
                 acc.setRole(rs.getString("role"));
-                acc.setIsActive(rs.getBoolean("isActive"));
+                acc.setAccountIsActive(rs.getBoolean("isActive"));
                 return acc;
             }
         }
@@ -294,7 +297,8 @@ public class OrderDAO {
     //choose
     public List<OrderProduct> getOrderProductByOrderID(int orderID) throws SQLException {
         List<OrderProduct> OrderProductList = new ArrayList<>();
-        String sql = "SELECT Order_Product.*, Product.productName, Product.imageURL, Product.description\n"
+
+        String sql = "SELECT Order_Product.orderID, Order_Product.productID, Order_Product.orderProductQuantity, Order_Product.orderProductPrice, Product.productName, Product.imageURL, Product.description\n"
                 + "FROM     Order_Product INNER JOIN\n"
                 + "                  Product ON Order_Product.productID = Product.productID\n"
                 + "WHERE  (Order_Product.orderID = ?)";
@@ -407,7 +411,7 @@ public class OrderDAO {
                 rs.getString("deliveryAddress"),
                 rs.getInt("deliveryOptionID"),
                 rs.getInt("customerID"),
-                rs.getDouble("preVoucherAmount"),
+                rs.getDouble("finalAmount"),
                 rs.getInt("voucherID"),
                 rs.getInt("staffID"),
                 rs.getInt("shipperID"),
@@ -427,10 +431,12 @@ public class OrderDAO {
         return new OrderProduct(
                 rs.getInt("orderID"),
                 rs.getInt("productID"),
-                rs.getInt("quantity"),
-                rs.getInt("priceWithQuantity"),
+                rs.getInt("orderProductQuantity"),
+                rs.getInt("orderProductPrice"),
                 rs.getInt("rating"),
                 rs.getString("comment")    
+
+
         );
     }
 //choose
@@ -483,7 +489,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return admin;
 
@@ -500,7 +506,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return shipper;
 
@@ -517,7 +523,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return customer;
 
@@ -534,7 +540,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return staff;
 
@@ -562,7 +568,7 @@ public class OrderDAO {
     }
 
     public boolean updateQuantityVoucher(int voucherID) throws SQLException {
-        String sql = "UPDATE Voucher SET quantity = quantity - 1 WHERE voucherID = ?";
+        String sql = "UPDATE Voucher SET voucherQuantity = voucherQuantity - 1 WHERE voucherID = ?";
         Object[] params = {voucherID};
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " rows affected");
@@ -603,7 +609,7 @@ public class OrderDAO {
 
     public boolean updatePreVoucherAmount(int orderID, Double preVoucherAmount) throws SQLException {
         String sql = "UPDATE OrderInfo \n"
-                + "SET preVoucherAmount = ? \n"
+                + "SET finalAmount = ? \n"
                 + "WHERE orderID = ?";
         Object[] params = {preVoucherAmount, orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
@@ -648,14 +654,14 @@ public class OrderDAO {
 // choose
     public boolean restoreProductStockByOrderID(int orderID) throws SQLException {
         // Lấy dữ liệu từ Order_Product, nhưng không ép kiểu trực tiếp
-        String selectSQL = "SELECT productID, quantity FROM Order_Product WHERE orderID = ?";
+        String selectSQL = "SELECT productID, orderProductQuantity FROM Order_Product WHERE orderID = ?";
         ResultSet rs = (ResultSet) context.exeQuery(selectSQL, new Object[]{orderID});
 
         List<Object[]> productList = new ArrayList<>();
 
         // Chuyển từ ResultSet sang List<Object[]>
         while (rs.next()) {
-            productList.add(new Object[]{rs.getInt("productID"), rs.getInt("quantity")});
+            productList.add(new Object[]{rs.getInt("productID"), rs.getInt("orderProductQuantity")});
         }
 
         int rowsUpdated = 0;
@@ -681,6 +687,23 @@ public class OrderDAO {
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " cart items deleted.");
         return rowsAffected > 0;
+    }
+
+    public Map<String, String[]> getRatingsAndCommentsByProduct(int productID) throws SQLException {
+        String sql = "SELECT Account.firstName, Account.lastName, Order_Product.rating, Order_Product.comment\n"
+                + "FROM     Order_Product INNER JOIN\n"
+                + "                  OrderInfo ON Order_Product.orderID = OrderInfo.orderID INNER JOIN\n"
+                + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
+                + "                  Account ON Customer.customerID = Account.accountID\n"
+                + "				  where productID = ? AND (rating is not null OR comment is not null)";
+        Object[] params = {productID};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            Map<String, String[]> reviewMap = new HashMap<>();
+            while (rs.next()) {
+                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "", rs.getString("comment")});
+            }
+            return reviewMap;
+        }
     }
 
 }

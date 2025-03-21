@@ -1,12 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller.notification;
 
 import dao.NotificationDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,13 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Notification;
 
-/**
- *
- * @author ADMIN
- */
 @WebServlet(name = "NotificationController", urlPatterns = {"/notification"})
 public class NotificationController extends HttpServlet {
-
     private static final long serialVersionUID = 1L;
     private NotificationDAO notificationDAO;
 
@@ -38,11 +28,12 @@ public class NotificationController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         try {
             String receiverIDParam = request.getParameter("receiverID");
             int receiverID = Integer.parseInt(receiverIDParam);
-            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
-            request.setAttribute("notifications", notifications);
+            List<Notification> notifications = notificationDAO.getNotificationsByReceiverDESC(receiverID);
+            session.setAttribute("notifications", notifications);
             request.getRequestDispatcher("notification.jsp").forward(request, response);
         } catch (SQLException ex) {
             Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
@@ -57,7 +48,7 @@ public class NotificationController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         if (action == null) {
-            action = "insert"; // Mặc định là thêm thông báo mới nếu không có action
+            action = "insert";
         }
 
         switch (action) {
@@ -79,7 +70,6 @@ public class NotificationController extends HttpServlet {
         }
     }
 
-    // Lấy danh sách thông báo theo receiverID
     private void listNotifications(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -93,7 +83,6 @@ public class NotificationController extends HttpServlet {
         }
     }
 
-    // Thêm thông báo mới
     private void insertNotification(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
@@ -101,11 +90,11 @@ public class NotificationController extends HttpServlet {
             int receiverID = Integer.parseInt(request.getParameter("receiverID"));
             String details = request.getParameter("notificationDetails");
             String title = request.getParameter("notificationTitle");
-            Date dateCreated = new Date(System.currentTimeMillis());
+            Date notificationDateCreated = new Date(System.currentTimeMillis());
             boolean isDeleted = false;
             boolean isRead = false;
 
-            Notification notification = new Notification(0, senderID, receiverID, details, dateCreated, isDeleted, title, isRead);
+            Notification notification = new Notification(0, senderID, receiverID, details, notificationDateCreated, isDeleted, title, isRead);
             notificationDAO.insertNotification(notification);
             response.sendRedirect("notification?action=list&receiverID=" + receiverID);
         } catch (SQLException ex) {
@@ -114,7 +103,6 @@ public class NotificationController extends HttpServlet {
         }
     }
 
-    // Đánh dấu thông báo là đã đọc
     private void markAsRead(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
@@ -127,7 +115,6 @@ public class NotificationController extends HttpServlet {
         }
     }
 
-    // Đánh dấu tất cả thông báo là đã đọc
     private void markAsAllRead(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
@@ -140,7 +127,6 @@ public class NotificationController extends HttpServlet {
         }
     }
 
-    // Xóa thông báo (cập nhật isDeleted thành true)
     private void deleteNotification(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {

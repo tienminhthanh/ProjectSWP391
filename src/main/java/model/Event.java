@@ -23,9 +23,6 @@ public class Event {
     private String dateStarted;
     private boolean expiry;
 
-    public Event() {
-    }
-
     public Event(int eventID, String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
         this.eventID = eventID;
         this.eventName = eventName;
@@ -39,20 +36,19 @@ public class Event {
         this.expiry = expiry;
     }
 
-    public boolean isExpiry() {
-        return expiry;
-    }
-
-    public void setExpiry(boolean expiry) {
+    public Event(String eventName, String dateCreated, int duration, String banner, String description, int adminID, boolean isActive, String dateStarted, boolean expiry) {
+        this.eventName = eventName;
+        this.dateCreated = dateCreated;
+        this.duration = duration;
+        this.banner = banner;
+        this.description = description;
+        this.adminID = adminID;
+        this.isActive = isActive;
+        this.dateStarted = dateStarted;
         this.expiry = expiry;
     }
 
-    public String getDateStarted() {
-        return dateStarted;
-    }
-
-    public void setDateStarted(String dateStarted) {
-        this.dateStarted = dateStarted;
+    public Event() {
     }
 
     public int getEventID() {
@@ -117,6 +113,27 @@ public class Event {
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public String getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(String dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
+    public boolean isExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(boolean expiry) {
+        this.expiry = expiry;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" + "eventID=" + eventID + ", eventName=" + eventName + ", dateCreated=" + dateCreated + ", duration=" + duration + ", banner=" + banner + ", description=" + description + ", adminID=" + adminID + ", isActive=" + isActive + ", dateStarted=" + dateStarted + ", expiry=" + expiry + '}';
     }
 
 }

@@ -14,11 +14,12 @@ import java.util.logging.Logger;
  */
 public class DBContext {
 
-    private static final Logger LOGGER = Logger.getLogger(DBContext.class.getName());
+    private static final Logger LOGGER = LoggingConfig.getLogger(DBContext.class);
     private static final String URL = "jdbc:sqlserver://localhost:1433;"
             + "databaseName=WIBOOKS;"
             + "encrypt=true;"
-            + "trustServerCertificate=true;";
+            + "trustServerCertificate=true;"
+            + "characterEncoding=UTF-8";
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -36,7 +37,7 @@ public class DBContext {
     public Connection getConnection() throws SQLException {
         try {
             Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            LOGGER.fine("Connected successfully!");
+            LOGGER.info("Connected successfully!");
             return connection;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Failed to establish database connection", e);
@@ -61,14 +62,52 @@ public class DBContext {
         try ( Connection connection = getConnection();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             if (params != null && params.length > 0) {
                 for (int i = 0; i < params.length; i++) {
-                    preparedStatement.setObject(i + 1, params[i]);
+                    if (params[i] instanceof String) {
+                        preparedStatement.setString(i + 1, (String) params[i]);
+                    } else {
+                        preparedStatement.setObject(i + 1, params[i]);
+
+                    }
                 }
             }
             int rowsAffected = preparedStatement.executeUpdate();
-            LOGGER.fine(() -> String.format("Query affected %d rows: %s", rowsAffected, query));
+            LOGGER.info(() -> String.format("Query affected %d rows: %s", rowsAffected, query));
             return rowsAffected;
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Non-query execution failed: " + query, ex);
+            throw ex;
+        }
+    }
+
+    //Overload
+    public int exeNonQuery(Connection connection, String sql, Object[] params, boolean returnGeneratedKeys) throws SQLException {
+        try ( PreparedStatement preparedStatement = returnGeneratedKeys 
+                ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                : connection.prepareStatement(sql)) {
+            if (params != null && params.length > 0) {
+                for (int i = 0; i < params.length; i++) {
+                    if (params[i] instanceof String) {
+                        preparedStatement.setString(i + 1, (String) params[i]);
+                    } else {
+                        preparedStatement.setObject(i + 1, params[i]);
+
+                    }
+                }
+            }
+            int rowsAffected = preparedStatement.executeUpdate();
+            LOGGER.log(Level.INFO, String.format("Query affected %d rows: %s", rowsAffected, sql));
+
+            //Return generated PK for INSERT STATEMENT if any
+            if (rowsAffected > 0 && returnGeneratedKeys) {
+                ResultSet rs = preparedStatement.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1) > 0 ? rs.getInt(1) : rowsAffected;
+                }
+            }
+
+            return rowsAffected;
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Non-query execution failed: " + sql, ex);
             throw ex;
         }
     }
@@ -83,9 +122,8 @@ public class DBContext {
             }
             return preparedStatement.executeQuery();
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Query execution failed: " + e);
+            LOGGER.log(Level.SEVERE, "Query execution failed: {0}", e);
             throw e;
         }
     }
-
 }

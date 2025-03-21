@@ -17,10 +17,21 @@
     </c:choose>
 
     <!-- Product Image -->
-    <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image" title="${currentProduct.productName}">
-        <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" >
-        <div class="hover-name">${currentProduct.productName}</div>
-    </a>
+    <c:choose>
+        <c:when test="${sessionScope.account.role eq 'admin' or sessionScope.account.role eq 'staff'}">
+            <a href="manageProductDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image" title="${currentProduct.productName}">
+                <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" loading="lazy">
+                <div class="hover-name">${currentProduct.productName}</div>
+            </a>
+            
+        </c:when>
+        <c:otherwise>
+            <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-image" title="${currentProduct.productName}">
+                <img src="${currentProduct.imageURL}" alt="${currentProduct.productName}" loading="lazy">
+                <div class="hover-name">${currentProduct.productName}</div>
+            </a>
+        </c:otherwise>
+    </c:choose>
 
     <!-- Category -->
     <c:choose>
@@ -87,20 +98,18 @@
     <c:set var="cartQuantity" value="0" />
     <c:forEach var="cartItem" items="${sessionScope.cartItems}">
         <c:if test="${cartItem.productID == currentProduct.productID}">
-            <c:set var="cartQuantity" value="${cartItem.quantity}" />
+            <c:set var="cartQuantity" value="${cartItem.cartItemQuantity}" />
         </c:if>
     </c:forEach>
-
-
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
-
     <form action="cart" method="post">
         <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
         <input type="hidden" name="productID" value="${currentProduct.productID}">
         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
         <input type="hidden" name="priceWithQuantity">
-        <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order'}">
+        <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order' 
+                      && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
             <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </c:if>
     </form>

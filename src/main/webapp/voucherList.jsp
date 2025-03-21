@@ -34,6 +34,40 @@
                             <i class="fas fa-exclamation-circle mr-2"></i>${errorMessage}
                         </p>
                     </c:if>
+                    <form action="voucherList" method="GET" class="flex flex-wrap items-center gap-4 bg-gray-100 p-4 rounded-lg shadow-md w-full">
+                        <!-- Dropdown: Voucher Type & Status -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Voucher Type -->
+                            <label class="text-gray-700 font-semibold">Type</label>
+                            <select  name="voucherType" class="px-4 py-2 border rounded-md" onchange="this.form.submit()" >
+                                <option value="" ${voucherType eq '' ? 'selected' : ''}>All Types</option>
+                                <option value="PERCENTAGE" ${voucherType eq 'PERCENTAGE' ? 'selected' : ''}>Percentage</option>
+                                <option value="FIXED_AMOUNT" ${voucherType eq 'FIXED_AMOUNT' ? 'selected' : ''}>Fixed Amount</option>
+                            </select>
+
+                            <!-- Voucher Status -->
+                            <label class="text-gray-700 font-semibold">Status:</label>
+                            <select name="isActive" class="px-4 py-2 border rounded-md" onchange="this.form.submit()">
+                                <option value="" ${empty param.isActive ? 'selected' : ''}>All</option>
+                                <option value="true" ${param.isActive == 'true' ? 'selected' : ''}>Active</option>
+                                <option value="false" ${param.isActive == 'false' ? 'selected' : ''}>Deactivate</option>
+                            </select>
+                        </div>
+
+                        <!-- Search Input -->
+                        <div class="flex-grow">
+                            <input type="text" name="search" placeholder="Search by name..."
+                                   value="${searchName}"
+                                   class="px-4 py-2 border rounded-md focus:ring w-full">
+                        </div>
+
+                        <!-- Search Button -->
+                        <button type="submit"
+                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition flex items-center">
+                            <i class="fas fa-search mr-2"></i> Search
+                        </button>
+                    </form>
+
                 </div>
 
                 <!-- TABLE -->
@@ -80,15 +114,8 @@
 
                                     <td class="px-2 py-3 border border-b text-center">
                                         <c:choose>
-                                            <c:when test="${voucher.expiry}">
-                                                <c:choose>
-                                                    <c:when test="${voucher.isActive}">
-                                                        <span class="text-green-600">Active</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="text-red-600">Deactivate</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <c:when test="${voucher.isActive}">
+                                                <span class="text-green-600">Active</span>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="text-red-600">Deactivate</span>
@@ -114,7 +141,7 @@
                         <nav class="flex space-x-2">
                             <!-- Nút Previous -->
                             <c:if test="${currentPage> 1}">
-                                <a href="voucherList?page=${currentPage - 1}"
+                                <a href="voucherList?page=${currentPage - 1}&search=${searchName}&isActive=${isActiveParam}&voucherType=${voucherType}"
                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
                                     &laquo; Previous
                                 </a>
@@ -122,7 +149,7 @@
 
                             <!-- Hiển thị các trang -->
                             <c:forEach var="i" begin="1" end="${totalPage}">
-                                <a href="voucherList?page=${i}"
+                                <a href="voucherList?page=${i}&search=${searchName}&isActive=${isActiveParam}&voucherType=${voucherType}"
                                    class="px-4 py-2 rounded ${i == currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
                                     ${i}
                                 </a>
@@ -130,7 +157,7 @@
 
                             <!-- Nút Next -->
                             <c:if test="${currentPage < totalPage}">
-                                <a href="voucherList?page=${currentPage + 1}"
+                                <a href="voucherList?page=${currentPage + 1}&search=${searchName}&isActive=${isActiveParam}&voucherType=${voucherType}"
                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
                                     Next &raquo;
                                 </a>
@@ -158,19 +185,21 @@
                                                 }
                                             });
                                         }
+
                                         function navigateToUpdate(voucherID) {
-                                            window.location = 'voucherDetails?voucherId=' + voucherID;
+                                            window.location.href = 'voucherDetails?voucherId=' + voucherID;
                                         }
         </script>
+
         <c:if test="${not empty sessionScope.message}">
-            <div id="popupMessage" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
+            <div id="popupMessage"
+                 class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
                 <strong>${sessionScope.message}</strong>
             </div>
             <c:remove var="message" scope="session"/>
             <c:remove var="messageType" scope="session"/>
 
             <script>
-                // Tự động biến mất sau 3 giây
                 setTimeout(() => {
                     let popup = document.getElementById("popupMessage");
                     if (popup) {
@@ -180,6 +209,7 @@
                 }, 3000);
             </script>
         </c:if>
+
 
 
 </body>

@@ -121,6 +121,7 @@
                             <c:if test="${ account.role eq 'admin'}">
                                 <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel(event);">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                                    <input type="hidden" name="customerID" value="${customer.accountID}">
                                     <input type="hidden" name="action" value="cancel">
                                     <c:if test="${ orderInfo.orderStatus eq 'pending'}">
                                         <button type="submit" class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>

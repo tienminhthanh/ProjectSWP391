@@ -59,10 +59,8 @@
     </head>
     <body class="bg-gray-100">
         <c:import url="header.jsp"/>
-
         <div class="flex flex-col md:flex-row">
             <jsp:include page="customerSidebar.jsp"/>
-
             <main class="flex-1 bg-white p-4">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-bold">
@@ -71,14 +69,12 @@
                             Notifications
                         </a>
                     </h2>
-
                     <form action="notification" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                         <input type="hidden" name="action" value="markAsAllRead">
                         <input type="hidden" name="receiverID" value="${param.receiverID}">
                         <button type="submit" class="text-blue-500 hover:underline" onclick="event.stopPropagation();">Mark all as read</button>
                     </form>
                 </div>
-
                 <div class="notification-scroll space-y-4">
                     <c:choose>
                         <c:when test="${empty notifications}">
@@ -86,28 +82,24 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="notification" items="${notifications}">
-                                <div class="flex items-start p-4 rounded-md notification-item ${notification.read ? 'read' : 'unread'}">
-                                    <!-- Wrap the entire item in an anchor tag pointing to the detail page -->
-                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${param.receiverID}" 
+                                <div class="flex items-start p-4 rounded-md notification-item ${notification.isRead() ? 'read' : 'unread'}">
+                                    <a href="notificationdetail?notificationID=${notification.notificationID}&receiverID=${notification.receiverID}" 
                                        class="flex items-start w-full">
                                         <img alt="Notification icon" class="mr-4" 
                                              src="https://icon-library.com/images/icon-notification/icon-notification-3.jpg" 
                                              width="100" height="100"/>
                                         <div class="flex-1">
                                             <h3 class="font-bold">
-                                                <!-- Remove the inner <a> tag since the whole div is now clickable -->
                                                 <span class="text-blue-600 hover:underline">${notification.notificationTitle}</span>
                                             </h3>
                                             <p class="text-gray-600">Click to see details.</p>
                                             <p class="text-gray-400 text-sm">
-                                                <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
+                                                <fmt:formatDate value="${notification.notificationDateCreated}" pattern="dd/MM/yyyy"/>
                                             </p>
                                         </div>
                                     </a>
-                                    <!-- Keep the buttons outside the <a> tag to avoid them triggering the link -->
                                     <div class="flex space-x-2">
-                                        <c:if test="${not notification.read}">
-                                            <!-- Form to mark notification as read -->
+                                        <c:if test="${not notification.isRead()}">
                                             <form action="notification" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                                 <input type="hidden" name="action" value="markAsRead">
                                                 <input type="hidden" name="notificationID" value="${notification.notificationID}">
@@ -115,7 +107,6 @@
                                                 <button type="submit" class="text-blue-500 hover:underline" onclick="event.stopPropagation();">Mark as read</button>
                                             </form>
                                         </c:if>
-                                        <!-- Form to delete notification -->
                                         <form action="notification" method="post" style="display:inline;" onsubmit="event.stopPropagation();">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="notificationID" value="${notification.notificationID}">

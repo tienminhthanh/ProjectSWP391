@@ -4,6 +4,7 @@
  */
 package controller.order;
 
+import dao.NotificationDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
+import model.Notification;
 import model.OrderInfo;
 import model.OrderProduct;
 import model.Product;
@@ -148,11 +150,28 @@ public class OrderDetailForStaffController extends HttpServlet {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         OrderDAO orderDao = new OrderDAO();
         String status = "canceled";
+        NotificationDAO notificationDAO = new NotificationDAO();
+        String cusID = request.getParameter("customerID");
+
         try {
              orderDao.restoreProductStockByOrderID(orderID);
+
+            int customerID = Integer.parseInt(cusID);
             orderDao.updateOrderstatus(orderID, status);
            
             orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
+            // Send notification to shipper
+            Notification notification = new Notification();
+            notification.setSenderID(account.getAccountID()); // Staff who assigned the order
+            notification.setReceiverID(customerID); // Shipper's account ID
+            notification.setNotificationDetails("Your order has been canceled by the system! Order ID: " + orderID);
+            notification.setNotificationDateCreated(new Date(System.currentTimeMillis()));
+            notification.setDeleted(false);
+            notification.setNotificationTitle("Order Cancellation");
+            notification.setRead(false);
+
+            notificationDAO.insertNotification(notification);
+
         } catch (SQLException ex) {
             Logger.getLogger(OrderDetailForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }

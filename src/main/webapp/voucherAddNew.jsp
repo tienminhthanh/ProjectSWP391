@@ -9,12 +9,12 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
-            <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <img alt="Book Walker Logo" class="h-10" src="https://storage.googleapis.com/a1aa/image/eqONjY2PAhJPB-SS1k-WJ6Cn3CmR-ITt6O9vKa2fKhk.jpg" width="150"/>
+            <a href="home" class="container mx-auto px-4 py-2 flex justify-between items-center">
+                <img alt="WIBOOKS Logo" class="h-10" height="50" src="./img/logoWibooks-removebg-preview.png" width="200"/>
                 <div class="flex items-center space-x-4">
-                    <i class="fas fa-gift text-xl"></i>
+                    <i class="fas fa-globe text-xl"></i>
                 </div>
-            </div>
+            </a>
         </header>
         <main class="flex-grow flex items-center justify-center">
             <div class="w-full max-w-4xl bg-white p-8 shadow-md">
@@ -70,22 +70,15 @@
                             <input class="w-full p-3 border border-gray-300 rounded" name="duration" placeholder="Enter duration" required type="number"/>
                         </div>
                     </div>
-                    <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Add Voucher</button>
+                    <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Add Voucher</button>
                 </form>
                 <div class="mt-6">
-                    <a class="text-blue-600 hover:underline" href="voucherList">
+                    <a class="text-orange-400 hover:underline" href="voucherList">
                         <i class="fas fa-arrow-left mr-2"></i> Back to Voucher List
                     </a>
                 </div>
             </div>
         </main>
-        <footer class="bg-gray-200 py-4 mt-8 w-full">
-            <div class="container mx-auto px-4 text-center text-sm text-gray-600">
-                <a class="mr-4" href="#">Privacy</a>
-                <a href="#">Terms & Conditions</a>
-                <p class="mt-4">© BOOK WALKER Co.,Ltd.</p>
-            </div>
-        </footer>
         <script>
             function toggleMaxDiscount() {
                 let type = document.getElementById("voucherType").value;

@@ -68,7 +68,7 @@
                                             </p>
                                         </c:if>
                                         <p><strong>Date Created:</strong> <span id="dateCreated">${VOUCHER_DETAILS.dateCreated}</span></p>
-                                        <p><strong>Date Started</strong> <span id="dateStarted">${VOUCHER_DETAILS.dateStarted}</span></p>
+                                        <p><strong>Date Started:</strong> <span id="dateStarted">${VOUCHER_DETAILS.dateStarted}</span></p>
                                         <p><strong>Duration:</strong> <span id="duration">${VOUCHER_DETAILS.duration} days</span> 
                                             (Until <span id="dateEnd">${dateEnd}</span>)
                                         </p>
@@ -87,15 +87,8 @@
                                         <p><strong>Status:</strong> 
                                             <span id="isActive" class="font-semibold">
                                                 <c:choose>
-                                                    <c:when test="${VOUCHER_DETAILS.expiry}">
-                                                        <c:choose>
-                                                            <c:when test="${VOUCHER_DETAILS.isActive}">
-                                                                <span class="text-green-600">Active</span>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <span class="text-red-600">Deactivate</span>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                    <c:when test="${VOUCHER_DETAILS.isActive}">
+                                                        <span class="text-green-600">Active</span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span class="text-red-600">Deactivate</span>
@@ -111,12 +104,12 @@
                                         </a>
                                         <c:choose>
                                             <c:when test="${VOUCHER_DETAILS.isActive}">
-                                                <a class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
+                                                <a class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to delete this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}&action=delete')">
                                                     Delete
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}')">
+                                                <a class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200" href="javascript:void(0);" onclick="confirmAction('Are you sure you want to unlock this voucher?', 'voucherDelete?id=${VOUCHER_DETAILS.voucherID}&action=unlock')">
                                                     Unlock
                                                 </a>
                                             </c:otherwise>
@@ -130,13 +123,6 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
-            </div>
-            <div class="mt-6">
-                <button>
-                    <a class="text-orange-400 hover:underline" href="voucherList">
-                        <i class="fas fa-arrow-left mr-2"></i> <strong>Back to Voucher List</strong>
-                    </a>
-                </button>
             </div>
         </main>
 

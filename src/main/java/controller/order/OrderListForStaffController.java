@@ -127,6 +127,7 @@ public class OrderListForStaffController extends HttpServlet {
         request.setAttribute("orderInfo", orderList);
         request.setAttribute("account", account);
         session.setAttribute("orderInfo", orderInfo);
+
         request.setAttribute("customerMap", customerMap); // Gửi Map sang JSP
         request.getRequestDispatcher("OrderListForStaffView.jsp").forward(request, response);
     }
@@ -147,7 +148,7 @@ public class OrderListForStaffController extends HttpServlet {
         int shipperID = Integer.parseInt(request.getParameter("shipperID"));
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         NotificationDAO notificationDAO = new NotificationDAO();
-
+        
         OrderDAO orderDAO = new OrderDAO();
         if (account == null) {
             response.sendRedirect("login");
@@ -160,25 +161,24 @@ public class OrderListForStaffController extends HttpServlet {
             }else{
                 orderDAO.updateAdminAndShipperForOrder(orderID, account.getAccountID(), shipperID);
             }
-   
+
             orderDAO.updateDeliverystatus(orderID, status);
             orderDAO.updateOrderstatus(orderID, status);
             session.setAttribute("orderID", orderID);
             System.out.println();
             // Send notification to shipper
-            if (request.getParameter("shipperID") != null) {
-                Notification notification = new Notification();
-                notification.setSenderID(1); // Staff who assigned the order
-                notification.setReceiverID(7); // Shipper's account ID
-                notification.setNotificationDetails("You have a new order to deliver! Order ID: " + orderID);
-                notification.setDateCreated(new Date(System.currentTimeMillis()));
-                notification.setDeleted(false);
-                notification.setNotificationTitle("New Delivery Assignment");
-                notification.setRead(false);
+//            if (request.getParameter("shipperID") != null) {
+            Notification notification = new Notification();
+            notification.setSenderID(1); // Staff who assigned the order
+            notification.setReceiverID(7); // Shipper's account ID
+            notification.setNotificationDetails("You have a new order to deliver! Order ID: " + orderID);
+            notification.setNotificationDateCreated(new Date(System.currentTimeMillis()));
+            notification.setDeleted(false);
+            notification.setNotificationTitle("New Delivery Assignment");
+            notification.setRead(false);
 
-                notificationDAO.insertNotification(notification);
+            notificationDAO.insertNotification(notification);
 
-            }
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForStaffController.class.getName()).log(Level.SEVERE, null, ex);
         }

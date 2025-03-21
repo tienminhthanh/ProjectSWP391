@@ -4,16 +4,6 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>                                                    
 <fmt:setLocale value="en_US"/>
-<%
-    String bannerPath = application.getRealPath("/img/banner_event/");
-    File folder = new File(bannerPath);
-    String[] files = folder.list(new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.matches(".*\\.(jpg|jpeg|png|gif)");
-        }
-    });
-%>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -89,6 +79,7 @@
                     <div class="w-full">
                         <div class="gap-4 w-full overflow-x-auto">
                             <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
+                                <c:set var="currentURL" value="${currentURL}" scope="request"/>
                                 <c:forEach var="currentProduct" items="${productList}">
                                     <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                     <jsp:include page="productCard.jsp"/>
@@ -148,53 +139,7 @@
             });
         </script>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let banners = [
-            <% for (String file : files) {%>
-                    {img: "/img/banner_event/<%= file%>"},
-            <% }%>
-                ];
-                let current = 0;
-                const bannerImg = document.getElementById("banner-img");
-                const bannerLink = document.getElementById("banner-link");
-                const dotsContainer = document.getElementById("dots-container");
 
-                function updateBanner() {
-                    bannerImg.src = banners[current].img;
-                    bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
-
-                    dotsContainer.innerHTML = "";
-                    banners.forEach((_, index) => {
-                        const dot = document.createElement("div");
-                        dot.className = "w-3 h-3 rounded-full cursor-pointer transition-all duration-300 " +
-                                (index === current ? "bg-blue-500 scale-125" : "bg-gray-300");
-                        dot.onclick = () => {
-                            current = index;
-                            updateBanner();
-                        };
-                        dotsContainer.appendChild(dot);
-                    });
-                }
-
-                function next() {
-                    current = (current + 1) % banners.length;
-                    updateBanner();
-                }
-
-                function prev() {
-                    current = (current - 1 + banners.length) % banners.length;
-                    updateBanner();
-                }
-
-                document.getElementById("prev-btn").addEventListener("click", prev);
-                document.getElementById("next-btn").addEventListener("click", next);
-
-                setInterval(next, 3000);
-                updateBanner();
-            });
-
-        </script>
 
     </body>
 </html>

@@ -16,7 +16,7 @@
             <title>Unavailable Product - WIBOOKS</title>
         </c:if>
 
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 
@@ -35,9 +35,6 @@
 
     <body>
 
-        <fmt:setLocale value="vi_vn"/> <!-- Set locale if needed -->
-        <fmt:formatDate value="<%= new java.util.Date()%>" pattern="yyyy-MM-dd" var="todayDate"/>
-
         <!--header-->
         <jsp:include page="header.jsp"/>
 
@@ -49,15 +46,6 @@
             <jsp:include page="customerSidebar.jsp"/>
 
             <main class="w-full md:w-5/6 p-3">
-                <c:if test="${not empty requestScope.exception}">
-                    <h3>
-                        An error occurred when retrieving product information!
-                    </h3>
-                    <p>
-                        ${requestScope.exception}
-                    </p>
-                </c:if>
-
                 <c:if test="${not empty requestScope.product}">
                     <div class="root-container bg-gray-100">
 
@@ -80,11 +68,14 @@
                                                 <h3 class="description-title text-lg">Description</h3>
 
                                                 <p class="description-content m-2">${product.description}</p>
-                                                <p class="tags">
+                                                <p class="tags p-2">
                                                     <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                                        #${tag} 
+                                                        <a data-tag="${tag}" class="tags-link text-orange-500 hover:underline px-1" href="#" alt="${tag}">
+                                                            <span>#</span>${tag} 
+                                                        </a>
                                                     </c:forTokens>
                                                 </p>
+
                                             </div>
                                         </c:if>
                                     </div>
@@ -92,7 +83,7 @@
 
 
                                 <!--Title - purchase-->
-                                <div class="purchase-area w-full flex-grow md:pl-4 mb-4 bg-white border-l-2 border-solid border-black/10">
+                                <div class="purchase-area w-full flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
                                     <!--Title-->
                                     <div class="big-product-name bg-white p-2 border-b-2 border-solid border-black/10">
                                         <div class="big-product-name-inner w-full text-base md:text-sm lg:text-base">
@@ -100,8 +91,8 @@
                                             <p class="category w-full">${product.specificCategory.categoryName}</p>
                                         </div>
                                         <div class="creator-top text-xs">
-                                            <c:forEach var="creator" items ="${creatorMap}" varStatus="loopStatus">
-                                                <c:out value="${creator.value.creatorName}"/>
+                                            <c:forEach var="creator" items ="${creatorList}" varStatus="loopStatus">
+                                                <c:out value="${creator.creatorName}"/>
                                                 <c:if test="${!loopStatus.last}"> - </c:if>
                                             </c:forEach>
                                         </div>
@@ -150,7 +141,7 @@
                                     </div>
 
                                     <!--Purchase form-->
-                                    <div class="purchase-form w-90% md:w-full bg-white mx-auto">
+                                    <div class="purchase-form w-[90%] md:w-full bg-white mx-auto">
                                         <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
                                             <c:choose>
                                                 <c:when test="${product.specialFilter != 'pre-order'}">
@@ -159,7 +150,7 @@
                                                 </c:when>
                                                 <c:when test="${product.stockCount <= 10}">
                                                     <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
-                                                </c:when>
+                                                    </c:when>
 
                                             </c:choose>
                                         </div>
@@ -217,7 +208,9 @@
                                     <p class="description-content p-2 m-2">${product.description}</p>
                                     <p class="tags p-2">
                                         <c:forTokens var="tag" items="${product.keywords}" delims=",">
-                                            #${tag} 
+                                            <a data-tag="${tag}" class="tags-link text-orange-500 hover:underline px-1" href="#" alt="${tag}">
+                                                <span>#</span>${tag} 
+                                            </a>
                                         </c:forTokens>
                                     </p>
                                 </div>
@@ -229,13 +222,28 @@
                                         <c:when test="${type=='book'}">
                                             <table class="m-2">
                                                 <tr><td>Title</td><td>${product.productName}</td></tr>
-                                                <c:if test="${not empty creatorMap.author}">
-                                                    <tr><td>Author</td><td>${creatorMap.author.creatorName}</td></tr>
+                                                <tr class="cre-details-gr"><td>Author</td>
+                                                    <td>
+                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                            ${cre.creatorRole eq 'author' ? cre.creatorName : ''}
+                                                        </c:forEach>
+
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="cre-details-gr"><td>Artist</td>
+                                                    <td>
+                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                            ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
+                                                        </c:forEach>
+
+                                                    </td>
+                                                </tr>
+                                                <c:if test="${not empty product.publisher && not empty product.publisher.publisherName}">
+                                                    <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
                                                 </c:if>
-                                                <c:if test="${not empty creatorMap.artist}">
-                                                    <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
-                                                </c:if>
-                                                <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
                                                 <tr>
                                                     <td>Genre</td>
                                                     <td>
@@ -248,11 +256,23 @@
                                                 </tr>
 
                                                 <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                                    <c:if test="${not empty product.duration}">
+
+                                                <c:if test="${not empty product.duration}">
                                                     <tr><td>Duration</td><td>${product.duration}</td></tr>
                                                 </c:if>
-                                                <c:if test="${not empty ranking}">
-                                                    <tr><td>Ranking</td><td>${ranking}</td></tr>
+
+                                                <c:if test="${product.salesRank > 0}">
+                                                    <c:set var="rank" value="${product.salesRank}" />
+                                                    <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
+                                                    <tr>
+                                                        <td>Monthly Ranking</td>
+                                                        <td class=" text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                                            <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>
+                                                            <span class="a-product-rank-${rank}">
+                                                                ${rank}<span>${suffix}</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
                                                 </c:if>
                                             </table>
                                         </c:when>
@@ -260,24 +280,50 @@
                                         <c:when test= "${type=='merch'}">
                                             <table class="m-2">
                                                 <tr><td>Product Name</td><td>${product.productName}</td></tr>
-                                                <c:if test="${not empty creatorMap.sculptor}">
-                                                    <tr><td>Sculptor</td><td>${creatorMap.scupltor.creatorName}</td></tr>
+                                                <tr class="cre-details-gr"><td>Sculptor</td>
+                                                    <td>
+                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                            ${cre.creatorRole eq 'sculptor' ? cre.creatorName : ''}
+                                                        </c:forEach>
+
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="cre-details-gr"><td>Artist</td>
+                                                    <td>
+                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
+                                                            ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
+                                                        </c:forEach>
+
+                                                    </td>
+                                                </tr>
+
+                                                <c:if test="${not empty product.brand and not empty product.brand.brandName}">
+                                                    <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
                                                 </c:if>
-                                                <c:if test="${not empty creatorMap.artist}">
-                                                    <tr><td>Artist</td><td>${creatorMap.artist.creatorName}</td></tr>
+                                                <c:if test="${not empty product.series and not empty product.series.seriesName}">
+                                                    <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
                                                 </c:if>
-                                                <tr><td>Brand</td><td>${product.brand.brandName}</td></tr>
-                                                <tr><td>Series</td><td>${product.series.seriesName}</td></tr>
-                                                <tr><td>Character</td><td>${product.character.characterName}</td></tr>
+                                                <c:if test="${not empty product.character and not empty product.character.characterName}">
+                                                    <tr><td>Character</td><td>${product.character.characterName}</td></tr>
+                                                </c:if>
 
                                                 <tr>
                                                     <td>Specification</td>
                                                     <td>
                                                         <ul>
-                                                            <li>Category: ${product.specificCategory.categoryName}</li>
-                                                            <li>Scale level: ${product.scaleLevel}</li>
-                                                            <li>Size: ${product.size}</li>
-                                                            <li>Material: ${product.material}</li>
+                                                            <li>${product.specificCategory.categoryName}</li>
+                                                                <c:if test="${not empty product.scaleLevel}">
+                                                                <li>Scale level: ${product.scaleLevel}</li>
+                                                                </c:if>
+                                                                <c:if test="${not empty product.size}">
+                                                                <li>Size: ${product.size}</li>
+                                                                </c:if>
+                                                                <c:if test="${not empty product.material}">
+                                                                <li>Material: ${product.material}</li>
+                                                                </c:if>
                                                         </ul>
 
                                                     </td>
@@ -285,11 +331,50 @@
 
 
                                                 <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
-                                                    <c:if test="${not empty ranking}">
-                                                    <tr><td>Ranking</td><td>${ranking}</td></tr>
+                                                    <c:if test="${product.salesRank > 0}">
+                                                        <c:set var="rank" value="${product.salesRank}" />
+                                                        <c:set var="suffix" value="${(rank % 10 == 1 and rank % 100 != 11) ? 'st' : (rank % 10 == 2 and rank % 100 != 12) ? 'nd' : (rank % 10 == 3 and rank % 100 != 13) ? 'rd' : 'th'}" />
+                                                    <tr>
+                                                        <td>Monthly Ranking</td>
+                                                        <td class=" text-${rank == 1 ? 'yellow-400 font-bold text-lg' : rank == 2 ? 'gray-400 font-bold text-lg' : rank == 3 ? 'amber-700 font-bold text-lg' : 'orange-300'}">
+                                                            <span class="a-product-crown-${rank}"><i class="fa-solid fa-crown"></i></span>
+                                                            <span class="a-product-rank-${rank}">
+                                                                ${rank}<span>${suffix}</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
                                                 </c:if>
                                             </table>
                                         </c:when>
+                                    </c:choose>
+                                </div>
+
+                                <!--Reviews section-->
+                                <div class="review-area text-sm w-full mb-4 bg-white">
+                                    <h3 class="description-title text-lg">Reviews</h3>
+                                    <c:choose>
+
+                                        <c:when test="${not empty requestScope.reviewMap}">
+                                            <c:forEach var="review" items="${requestScope.reviewMap}">
+                                                <div class="customer-review p-2 m-2 border-b-4 rounded-lg flex flex-col items-start gap-2">
+                                                    <h4 class="customer-name text-md font-bold">${review.key}</h4>
+                                                    <p class="avg-rating">
+                                                        <c:forEach var="i" begin="1" end="${review.value[0]}">
+                                                            <i class="fa-solid fa-star"></i>
+                                                        </c:forEach>
+                                                    </p>
+                                                    <p class="review-content">
+                                                        ${review.value[1] ne null ? review.value[1] : ''}
+                                                    </p>
+                                                </div> 
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="flex justify-center items-center h-40 w-full">
+                                                <p class="text-gray-500 italic">No reviews yet. Be the first to share your thoughts about the purchase!</p>
+                                            </div>
+                                        </c:otherwise>
+
                                     </c:choose>
                                 </div>
 
@@ -310,6 +395,32 @@
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
+        <div class="fixed bottom-4 left-4 z-50">
+            <button id="openChat" class="bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-yellow-600 transition">
+                🤖 WIBOOKS AI
+            </button>
+        </div>
+
+        <!-- Chat Popup -->
+        <div id="chatPopup" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden zindex-10000">
+            <div class="flex justify-between items-center bg-orange-500 text-white px-4 py-2 rounded-t-lg">
+                <span>WIBOOKS AI</span>
+                <span id="closeChatAI" class="cursor-pointer text-xl">❌</span>
+            </div>
+            <div class="flex-grow overflow-y-auto border p-2 bg-gray-200 rounded-lg shadow-lg">
+                <jsp:include page="chatAI.jsp"/>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById("openChat").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.remove("hidden");
+            });
+
+            document.getElementById("closeChatAI").addEventListener("click", function () {
+                document.getElementById("chatPopup").classList.add("hidden");
+            });
+        </script>
 
         <!--Icon-->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
@@ -334,208 +445,269 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script>
-                                                        //Map input quant to purchase quant in forms
-                                                        document.addEventListener("DOMContentLoaded", function () {
+            //Map input quant to purchase quant in forms
+            document.addEventListener("DOMContentLoaded", function () {
 
-                                                            // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
-                                                            if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
-                                                                document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
-                                                                const stockOut = document.querySelector('.purchase-form p');
-                                                                stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:pr-2', 'bg-gray-100', 'my-16', 'md:mr-4', 'max-w-full');
-                                                                return;
-                                                            }
+                // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
+                if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
+                    document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
+                    const stockOut = document.querySelector('.purchase-form p');
+                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
+                    return;
+                }
 
-                                                            let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
-                                                            let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+                let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                                                            if (!hiddenInputs) {
-                                                                console.log("Hidden quantity not found!");
-                                                                return;
-                                                            }
+                if (!hiddenInputs) {
+                    console.log("Hidden quantity not found!");
+                    return;
+                }
 
-                                                            if (!numberValue) {
-                                                                console.log("Quantity input not found!");
-                                                                return;
-                                                            }
-
-
-                                                            // Loop through all hidden inputs and update their values
-                                                            hiddenInputs.forEach(function (hiddenInput) {
-                                                                hiddenInput.value = numberValue.value;
-                                                            });
-
-                                                            // Optional: Display the values for verification
-                                                            let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                                                            console.log("quantity:", displayValues);
+                if (!numberValue) {
+                    console.log("Quantity input not found!");
+                    return;
+                }
 
 
-//                Map quant on input
-                                                            document.getElementById("quantityInput").addEventListener("input", function (event) {
-                                                                const inputElement = document.getElementById("quantityInput");
-                                                                let numberValue = event.target.value; // Get the value from the number input
-                                                                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-
-                                                                if (!numberValue || !`${product.stockCount}`) {
-                                                                    return;
-                                                                }
-                                                                if (numberValue < 1) {
-                                                                    alert("Purchase quantity must be greater than 0!");
-                                                                    inputElement.value = numberValue = 1;
-                                                                } else if (numberValue > ${product.stockCount}) {
-                                                                    alert("Purchase quantity cannot exceed ${product.stockCount}!");
-                                                                    inputElement.value = numberValue = 1;
-                                                                }
+                // Loop through all hidden inputs and update their values
+                hiddenInputs.forEach(function (hiddenInput) {
+                    hiddenInput.value = numberValue.value;
+                });
 
 
-                                                                // Loop through all hidden inputs and update their values
-                                                                hiddenInputs.forEach(function (hiddenInput) {
-                                                                    hiddenInput.value = numberValue;
-                                                                });
+                //                Map quant on input
+                document.getElementById("quantityInput").addEventListener("input", function (event) {
+                    const inputElement = document.getElementById("quantityInput");
+                    let numberValue = event.target.value; // Get the value from the number input
+                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
 
-                                                                // Optional: Display the values for verification
-                                                                let displayValues = Array.from(hiddenInputs).map(input => input.value).join(", ");
-                                                                console.log("quantity:", displayValues);
-                                                            });
-                                                        });
-
-//            Adjust layout based product type
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            const type = "${requestScope.type}";
-                                                            const purchase = document.querySelector(".purchase-area");
-                                                            const overview = document.querySelector(".overview-area");
-                                                            const image = document.querySelector(".image-area");
-                                                            const desc = document.querySelector(".desc-common");
-                                                            if (!type) {
-                                                                return;
-                                                            }
-
-                                                            if (type === 'book') {
-                                                                overview.classList.add('md:w-3/4');
-                                                                image.classList.add('md:w-1/3');
-
-                                                                purchase.classList.add('md:w-1/4');
-                                                                desc.classList.add('md:hidden');
-                                                            } else if (type === 'merch') {
-                                                                overview.classList.add('md:w-2/3');
-                                                                purchase.classList.add('md:w-1/3');
-
-                                                            }
-
-                                                            //                if (type === 'book') {
-                                                            //                    overview.classList.add('md:w-2/3');
-                                                            //                    purchase.classList.add('md:w-1/3');
-                                                            //
-                                                            //                } else if (type === 'merch') {
-                                                            //                    overview.classList.add('md:w-3/4');
-                                                            //                    image.classList.add('md:w-1/3');
-                                                            //                    purchase.classList.add('md:w-1/4');
-                                                            //                    desc.classList.add('md:hidden');
-                                                            //
-                                                            //                }
-                                                        });
+                    if (!numberValue || !`${product.stockCount}`) {
+                        return;
+                    }
+                    if (numberValue < 1) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid purchase quantity',
+                            text: `Purchase quantity must be greater than 0!`
+                        });
+                        inputElement.value = numberValue = 1;
+                    } else if (numberValue > ${product.stockCount}) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid purchase quantity',
+                            text: `Purchase quantity cannot exceed ${product.stockCount}!`
+                        });
+                        inputElement.value = numberValue = 1;
+                    }
 
 
-                                                        //Format price display
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            // Select all elements with prices
-                                                            let priceElements = document.querySelectorAll(".price-area p");
+                    // Loop through all hidden inputs and update their values
+                    hiddenInputs.forEach(function (hiddenInput) {
+                        hiddenInput.value = numberValue;
+                    });
 
-                                                            priceElements.forEach(priceEl => {
-                                                                let priceText = priceEl.innerText.trim(); // Get the text inside span
-                                                                let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-                                                                console.log("formatted price: ", price);
-                                                                price = Math.round(price);
-                                                                console.log("Rounded price: ", price);
-
-                                                                if (!isNaN(price)) {
-                                                                    // Format price with commas (e.g., 4,400 VND)
-                                                                    priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
-                                                                }
-                                                            });
-                                                        });
+                });
 
 
-                                                        //Map final price to forms
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            const finalPriceElement = document.querySelector(".final-price");
-                                                            let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
+            });
 
-                                                            //Check if the forms are there
-                                                            if (!pricesToSubmit) {
-                                                                return;
-                                                            }
+            //            Adjust layout based product type
+            document.addEventListener("DOMContentLoaded", function () {
+                const type = "${requestScope.type}";
+                const purchase = document.querySelector(".purchase-area");
+                const overview = document.querySelector(".overview-area");
+                const image = document.querySelector(".image-area");
+                const desc = document.querySelector(".desc-common");
+                if (!type) {
+                    return;
+                }
 
-                                                            if (!finalPriceElement) {
-                                                                alert("Cannot retrieve product price!");
-                                                                return;
-                                                            }
+                if (type === 'book') {
+                    overview.classList.add('md:w-3/4');
+                    image.classList.add('md:w-1/3');
 
+                    purchase.classList.add('md:w-1/4');
+                    desc.classList.add('md:hidden');
+                } else if (type === 'merch') {
+                    overview.classList.add('md:w-2/3');
+                    purchase.classList.add('md:w-1/3');
 
-                                                            let priceText = finalPriceElement.innerText;
-                                                            let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
+                }
 
-                                                            if (isNaN(priceNumber)) {
-                                                                console.log("Price is not a number");
-                                                                return;
-                                                            }
-
-                                                            pricesToSubmit.forEach(function (price) {
-                                                                price.value = priceNumber;
-                                                                console.log('Price is', price.value);
-                                                            });
-                                                        });
-
-                                                        //Format date
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            const fomoDate = document.querySelector('.fomo-info>span');
-                                                            const releaseDate = document.querySelector('.release-date');
-
-                                                            if (!fomoDate) {
-                                                                console.log("Fomo element not found!");
-                                                            } else {
-                                                                const fomoText = new Date(fomoDate.innerText);
-                                                                if (fomoText === null) {
-                                                                    console.log("invalid date format");
-                                                                }
-                                                                fomoDate.innerText = fomoText.toLocaleDateString("vi-VN");
-                                                            }
-
-                                                            if (!releaseDate) {
-                                                                console.log("Date element not found!");
-                                                                return;
-                                                            }
-
-                                                            const dateText = new Date(releaseDate.innerText);
-                                                            if (dateText === null) {
-                                                                console.log("invalid date format");
-                                                                return;
-                                                            }
-
-                                                            releaseDate.innerText = dateText.toLocaleDateString("vi-VN");
-                                                        });
+                //                if (type === 'book') {
+                //                    overview.classList.add('md:w-2/3');
+                //                    purchase.classList.add('md:w-1/3');
+                //
+                //                } else if (type === 'merch') {
+                //                    overview.classList.add('md:w-3/4');
+                //                    image.classList.add('md:w-1/3');
+                //                    purchase.classList.add('md:w-1/4');
+                //                    desc.classList.add('md:hidden');
+                //
+                //                }
+            });
 
 
-////Close sidebar on resize
-//window.addEventListener('resize', () => {
-//    const clientWidth = document.documentElement.clientWidth;
-//    const sidebar = document.getElementById('cus-sidebar');
-//    sidebar.style.display = 'none';
-//});
+            //Format price display
+            document.addEventListener("DOMContentLoaded", function () {
+                // Select all elements with prices
+                let priceElements = document.querySelectorAll(".price-area p");
 
-// Stock check function for Add to Cart
-                                                        function checkStock(cartQuantity, stockCount, event) {
-                                                            let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
-                                                            if (cartQuantity + quantityToAdd > stockCount) {
-                                                                Swal.fire({
-                                                                    icon: 'error',
-                                                                    title: 'Stock Limit Reached',
-                                                                    text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
-                                                                });
-                                                                event.preventDefault();
-                                                                return false;
-                                                            }
-                                                            return true;
-                                                        }
+                priceElements.forEach(priceEl => {
+                    let priceText = priceEl.innerText.trim(); // Get the text inside span
+                    let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
+                    console.log("formatted price: ", price);
+                    price = Math.round(price);
+                    console.log("Rounded price: ", price);
+
+                    if (!isNaN(price)) {
+                        // Format price with commas (e.g., 4,400 VND)
+                        priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
+                    }
+                });
+            });
+
+
+            //Map final price to forms
+            document.addEventListener("DOMContentLoaded", function () {
+                const finalPriceElement = document.querySelector(".final-price");
+                const purchaseForms = document.querySelectorAll(".purchase-form form");
+                let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
+
+                if (!purchaseForms) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occured: Purchase forms not found',
+                        text: `This product is not ready for purchase right now! Feel free to check the others.`
+                    });
+                    document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                    const stockOut = document.querySelector('.purchase-form p');
+                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
+                    return;
+                }
+
+                //Check if the form inputs and price are there
+                if (!pricesToSubmit || !finalPriceElement) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occured: Unable to process product price',
+                        text: `This product is not ready for purchase right now! Feel free to check the others.`
+                    });
+                    document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                    const stockOut = document.querySelector('.purchase-form p');
+                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
+                    return;
+                }
+
+
+                let priceText = finalPriceElement.innerText;
+                let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
+
+                if (isNaN(priceNumber)) {
+                    console.log("Price is not a number");
+                    return;
+                }
+
+                pricesToSubmit.forEach(function (price) {
+                    price.value = priceNumber;
+                    console.log('Price is', price.value);
+                });
+            });
+
+            //Format date display
+            document.addEventListener('DOMContentLoaded', function () {
+                const releaseDates = document.querySelectorAll('.release-date');
+                const fomoDate = document.querySelector('.fomo-info>span');
+
+                // Formatting functions for Vietnam locale
+                const formatDate = (date) =>
+                    new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                const formatTime = (date) =>
+                    new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
+
+                //ReleaseDate
+                if (releaseDates) {
+                    releaseDates.forEach(rlsDate => {
+                        const rlsDateObj = new Date(rlsDate.innerText.trim());
+                        if (!isNaN(rlsDateObj)) {
+                            rlsDate.innerText = formatDate(rlsDateObj);
+                        }
+                    });
+                }
+
+                //Last modified time
+                if (fomoDate) {
+                    const dateObj = new Date(fomoDate.innerText.trim());
+                    if (!isNaN(dateObj)) {
+                        const today = new Date();
+                        // Remove time from today's date for accurate comparison
+                        today.setHours(0, 0, 0, 0);
+
+                        // Show time if today, otherwise show formatted date
+                        const formattedDate = dateObj.toDateString() === today.toDateString()
+                                ? formatTime(dateObj)
+                                : formatDate(dateObj);
+                        fomoDate.innerText = formattedDate;
+                    }
+                }
+
+            });
+
+            //Format tags-link
+            document.addEventListener('DOMContentLoaded', function () {
+                const tagsLink = document.querySelectorAll('.tags-link');
+                if (tagsLink) {
+                    const type = `${requestScope.type}`;
+                    if (type !== '') {
+                        tagsLink.forEach(link => {
+                            const tag = link.dataset.tag ? link.dataset.tag : "";
+                            let params = `type=${type}`;
+                            params += tag !== type ? "&query=" + tag : "";
+                            link.href = decodeURIComponent("search?" + encodeURIComponent(params));
+                        });
+                    }
+                }
+            });
+
+
+            ////Close sidebar on resize
+            //window.addEventListener('resize', () => {
+            //    const clientWidth = document.documentElement.clientWidth;
+            //    const sidebar = document.getElementById('cus-sidebar');
+            //    sidebar.style.display = 'none';
+            //});
+
+            // Stock check function for Add to Cart
+            function checkStock(cartQuantity, stockCount, event) {
+                let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
+                if (cartQuantity + quantityToAdd > stockCount) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Stock Limit Reached',
+                        text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            }
+            ;
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const creators = document.querySelectorAll('.cre-details-gr');
+                if (creators) {
+                    creators.forEach(cre => {
+                        let content = cre.querySelector('td:nth-child(2)');
+                        if (content) {
+                            let text = content.innerText.trim();
+                            if (text === '') {
+                                cre.remove();
+                            }
+                        }
+                    });
+                }
+            });
 
         </script>
     </body>

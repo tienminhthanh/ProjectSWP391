@@ -326,7 +326,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form action="OrderDetailController" method="POST" ">
+                                    <form action="OrderDetailController" method="POST" >
                                         <input type="hidden" name="orderID" id="popupOrderID">
                                         <input type="hidden" name="productID" id="popupProductID">
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">

@@ -7,12 +7,12 @@ public class Admin extends Account{
     public Admin() {
     }
 
-    public Admin(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+    public Admin(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
     }
 
-    public Admin(int totalEvents, int totalVouchers, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+    public Admin(int totalEvents, int totalVouchers, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
         this.totalEvents = totalEvents;
         this.totalVouchers = totalVouchers;
     }
