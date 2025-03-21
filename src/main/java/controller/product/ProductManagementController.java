@@ -194,6 +194,12 @@ public class ProductManagementController extends HttpServlet {
                 List<Event> eventList = eDAO.getListActiveEvents();
                 request.setAttribute("eventList", eventList);
 
+                Event event = eDAO.getEventByProductID(id);
+                request.setAttribute("event", event);
+
+                boolean isSoldOrPreOrder = productDAO.isSoldOutOrPreOrder(id);
+                request.setAttribute("isSoldOrPreOrder", isSoldOrPreOrder);
+
                 //Check if product is currently featured in an event
                 request.setAttribute("productEventStatus", requestedProduct.getEventEndDate() == null || LocalDate.now().isAfter(requestedProduct.getEventEndDate()) ? "notInEvent" : "inEvent");
                 request.setAttribute("product", requestedProduct);

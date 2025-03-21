@@ -64,7 +64,9 @@
                             </thead>
                             <tbody>
                                 <c:forEach var="product" items="${productList}">
-                                    <tr class="hover:bg-gray-100 cursor-pointer">
+                                    <tr class="border-b cursor-pointer hover:bg-gray-100" 
+                                        onclick="toggleCheckbox('${product.productID}', event)">
+
                                         <td class="border border-gray-300 px-4 py-2">${product.productID}</td>
                                         <td class="px-4 py-3 border border-gray-300 text-center">
                                             <img src="${product.imageURL}" alt="${product.productName}" class="w-16 h-16 object-cover rounded"/>
@@ -76,10 +78,7 @@
                                             <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" /> đ
                                         </td>
                                         <td class="border border-gray-300 px-4 py-2 text-center">
-                                            <input type="checkbox" id="checkbox_${product.productID}" name="selectedProducts" value="${product.productID}" class="w-6 h-6"
-                                                   <c:if test="${product.stockCount == 0}">
-                                                       disabled
-                                                   </c:if> >
+                                            <input type="checkbox" id="checkbox_${product.productID}" name="selectedProducts" value="${product.productID}" class="w-6 h-6">
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -100,40 +99,57 @@
         <script>
             function removeSelectedProducts() {
                 let selectedProducts = [];
-                let errors = [];
-
                 let checkboxes = document.querySelectorAll('input[name="selectedProducts"]:checked');
+
                 for (let checkbox of checkboxes) {
-                    let productID = checkbox.value;
-                    selectedProducts.push(productID);
+                    selectedProducts.push(checkbox.value);
                 }
 
                 if (selectedProducts.length === 0) {
-                    Swal.fire({icon: 'warning', title: 'No Products Selected', text: 'At least 1 product must be selected.'});
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Products Selected',
+                        text: 'At least 1 product must be selected.'
+                    });
                     return;
                 }
 
-                let form = document.getElementById("productForm");
+                // 🔹 Thêm hộp thoại xác nhận trước khi xóa
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you really want to remove the selected products?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete them!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let form = document.getElementById("productForm");
 
-                // 🔹 Xóa input hidden cũ (tránh lỗi chỉ gửi 1 sản phẩm)
-                let oldInputs = form.querySelectorAll('input[type="hidden"]');
-                oldInputs.forEach(input => input.remove());
+                        // 🔹 Xóa input hidden cũ
+                        let oldInputs = form.querySelectorAll('input[type="hidden"]');
+                        oldInputs.forEach(input => input.remove());
 
-                // 🔹 Tạo input hidden mới để gửi dữ liệu lên server
-                selectedProducts.forEach(productID => {
-                    let inputProduct = document.createElement("input");
-                    inputProduct.type = "hidden";
-                    inputProduct.name = "selectedProducts";
-                    inputProduct.value = productID;
-                    form.appendChild(inputProduct);
+                        // 🔹 Thêm input hidden mới
+                        selectedProducts.forEach(productID => {
+                            let inputProduct = document.createElement("input");
+                            inputProduct.type = "hidden";
+                            inputProduct.name = "selectedProducts";
+                            inputProduct.value = productID;
+                            form.appendChild(inputProduct);
+                        });
+
+                        console.log("Submitting form with selectedProducts:", selectedProducts);
+
+                        form.submit();
+                        localStorage.removeItem("selectedProducts");
+                    }
                 });
-
-                console.log("Submitting form with selectedProducts:", selectedProducts);
-
-                form.submit();
-                localStorage.removeItem("selectedProducts");
             }
         </script>
+
         <script>
             function deselectAll() {
                 let checkboxes = document.querySelectorAll('input[name="selectedProducts"]:checked');
@@ -175,5 +191,21 @@
             }
 
         </script>
+        <script>
+            function toggleCheckbox(productID, event) {
+                // Nếu click trực tiếp vào input checkbox thì không làm gì cả
+                if (event.target.tagName.toLowerCase() === "input") {
+                    return;
+                }
+
+                let checkbox = document.getElementById("checkbox_" + productID);
+                checkbox.checked = !checkbox.checked; // Đảo trạng thái checkbox
+            }
+        </script>
+
+
+
+
+
     </body>
 </html>

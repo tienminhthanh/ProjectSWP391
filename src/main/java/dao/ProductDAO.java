@@ -49,6 +49,31 @@ public class ProductDAO {
      * @return
      * @throws SQLException
      */
+    public boolean isSoldOutOrPreOrder(int productId) {
+        String sql = "SELECT p.stockCount, \n"
+                + "       p.specialFilter\n"
+                + "FROM WIBOOKS.dbo.Product p\n"
+                + "WHERE [productID] = ?";
+        int stock = 0;
+        String specialFilter = "";
+        try {
+            Object[] params = {productId};
+            ResultSet rs = context.exeQuery(sql, params);
+            if (rs.next()) {
+                stock = rs.getInt(1);
+                specialFilter = rs.getString(2);
+            }
+            if ("pre-order".equals(specialFilter) || stock == 0) {
+                return true;  // Sản phẩm là Pre-order hoặc hết hàng
+            }
+            return false;  // Sản phẩm còn hàng và không phải Pre-order
+
+        } catch (Exception e) {
+            System.out.println("loi");
+        }
+        return true;
+    }
+
     public Product getProductById(int productID) throws SQLException {
         StringBuilder sql = getCTETables(null).append("SELECT P.*, \n"
                 + "       C.categoryName, \n"
@@ -61,13 +86,16 @@ public class ProductDAO {
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
                 + "WHERE P.productIsActive = 1 AND P.productID = ?\n");
+        try {
+            Object[] params = {productID};
+            ResultSet rs = context.exeQuery(sql.toString(), params);
 
-        Object[] params = {productID};
-        ResultSet rs = context.exeQuery(sql.toString(), params);
+            if (rs.next()) {
+                return mapResultSetToProduct(rs, null);
 
-        if (rs.next()) {
-            return mapResultSetToProduct(rs, null);
-
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return null;
@@ -1714,7 +1742,7 @@ public class ProductDAO {
         return context.exeNonQuery(sql, params) > 0;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         ProductDAO productDAO = new ProductDAO();
         Set<Integer> intSet = Set.of(1, 2, 4, 5);
         System.out.println(intSet);
