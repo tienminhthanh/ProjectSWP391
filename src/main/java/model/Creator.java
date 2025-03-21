@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  *
  * @author anhkc
@@ -51,5 +53,18 @@ public class Creator {
     public Creator setGeneralCategory(String generalCategory) { 
         this.generalCategory = generalCategory; 
         return this; 
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Creator)) return false;
+        Creator other = (Creator) obj;
+        return this.creatorID == other.creatorID; // Compare by creatorID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(creatorID);
     }
 }

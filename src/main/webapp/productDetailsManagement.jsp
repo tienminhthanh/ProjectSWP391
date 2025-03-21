@@ -14,12 +14,29 @@
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
         <title>Product Management - ${product.productName} - WIBOOKS</title>
+        
+        <!-- Preload Fonts for Faster Icon Loading -->
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+        <!-- Load FontAwesome via CSS (Faster than JS Kit) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+        
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.min.css" rel="stylesheet">
 
         <!--Product Details CSS-->
         <link rel="stylesheet" href="css/styleproductDetails.css">
+        
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        <!-- FontAwesome Kit (Optional, but defer it) -->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous" defer></script>
+
+
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
     </head>
     <body class="bg-gray-50 min-h-screen flex">
@@ -37,14 +54,14 @@
                 <div class="detail-container">
 
                     <div class="main-area flex flex-row md:flex-wrap items-center w-full md:items-stretch">
-
+                        
                         <!--Change to equal sign later-->
                         <!--Overview-->
-                        <div class="overview-area w-full min-w-3/5 flex-grow mb-4 bg-white">
+                        <div class="overview-area w-full ${type == 'merch' ? 'md:w-2/3' : 'md:w-3/4'} min-w-3/5 flex-grow mb-4 bg-white">
                             <div class="overview-inner md:flex md:flex-row">
                                 <!--Image-->
-                                <div class="image-area">
-                                    <img class="mx-auto" src="${product.imageURL}" alt="${product.productName}">
+                                <div class="image-area ${type == 'merch' ? 'w-full': 'md:w-1/3'}">
+                                    <img class="mx-auto object-contain" src="${product.imageURL}" alt="${product.productName}">
                                 </div>
 
                                 <c:if test="${type =='book'}">
@@ -65,10 +82,10 @@
                                 </c:if>
                             </div>
                         </div>
-
+                                
 
                         <!--Title - purchase-->
-                        <div class="purchase-area w-full flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
+                        <div class="purchase-area w-full ${type == 'merch' ? 'md:w-1/3' : 'md:w-1/4'} flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
                             <!--Title-->
                             <div class="big-product-name bg-white p-2 border-b-2 border-solid border-black/10">
                                 <div class="big-product-name-inner w-full text-base md:text-sm lg:text-base">
@@ -149,9 +166,9 @@
 
                         </div>
 
-                        <!--Description-->
+                        <!--Common Description-->
 
-                        <div class="description-area text-md leading-loose mb-4 block desc-common">
+                        <div class="description-area text-md leading-loose mb-4 block desc-common ${type == 'book' ? 'md:hidden' : ''}">
                             <h3 class="description-title text-lg">Description</h3>
 
                             <p class="description-content p-2 m-2">${product.description}</p>
@@ -171,39 +188,24 @@
                                 <c:when test="${type=='book'}">
                                     <table class="m-2">
                                         <tr><td>Title</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
+                                        <!--Fill by javascript-->
                                         <tr class="cre-details-gr"><td>Author</td>
-                                            <td>
-                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                    ${cre.creatorRole eq 'author' ? cre.creatorName : ''}
-                                                </c:forEach>
-
-                                            </td>
+                                            <td></td>
                                         </tr>
 
+                                        <!--Fill by javascript-->
                                         <tr class="cre-details-gr"><td>Artist</td>
-                                            <td>
-                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                    ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
-                                                </c:forEach>
-
-                                            </td>
+                                            <td></td>
                                         </tr>
 
                                         <tr><td>Publisher</td>
                                             <td>${not empty product.publisher && not empty product.publisher.publisherName ? product.publisher.publisherName : 'Unknown'}</td>
                                         </tr>
 
-                                        <tr>
+                                        <!--Fill by javascript-->
+                                        <tr class="gen-details-gr">
                                             <td>Genre</td>
-                                            <td>
-                                                ${product.specificCategory.categoryName}, 
-                                                <c:forEach var= "genre" items="${genreList}" varStatus="loopStatus">
-                                                    ${genre.genreName}
-                                                    <c:if test="${!loopStatus.last}">, </c:if>
-                                                </c:forEach>
-                                            </td>
+                                            <td></td>
                                         </tr>
 
                                         <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
@@ -230,25 +232,14 @@
                                 <c:when test= "${type=='merch'}">
                                     <table class="m-2">
                                         <tr><td>Product Name</td><td>${not empty product.productName ? product.productName : 'Unknown'}</td></tr>
+                                        <!--Fill by javascript-->
                                         <tr class="cre-details-gr"><td>Sculptor</td>
-                                            <td>
-                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                    ${cre.creatorRole eq 'sculptor' ? cre.creatorName : ''}
-                                                </c:forEach>
-
-                                            </td>
+                                            <td></td>
                                         </tr>
 
-
+                                        <!--Fill by javascript-->
                                         <tr class="cre-details-gr"><td>Artist</td>
-                                            <td>
-                                                <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                    <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                    ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
-                                                </c:forEach>
-
-                                            </td>
+                                            <td></td>
                                         </tr>
 
                                         <tr><td>Brand</td><td>${not empty product.brand and not empty product.brand.brandName ? product.brand.brandName : 'Unknown'}</td></tr>
@@ -324,8 +315,6 @@
 
         </div>
 
-        <script src="https://cdn.tailwindcss.com"></script>       
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
                                         function confirmAction(message, url) {
                                             Swal.fire({
@@ -384,41 +373,6 @@
                                         });
 
 
-                                        //            Adjust layout based product type
-                                        document.addEventListener("DOMContentLoaded", function () {
-                                            const type = "${requestScope.type}";
-                                            const purchase = document.querySelector(".purchase-area");
-                                            const overview = document.querySelector(".overview-area");
-                                            const image = document.querySelector(".image-area");
-                                            const desc = document.querySelector(".desc-common");
-                                            if (!type) {
-                                                return;
-                                            }
-
-                                            if (type === 'book') {
-                                                overview.classList.add('md:w-3/4');
-                                                image.classList.add('md:w-1/3');
-
-                                                purchase.classList.add('md:w-1/4');
-                                                desc.classList.add('md:hidden');
-                                            } else if (type === 'merch') {
-                                                overview.classList.add('md:w-2/3');
-                                                purchase.classList.add('md:w-1/3');
-
-                                            }
-
-                                            //                if (type === 'book') {
-                                            //                    overview.classList.add('md:w-2/3');
-                                            //                    purchase.classList.add('md:w-1/3');
-                                            //
-                                            //                } else if (type === 'merch') {
-                                            //                    overview.classList.add('md:w-3/4');
-                                            //                    image.classList.add('md:w-1/3');
-                                            //                    purchase.classList.add('md:w-1/4');
-                                            //                    desc.classList.add('md:hidden');
-                                            //
-                                            //                }
-                                        });
 
 
                                         //Format price display
@@ -469,26 +423,61 @@
                                                 return false;
                                             }
                                             return true;
-                                        };
-                                        
+                                        }
+                                        ;
 
+                                        //Format creators display
                                         document.addEventListener('DOMContentLoaded', function () {
                                             const creators = document.querySelectorAll('.cre-details-gr');
+                                            const creStrs = [
+                                                <c:forEach var="c" items="${requestScope.creatorList}">
+                                                            {"role": `${c.creatorRole}`, "name": `${c.creatorName}`},
+                                                </c:forEach>
+                                            ];
                                             if (creators) {
                                                 creators.forEach(cre => {
+                                                    let title = cre.querySelector('td:nth-child(1)');
                                                     let content = cre.querySelector('td:nth-child(2)');
-                                                    if (content) {
-                                                        let text = content.innerText.trim();
-                                                        text = text !== '' ? text : 'Unknown';
-                                                        content.innerText = text;
+                                                    if (content && title) {
+                                                        let title_text = title.innerText;
+                                                        let content_text = content.innerText;
+                                                        creStrs.forEach(cre_obj=>{
+                                                            content_text += 
+                                                                    title_text.toLowerCase() === cre_obj["role"] ? 
+                                                                    cre_obj["name"] + ', '
+                                                                    : '';
+                                                        });
+                                                        content.innerText = content_text ? content_text.replace(/,\s*$/,'') : 'Unknown';
                                                     }
                                                 });
                                             }
                                         });
+                                        
+                                        //Format genres display
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const cat_gens = document.querySelector('.gen-details-gr');
+                                            if(!cat_gens){
+                                                return;
+                                            }
+                                            const genStrs = [
+                                                <c:forEach var="g" items="${requestScope.genreList}">
+                                                     `${g.genreName}`,
+                                                </c:forEach>
+                                            ];
+                                            const catStr = `${requestScope.product.specificCategory.categoryName}`;
+                                            let content = cat_gens.querySelector('td:nth-child(2)');
+                                            if(content){
+                                                let text = content.innerText;
+                                                text = !catStr && genStrs.length === 0 ? 'Unknown' 
+                                                      : genStrs.length === 0 ? catStr 
+                                                      : [catStr,...genStrs].join(', '); 
+                                                content.innerText = text;
+                                            }
+                                            
+                                        });
 
 
         </script>
-        <!--Script for include icons-->
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+        
     </body>
 </html>

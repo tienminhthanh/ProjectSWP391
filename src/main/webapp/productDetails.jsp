@@ -17,20 +17,47 @@
         </c:if>
 
 
+        <!-- Preload Fonts for Faster Icon Loading -->
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+        <!-- Load FontAwesome via CSS (Faster than JS Kit) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 
         <!--Footer css-->
+        <link href="css/styleFooter.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-        <link href="css/styleFooter.css" rel="stylesheet">
 
         <!--Product Details CSS-->
         <link rel="stylesheet" href="css/styleproductDetails.css">
 
         <!--Customer sidebar-->
         <link rel="stylesheet" href="css/styleCustomerSidebar.css">
+        
+         <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!--Header script-->
+        <script src="js/scriptHeader.js" defer></script>
 
+        <!--Footer script-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous" defer></script>
+
+        <!--customer sidebar-->
+        <script src="js/scriptCusSidebar.js" defer></script>
+
+         <!-- FontAwesome Kit (Optional, but defer it) -->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous" defer></script>
+
+       
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     </head>
 
     <body>
@@ -55,11 +82,11 @@
 
                                 <!--Change to equal sign later-->
                                 <!--Overview-->
-                                <div class="overview-area w-full min-w-3/5 flex-grow mb-4 bg-white">
+                                <div class="overview-area w-full ${type == 'merch' ? 'md:w-2/3' : 'md:w-3/4'} min-w-3/5 flex-grow mb-4 bg-white">
                                     <div class="overview-inner md:flex md:flex-row">
                                         <!--Image-->
-                                        <div class="image-area">
-                                            <img class="mx-auto" src="${product.imageURL}" alt="${product.productName}">
+                                        <div class="image-area ${type == 'merch' ? 'w-full': 'md:w-1/3'}">
+                                            <img class="mx-auto object-contain" src="${product.imageURL}" alt="${product.productName}">
                                         </div>
 
                                         <c:if test="${type =='book'}">
@@ -81,9 +108,8 @@
                                     </div>
                                 </div>
 
-
                                 <!--Title - purchase-->
-                                <div class="purchase-area w-full flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
+                                <div class="purchase-area w-full ${type == 'merch' ? 'md:w-1/3' : 'md:w-1/4'} flex-grow md:px-4 mb-4 bg-white border-l-2 border-solid border-black/10">
                                     <!--Title-->
                                     <div class="big-product-name bg-white p-2 border-b-2 border-solid border-black/10">
                                         <div class="big-product-name-inner w-full text-base md:text-sm lg:text-base">
@@ -142,67 +168,75 @@
 
                                     <!--Purchase form-->
                                     <div class="purchase-form w-[90%] md:w-full bg-white mx-auto">
-                                        <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
-                                            <c:choose>
-                                                <c:when test="${product.specialFilter != 'pre-order'}">
-                                                    <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
-                                                    <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
-                                                </c:when>
-                                                <c:when test="${product.stockCount <= 10}">
-                                                    <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
-                                                    </c:when>
-
-                                            </c:choose>
-                                        </div>
-
                                         <c:choose>
-                                            <c:when test="${product.specialFilter == 'pre-order'}">
-
-                                                <!--Quantity = 1 for pre-order-->
-                                                <form action="preorder" method="post">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" value="1"/>
-                                                    <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
-                                                </form>
+                                            <c:when test="${product.stockCount eq 0 and product.specialFilter ne 'pre-order'}">
+                                                <p class="text-center text-xl text-gray-400 py-8 md:px-2 bg-gray-100 my-16 max-w-full">
+                                                    OUT OF STOCK
+                                                </p>
                                             </c:when>
                                             <c:otherwise>
-                                                <!-- Calculate cart quantity from session -->
-                                                <c:set var="cartQuantity" value="0" />
-                                                <c:forEach var="cartItem" items="${sessionScope.cartItems}">
-                                                    <c:if test="${cartItem.productID == product.productID}">
-                                                        <c:set var="cartQuantity" value="${cartItem.quantity}" />
-                                                    </c:if>
-                                                </c:forEach>
+                                                <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
+                                                    <c:choose>
+                                                        <c:when test="${product.specialFilter != 'pre-order'}">
+                                                            <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
+                                                            <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
+                                                        </c:when>
+                                                        <c:when test="${product.stockCount <= 10}">
+                                                            <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
+                                                            </c:when>
 
-                                                <!-- Add to Cart form with stock check -->
-                                                <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${product.stockCount}, event)">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}">
-                                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
-                                                </form>
-                                                <form action="OrderController" method="get">
-                                                    <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                                                    <input type="hidden" name="productID" value="${product.productID}"/>
-                                                    <input type="hidden" name="priceWithQuantity"/>
-                                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                                    <input type="hidden" name="quantity" class="quantity"/>
-                                                    <button name="action" value="buyNow" onclick="openLoginPopup()" class="buy-now">Buy Now</button>
-                                                </form>
+                                                    </c:choose>
+                                                </div>
+
+                                                <c:choose>
+                                                    <c:when test="${product.specialFilter == 'pre-order'}">
+
+                                                        <!--Quantity = 1 for pre-order-->
+                                                        <form action="preorder" method="post">
+                                                            <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                            <input type="hidden" name="productID" value="${product.productID}"/>
+                                                            <input type="hidden" name="priceWithQuantity"/>
+                                                            <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                            <input type="hidden" name="quantity" value="1"/>
+                                                            <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
+                                                        </form>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <!-- Calculate cart quantity from session -->
+                                                        <c:set var="cartQuantity" value="0" />
+                                                        <c:forEach var="cartItem" items="${sessionScope.cartItems}">
+                                                            <c:if test="${cartItem.productID == product.productID}">
+                                                                <c:set var="cartQuantity" value="${cartItem.quantity}" />
+                                                            </c:if>
+                                                        </c:forEach>
+
+                                                        <!-- Add to Cart form with stock check -->
+                                                        <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${product.stockCount}, event)">
+                                                            <input type="hidden" name="customerID" value="${sessionScope.account.accountID}">
+                                                            <input type="hidden" name="productID" value="${product.productID}"/>
+                                                            <input type="hidden" name="priceWithQuantity"/>
+                                                            <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                            <input type="hidden" name="quantity" class="quantity"/>
+                                                            <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
+                                                        </form>
+                                                        <form action="OrderController" method="get">
+                                                            <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
+                                                            <input type="hidden" name="productID" value="${product.productID}"/>
+                                                            <input type="hidden" name="priceWithQuantity"/>
+                                                            <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                            <input type="hidden" name="quantity" class="quantity"/>
+                                                            <button name="action" value="buyNow" onclick="openLoginPopup()" class="buy-now">Buy Now</button>
+                                                        </form>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
 
                                 </div>
 
-                                <!--Description-->
-
-                                <div class="description-area text-md leading-loose mb-4 block desc-common">
+                                <!--Common Description-->
+                                <div class="description-area text-md leading-loose mb-4 block desc-common ${type == 'book' ? 'md:hidden' : ''}">
                                     <h3 class="description-title text-lg">Description</h3>
 
                                     <p class="description-content p-2 m-2">${product.description}</p>
@@ -222,37 +256,24 @@
                                         <c:when test="${type=='book'}">
                                             <table class="m-2">
                                                 <tr><td>Title</td><td>${product.productName}</td></tr>
+                                                <!--Fill by javascript-->
                                                 <tr class="cre-details-gr"><td>Author</td>
                                                     <td>
-                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                            ${cre.creatorRole eq 'author' ? cre.creatorName : ''}
-                                                        </c:forEach>
-
                                                     </td>
                                                 </tr>
-
+                                                <!--Fill by javascript-->
                                                 <tr class="cre-details-gr"><td>Artist</td>
                                                     <td>
-                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                            ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
-                                                        </c:forEach>
-
                                                     </td>
                                                 </tr>
                                                 <c:if test="${not empty product.publisher && not empty product.publisher.publisherName}">
                                                     <tr><td>Publisher</td><td>${product.publisher.publisherName}</td></tr>
                                                 </c:if>
-                                                <tr>
+
+                                                <!--Fill by javascript-->
+                                                <tr class="gen-details-gr">
                                                     <td>Genre</td>
-                                                    <td>
-                                                        ${product.specificCategory.categoryName}, 
-                                                        <c:forEach var= "genre" items="${genreList}" varStatus="loopStatus">
-                                                            ${genre.genreName}
-                                                            <c:if test="${!loopStatus.last}">, </c:if>
-                                                        </c:forEach>
-                                                    </td>
+                                                    <td></td>
                                                 </tr>
 
                                                 <tr><td>Release Date</td><td class="release-date">${product.releaseDate}</td></tr>
@@ -280,23 +301,14 @@
                                         <c:when test= "${type=='merch'}">
                                             <table class="m-2">
                                                 <tr><td>Product Name</td><td>${product.productName}</td></tr>
+                                                <!--Fill by javascript-->
                                                 <tr class="cre-details-gr"><td>Sculptor</td>
                                                     <td>
-                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                            ${cre.creatorRole eq 'sculptor' ? cre.creatorName : ''}
-                                                        </c:forEach>
-
                                                     </td>
                                                 </tr>
-
+                                                <!--Fill by javascript-->
                                                 <tr class="cre-details-gr"><td>Artist</td>
                                                     <td>
-                                                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
-                                                            <c:if test="${loopStatus.index > 0}">, </c:if>
-                                                            ${cre.creatorRole eq 'artist' ? cre.creatorName : ''}
-                                                        </c:forEach>
-
                                                     </td>
                                                 </tr>
 
@@ -413,46 +425,23 @@
         </div>
 
         <script>
-            document.getElementById("openChat").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.remove("hidden");
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("openChat").addEventListener("click", function () {
+                    document.getElementById("chatPopup").classList.remove("hidden");
+                });
+
+                document.getElementById("closeChatAI").addEventListener("click", function () {
+                    document.getElementById("chatPopup").classList.add("hidden");
+                });
             });
 
-            document.getElementById("closeChatAI").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.add("hidden");
-            });
-        </script>
-
-        <!--Icon-->
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
-
-        <!--Header script-->
-        <script src="js/scriptHeader.js"></script>
-
-        <!--Footer script-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
 
 
-        <!--customer sidebar-->
-        <script src="js/scriptCusSidebar.js"></script>
-
-        <!--Tailwind-->
-        <script src="https://cdn.tailwindcss.com">
-        </script>
-
-        <!-- SweetAlert2 -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        <script>
             //Map input quant to purchase quant in forms
             document.addEventListener("DOMContentLoaded", function () {
 
-                // Replace purchase forms with 'OUT OF STOCK' if stockcount == 0
-                if (${product.stockCount == 0 && product.specialFilter != 'pre-order'}) {
-                    document.querySelector('.purchase-form').innerHTML = `<p>OUT OF STOCK</p>`;
-                    const stockOut = document.querySelector('.purchase-form p');
-                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
+                // Stockcount = 0 => Do nothing
+                if (`${product.stockCount}` === '0' && `${product.specialFilter}` !== 'pre-order') {
                     return;
                 }
 
@@ -512,41 +501,6 @@
 
             });
 
-            //            Adjust layout based product type
-            document.addEventListener("DOMContentLoaded", function () {
-                const type = "${requestScope.type}";
-                const purchase = document.querySelector(".purchase-area");
-                const overview = document.querySelector(".overview-area");
-                const image = document.querySelector(".image-area");
-                const desc = document.querySelector(".desc-common");
-                if (!type) {
-                    return;
-                }
-
-                if (type === 'book') {
-                    overview.classList.add('md:w-3/4');
-                    image.classList.add('md:w-1/3');
-
-                    purchase.classList.add('md:w-1/4');
-                    desc.classList.add('md:hidden');
-                } else if (type === 'merch') {
-                    overview.classList.add('md:w-2/3');
-                    purchase.classList.add('md:w-1/3');
-
-                }
-
-                //                if (type === 'book') {
-                //                    overview.classList.add('md:w-2/3');
-                //                    purchase.classList.add('md:w-1/3');
-                //
-                //                } else if (type === 'merch') {
-                //                    overview.classList.add('md:w-3/4');
-                //                    image.classList.add('md:w-1/3');
-                //                    purchase.classList.add('md:w-1/4');
-                //                    desc.classList.add('md:hidden');
-                //
-                //                }
-            });
 
 
             //Format price display
@@ -696,24 +650,65 @@
                 }
                 return true;
             }
-            ;
 
+            //Format creators display
             document.addEventListener('DOMContentLoaded', function () {
                 const creators = document.querySelectorAll('.cre-details-gr');
+                const creStrs = [
+            <c:forEach var="c" items="${requestScope.creatorList}">
+                    {"role": `${c.creatorRole}`, "name": `${c.creatorName}`},
+            </c:forEach>
+                ];
                 if (creators) {
                     creators.forEach(cre => {
+                        let title = cre.querySelector('td:nth-child(1)');
                         let content = cre.querySelector('td:nth-child(2)');
-                        if (content) {
-                            let text = content.innerText.trim();
-                            if (text === '') {
+                        if (content && title) {
+                            let title_text = title.innerText;
+                            let content_text = content.innerText;
+                            creStrs.forEach(cre_obj => {
+                                content_text +=
+                                        title_text.toLowerCase() === cre_obj["role"] ?
+                                        cre_obj["name"] + ', '
+                                        : '';
+                            });
+
+                            if (content_text) {
+                                content.innerText = content_text.replace(/,\s*$/, '');
+                            } else {
                                 cre.remove();
                             }
+
                         }
                     });
                 }
             });
 
+            //Format genres display
+            document.addEventListener('DOMContentLoaded', function () {
+                const cat_gens = document.querySelector('.gen-details-gr');
+                if (!cat_gens) {
+                    return;
+                }
+                const genStrs = [
+            <c:forEach var="g" items="${requestScope.genreList}">
+                    `${g.genreName}`,
+            </c:forEach>
+                ];
+                const catStr = `${requestScope.product.specificCategory.categoryName}`;
+                let content = cat_gens.querySelector('td:nth-child(2)');
+                if (content) {
+                    let text = content.innerText;
+                    text = !catStr && genStrs.length === 0 ? ''
+                            : genStrs.length === 0 ? catStr
+                            : [catStr, ...genStrs].join(', ');
+                    content.innerText = text ? text : 'Uncategorized';
+                }
+
+            });
+
         </script>
+       
     </body>
 
 </html>

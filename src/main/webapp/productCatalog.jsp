@@ -15,6 +15,14 @@
             ${pageTitle} - WIBOOKS
         </title>
 
+        <!-- Preload Fonts for Faster Icon Loading -->
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+        <!-- Load FontAwesome via CSS (Faster than JS Kit) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+
         <!--Header css-->
         <link href="css/styleHeader.css" rel="stylesheet">
 
@@ -26,11 +34,32 @@
         <!--Product card css-->
         <link rel="stylesheet" href="css/styleProductCard.css"/>
 
-        <!--Search css-->
+        <!--Catalog css-->
         <link rel="stylesheet" href="css/styleCatalog.css"/>
 
         <!--Customer Sidebar-->
         <link href="css/styleCustomerSidebar.css" rel="stylesheet">
+
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!--Product Card-->
+        <script src="js/scriptProductCard.js" defer></script>
+        <!--Header script-->
+        <script src="js/scriptHeader.js" defer></script>
+        <!--Customer sidebar script-->
+        <script src="js/scriptCusSidebar.js" defer></script>
+        <script src="js/scriptCusSideBarNOTDetails.js" defer></script>
+        <!--Script for include icons-->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous" defer></script>
+
+
+        <!--Footer script-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous" defer></script>
+        
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     </head>
     <body>
         <!--Header-->
@@ -112,7 +141,7 @@
                     <jsp:include page="popuplogin.jsp"/>
                 </c:if>
 
-               
+
             </main>
         </div>
 
@@ -121,32 +150,8 @@
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
-        
-        <!--Script for include icons-->
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
-        <!--Header script-->
-        <script src="js/scriptHeader.js"></script>
 
-        <!--Footer script-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
-
-        <!--Tailwind-->
-        <script src="https://cdn.tailwindcss.com">
-        </script>
-
-        <!--Product Card-->
-        <script src="js/scriptProductCard.js"></script>
-
-        <!--Customer sidebar script-->
-        <script src="js/scriptCusSidebar.js"></script>
-        <script src="js/scriptCusSideBarNOTDetails.js"></script>
-        
-         <!-- SweetAlert2 -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        
         <script>
 
             //Display current sort option
@@ -191,9 +196,9 @@
             });
 
             //            Pop-up message
-            document.addEventListener('DOMContentLoaded',function(){
+            document.addEventListener('DOMContentLoaded', function () {
                 const reqMessage = `${requestScope.message}`;
-                if(reqMessage){
+                if (reqMessage) {
                     Swal.fire({
                         icon: 'warning',
                         text: reqMessage
@@ -204,6 +209,7 @@
 
 
         </script>
+        
 
 
     </body>

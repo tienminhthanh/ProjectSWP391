@@ -13,30 +13,42 @@
             WIBOOKS - More Than Just Books
         </title>
 
-        <!--Script for include icons-->
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
+        <!-- Preload Fonts for Faster Icon Loading -->
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+        <!-- Load FontAwesome via CSS (Faster than JS Kit) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
 
 
-        <!--Unknown import-->
-        <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>-->
-
+        <!--Tailwind-->
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        <!-- Stylesheets -->
         <link rel="stylesheet" href="css/styleHome.css"/>
-        <!--Header css-->
-        <link href="css/styleHeader.css" rel="stylesheet">
-
-        <!--Footer css-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-        <link href="css/styleFooter.css" rel="stylesheet">
-
-        <!--Customer Sidebar-->
-        <link href="css/styleCustomerSidebar.css" rel="stylesheet">
-
-        <!--Product card css-->
+        <link rel="stylesheet" href="css/styleHeader.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/styleFooter.css"/>
+        <link rel="stylesheet" href="css/styleCustomerSidebar.css"/>
         <link rel="stylesheet" href="css/styleProductCard.css"/>
-
-        <!--Banner carousel-->
+        
+        
+         <!-- Alpine.js for interactive UI -->
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+        <!-- Custom Scripts (Defer to avoid render blocking) -->
+        <script src="js/scriptProductCard.js" defer></script>
+        <script src="js/scriptVoucherDateEnd.js" defer></script>
+        <script src="js/scriptCusSidebar.js" defer></script>
+        <script src="js/scriptHeader.js" defer></script>
+        <script src="js/scriptCusSideBarNOTDetails.js" defer></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" crossorigin="anonymous" defer></script>
+        <!-- FontAwesome Kit (Optional, but defer it) -->
+        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous" defer></script>
+         <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
     </head>
     <body class="bg-gray-100">
         <div class="header-container">
@@ -44,7 +56,7 @@
         </div>
 
         <div class="banner-container">
-                <jsp:include page="banner.jsp" flush="true"/> 
+            <jsp:include page="banner.jsp" flush="true"/> 
         </div>
 
         <div class="flex flex-col md:flex-row">
@@ -52,7 +64,7 @@
 
             <!--Main section-->
             <main class="w-full md:w-5/6 p-3 flex flex-col">
-                    
+
                 <!--Popular Searches-->
                 <div class="my-4 bg-white popular-search-area border-t-4 border-orange-500">
 
@@ -394,7 +406,7 @@
                     <jsp:include page="popuplogin.jsp"/>
                 </c:if>
 
-               
+
             </main>
         </div>
         <jsp:include page="footer.jsp"/>
@@ -418,60 +430,34 @@
             </div>
         </div>
 
-        <script>
-            document.getElementById("openChat1").addEventListener("click", function () {
-                document.getElementById("chatPopup1").classList.remove("hidden");
-            });
-
-            document.getElementById("closeChatAI1").addEventListener("click", function () {
-                document.getElementById("chatPopup1").classList.add("hidden");
-            });
-        </script>
-
-
-        
-        <!--Script for include icons-->
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
-
-        <!--Header script-->
-        <script src="js/scriptHeader.js"></script>
-
-        <!--Footer script-->
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
-
-        <!--Customer sidebar script-->
-        <script src="js/scriptCusSidebar.js"></script>
-        <script src="js/scriptCusSideBarNOTDetails.js"></script>
-
-        <!--Unknown import-->
-        <!--        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-                        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-                crossorigin="anonymous"></script>-->
-
-
-        <!--Product Card-->
-        <script src="js/scriptProductCard.js"></script>
-
-        <!--Voucher Date End-->
-        <script src="js/scriptVoucherDateEnd.js"></script>
-        
-        <!--Tailwind-->
-        <script src="https://cdn.tailwindcss.com">
-        </script>
-        
-         <!-- SweetAlert2 -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 
         <script>
-            
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+                document.getElementById("openChat1").addEventListener("click", function () {
+                    document.getElementById("chatPopup1").classList.remove("hidden");
+                });
+
+                document.getElementById("closeChatAI1").addEventListener("click", function () {
+                    document.getElementById("chatPopup1").classList.add("hidden");
+                });
+
+                document.getElementById("openChat").addEventListener("click", function () {
+                    document.getElementById("chatPopup").classList.remove("hidden");
+                });
+
+                document.getElementById("closeChatAI").addEventListener("click", function () {
+                    document.getElementById("chatPopup").classList.add("hidden");
+                });
+
+            });
+
+
 //            Pop-up message
-            document.addEventListener('DOMContentLoaded',function(){
+            document.addEventListener('DOMContentLoaded', function () {
                 const reqMessage = `${requestScope.message}`;
-                if(reqMessage){
+                if (reqMessage) {
                     Swal.fire({
                         icon: 'warning',
                         text: reqMessage
@@ -479,14 +465,7 @@
                 }
             });
 
-            
-            document.getElementById("openChat").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.remove("hidden");
-            });
 
-            document.getElementById("closeChatAI").addEventListener("click", function () {
-                document.getElementById("chatPopup").classList.add("hidden");
-            });
 
         </script>
 
