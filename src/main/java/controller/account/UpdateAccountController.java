@@ -87,11 +87,16 @@ String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("
 
             }
 
-            if ("addAddress".equals(actionType)) {
+           if ("addAddress".equals(actionType)) {
                 accountDAO.insertNewAddress(loggedInAccount.getAccountID(), selectedAddress);
+                response.sendRedirect("updateAccount?username="+loggedInAccount.getUsername());
+                return;
             } else if ("deleteAddress".equals(actionType)) {
                 int id = Integer.parseInt(selectedAddress);
                 accountDAO.deleteAddress(id);
+                response.sendRedirect("updateAccount?username="+loggedInAccount.getUsername());
+                return;
+               
             }
             // Cập nhật thông tin tài khoản
 
