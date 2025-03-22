@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
-import model.OrderProduct;
 
 /**
  *
@@ -96,7 +95,7 @@ public class OrderDetailController extends HttpServlet {
             request.getRequestDispatcher("OrderDetailView.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
-              request.setAttribute("errorMessage1", "Something went wrong. Please try again later!");
+            request.setAttribute("errorMessage1", "Something went wrong. Please try again later!");
 //            response.sendRedirect("error.jsp");
             request.getRequestDispatcher("OrderListView.jsp").forward(request, response);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error fetching order list.");
@@ -115,10 +114,8 @@ public class OrderDetailController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-
         String status = "completed";
         String action = request.getParameter("action");
-
         OrderDAO orderDao = new OrderDAO();
 
         try {

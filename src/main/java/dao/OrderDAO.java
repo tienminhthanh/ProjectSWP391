@@ -297,7 +297,7 @@ public class OrderDAO {
     //choose
     public List<OrderProduct> getOrderProductByOrderID(int orderID) throws SQLException {
         List<OrderProduct> OrderProductList = new ArrayList<>();
-        String sql = "SELECT Order_Product.orderID, Order_Product.productID, Order_Product.orderProductQuantity, Order_Product.orderProductPrice, Product.productName, Product.imageURL, Product.description\n"
+        String sql = "SELECT Order_Product.*, Product.productName, Product.imageURL, Product.description\n"
                 + "FROM     Order_Product INNER JOIN\n"
                 + "                  Product ON Order_Product.productID = Product.productID\n"
                 + "WHERE  (Order_Product.orderID = ?)";
@@ -316,7 +316,6 @@ public class OrderDAO {
         }
         return OrderProductList;
     }
-//choose
 
     public OrderInfo getOrderByID(int orderID, int customerID) throws SQLException {
         String sql = "SELECT OrderInfo.*\n"
@@ -429,9 +428,12 @@ public class OrderDAO {
     //choose
     private OrderProduct mapResultSetToOrderProduct(ResultSet rs) throws SQLException {
         return new OrderProduct(
+                rs.getInt("orderID"),
                 rs.getInt("productID"),
-                rs.getInt("orderProductQuantity"),
-                rs.getInt("orderProductPrice")
+                rs.getInt("quantity"),
+                rs.getInt("priceWithQuantity"),
+                rs.getInt("rating"),
+                rs.getString("comment")    
         );
     }
 //choose
@@ -632,7 +634,7 @@ public class OrderDAO {
     public boolean updateRatingForProduct(int orderID, int productID, int rate) throws SQLException {
         String sql = "UPDATE Order_Product SET rating =  ? WHERE productID = ? and orderID = ?";
         Object[] params = {rate, productID, orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
+        int rowsAffected = context.exeNonQuery(sql, params);    
         return rowsAffected > 0;
     }
 // review

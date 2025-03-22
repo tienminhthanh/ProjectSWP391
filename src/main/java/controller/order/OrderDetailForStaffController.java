@@ -154,8 +154,9 @@ public class OrderDetailForStaffController extends HttpServlet {
         String cusID = request.getParameter("customerID");
 
         try {
-            int customerID = Integer.parseInt(cusID);
+             orderDao.restoreProductStockByOrderID(orderID);
             orderDao.updateOrderstatus(orderID, status);
+           
             orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
             // Send notification to shipper
             Notification notification = new Notification();

@@ -37,6 +37,7 @@
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
                 <h1 class="text-lg font-semibold">Deliver</h1>
             </div>
+
             <div class="flex items-center space-x-6">
 <!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
                 <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}" class="relative">
