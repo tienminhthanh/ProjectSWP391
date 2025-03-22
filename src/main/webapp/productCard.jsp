@@ -1,4 +1,6 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <div class="product-card w-32 md:w-48">
 
     <!-- Sale Label (Shown only if on sale) -->
@@ -59,11 +61,17 @@
             <p class="product-price">
                 <c:choose>
                     <c:when test="${currentProduct.discountPercentage != 0}">
-                        <span class="discount-price">${currentProduct.price * (100-currentProduct.discountPercentage)/100}</span>
-                        <span class="original-price">${currentProduct.price}</span>
+                        <span class="discount-price">
+                            <fmt:formatNumber value="${currentProduct.price * (100-currentProduct.discountPercentage)/100}" type="number" groupingUsed="true" /> đ
+                        </span>
+                        <span class="original-price">
+                            <fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ
+                        </span>
                     </c:when>
                     <c:otherwise>
-                        <span class="discount-price">${currentProduct.price}</span>
+                        <span class="discount-price">
+                            <fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ
+                        </span>
                     </c:otherwise>
                 </c:choose>
             </p>
@@ -76,7 +84,7 @@
 
             <!-- Price Section -->
             <p class="product-price">
-                <span class="discount-price">${currentProduct.price}</span>
+                <span class="discount-price"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ</span>
             </p>
         </c:otherwise>
     </c:choose>
@@ -89,9 +97,6 @@
         <c:when test="${currentProduct.specialFilter == 'pre-order'}">
             <p class="fomo-info release-date">Release on: <span>${currentProduct.releaseDate}</span></p>
         </c:when>
-        <c:otherwise>
-            <p class="fomo-info release-date hidden">Release on: <span>${currentProduct.releaseDate}</span></p>
-        </c:otherwise>
     </c:choose>
 
     <!-- Add to Cart Button Logic -->
@@ -104,7 +109,7 @@
 
 
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
-    <form action="cart" method="post">
+    <form action="cart" method="post" onsubmit="return checkStockCard(${cartQuantity}, ${currentProduct.stockCount}, event)">
         <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
         <input type="hidden" name="productID" value="${currentProduct.productID}">
         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
@@ -112,7 +117,7 @@
         <input type="hidden" name="priceWithQuantity">
         <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order' 
                       && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
-            <button name="action" value="add" onclick="openLoginPopup()" type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+              <button name="action" value="add" ${empty sessionScope.account ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </c:if>
     </form>
 
@@ -123,22 +128,5 @@
 
 </div>
 
-<!-- Include SweetAlert2 Library -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- JavaScript for stock check and SweetAlert2 popup -->
-<script>
-                function checkStock(cartQuantity, stockCount, event) {
-                    let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
-                    if (cartQuantity + quantityToAdd > stockCount) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Stock Limit Reached',
-                            text: `The quantity in your cart has reached the stock limit. The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
-                        });
-                        event.preventDefault();
-                        return false;
-                    }
-                    return true;
-                }
-</script>
+

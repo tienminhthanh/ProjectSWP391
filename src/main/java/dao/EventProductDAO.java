@@ -93,7 +93,7 @@ public class EventProductDAO {
                 + "    p.adminID, \n"
                 + "    p.keywords, \n"
                 + "    p.generalCategory, \n"
-                + "    p.isActive, \n"
+                + "    p.productIsActive, \n"
                 + "    p.imageURL\n"
                 + "FROM Product p\n"
                 + "LEFT JOIN Event_Product ep ON p.productID = ep.productID AND ep.eventID = ?\n"

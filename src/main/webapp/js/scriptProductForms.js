@@ -88,6 +88,10 @@ document.addEventListener('DOMContentLoaded',function(){
     // Get the price input element and the label element
     const priceInput = document.querySelector('input[name="price"]');
     const priceLabel = document.querySelector('label[for="priceBook"]');
+    
+    if(!priceInput || !priceLabel){
+        return;
+    }
 
     // Function to format number with commas and multiply by 1000
     function formatPrice(value) {
@@ -266,7 +270,7 @@ document.addEventListener("input", function (event) {
     let target = event.target;
     
     // Stock count validation (Whole numbers only)
-    if (target.matches("[name='stockCount']")) {
+    if (target.matches("[name='stockCount'], [name='quantity']")) {
         if (target.value.includes(".")) {
             target.setCustomValidity("Stock count must be a whole number.");
         } else {
@@ -286,5 +290,4 @@ document.addEventListener("input", function (event) {
         }
     }
 });
-
 

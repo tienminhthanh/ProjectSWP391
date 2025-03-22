@@ -542,11 +542,11 @@ public class ProductDAO {
             case "crt":
                 return "AND PC.creatorID = ?\n";
             case "gnr":
-                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter is null\n" : "AND BG.genreID = ?\n";
+                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('pre-order','new')\n" : "AND BG.genreID = ?\n";
             case "pbl":
                 return "AND B.publisherID = ?\n";
             case "srs":
-                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter is null\n" : "AND M.seriesID = ?\n";
+                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('pre-order')\n" : "AND M.seriesID = ?\n";
             case "chr":
                 return "AND M.characterID = ?\n";
             case "brn":
@@ -1091,7 +1091,7 @@ public class ProductDAO {
             }
 
             newProduct.setProductID(insertedProductID);
-            
+
             Set<Integer> associatedCreatorIDs = new HashSet<>();
             for (Object dataObj : dataArray) {
                 if (dataObj instanceof Creator) {
@@ -1191,7 +1191,7 @@ public class ProductDAO {
                 }
 
             }
-            
+
             //Handle type-specific data
             String className = "";
             if (newProduct instanceof Book) {
@@ -1203,7 +1203,7 @@ public class ProductDAO {
             }
 
             stmtEntry = generateUpdateStatement(new Object[]{newProduct}, className);
-            
+
             //Update Book or Merch based on type
             if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0) {
                 connection.commit();
@@ -1416,6 +1416,61 @@ public class ProductDAO {
                     paramList.add(updatedMerch.getMaterial());
                     paramList.add(updatedMerch.getProductID());
                 }
+
+                break;
+            case "importitem":
+                String placeHolder = String.join(",", Collections.nCopies(updatedObjs.length, "?"));
+                sql.append("UPDATE ImportItem SET isImported = ? WHERE importItemID IN (")
+                        .append(placeHolder)
+                        .append(")\n");
+
+                paramList.add(true);
+                for (Object updatedObj : updatedObjs) {
+                    if (updatedObj instanceof ImportItem) {
+                        ImportItem item = (ImportItem) updatedObj;
+                        paramList.add(item.getImportItemID());
+                    }
+                }
+
+                break;
+            case "importedproduct":
+                int quantity = 0;
+                int productID = 0;
+                String specialFilter = "";
+                LocalDate releaseDate = null;
+                for (Object updatedObj : updatedObjs) {
+                    if (updatedObj instanceof ImportItem) {
+                        ImportItem item = (ImportItem) updatedObj;
+                        Product product = item.getProduct();
+                        quantity += item.getImportQuantity();
+                        if (productID == 0) {
+                            productID = product.getProductID();
+                        }
+                        if (specialFilter.equals("")) {
+                            specialFilter = product.getSpecialFilter();
+                        }
+
+                        if (releaseDate == null) {
+                            releaseDate = product.getReleaseDate();
+                        }
+                    }
+                }
+
+                sql.append("UPDATE Product SET stockCount = stockCount + ?\n");
+                paramList.add(quantity);
+
+                if (releaseDate != null && releaseDate.isBefore(LocalDate.now())) {
+                    sql.append(", releaseDate = ?\n");
+                    paramList.add(releaseDate);
+                }
+
+                if (specialFilter.equalsIgnoreCase("pre-order")) {
+                    sql.append(", specialFilter = ?\n");
+                    paramList.add("new");
+                }
+
+                sql.append("WHERE productID = ?\n");
+                paramList.add(productID);
 
                 break;
             default:
@@ -1713,10 +1768,148 @@ public class ProductDAO {
         return context.exeNonQuery(sql, params) > 0;
     }
 
+    public Map<Supplier, List<ImportItem>> getPendingImportMapByProductID(int productID) throws SQLException {
+        String sql = "SELECT ii.*, \n"
+                + "       p.productName, \n"
+                + "       p.specialFilter, \n"
+                + "       p.releaseDate, \n"
+                + "       s.supplierName\n"
+                + "FROM ImportItem AS ii\n"
+                + "INNER JOIN Product AS p ON ii.productID = p.productID\n"
+                + "INNER JOIN Supplier AS s ON ii.supplierID = s.supplierID\n"
+                + "WHERE ii.productID = ? AND ii.isImported = 0";
+
+        Object[] params = {productID};
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            Map<Supplier, List<ImportItem>> importMap = new HashMap<>();
+            while (rs.next()) {
+                LocalDate importDate = rs.getDate("importDate") != null ? rs.getDate("importDate").toLocalDate() : LocalDate.EPOCH;
+                LocalDate releaseDate = rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX;
+                Supplier supplier = new Supplier(rs.getInt("supplierID"), rs.getString("supplierName"));
+                ImportItem item = new ImportItem()
+                        .setImportItemID(rs.getInt("importItemID"))
+                        .setProduct(new Product().setProductID(rs.getInt("productID")).setProductName(rs.getString("productName"))
+                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate))
+                        .setSupplier(supplier)
+                        .setImportDate(importDate)
+                        .setImportPrice(rs.getDouble("importPrice"))
+                        .setImportQuantity(rs.getInt("importQuantity"))
+                        .setIsImported(rs.getBoolean("isImported"));
+
+                importMap.computeIfAbsent(supplier, key -> new ArrayList<>()).add(item);
+            }
+
+            return importMap;
+        }
+    }
+
+    public boolean importProducts(List<ImportItem> items) throws SQLException {
+        if (items == null) {
+            throw new IllegalArgumentException("Cannot import null items!");
+        }
+
+        Connection connection = null;
+        try {
+            connection = context.getConnection();
+            connection.setAutoCommit(false);
+            SimpleEntry<String, Object[]> stmtEntry;
+            ImportItem[] itemArr = items.toArray(ImportItem[]::new);
+
+            stmtEntry = generateUpdateStatement(itemArr, "ImportItem");
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                throw new SQLException("Failed to update import status!");
+            }
+
+            stmtEntry = generateUpdateStatement(itemArr, "ImportedProduct");
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                throw new SQLException("Failed to update product info after import!");
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (Exception e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    e.addSuppressed(ex);
+                }
+
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true); // Restore auto-commit
+                    connection.close();
+                } catch (SQLException e) {
+                    throw e;
+                }
+            }
+
+        }
+    }
+
+    public List<Product> getAllProductsForQueueing() throws SQLException {
+        String sql = "SELECT productID, \n"
+                + "       productName, \n"
+                + "       stockCount, \n"
+                + "       releaseDate\n"
+                + "FROM Product\n"
+                + "WHERE releaseDate <= DATEADD(DAY, 30, GETDATE())\n"
+                + "ORDER BY stockCount ASC, \n"
+                + "         DATEDIFF(DAY, releaseDate, GETDATE()) ASC";
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
+            List<Product> productList = new ArrayList<>();
+            while (rs.next()) {
+                productList.add(new Product().setProductID(rs.getInt("productID"))
+                        .setProductName(rs.getString("productName"))
+                        .setStockCount(rs.getInt("stockCount"))
+                        .setReleaseDate(rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX));
+            }
+            return productList;
+        }
+
+    }
+
+    public List<Supplier> getAllSuppliers() throws SQLException {
+        String sql = "SELECT supplierID, supplierName FROM Supplier";
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
+            List<Supplier> supplierList = new ArrayList<>();
+            while (rs.next()) {
+                supplierList.add(new Supplier(rs.getInt("supplierID"), rs.getString("supplierName")));
+            }
+            return supplierList;
+        }
+    }
+
+    public boolean queueImport(ImportItem queuedItem) throws SQLException {
+        String sql = "INSERT INTO ImportItem (productID, supplierID, importPrice, "
+                + "importQuantity, importDate, isImported) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+
+        Object[] params = {
+            queuedItem.getProduct().getProductID(),
+            queuedItem.getSupplier().getSupplierID(),
+            queuedItem.getImportPrice(),
+            queuedItem.getImportQuantity(),
+            queuedItem.getImportDate(),
+            queuedItem.isIsImported()
+        };
+
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
     public static void main(String[] args) {
-        ProductDAO productDAO = new ProductDAO();
-        Set<Integer> intSet = Set.of(1, 2, 4, 5);
-        System.out.println(intSet);
+        try {
+            ProductDAO productDAO = new ProductDAO();
+            // Checking the final map
+            System.out.println(productDAO.getPendingImportMapByProductID(2)); // Output: {1=[Item A, Item B]}
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 

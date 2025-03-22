@@ -382,13 +382,11 @@ public class AccountDAO {
                     return ad;
                 case "shipper":
                     Shipper shipper = (Shipper) account;
-                    shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                     shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
                     return shipper;
                 case "staff":
                     Staff staff = (Staff) account;
                     staff.setTotalOrders(rs.getInt("totalOrders"));
-                    staff.setWorkShift(rs.getString("workShift"));
                     return staff;
             }
         }

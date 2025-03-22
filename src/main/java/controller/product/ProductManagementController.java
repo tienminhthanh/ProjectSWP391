@@ -4,6 +4,9 @@
  */
 package controller.product;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 import dao.EventDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
@@ -14,6 +17,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,25 +32,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Account;
-import model.Book;
-import model.Brand;
-import model.Category;
-import model.Creator;
-import model.Event;
-import model.Genre;
-import model.Merchandise;
-import model.OGCharacter;
-import model.Product;
-import model.Publisher;
-import model.Series;
+import model.*;
 import utils.LoggingConfig;
 
 /**
  *
  * @author anhkc
  */
-@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus"})
+@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus", "/importProduct","/queueImport"})
 public class ProductManagementController extends HttpServlet {
 
     private static final Logger LOGGER = LoggingConfig.getLogger(ProductManagementController.class);
@@ -90,6 +84,12 @@ public class ProductManagementController extends HttpServlet {
                 break;
             case "/changeProductStatus":
                 manageStatus(request, response);
+                break;
+            case "/importProduct":
+                manageImport(request, response);
+                break;
+            case "/queueImport":
+                manageQueue(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid product management url: " + path);
@@ -223,26 +223,9 @@ public class ProductManagementController extends HttpServlet {
         }
 
         if (action == null) {
-            retrieveProduct(request, response);
-            return;
+            retrieveProductForUpdate(request, response);
         } else {
 
-            //Update general info
-            //
-            //For related entities, keep the input type=text, then use either one of these 2 approaches:
-            //Easy (maybe) but require more database connection:
-            //Use where contains(name,formatQueryTight('inputText')) to dynammically fetch full-text search from database
-            //After submission, check if exist ( double check )
-            //If not, add new
-            //If exist -> re-associate if the association is new
-            //NOT includes update existing entries of related entities
-            //Difficult, less database connection:
-            //Use the entityMap in applicationScope and similarity check with Levenshtein and Jaro-Winkler instead of database search
-            //After submission, check if exist with full-text search ( double check )
-            //If not, add new
-            //If exist -> re-associate if the association is new
-            //NOT includes update existing entries of related entities
-            //After form submission
             Map<String, String[]> paramMap = request.getParameterMap() != null ? request.getParameterMap() : new HashMap<>();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             List<Object> dataList = new ArrayList<>();
@@ -415,7 +398,7 @@ public class ProductManagementController extends HttpServlet {
         }
     }
 
-    private void retrieveProduct(HttpServletRequest request, HttpServletResponse response)
+    private void retrieveProductForUpdate(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //Retrieve product info from database based on id and generalCategory (product type)
         String productID = request.getParameter("id");
@@ -691,6 +674,173 @@ public class ProductManagementController extends HttpServlet {
         }
     }
 
+    private void manageImport(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        //Prevent unauthorized access
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        if (action == null) {
+            retrieveProductsForImport(request, response);
+        } else {
+            try {
+                // Get the encoded JSON string from request parameters
+                String[] encodedJsons = request.getParameterValues("importItem");
+                int productID = Integer.parseInt(request.getParameter("productID"));
+                
+
+                if (encodedJsons == null) {
+                    throw new Exception("Cannot retrieve import data from form submission!");
+                }
+
+                List<ImportItem> items = new ArrayList<>();
+                for (String encodedJson : encodedJsons) {
+                    // Decode the URL-encoded JSON
+                    String decodedJson = URLDecoder.decode(encodedJson, StandardCharsets.UTF_8);
+                    // Parse JSON into Java object
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ImportItem importItem = objectMapper.readValue(decodedJson, ImportItem.class);
+                    if (importItem != null) {
+                        items.add(importItem);
+                    }
+                }
+                if(productDAO.importProducts(items)){
+                    LOGGER.log(Level.INFO, "Products has been imported to inventory successfully! (ID:{0})", productID);
+                    request.setAttribute("message", "The product has been imported to inventory successfully! (ID:"+productID+")");
+                }else{
+                    LOGGER.log(Level.SEVERE,"Failed to import products!");
+                    request.setAttribute("errorMessage", "Failed to import the product!");
+                }
+                
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+                request.setAttribute("errorMessage", "Failed to import the product due to:<br>" + e.toString());
+                
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
+        }
+
+    }
+
+    private void retrieveProductsForImport(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        //Retrieve import info from database based on id 
+        String productID = request.getParameter("id");
+        try {
+            int id = Integer.parseInt(productID);
+
+            Map<Supplier, List<ImportItem>> importMap = productDAO.getPendingImportMapByProductID(id);
+            if (importMap.isEmpty()) {
+                request.setAttribute("errorMessage", "No pending import found for this product (ID:" + id + ").");
+            } else {
+                String json = new Gson().toJson(importMap);
+                request.setAttribute("importMap", importMap);
+                request.setAttribute("jsonMap", json);
+                //Set the formAction to ensure the page show the correct form
+                request.setAttribute("formAction", "import");
+            }
+             request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+             
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while fetching import info of the product: {0}", e.toString());
+            request.setAttribute("errorMessage", "An error occurred while fetching import info of the product: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+
+    }
+    
+    private void manageQueue(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        String action = request.getParameter("action");
+
+        //Prevent unauthorized access
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        if (action == null) {
+            retrieveProductsAndSuppliers(request, response);
+            return;
+        } else {
+            try {
+                int productID = Integer.parseInt(request.getParameter("product"));
+                int supplierID = Integer.parseInt(request.getParameter("supplier")); 
+                double price = Double.parseDouble(request.getParameter("price")); 
+                int quantity = Integer.parseInt(request.getParameter("quantity"));
+                
+                ImportItem queuedItem = new ImportItem()
+                        .setProduct(new Product().setProductID(productID))
+                        .setSupplier(new Supplier().setSupplierID(supplierID))
+                        .setImportDate(LocalDate.now())
+                        .setImportPrice(price*1000)
+                        .setImportQuantity(quantity)
+                        .setIsImported(false);
+                
+                if(productDAO.queueImport(queuedItem)){
+                    LOGGER.log(Level.INFO, "A new import has been queued successfully! (productID:{0} - supplierID:{1})"
+                            , new Object[]{productID,supplierID});
+                    request.setAttribute("message", "A new import has been queued successfully! (productID:"+productID+" - supplierID:"+supplierID+")");
+                }else{
+                    LOGGER.log(Level.SEVERE,"Failed to queue the import!");
+                    request.setAttribute("errorMessage", "Failed to queue the import!");
+                }
+                
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+                request.setAttribute("errorMessage", "Failed to queue the import due to:<br>" + e.toString());
+                
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+            
+        }
+        
+    }
+    
+    private void retrieveProductsAndSuppliers (HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            List<Product> productList = productDAO.getAllProductsForQueueing();
+            List<Supplier> supplierList = productDAO.getAllSuppliers();
+            
+            if(productList.isEmpty() || supplierList.isEmpty()){
+                request.setAttribute("errorMessage", "Failed to retrieve sufficient information for queueing imports!");
+            }
+            else{
+                request.setAttribute("productList", productList);
+                request.setAttribute("supplierList", supplierList);
+                request.setAttribute("formAction", "queue");
+                
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while fetching products and suppliers for queueing imports", e);
+            request.setAttribute("errorMessage", "An error occurred while fetching products and suppliers for queueing imports: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -708,4 +858,7 @@ public class ProductManagementController extends HttpServlet {
     public String getServletInfo() {
         return "Manages product-related operations";
     }// </editor-fold>
+
+    
+
 }
