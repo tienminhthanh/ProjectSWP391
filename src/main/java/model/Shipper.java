@@ -10,7 +10,7 @@ package model;
  */
 public class Shipper extends Account {
 
-    private String deliveryAreas;
+  
     private int totalDeliveries;
 
     public Shipper() {
@@ -20,19 +20,13 @@ public class Shipper extends Account {
         super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
     }
 
-    public Shipper(String deliveryAreas, int totalDeliveries, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
+    public Shipper( int totalDeliveries, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
         super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
-        this.deliveryAreas = deliveryAreas;
+       
         this.totalDeliveries = totalDeliveries;
     }
 
-    public String getDeliveryAreas() {
-        return deliveryAreas;
-    }
-
-    public void setDeliveryAreas(String deliveryAreas) {
-        this.deliveryAreas = deliveryAreas;
-    }
+   
 
     public int getTotalDeliveries() {
         return totalDeliveries;

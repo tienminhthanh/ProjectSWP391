@@ -390,7 +390,7 @@ public class OrderDAO {
                 shipper.setEmail(rs.getString("email"));
                 shipper.setPhoneNumber(rs.getString("phoneNumber"));
                 shipper.setBirthDate(rs.getString("birthDate"));
-                shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
+
                 shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
 
                 shipperList.add(shipper);
@@ -490,7 +490,6 @@ public class OrderDAO {
 
             case "shipper":
                 Shipper shipper = new Shipper(
-                        rs.getString("deliveryAreas"),
                         rs.getInt("totalDeliveries"),
                         account.getAccountID(),
                         account.getUsername(),
@@ -524,7 +523,6 @@ public class OrderDAO {
 
             case "staff":
                 Staff staff = new Staff(
-                        rs.getString("workShift"),
                         rs.getInt("totalOrders"),
                         account.getAccountID(),
                         account.getUsername(),
