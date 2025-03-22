@@ -12,7 +12,10 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import model.Customer;
+import model.DeliveryAddress;
 
 @WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/updateAccount"})
 public class UpdateAccountController extends HttpServlet {
@@ -20,18 +23,24 @@ public class UpdateAccountController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
+        List<DeliveryAddress> listAddress = new ArrayList<>();
         if (session == null || session.getAttribute("account") == null) {
             response.sendRedirect("login.jsp");
+
             return;
         }
+        Account acc = (Account) session.getAttribute("account");
 
         String username = request.getParameter("username");
         AccountDAO accountDAO = new AccountDAO();
 
         try {
             Account account = accountDAO.getAccountByUsername(username);
+            listAddress = accountDAO.getAllAddressByCustomerID(acc.getAccountID());
             if (account != null) {
                 request.setAttribute("account", account);
+                request.setAttribute("addressList", listAddress);
+
                 request.getRequestDispatcher("accountUpdate.jsp").forward(request, response);
             } else {
                 response.sendRedirect("login.jsp");
@@ -58,9 +67,11 @@ public class UpdateAccountController extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
         String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
+        String actionType = request.getParameter("actionType");
+        String selectedAddress = request.getParameter("selectedAddress");
 
         // Chỉ admin mới có quyền cập nhật vai trò
-        String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("role") : null;
+String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("role") : null;
 
         AccountDAO accountDAO = new AccountDAO();
 
@@ -73,7 +84,16 @@ public class UpdateAccountController extends HttpServlet {
                 Customer customer = (Customer) loggedInAccount;
                 customer.setDefaultDeliveryAddress(defaultDeliveryAddress);
                 accountDAO.updateCustomerAddress(customer.getAccountID(), defaultDeliveryAddress);
+
             }
+
+            if ("addAddress".equals(actionType)) {
+                accountDAO.insertNewAddress(loggedInAccount.getAccountID(), selectedAddress);
+            } else if ("deleteAddress".equals(actionType)) {
+                int id = Integer.parseInt(selectedAddress);
+                accountDAO.deleteAddress(id);
+            }
+            // Cập nhật thông tin tài khoản
 
             if (success) {
                 Account updatedAccount = accountDAO.getAccountByUsername(username);

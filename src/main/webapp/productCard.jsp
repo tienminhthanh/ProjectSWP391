@@ -98,7 +98,7 @@
     <c:set var="cartQuantity" value="0" />
     <c:forEach var="cartItem" items="${sessionScope.cartItems}">
         <c:if test="${cartItem.productID == currentProduct.productID}">
-            <c:set var="cartQuantity" value="${cartItem.quantity}" />
+            <c:set var="cartQuantity" value="${cartItem.cartItemQuantity}" />
         </c:if>
     </c:forEach>
 
