@@ -102,6 +102,31 @@
             .breadcrumb-container .active {
                 color: #e3a100; /* Giữ màu vàng cho trang hiện tại */
             }
+            .relative {
+                position: relative; /* Để dropdown bám theo phần cha */
+            }
+
+            #addressList {
+                position: absolute;
+                top: 100%; /* Đẩy xuống ngay dưới button */
+                right: 0; /* Đẩy về bên phải theo button */
+                min-width: 200px; /* Độ rộng tối thiểu */
+                background-color: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                display: none; /* Mặc định ẩn */
+                z-index: 10;
+            }
+
+            #addressList li {
+                padding: 10px;
+                cursor: pointer;
+            }
+
+            #addressList li:hover {
+                background-color: #f3f4f6;
+            }
 
         </style>
     </head>
@@ -130,16 +155,34 @@
                 <div class="content">
                     <div class="left-content" style="width: 60%">
                         <h2>Shipping Information</h2> <hr>
-                        <form id="orderForm" action="VNPayController" method="POST" onsubmit="return updateOrderTotal()">
+                        <form id="orderForm" action="OrderController" method="POST" onsubmit="return updateOrderTotal()">
                             <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
+                            <input type="hidden" id="selectedAddress" name="selectedAddress" value="">
                             <div class="input-custom">
                                 <label for="name">Full Name</label><br>
                                 <input type="text" name="name" id="name" value="${fullName}" required/>
                             </div>
-                            <div class="input-custom">
-                                <label for="addr">Address</label><br>
-                                <input type="text" name="addr" id="addr" value="${deliveryAddress}" required/>
+                            <label for="name">Address</label><br>
+                            <div class="relative">
+                                <div class="flex">
+                                    <input class="w-full p-3 border border-gray-300 rounded-l" 
+                                           id="defaultDeliveryAddress" name="defaultDeliveryAddress"
+                                           placeholder="Default Delivery Address" type="text" 
+                                           value="${sessionScope.account.defaultDeliveryAddress}" readonly />
+
+                                    <button type="button" id="toggleDropdown" class="px-4 border border-gray-300 bg-gray-200 rounded-r">
+                                        ▼
+                                    </button>
+                                </div>
+                                <ul id="addressList">
+                                    <c:forEach var="address" items="${addressList}">
+                                        <li class="flex justify-between px-4 py-2 hover:bg-gray-200 cursor-pointer address-item">
+                                            <span data-value="${address.addressDetails}" class="flex-1"  data-id="${address.addressID}">${address.addressDetails}</span>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
                             </div>
+
                             <div class="input-custom">
                                 <label for="phone">Phone</label><br>
                                 <input type="tel" name="phone" id="phone" value="${phone}" required />
@@ -204,7 +247,7 @@
                                     <span class="product-infor">${item.product.productName}</span>
                                     <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
                                 </div>
-                                <span class="product-quantity">Quantity: ${item.quantity}</span>
+                                <span class="product-quantity">Quantity: ${item.cartItemQuantity}</span>
                                 <hr>
                             </c:forEach>
                         </div>
@@ -274,6 +317,41 @@
                     form.action = "OrderController"; // Giữ nguyên cho COD
                 }
             }
+
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const addressList = document.getElementById("addressList");
+                const toggleDropdown = document.getElementById("toggleDropdown");
+                const defaultAddressInput = document.getElementById("defaultDeliveryAddress");
+                const selectedAddress = document.getElementById("selectedAddress");
+
+                toggleDropdown.addEventListener("click", function () {
+                    addressList.classList.toggle("hidden");
+                });
+                document.getElementById("toggleDropdown").addEventListener("click", function () {
+                    const dropdown = document.getElementById("addressList");
+                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+                });
+
+                // Đóng dropdown nếu click bên ngoài
+                document.addEventListener("click", function (event) {
+                    const dropdown = document.getElementById("addressList");
+                    const toggleBtn = document.getElementById("toggleDropdown");
+                    if (!toggleBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = "none";
+                    }
+                });
+
+                document.querySelectorAll(".address-item span").forEach(item => {
+                    item.addEventListener("click", function () {
+                        defaultAddressInput.value = this.getAttribute("data-value");
+                        addressList.classList.add("hidden");
+                        selectedAddress.value = this.getAttribute("data-id");
+                        document.getElementById("addressList").style.display = "none";
+                    });
+                });
+            });
         </script>
 
     </body>
