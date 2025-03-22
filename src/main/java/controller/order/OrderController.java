@@ -96,7 +96,7 @@ public class OrderController extends HttpServlet {
                 Product product = null;
                 ProductDAO productDAO = new ProductDAO();
 
-                BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
+                BigDecimal priceWithQuantity = item.getCartItemPrice().multiply(BigDecimal.valueOf(item.getCartItemQuantity()));
                 subtotal += priceWithQuantity.doubleValue();
                 try {
                     product = productDAO.getProductById(item.getProductID());

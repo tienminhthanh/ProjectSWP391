@@ -21,7 +21,8 @@ public class AuthorizationFilter implements Filter {
         roleAccessMap.put("customer", Arrays.asList("/changePassword", "/deleteAccount", "/emailAuthentication",
                 "/emailForgot", "/emailUnlock", "/forgotPassword", "/loginGoogle",
                 "/login", "/logout", "/processPassword", "/register", "/readAccount",
-                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home", "/cart", "/notification", "/chat","/OrderController"));
+                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home", "/cart", "/notification", "/chat",
+                "/OrderController"));
         
         roleAccessMap.put("shipper", Arrays.asList("/OrderDetailForShipperController", "/viewOrders", "/home"));
         
