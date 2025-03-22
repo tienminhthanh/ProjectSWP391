@@ -10,7 +10,7 @@ package model;
  */
 public class Staff extends Account{
 
-    
+
     private int totalOrders;
 
     public Staff() {
@@ -20,13 +20,11 @@ public class Staff extends Account{
         super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
     }
 
-    public Staff( int totalOrders, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
-       
+  
+    public Staff(int totalOrders, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountAccountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountAccountIsActive);
         this.totalOrders = totalOrders;
     }
-
-  
 
     public int getTotalOrders() {
         return totalOrders;

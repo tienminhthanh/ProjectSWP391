@@ -97,6 +97,7 @@ String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("
                 response.sendRedirect("updateAccount?username="+loggedInAccount.getUsername());
                 return;
                
+
             }
             // Cập nhật thông tin tài khoản
 
