@@ -6,13 +6,17 @@ package controller.dashboard;
 
 import dao.*;
 import model.*;
-import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.temporal.IsoFields;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,26 +64,42 @@ public class DashboardController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        double totalRevenue = dashboardDAO.getTotalRevenue();
-        int totalQuantitySold = dashboardDAO.getTotalQuantitySold();
-        double orderConversionRate = dashboardDAO.getOrderConversionRate();
-        double grossProfit = dashboardDAO.getGrossProfit();
-        double profitMargin = dashboardDAO.getProfitMargin();
-        Map<String, Double> revenueTrend = dashboardDAO.getRevenueTrend("month");
-        Map<String, Integer> ageStats = dashboardDAO.getAgeStatistics();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String year = request.getParameter("year");
+        String month = request.getParameter("month");
+        String week = request.getParameter("week");
+        String day = request.getParameter("day");
+        String timeFrame = request.getParameter("timeFrame");
 
-        // Đặt dữ liệu vào request để truyền sang JSP
+        // Nếu không có bộ lọc nào, lấy toàn bộ dữ liệu từ trước đến nay
+        boolean isFilterApplied = (year != null && !year.isEmpty())
+                || (month != null && !month.isEmpty())
+                || (week != null && !week.isEmpty())
+                || (day != null && !day.isEmpty());
+
+        DashboardDAO dao = new DashboardDAO();
+        double totalRevenue = dao.getTotalRevenue(year, month, week, day, isFilterApplied);
+        int totalQuantitySold = dao.getTotalQuantitySold(year, month, week, day, isFilterApplied);
+        double grossProfit = dao.getGrossProfit(year, month, week, day, isFilterApplied);
+        double profitMargin = dao.getProfitMargin(year, month, week, day, isFilterApplied);
+        double orderConversionRate = dao.getOrderConversionRate(year, month, week, day, isFilterApplied);
+
+        // Nếu không có bộ lọc, lấy toàn bộ xu hướng theo năm
+        if (timeFrame == null || timeFrame.isEmpty()) {
+            timeFrame = "year";
+        }
+        Map<String, Double> revenueTrend = dao.getRevenueTrend(timeFrame, year, month, week, day, isFilterApplied);
+
+        // Đưa dữ liệu vào request
         request.setAttribute("totalRevenue", totalRevenue);
         request.setAttribute("totalQuantitySold", totalQuantitySold);
-        request.setAttribute("orderConversionRate", orderConversionRate);
         request.setAttribute("grossProfit", grossProfit);
         request.setAttribute("profitMargin", profitMargin);
+        request.setAttribute("orderConversionRate", orderConversionRate);
         request.setAttribute("revenueTrend", revenueTrend);
-        request.setAttribute("ageStats", ageStats);
+        Map<String, Integer> ageStats = dao.getAgeStatistics();
+        request.setAttribute("ageStatistics", ageStats);
 
-        // Chuyển hướng đến dashboard.jsp
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
