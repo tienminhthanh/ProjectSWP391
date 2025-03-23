@@ -30,7 +30,7 @@ public class AuthorizationFilter implements Filter {
         roleAccessMap.put("guest", Arrays.asList("/emailAuthentication",
                 "/emailForgot", "/emailUnlock", "/forgotPassword", "/loginGoogle",
                 "/login", "/logout", "/processPassword", "/register", "/readAccount",
-                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home"));
+                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home","/cart.jsp"));
     }
 
     @Override
