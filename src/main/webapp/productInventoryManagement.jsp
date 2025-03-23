@@ -76,7 +76,9 @@
                             if (options) {
                                 options.forEach(option => {
                                     option.classList.toggle("hidden", (`${requestScope.type}` === "book" && option.value === 'sculptor') || (`${requestScope.type}` === 'merch' && option.value === 'author'));
-                                    option.selected = option.classList.contains('hidden') ? false : true;
+                                    if(option.classList.contains('hidden')){
+                                        option.selected = false ;
+                                    }
                                 });
                             }
                         });

@@ -597,8 +597,9 @@ public class ProductCatalogController extends HttpServlet {
             String breadCrumb = "<a href='home'>Home</a>";
             Creator selectedCreator = productDAO.getCreatorById(id);
             String creatorName = selectedCreator.getCreatorName();
-            breadCrumb += String.format(" > <a href='creator?id=%s'>%s</a>", id, creatorName);
-            request.setAttribute("pageTitle", creatorName);
+            String creatorRole = selectedCreator.getCreatorRole();
+            breadCrumb += String.format(" > <a href='creator?id=%s'>%s - %s</a>", id, creatorName, creatorRole);
+            request.setAttribute("pageTitle", creatorName + " - " + creatorRole);
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list

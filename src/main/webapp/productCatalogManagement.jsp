@@ -116,13 +116,17 @@
                                     <span>đ</span>
                                 </td>
                                 <!--Stockcount-->
-                                <td class="px-2 py-3 border-b text-center">${product.stockCount}</td>
+                                <td class="px-2 py-3 border-b text-center">${ product.specialFilter eq 'pre-order' ? 'N/A' : product.stockCount}</td>
                                 <!--Category-->
                                 <td class="px-2 py-3 border-b text-center">${product.specificCategory.categoryName}</td>
                                 <!--Release Date-->
                                 <td class="release-date px-2 py-3 border-b text-center">${product.releaseDate}</td>
                                 <!--Special Filter-->
-                                <td class="px-2 py-3 border-b text-center">${ product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'pre-order' ? 'Pre-Order' : 'Unset'}</td>
+                                <td class="px-2 py-3 border-b text-center">
+                                    <span class="px-3 py-1 rounded text-white ${product.specialFilter eq 'new' ? 'bg-yellow-500' : product.specialFilter eq 'pre-order' ?  'bg-blue-500' : 'bg-black'}">
+                                    ${ product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'pre-order' ? 'Pre-Order' : 'Unset'}
+                                    </span>
+                                </td>
                                 <!--Type-->
                                 <td class="px-6 py-3 border-b text-center w-[7%]">
                                     <span class="px-3 py-1 rounded text-white ${product.generalCategory eq 'book' ? 'bg-orange-500' : product.generalCategory eq 'merch' ?  'bg-yellow-500' : 'bg-gray-500'}">

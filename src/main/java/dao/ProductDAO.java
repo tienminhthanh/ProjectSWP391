@@ -29,6 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 import model.*;
+import utils.*;
 
 /**
  *
@@ -36,10 +37,12 @@ import model.*;
  */
 public class ProductDAO {
 
-    private final utils.DBContext context;
+    private final DBContext context;
+    private Utility tool;
 
     public ProductDAO() {
-        context = new utils.DBContext();
+        context = new DBContext();
+        tool = new Utility();
     }
 
     /**
@@ -381,7 +384,8 @@ public class ProductDAO {
     }
 
     private String formatQueryBroad(String query) {
-        String[] queryParts = query.split("\\s+");
+        String normalizedQuery = query.replaceAll("[^A-Za-z0-9_']", " ").trim();
+        String[] queryParts = normalizedQuery.split("\\s+");
         String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and prefix
 
         for (int i = 0; i < queryParts.length; i++) {
@@ -395,7 +399,8 @@ public class ProductDAO {
     }
 
     private String formatQueryTight(String query, String logic) {
-        String[] queryParts = query.split("\\s+");
+        String normalizedQuery = query.replaceAll("[^A-Za-z0-9_']", " ").trim();
+        String[] queryParts = normalizedQuery.split("\\s+");
         for (int i = 0; i < queryParts.length; i++) {
             queryParts[i] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
         }
@@ -774,13 +779,15 @@ public class ProductDAO {
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             if (rs.next()) {
-                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), rs.getString("creatorRole"), rs.getString("generalCategory"));
+                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), 
+                        tool.toTitleCase(rs.getString("creatorRole")), rs.getString("generalCategory"));
             }
         }
         return null;
     }
 
     public Map<Creator, Integer> getAllCreators() throws SQLException {
+        
         String sql = "SELECT \n"
                 + "    c.creatorID, \n"
                 + "    c.creatorName, \n"
@@ -797,7 +804,9 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             Map<Creator, Integer> creatorMap = new HashMap<>();
             while (rs.next()) {
-                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), rs.getString("creatorRole")), rs.getInt("productCount"));
+                
+                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), 
+                        tool.toTitleCase(rs.getString("creatorRole"))), rs.getInt("productCount"));
             }
             return creatorMap;
         }
@@ -1461,10 +1470,10 @@ public class ProductDAO {
 
                 if (releaseDate != null && releaseDate.isBefore(LocalDate.now())) {
                     sql.append(", releaseDate = ?\n");
-                    paramList.add(releaseDate);
+                    paramList.add(LocalDate.now());
                 }
 
-                if (specialFilter.equalsIgnoreCase("pre-order")) {
+                if (!specialFilter.equalsIgnoreCase("new")) {
                     sql.append(", specialFilter = ?\n");
                     paramList.add("new");
                 }
@@ -1484,8 +1493,9 @@ public class ProductDAO {
         if (deletedParams == null || deletedParams.length == 0) {
             throw new IllegalArgumentException("Cannot generate statement from NULLs!");
         }
-
-        String placeHolder = String.join(",", Collections.nCopies(deletedParams.length - 1, "?"));
+        int length = deletedParams.length;
+        
+        String placeHolder = length > 1 ? String.join(",", Collections.nCopies(length - 1, "?")) : "";
         StringBuilder sql = new StringBuilder();
 
         switch (classNames != null ? classNames.toLowerCase() : "") {
@@ -1498,7 +1508,13 @@ public class ProductDAO {
                 break;
             case "book_genre":
                 sql.append("DELETE FROM Book_Genre\n")
-                        .append("WHERE bookID = ? AND genreID NOT IN (")
+                        .append("WHERE bookID = ?\n");
+                
+                if (length == 1) {
+                    break;
+                }
+                
+                sql.append("AND genreID NOT IN (")
                         .append(placeHolder)
                         .append(")\n");
 
@@ -1593,13 +1609,14 @@ public class ProductDAO {
 
             stmtEntry = generateUpdateStatement(new Object[]{updatedProduct}, "product");
             boolean updateSuccess = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0;
-            //Insert failed
+            //Update failed
             if (!updateSuccess) {
                 throw new SQLException("Failed to update this product!");
             }
 
             Set<Integer> associatedCreatorIDs = new LinkedHashSet<>();
             Set<Integer> associatedGenreIDs = new LinkedHashSet<>();
+            Set<Integer> deleteAllGenreIDs = new LinkedHashSet<>();
 
             for (Object dataObj : dataArray) {
                 if (dataObj instanceof Creator) {
@@ -1634,8 +1651,14 @@ public class ProductDAO {
                     Genre genre = (Genre) dataObj;
                     genreID = genre.getGenreID();
                     String genreName = genre.getGenreName();
+                    genreName = genreName != null ? genreName : "";
 
-                    if (genreName != null && genreName.trim().endsWith("(associated)")) {
+                    if (genreName.trim().endsWith("(deleteAll)")) {
+                        deleteAllGenreIDs.add(genreID);
+                        continue;
+                    }
+
+                    if (genreName.trim().endsWith("(associated)")) {
                         associatedGenreIDs.add(genreID);
                         continue;
                     }
@@ -1704,20 +1727,21 @@ public class ProductDAO {
 
             }
 
-            if (associatedCreatorIDs.size() > 0) {
-                Integer[] deletedCreIDs = Stream.concat(Stream.of(updatedProductID), associatedCreatorIDs.stream()).toArray(Integer[]::new);
-                stmtEntry = generateDeleteStatement(deletedCreIDs, "product_creator");
-                if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                    throw new SQLException("Failed to delete Product_Creator entries: productID(" + updatedProductID + ") - creatorID " + associatedCreatorIDs.toString());
-                }
+            if (!associatedCreatorIDs.isEmpty()) {
+                Integer[] params = Stream.concat(Stream.of(updatedProductID), associatedCreatorIDs.stream()).toArray(Integer[]::new);
+                stmtEntry = generateDeleteStatement(params, "product_creator");
+                context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
             }
-
-            if (associatedGenreIDs.size() > 0) {
-                Integer[] deletedGenIDs = Stream.concat(Stream.of(updatedProductID), associatedGenreIDs.stream()).toArray(Integer[]::new);
-                stmtEntry = generateDeleteStatement(deletedGenIDs, "book_genre");
-                if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                    throw new SQLException("Failed to delete Book_Genre entries: productID(" + updatedProductID + ") - genreID " + associatedGenreIDs.toString());
-                }
+            
+            if (!associatedGenreIDs.isEmpty()) {
+            //Delete some
+                Integer[] params = Stream.concat(Stream.of(updatedProductID), associatedGenreIDs.stream()).toArray(Integer[]::new);
+                stmtEntry = generateDeleteStatement(params, "book_genre");
+                context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
+            } else if (!deleteAllGenreIDs.isEmpty()) {
+                //Delete all
+                stmtEntry = generateDeleteStatement(new Object[]{updatedProductID}, "book_genre");
+                context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
             }
 
             String className = "";

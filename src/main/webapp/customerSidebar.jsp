@@ -125,7 +125,7 @@
                     <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2">
                         <a href="creator?id=${creEntry.key.creatorID}" data-filter="ftCrt-${creEntry.key.creatorID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
                             <span class="w-[calc(90%)]">
-                                ${creEntry.key.creatorName} (${creEntry.value})
+                                ${creEntry.key.creatorName} - ${creEntry.key.creatorRole} (${creEntry.value})
                             </span>
                             <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                         </a>
