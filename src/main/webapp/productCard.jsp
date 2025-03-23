@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<div class="product-card w-32 md:w-48">
+<div class="product-card w-36 md:w-48 p-2">
 
     <!-- Sale Label (Shown only if on sale) -->
     <c:if test="${currentProduct.discountPercentage != 0}">

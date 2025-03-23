@@ -57,7 +57,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous" defer></script>
-        
+
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     </head>
@@ -106,7 +106,10 @@
                                 </form>
                             </div>
                             <div class="page-num-top-area w-3/5 text-right">
-                                ${productList.size()} result(s)
+                                <!-- Hiển thị thông tin phân trang -->
+                                <c:if test="${not empty productList}">
+                                    (${(currentPage - 1) * pageSize + 1} - ${currentPage * pageSize > totalProducts ? totalProducts : currentPage * pageSize} of ${totalProducts} products)
+                                </c:if>
                             </div>
                         </c:if>
                     </div>
@@ -115,7 +118,7 @@
                         <c:set var="currentURL" value="${currentURL}" scope="request"/>
                         <c:choose>
                             <c:when test="${not fn:startsWith(pageTitle,'Leaderboard')}">
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 lg:grid-cols-5">
+                                <div class="grid grid-cols-3 gap-4 lg:grid-cols-4">
                                     <c:forEach var="currentProduct" items="${productList}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
@@ -133,6 +136,43 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
+
+                    <!-- Pagination Links -->
+                    <c:if test="${totalPages > 1}">
+
+                        <div class="relative mt-6">
+                            <nav aria-label="Page navigation" class="w-full">
+                                <ul class="flex flex-wrap justify-center max-w-full flex-row">
+                                    <c:if test="${currentPage > 1}">
+                                        <!-- First (hidden on small screens, shown on md+) -->
+                                        <li class=""><a href="${currentURL}&page=1" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">First</a></li>
+                                        <!-- Previous (always shown) -->
+                                        <li><a href="${currentURL}&page=${currentPage - 1}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Prev</a></li>
+                                        </c:if>
+
+                                    <!-- Page Numbers (hidden on small screens, shown on md+) -->
+                                    <c:forEach begin="${currentPage - 2 > 0 ? currentPage - 2 : 1}" 
+                                               end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}" 
+                                               var="i">
+                                        <c:if test="${i > 0 && i <= totalPages}">
+                                            <li class="hidden md:block"><a href="${currentURL}&page=${i}" 
+                                                                           class="${i == currentPage ? 'bg-yellow-500 font-bold p-3 hover:bg-yellow-600' : 'bg-orange-500 p-2 hover:bg-orange-600'} text-white rounded">${i}</a></li>
+                                            </c:if>
+                                        </c:forEach>
+
+                                    <c:if test="${currentPage < totalPages}">
+                                        <!-- Next (always shown) -->
+                                        <li><a href="${currentURL}&page=${currentPage + 1}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Next</a></li>
+                                        <!-- Last (hidden on small screens, shown on md+) -->
+                                        <li class=""><a href="${currentURL}&page=${totalPages}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Last</a></li>
+                                        </c:if>
+                                </ul>
+                            </nav>
+                        </div>
+
+                    </c:if>
+
+
 
                 </div>
                 <!--Popup unauthorized users-->
@@ -209,7 +249,7 @@
 
 
         </script>
-        
+
 
 
     </body>

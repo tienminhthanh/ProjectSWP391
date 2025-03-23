@@ -217,15 +217,85 @@ public class ProductDAO {
     }
 
     /**
+     * Count search result
+     *
+     * @param query
+     * @param type
+     * @param filterMap
+     * @return
+     * @throws SQLException
+     */
+    public int getProductsCount(String query, String type, Map<String, String> filterMap) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
+
+        //If there is search query
+        sql.append(query != null && !query.trim().isEmpty() ? "\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY]" : "");
+
+        // Type-specific JOIN if needed
+        type = type != null ? type : "";    //Handling null
+        if (type.equals("book")) {
+            sql.append("\nJOIN Book B");
+            sql.append("\n    ON B.bookID = P.productID");
+        } else if (type.equals("merch")) {
+            sql.append("\nJOIN Merchandise M");
+            sql.append("\n    ON M.merchandiseID = P.productID");
+        }
+
+        //WHERE Clause
+        sql.append("\nWHERE P.productIsActive = 1");
+
+        //Initialize the param list
+        List<Object> paramList = new ArrayList<>();
+        //Add search term if any
+        if (query != null && !query.trim().isEmpty()) {
+            paramList.add(formatQueryBroad(query));
+        }
+
+        //Append filter
+        if (filterMap != null && !filterMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
+                String filterOption = entry.getKey();
+                String filterParam = entry.getValue();
+
+                //Split the filter params if there are more than 1
+                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+
+                //Append filter clause based on filterOption
+                sql.append(processFilter(filterOption, selectedFilters.length));
+
+                //Then add filter param to the param list to match with the appended clause
+                if (filterOption.equals("ftPrc")) {
+                    //Handle special case with price range
+                    String[] valParts = filterParam.split("-");
+                    paramList.add(valParts[0]);
+                    paramList.add(valParts[1]);
+                } else {
+                    //Normal case
+                    Collections.addAll(paramList, selectedFilters);
+                }
+            }
+        }
+
+        Object[] params = paramList.toArray();
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+
+    }
+
+    /**
      * When user does not enter anything in the search bar
      *
      * @param type
      * @param sortCriteria
      * @param filterMap
+     * @param page
+     * @param pageSize
      * @return
      * @throws SQLException
      */
-    public List<Product> getActiveProducts(String type, String sortCriteria, Map<String, String> filterMap) throws SQLException {
+    public List<Product> getActiveProducts(String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
 //        Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
 
@@ -287,6 +357,12 @@ public class ProductDAO {
         sql.append("ORDER BY ");
         sql.append(processSort(sortCriteria));
 
+        //Append paginated
+        sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        int offset = (page - 1) * pageSize;
+        paramList.add(offset);
+        paramList.add(pageSize);
+
         //Print the final query to console
         System.out.println(sql);
         System.out.println("-------------------------------------------------------------------------------------");
@@ -303,7 +379,7 @@ public class ProductDAO {
 
     }
 
-    public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap) throws SQLException {
+    public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
 
         //Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
@@ -368,6 +444,12 @@ public class ProductDAO {
         sql.append("\nORDER BY ");
         sql.append(processSort(sortCriteria));
 
+        //Append paginated
+        sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        int offset = (page - 1) * pageSize;
+        paramList.add(offset);
+        paramList.add(pageSize);
+
         //Print the final query to console
         System.out.println(sql);
         System.out.println("-------------------------------------------------------------------------------------");
@@ -431,7 +513,65 @@ public class ProductDAO {
         }
     }
 
-    public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location) throws SQLException {
+    /**
+     * Overload for filtered list
+     *
+     * @param conditionID
+     * @param condition
+     * @param type
+     * @param filterMap
+     * @return
+     * @throws SQLException
+     */
+    public int getProductsCount(int conditionID, Map<String, String> filterMap, String condition, String type) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
+
+        //Conditional joins
+        sql.append(getSpecificJoin(condition, type));
+
+        //Initialize where clause
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, null));
+
+        //Initialize the param list
+        List<Object> paramList = new ArrayList<>();
+        if (conditionID > 0) {
+            paramList.add(conditionID);
+        }
+
+        //Append filter
+        if (filterMap != null && !filterMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
+                String filterOption = entry.getKey();
+                String filterParam = entry.getValue();
+
+                //Split the filter params if there are more than 1
+                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+
+                //Append filter clause based on filterOption
+                sql.append(processFilter(filterOption, selectedFilters.length));
+
+                //Then add filter param to the param list to match with the appended clause
+                if (filterOption.equals("ftPrc")) {
+                    //Handle special case with price range
+                    String[] valParts = filterParam.split("-");
+                    paramList.add(valParts[0]);
+                    paramList.add(valParts[1]);
+                } else {
+                    //Normal case
+                    Collections.addAll(paramList, selectedFilters);
+                }
+            }
+        }
+
+        Object[] params = paramList.toArray();
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+
+    }
+
+    public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location, int page, int pageSize) throws SQLException {
         StringBuilder sql = getCTETables(null);
         sql.append(location.equals("home") ? "SELECT TOP 7\n" : "SELECT\n");
         sql.append("P.*, C.categoryName, PD.discountPercentage, PD.eventDateStarted, PD.eventDuration\n"
@@ -482,6 +622,14 @@ public class ProductDAO {
         //Append order
         sql.append("ORDER BY ");
         sql.append(processSort(sortCriteria));
+        
+        //Append paginated (these values are ZERO for home lists)
+        if (page > 0 && pageSize > 0) {
+            sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            int offset = (page - 1) * pageSize;
+            paramList.add(offset);
+            paramList.add(pageSize);
+        }
 
         //Print the final query to console
         System.out.println(sql);
@@ -501,7 +649,8 @@ public class ProductDAO {
 
     private StringBuilder getSpecificJoin(String condition, String generalCategory) {
         StringBuilder joinClause = new StringBuilder();
-        switch (condition) {
+        generalCategory = generalCategory != null ? generalCategory.toLowerCase() : "";
+        switch (condition != null ? condition.toLowerCase() : "") {
             case "ctg":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
@@ -779,7 +928,7 @@ public class ProductDAO {
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             if (rs.next()) {
-                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), 
+                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
                         tool.toTitleCase(rs.getString("creatorRole")), rs.getString("generalCategory"));
             }
         }
@@ -787,7 +936,7 @@ public class ProductDAO {
     }
 
     public Map<Creator, Integer> getAllCreators() throws SQLException {
-        
+
         String sql = "SELECT \n"
                 + "    c.creatorID, \n"
                 + "    c.creatorName, \n"
@@ -804,8 +953,8 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             Map<Creator, Integer> creatorMap = new HashMap<>();
             while (rs.next()) {
-                
-                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), 
+
+                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
                         tool.toTitleCase(rs.getString("creatorRole"))), rs.getInt("productCount"));
             }
             return creatorMap;
@@ -1045,6 +1194,14 @@ public class ProductDAO {
         }
     }
 
+    /**
+     * Overload for management
+     *
+     * @param query
+     * @param type
+     * @return
+     * @throws SQLException
+     */
     public int getProductsCount(String query, String type) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
 
@@ -1494,7 +1651,7 @@ public class ProductDAO {
             throw new IllegalArgumentException("Cannot generate statement from NULLs!");
         }
         int length = deletedParams.length;
-        
+
         String placeHolder = length > 1 ? String.join(",", Collections.nCopies(length - 1, "?")) : "";
         StringBuilder sql = new StringBuilder();
 
@@ -1509,11 +1666,11 @@ public class ProductDAO {
             case "book_genre":
                 sql.append("DELETE FROM Book_Genre\n")
                         .append("WHERE bookID = ?\n");
-                
+
                 if (length == 1) {
                     break;
                 }
-                
+
                 sql.append("AND genreID NOT IN (")
                         .append(placeHolder)
                         .append(")\n");
@@ -1732,9 +1889,9 @@ public class ProductDAO {
                 stmtEntry = generateDeleteStatement(params, "product_creator");
                 context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
             }
-            
+
             if (!associatedGenreIDs.isEmpty()) {
-            //Delete some
+                //Delete some
                 Integer[] params = Stream.concat(Stream.of(updatedProductID), associatedGenreIDs.stream()).toArray(Integer[]::new);
                 stmtEntry = generateDeleteStatement(params, "book_genre");
                 context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);

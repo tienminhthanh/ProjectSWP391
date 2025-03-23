@@ -39,6 +39,7 @@ public class ProductCatalogController extends HttpServlet {
     private static final Set<String> MERCH_FILTERS = Set.of("ftSrs", "ftBrn", "ftChr");
     private static final Set<String> BOOK_FITLERS = Set.of("ftGnr", "ftPbl");
     private static final Set<String> SINGLE_FILTERS = Set.of("ftCtg", "ftPbl", "ftSrs", "ftBrn", "ftChr");
+    private static final int PAGE_SIZE = 12;
 
     private ProductDAO productDAO;
     private VoucherDAO vDao;
@@ -153,6 +154,7 @@ public class ProductCatalogController extends HttpServlet {
 
         String type = request.getParameter("type");
         String query = request.getParameter("query");
+        String pageStr = request.getParameter("page");
 
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -194,6 +196,8 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Parse page number
+            int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             // Set up breadCrumb and page Title
             // Get product list
@@ -204,18 +208,20 @@ public class ProductCatalogController extends HttpServlet {
                 //No keywords entered
                 breadCrumb += String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type));
                 pageTitle.append(getDisplayTextBasedOnType(type));
-                productList = productDAO.getActiveProducts(type, sortCriteria, filterMap);
+                productList = productDAO.getActiveProducts(type, sortCriteria, filterMap, page, PAGE_SIZE);
 
             } else {
                 breadCrumb += String.format(" > <a href='search?type=%s&query=%s'>Search Result: %s</a>", type, query, query);
                 pageTitle.append("Search Result: ").append(query);
-                productList = productDAO.getSearchResult(query, type, sortCriteria, filterMap);
+                productList = productDAO.getSearchResult(query, type, sortCriteria, filterMap, page, PAGE_SIZE);
                 // Set attribute if there are keywords entered
                 request.setAttribute("query", query);
             }
 
-            request.setAttribute("breadCrumb", breadCrumb);
-            request.setAttribute("pageTitle", pageTitle.toString());
+            // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(query, type, filterMap);
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;
 
             // Set up the product list
             if (productList.isEmpty()) {
@@ -238,8 +244,16 @@ public class ProductCatalogController extends HttpServlet {
             if (message.length() > 0) {
                 request.setAttribute("message", message);
             }
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
             request.setAttribute("type", type);
+            request.setAttribute("breadCrumb", breadCrumb);
+            request.setAttribute("pageTitle", pageTitle.toString());
+
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
+
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -282,6 +296,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String categoryID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -325,6 +340,9 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Default page is 1
+            int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
+
             //Parse id string to integer
             int id = Integer.parseInt(categoryID);
 
@@ -337,7 +355,13 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "ctg", selectedCategory.getGeneralCategory(), "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "ctg", selectedCategory.getGeneralCategory(), "",page,PAGE_SIZE);
+            
+            // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "ctg", selectedCategory.getGeneralCategory());
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;
+            
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -353,7 +377,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", selectedCategory.getGeneralCategory());
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+             request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -366,6 +394,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleGenre(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String genreID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -415,6 +444,8 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             //Parse id string to integer
             int id = Integer.parseInt(genreID);
@@ -429,7 +460,12 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "gnr", "book", "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "gnr", "book", "",page,PAGE_SIZE);
+            
+            // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "gnr", "book");
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;		
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -445,7 +481,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "book");
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -457,6 +497,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handlePublisher(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String publisherID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -506,6 +547,8 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             //Parse id string to integer
             int id = Integer.parseInt(publisherID);
@@ -520,7 +563,12 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "pbl", "book", "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "pbl", "book", "",page,PAGE_SIZE);
+            
+            // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "pbl", "book");
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;	
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -536,7 +584,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "book");
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+             request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -548,6 +600,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleCreator(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String creatorID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -590,6 +643,9 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
+            
             //Parse id string to integer
             int id = Integer.parseInt(creatorID);
 
@@ -603,7 +659,13 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "crt", selectedCreator.getGeneralCategory(), "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "crt", selectedCreator.getGeneralCategory(), "",page,PAGE_SIZE);
+            
+             // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "crt", selectedCreator.getGeneralCategory());
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;		
+					
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -620,7 +682,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", selectedCreator.getGeneralCategory());
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -632,6 +698,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleSeries(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String seriesID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -681,6 +748,9 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            
+//Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             //Parse id string to integer
             int id = Integer.parseInt(seriesID);
@@ -695,7 +765,14 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "srs", "merch", "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "srs", "merch", "",page,PAGE_SIZE);
+            
+            
+ // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "srs","merch");
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;		
+					
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -711,7 +788,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "merch");
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);	
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -723,6 +804,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleBrand(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String brandID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -772,6 +854,9 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            
+//Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             //Parse id string to integer
             int id = Integer.parseInt(brandID);
@@ -786,7 +871,12 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "brn", "merch", "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "brn", "merch", "",page,PAGE_SIZE);
+            
+             // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "brn", "merch");
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;	
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -802,7 +892,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "merch");
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+               request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -814,6 +908,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleCharacter(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String characterID = request.getParameter("id");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
@@ -863,6 +958,8 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             //Parse id string to integer
             int id = Integer.parseInt(characterID);
@@ -877,7 +974,14 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("breadCrumb", breadCrumb);
 
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "chr", "merch", "");
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, "chr", "merch", "",page,PAGE_SIZE);
+            
+            
+ // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, "chr",  "merch");
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;		
+					
             if (productList.isEmpty()) {
                 //No result found
                 message.setLength(0);
@@ -893,7 +997,11 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "merch");
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);	
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -905,8 +1013,8 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleNewRelease(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String type = request.getParameter("type");
-
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
         //For redirect back to original page after logging in or adding items to cart
@@ -947,13 +1055,20 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
-
+            //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
+        
             // Set up breadCrumb and page Title
             // Get product list
             StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
             breadCrumb.append(String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type)));
             breadCrumb.append(String.format(" > <a href='new?type=%s'>New Release</a>", type));
-            List<Product> productList = productDAO.getProductsByCondition(0, sortCriteria, filterMap, "new", type, "");
+            List<Product> productList = productDAO.getProductsByCondition(0, sortCriteria, filterMap, "new", type, "",page,PAGE_SIZE);
+            
+             // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(0, filterMap, "new", type);
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;	
 
             // Set up the product list
             if (productList.isEmpty()) {
@@ -977,8 +1092,14 @@ public class ProductCatalogController extends HttpServlet {
             if (message.length() > 0) {
                 request.setAttribute("message", message);
             }
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
             request.setAttribute("type", type);
+            
+             request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
+            
             request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("pageTitle", "New Release - " + getDisplayTextBasedOnType(type));
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
@@ -992,8 +1113,8 @@ public class ProductCatalogController extends HttpServlet {
 
     private void handleOnSale(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
         String type = request.getParameter("type");
-
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
         //For redirect back to original page after logging in or adding items to cart
@@ -1034,13 +1155,20 @@ public class ProductCatalogController extends HttpServlet {
         }
 
         try {
+            //Default page is 1
+        int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
             // Set up breadCrumb and page Title
             // Get product list
             StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
             breadCrumb.append(String.format(" > <a href='search?type=%s'>%s</a>", type, getDisplayTextBasedOnType(type)));
             breadCrumb.append(String.format(" > <a href='sale?type=%s'>On Sale</a>", type));
-            List<Product> productList = productDAO.getProductsByCondition(0, sortCriteria, filterMap, "sale", type, "");
+            List<Product> productList = productDAO.getProductsByCondition(0, sortCriteria, filterMap, "sale", type, "",page,PAGE_SIZE);
+            
+             // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(0, filterMap, "sale", type);
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;	
 
             // Set up the product list
             if (productList.isEmpty()) {
@@ -1064,8 +1192,12 @@ public class ProductCatalogController extends HttpServlet {
             if (message.length() > 0) {
                 request.setAttribute("message", message);
             }
-            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("currentURL", formatURL(currentURL));
             request.setAttribute("type", type);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("pageTitle", "On Sale - " + getDisplayTextBasedOnType(type));
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
@@ -1086,18 +1218,18 @@ public class ProductCatalogController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id,false);
+            Product requestedProduct = productDAO.callGetProductByTypeAndId(type, id, false);
             if (requestedProduct == null) {
                 request.setAttribute("message", "The product is not available right now!");
                 request.getRequestDispatcher("home").forward(request, response);
             } else {
                 //Handle linebreak for html display
                 requestedProduct.setDescription(requestedProduct.getDescription().replaceAll("\r\n|\r|\n", "<br>"));
-                
+
                 //Get and creators
                 List<Creator> creatorList = productDAO.getCreatorsOfThisProduct(id);
-                Collections.sort(creatorList,Comparator.comparing(c -> c.getCreatorName()));
-                request.setAttribute("creatorList",creatorList);
+                Collections.sort(creatorList, Comparator.comparing(c -> c.getCreatorName()));
+                request.setAttribute("creatorList", creatorList);
 
                 //Get comments & ratings
                 Map<String, String[]> reviewMap = orderDAO.getRatingsAndCommentsByProduct(id);
@@ -1155,12 +1287,12 @@ public class ProductCatalogController extends HttpServlet {
 
     private void showProductsInHomepage(HttpSession session) throws Exception {
 
-        List<Product> newBookHome = session.getAttribute("newBookHome") != null ? (List<Product>) session.getAttribute("newBookHome") : productDAO.getProductsByCondition(0, "releaseDate", null, "new", "book", "home");
-        List<Product> newMerchHome = session.getAttribute("newMerchHome") != null ? (List<Product>) session.getAttribute("newMerchHome") : productDAO.getProductsByCondition(0, "releaseDate", null, "new", "merch", "home");
-        List<Product> saleBookHome = session.getAttribute("saleBookHome") != null ? (List<Product>) session.getAttribute("saleBookHome") : productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "book", "home");
-        List<Product> saleMerchHome = session.getAttribute("saleMerchHome") != null ? (List<Product>) session.getAttribute("saleMerchHome") : productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "merch", "home");
-        List<Product> animeBookHome = session.getAttribute("animeBookHome") != null ? (List<Product>) session.getAttribute("animeBookHome") : productDAO.getProductsByCondition(18, "releaseDate", null, "gnr", "book", "home");
-        List<Product> holoMerchHome = session.getAttribute("holoMerchHome") != null ? (List<Product>) session.getAttribute("holoMerchHome") : productDAO.getProductsByCondition(1, "releaseDate", null, "srs", "merch", "home");
+        List<Product> newBookHome = session.getAttribute("newBookHome") != null ? (List<Product>) session.getAttribute("newBookHome") : productDAO.getProductsByCondition(0, "releaseDate", null, "new", "book", "home",0,0);
+        List<Product> newMerchHome = session.getAttribute("newMerchHome") != null ? (List<Product>) session.getAttribute("newMerchHome") : productDAO.getProductsByCondition(0, "releaseDate", null, "new", "merch", "home",0,0);
+        List<Product> saleBookHome = session.getAttribute("saleBookHome") != null ? (List<Product>) session.getAttribute("saleBookHome") : productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "book", "home",0,0);
+        List<Product> saleMerchHome = session.getAttribute("saleMerchHome") != null ? (List<Product>) session.getAttribute("saleMerchHome") : productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "merch", "home",0,0);
+        List<Product> animeBookHome = session.getAttribute("animeBookHome") != null ? (List<Product>) session.getAttribute("animeBookHome") : productDAO.getProductsByCondition(18, "releaseDate", null, "gnr", "book", "home",0,0);
+        List<Product> holoMerchHome = session.getAttribute("holoMerchHome") != null ? (List<Product>) session.getAttribute("holoMerchHome") : productDAO.getProductsByCondition(1, "releaseDate", null, "srs", "merch", "home",0,0);
 
         session.setAttribute("newBookHome", newBookHome);
         session.setAttribute("newMerchHome", newMerchHome);
@@ -1231,7 +1363,7 @@ public class ProductCatalogController extends HttpServlet {
         }
     }
 
-    private String formatURL(String encodedURL, Set<String> invalidParams) throws UnsupportedEncodingException, MalformedURLException {
+    private String formatURL(String encodedURL) throws UnsupportedEncodingException, MalformedURLException {
 
         Map<String, String> decodedURLParts = new HashMap<>();
 
@@ -1254,8 +1386,7 @@ public class ProductCatalogController extends HttpServlet {
             String[] keyValue = param.split("=");           //Split param name and value
             String key = keyValue[0];
 
-            //Skip if invalid params found
-            if (invalidParams.contains(key)) {
+            if (key.equalsIgnoreCase("page")) {
                 continue;
             }
 
