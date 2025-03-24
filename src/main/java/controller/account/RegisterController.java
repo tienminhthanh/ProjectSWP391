@@ -46,7 +46,7 @@ public class RegisterController extends HttpServlet {
 
             if (accountByEmail != null && !"admin".equals(accountByEmail.getRole())) {
                 // If email exists, check if the account is active or locked
-                if (accountByEmail.getIsActive()) {
+                if (accountByEmail.getAccountIsActive()) {
                     // If account is active, deny registration
                     message = "Email already exists!";
                 } else {

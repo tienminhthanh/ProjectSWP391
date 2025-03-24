@@ -8,8 +8,7 @@ package model;
  *
  * @author Admin
  */
-public class Customer  extends Account{
-
+public class Customer extends Account {
 
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;
@@ -17,12 +16,12 @@ public class Customer  extends Account{
     public Customer() {
     }
 
-    public Customer(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+    public Customer(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
     }
 
-    public Customer(double totalPurchasePoints, String defaultDeliveryAddress, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+    public Customer(double totalPurchasePoints, String defaultDeliveryAddress, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
         this.totalPurchasePoints = totalPurchasePoints;
         this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
@@ -42,5 +41,4 @@ public class Customer  extends Account{
     public void setDefaultDeliveryAddress(String defaultDeliveryAddress) {
         this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
-
 }

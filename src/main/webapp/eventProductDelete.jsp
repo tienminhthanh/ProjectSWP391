@@ -36,6 +36,18 @@
                 <h1 class="text-2xl font-bold uppercase pt-4 pb-4 text-center">
                     ${eventName}
                 </h1>
+                <div class="sticky top-0 bg-white p-4 z-10 flex justify-end">
+                    <div class="ml-2 flex items-center space-x-2">
+                        <button type="button" onclick="selectAll()" 
+                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200">
+                            Select All
+                        </button>
+                        <button type="button" onclick="deselectAll()" 
+                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
+                            Deselect All
+                        </button>
+                    </div>
+                </div>
                 <div class="overflow-x-auto rounded-lg shadow-md">
                     <form id="productForm" action="eventProductDelete?eventId=${param.eventId}" method="post">
                         <table class="table-fixed min-w-full bg-white border border-gray-200">
@@ -121,6 +133,47 @@
                 form.submit();
                 localStorage.removeItem("selectedProducts");
             }
+        </script>
+        <script>
+            function deselectAll() {
+                let checkboxes = document.querySelectorAll('input[name="selectedProducts"]:checked');
+
+                if (checkboxes.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Products Selected',
+                        text: 'There are no selected products to deselect.'
+                    });
+                    return;
+                }
+
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                updateSelectedCount(); // Cập nhật số lượng sản phẩm đã chọn
+            }
+
+            function selectAll() {
+                let checkboxes = document.querySelectorAll('input[name="selectedProducts"]:not(:checked)');
+                let selectable = Array.from(checkboxes).filter(checkbox => !checkbox.disabled);
+
+                if (selectable.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Products Available',
+                        text: 'There are no available products to select.'
+                    });
+                    return;
+                }
+
+                selectable.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+
+                updateSelectedCount(); // Cập nhật số lượng sản phẩm đã chọn
+            }
+
         </script>
     </body>
 </html>

@@ -904,6 +904,7 @@ public class ProductDAO {
             }
         }
         return null;
+
     }
 
     public Map<Category, Integer> getAllCategories() throws SQLException {

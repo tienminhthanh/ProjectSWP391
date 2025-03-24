@@ -1276,6 +1276,7 @@ public class ProductCatalogController extends HttpServlet {
             }
             showProductsInHomepage(session);
             showVouchersInHomepage(request);
+            showVouchersAvalaibleInHomepage(request);
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } catch (Exception e) {
             System.out.println(e.toString());
@@ -1313,8 +1314,14 @@ public class ProductCatalogController extends HttpServlet {
 //    }
     private void showVouchersInHomepage(HttpServletRequest request) throws Exception {
 
-        List<Voucher> listVoucher = vDao.getListVoucher();
+        List<Voucher> listVoucher = vDao.getListVoucherAvailableNow();
         request.setAttribute("listVoucher", listVoucher);
+
+    }
+    private void showVouchersAvalaibleInHomepage(HttpServletRequest request) throws Exception {
+
+        List<Voucher> listVoucher = vDao.getListVoucherComeSoon();
+        request.setAttribute("listVoucherComeSoon", listVoucher);
 
     }
 

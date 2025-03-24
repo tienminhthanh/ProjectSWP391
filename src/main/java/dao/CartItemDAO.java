@@ -5,14 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.CartItem;
 import model.Product;
 import utils.DBContext;
 
 public class CartItemDAO {
-
     private DBContext context;
 
     public CartItemDAO() {
@@ -21,14 +18,14 @@ public class CartItemDAO {
 
     public boolean addCartItem(CartItem cartItem) throws SQLException {
         String sql = "INSERT INTO CartItem (customerID, productID, cartItemQuantity, cartItemPrice) VALUES (?, ?, ?, ?)";
-        Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getQuantity(), cartItem.getPriceWithQuantity()};
+        Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getCartItemQuantity(), cartItem.getCartItemPrice()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 
     public boolean updateCartItem(CartItem cartItem) throws SQLException {
         String sql = "UPDATE CartItem SET cartItemQuantity = ? WHERE itemID = ?";
-        Object[] params = {cartItem.getQuantity(), cartItem.getItemID()};
+        Object[] params = {cartItem.getCartItemQuantity(), cartItem.getItemID()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
@@ -64,8 +61,7 @@ public class CartItemDAO {
     public CartItem getCartItemByCustomerAndProduct(int customerID, int productID) throws SQLException {
         String sql = "SELECT * FROM CartItem JOIN Product ON CartItem.productID = Product.productID WHERE customerID = ? AND CartItem.productID = ?";
         Object[] params = {customerID, productID};
-
-        try ( ResultSet rs = context.exeQuery(sql, params)) {
+        try (ResultSet rs = context.exeQuery(sql, params)) {
             if (rs.next()) {
                 return mapResultSetToCartItem(rs);
             }
@@ -81,7 +77,6 @@ public class CartItemDAO {
         product.setStockCount(rs.getInt("stockCount"));
         product.setImageURL(rs.getString("imageURL"));
         product.setGeneralCategory(rs.getString("generalCategory"));
-        // Add other Product fields as needed
 
         CartItem cartItem = new CartItem(
                 rs.getInt("itemID"),

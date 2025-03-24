@@ -55,7 +55,7 @@ public class EmailUnlockController extends HttpServlet {
             }
 
             // Kiểm tra xem tài khoản có bị khóa không
-            if (account.getIsActive()) {
+            if (account.getAccountIsActive()) {
                 request.setAttribute("message", "Account is already active.");
                 request.getRequestDispatcher("accountUnlock.jsp").forward(request, response);
                 return;
@@ -116,7 +116,7 @@ public class EmailUnlockController extends HttpServlet {
             AccountDAO accountDAO = new AccountDAO();
             Account account = accountDAO.getAccountByEmail(email);
 
-            if (account != null && !account.getIsActive()) {
+            if (account != null && !account.getAccountIsActive()) {
                 // Unlock account after successful verification
                 boolean unlockSuccess = accountDAO.updateAccountStatus(account.getUsername(), true);
                 if (unlockSuccess) {

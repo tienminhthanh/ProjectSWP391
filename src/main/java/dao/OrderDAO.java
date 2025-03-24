@@ -73,8 +73,7 @@ public class OrderDAO {
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
     }
-    
-    
+
 // insert row vao bang Order_product
     //choose
     public void insertOrderProduct(Object[] params) throws SQLException {
@@ -270,7 +269,7 @@ public class OrderDAO {
                 acc.setPhoneNumber(rs.getString("phoneNumber"));
                 acc.setBirthDate(rs.getDate("birthDate") != null ? rs.getDate("birthDate").toString() : null);
                 acc.setRole(rs.getString("role"));
-                acc.setIsActive(rs.getBoolean("accountIsActive"));
+                acc.setAccountIsActive(rs.getBoolean("accountIsActive"));
                 return acc;
             }
         }
@@ -484,7 +483,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return admin;
 
@@ -500,7 +499,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return shipper;
 
@@ -517,7 +516,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return customer;
 
@@ -533,7 +532,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return staff;
 
@@ -689,12 +688,11 @@ public class OrderDAO {
                 + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
                 + "                  Account ON Customer.customerID = Account.accountID\n"
                 + "				  where productID = ? AND (rating is not null OR comment is not null)";
-        Object [] params = {productID};
-        try(Connection connection = context.getConnection();
-                ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)){
+        Object[] params = {productID};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             Map<String, String[]> reviewMap = new HashMap<>();
             while (rs.next()) {
-                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "",rs.getString("comment")});
+                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "", rs.getString("comment")});
             }
             return reviewMap;
         }

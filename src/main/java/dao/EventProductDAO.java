@@ -31,7 +31,6 @@ public class EventProductDAO {
     }
 
 //    public int getDiscountOfProductInEvent()
-    
     public boolean deleteProductFromEvent(int eventId, int productId) {
         String sql = "DELETE FROM [dbo].[Event_Product]\n"
                 + "      WHERE eventID = ? and productID = ?";
@@ -75,9 +74,12 @@ public class EventProductDAO {
 //        }
 //        return 0;
 //    }
-    public List<Product> getListProductToAddForEvent(int eventId) {
+    public List<Product> getListProductToAddForEvent(int eventId, String searchKeyword, String filtered) {
         List<Product> listProduct = new ArrayList<>();
         ProductDAO pDao = new ProductDAO();
+        List<Object> paramsList = new ArrayList<>();
+        paramsList.add(eventId);
+
         String sql = "SELECT \n"
                 + "    p.productID, \n"
                 + "    p.productName, \n"
@@ -98,7 +100,23 @@ public class EventProductDAO {
                 + "FROM Product p\n"
                 + "LEFT JOIN Event_Product ep ON p.productID = ep.productID AND ep.eventID = ?\n"
                 + "WHERE ep.productID IS NULL\n"
-                + "AND ([specialFilter] != 'pre-order' or [specialFilter] is null);";
+                + "AND NOT EXISTS (\n"
+                + "SELECT 1 FROM Event_Product ep2 WHERE ep2.productID = p.productID)\n"
+                + "AND ([specialFilter] != 'pre-order' or [specialFilter] is null)";
+
+        if (filtered != null && !filtered.isEmpty()) {
+            sql += " AND p.categoryID = (SELECT categoryID FROM Category WHERE categoryName = ?)";
+            paramsList.add(filtered);
+        }
+
+        // Tìm kiếm theo tất cả các cột
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            sql += " AND (p.productName LIKE ? OR p.keywords LIKE ? OR p.description LIKE ?)";
+            String keywordPattern = "%" + searchKeyword.trim() + "%";
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+            paramsList.add(keywordPattern);
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
@@ -107,8 +125,11 @@ public class EventProductDAO {
                 .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 3, true)
                 .optionalEnd()
                 .toFormatter();
+        System.out.println("SQL Query: " + sql);
+        System.out.println("Params: " + paramsList);
+
         try {
-            Object[] params = {eventId};
+            Object[] params = paramsList.toArray();
             ResultSet rs = context.exeQuery(sql, params);
             while (rs.next()) {
                 int productID = rs.getInt(1);
@@ -157,7 +178,7 @@ public class EventProductDAO {
                 + "       p.[adminID],\n"
                 + "       p.[keywords],\n"
                 + "       p.[generalCategory],\n"
-                + "       p.[isActive],\n"
+                + "       p.[productIsActive],\n"
                 + "       p.[imageURL]\n"
                 + "FROM [WIBOOKS].[dbo].[Product] p\n"
                 + "JOIN [WIBOOKS].[dbo].[Event_Product] ep\n"
@@ -225,6 +246,18 @@ public class EventProductDAO {
         return listEventProduct;
     }
 
+    public boolean deleteListProductInEvent(int eventId) {
+        String sql = "DELETE FROM [dbo].[Event_Product]\n"
+                + "      WHERE [eventID] = ?";
+        try {
+            Object[] params = {eventId};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
     public int getTotalProductInAnEvent(int eventId) {
         String sql = "SELECT COUNT (*)\n"
                 + "FROM [WIBOOKS].[dbo].[Event_Product]\n"
@@ -243,6 +276,6 @@ public class EventProductDAO {
 
     public static void main(String[] args) {
         EventProductDAO ep = new EventProductDAO();
-        System.out.println(ep.getListProductToAddForEvent(41).size());
+        System.out.println(ep.getListProductToAddForEvent(14, "", "Manga").size());
     }
 }
