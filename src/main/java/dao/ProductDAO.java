@@ -5,22 +5,16 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.AbstractMap.SimpleEntry;
@@ -38,13 +32,21 @@ import utils.*;
 public class ProductDAO {
 
     private final DBContext context;
-    private Utility tool;
-
+    private final Utility tool;
+    
+    //Normal run
     public ProductDAO() {
         context = new DBContext();
         tool = new Utility();
     }
-
+    
+    //Test run
+    public ProductDAO(DBContext context, Utility tool) {
+        this.context = context;
+        this.tool = tool;
+    }
+   
+    
     /**
      * For add, update cart
      *
@@ -808,13 +810,15 @@ public class ProductDAO {
     private Product mapResultSetToProduct(ResultSet rs, String type) throws SQLException {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
 
-        LocalDate eventEndDate = null;
+        LocalDate eventEndDate = tool.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
         int discountPercentage = 0;
-        java.sql.Date sqlDateStarted = rs.getDate("eventDateStarted");
-        if (sqlDateStarted != null) {
-            eventEndDate = sqlDateStarted.toLocalDate().plusDays(rs.getInt("eventDuration"));
+        if(eventEndDate !=null){
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
+        
+        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"),0);
+        
+        LocalDateTime lastMdfTime = tool.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
 
         switch (type != null ? type : "") {
             case "book":
@@ -827,8 +831,8 @@ public class ProductDAO {
                         rs.getInt("stockCount"),
                         category,
                         rs.getString("description"),
-                        rs.getDate("releaseDate").toLocalDate(),
-                        rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                        rlsDate,
+                        lastMdfTime,
                         rs.getDouble("averageRating"),
                         rs.getInt("numberOfRating"),
                         rs.getString("specialFilter"),
@@ -851,8 +855,8 @@ public class ProductDAO {
                         rs.getInt("stockCount"),
                         category,
                         rs.getString("description"),
-                        rs.getDate("releaseDate").toLocalDate(),
-                        rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                        rlsDate,
+                        lastMdfTime,
                         rs.getDouble("averageRating"),
                         rs.getInt("numberOfRating"),
                         rs.getString("specialFilter"),
@@ -872,8 +876,8 @@ public class ProductDAO {
                         rs.getInt("stockCount"),
                         category,
                         rs.getString("description"),
-                        rs.getDate("releaseDate").toLocalDate(),
-                        rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                        rlsDate,
+                        lastMdfTime,
                         rs.getDouble("averageRating"),
                         rs.getInt("numberOfRating"),
                         rs.getString("specialFilter"),
@@ -2093,5 +2097,7 @@ public class ProductDAO {
         }
 
     }
+
+    
 
 }

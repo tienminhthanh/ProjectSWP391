@@ -4,6 +4,8 @@
  */
 package utils;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +17,13 @@ import java.util.stream.Collectors;
  * @author anhkc
  */
 public class Utility {
+    public LocalDate getLocalDate(Date date, int duration) {
+        return date != null ? date.toLocalDate().plusDays(duration) : null;
+    }
+    
+    public LocalDateTime getLocalDateTime(Timestamp dateTime) {
+        return dateTime != null ? dateTime.toLocalDateTime() : null;
+    }
 
     // Convert LocalDate to String
     public String formatLocalDate(LocalDate date) {
