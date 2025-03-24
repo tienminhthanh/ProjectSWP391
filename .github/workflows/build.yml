@@ -14,13 +14,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up JDK 13
+    - name: Set up JDK 13 (Zulu)
       uses: actions/setup-java@v3
       with:
-        java-version: '13.0.2'  # Exact version from Adoptium archives
-        distribution: 'temurin'
-        java-package: 'jdk'     # Ensures full JDK, not JRE
-        architecture: 'x64'     # Matches most runners
+        java-version: '13.0.2'
+        distribution: 'zulu'
+
 
     - name: Cache Maven packages
       uses: actions/cache@v3
