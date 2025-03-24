@@ -47,26 +47,26 @@ jobs:
         path: target/*.war
 
   deploy:
-  needs: build
-  runs-on: windows-latest
-
-  steps:
-  - name: Download WAR artifact
-    uses: actions/download-artifact@v4
-    with:
-      name: mavenproject7
-      path: target/
-
-  - name: Stop Tomcat Service if Running
-    shell: cmd
-    run: |
-      net stop Tomcat10 || echo "Tomcat10 is not running, proceeding anyway."
-
-  - name: Copy WAR to Tomcat webapps
-    shell: cmd
-    run: copy target\*.war C:\apache-tomcat-10.1.29\webapps\
-
-  - name: Start Tomcat Service
-    shell: cmd
-    run: net start Tomcat10
+    needs: build
+    runs-on: windows-latest
+  
+    steps:
+    - name: Download WAR artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: mavenproject7
+        path: target/
+  
+    - name: Stop Tomcat Service if Running
+      shell: cmd
+      run: |
+        net stop Tomcat10 || echo "Tomcat10 is not running, proceeding anyway."
+  
+    - name: Copy WAR to Tomcat webapps
+      shell: cmd
+      run: copy target\*.war C:\apache-tomcat-10.1.29\webapps\
+  
+    - name: Start Tomcat Service
+      shell: cmd
+      run: net start Tomcat10
 
