@@ -93,7 +93,7 @@ public class OrderController extends HttpServlet {
             }
 
             for (CartItem item : cartItems) {
-                BigDecimal priceWithQuantity = item.getCartItemPrice().multiply(BigDecimal.valueOf(item.getCartItemQuantity()));
+                BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 subtotal += priceWithQuantity.doubleValue();
             }
 
@@ -278,7 +278,7 @@ public class OrderController extends HttpServlet {
             }
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
-                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getCartItemQuantity(), item.getCartItemPrice().intValue());
+                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);

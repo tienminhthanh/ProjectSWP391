@@ -165,7 +165,7 @@
                 }
             }
 
-// Ngăn việc nhấn vào checkbox làm kích hoạt sự kiện click trên hàng
+            // Ngăn việc nhấn vào checkbox làm kích hoạt sự kiện click trên hàng
             function toggleDiscount(productID) {
                 let checkbox = document.getElementById("checkbox_" + productID);
                 let discountInput = document.getElementById("discount_" + productID);

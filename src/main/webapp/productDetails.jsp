@@ -552,6 +552,10 @@
                     return;
                 }
 
+                if (isNaN(priceNumber)) {
+                    console.log("Price is not a number");
+                    return;
+                }
 
                 let priceText = finalPriceElement.innerText;
                 let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
