@@ -110,7 +110,8 @@ public class ProductManagementController extends HttpServlet {
         //Prevent unauthorized access
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
-        if (currentAccount == null || (!currentAccount.getRole().equals("admin") && !currentAccount.getRole().equals("staff"))) {
+        boolean isManagement = currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff");
+        if (currentAccount == null || !isManagement) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -157,7 +158,8 @@ public class ProductManagementController extends HttpServlet {
         //Prevent unauthorized access
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
-        if (currentAccount == null || (!currentAccount.getRole().equals("admin") && !currentAccount.getRole().equals("staff"))) {
+        boolean isManagement = currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff");
+        if (currentAccount == null || !isManagement) {
             response.sendRedirect("login.jsp");
             return;
         }

@@ -13,7 +13,6 @@ import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import model.*;
-import dao.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -254,6 +253,7 @@ public class EventProductDAO {
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return false;
     }

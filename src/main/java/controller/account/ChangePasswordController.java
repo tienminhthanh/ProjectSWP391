@@ -1,6 +1,5 @@
 package controller.account;
 
-import dao.AccountDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "ChangePasswordServlet", urlPatterns = {"/changePassword"})

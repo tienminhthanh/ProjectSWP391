@@ -17,9 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -101,7 +99,7 @@ public class EventAddNewController extends HttpServlet {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");
 
             String name = "";
-            String banner = "";
+//            String banner = "";
             String dateStarted_raw = "";
             LocalDate dateStarted = null;
             LocalDate dateCreated = null;
@@ -132,7 +130,7 @@ public class EventAddNewController extends HttpServlet {
                 }
             } else {
                 name = request.getParameter("eventName");
-                banner = request.getParameter("bannerFile");
+//                banner = request.getParameter("bannerFile");
                 dateStarted_raw = request.getParameter("dateStarted");
                 dateStarted_raw = request.getParameter("dateStarted");
                 dateStarted = LocalDate.parse(dateStarted_raw, formatter);

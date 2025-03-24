@@ -71,7 +71,7 @@ public class EventProductAddNewController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        ProductDAO pDao = new ProductDAO();
+//        ProductDAO pDao = new ProductDAO();
         EventProductDAO epDao = new EventProductDAO();
         EventDAO eDao = new EventDAO();
 

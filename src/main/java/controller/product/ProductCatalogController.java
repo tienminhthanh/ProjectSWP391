@@ -43,7 +43,7 @@ public class ProductCatalogController extends HttpServlet {
 
     private ProductDAO productDAO;
     private VoucherDAO vDao;
-    private EventDAO eDao;
+//    private EventDAO eDao;
     private OrderDAO orderDAO;
 
     @Override
@@ -1265,7 +1265,7 @@ public class ProductCatalogController extends HttpServlet {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
         try {
-            if (account != null && (account.getRole().equals("customer"))) {
+            if (account != null && account.getRole().equals("customer")) {
                 CartItemDAO cartDAO = new CartItemDAO();
                 List<CartItem> listCart = session.getAttribute("cartItems") != null ? (List<CartItem>) session.getAttribute("cartItems") : cartDAO.getCartItemsByCustomer(account.getAccountID());
                 session.setAttribute("cartItems", listCart);

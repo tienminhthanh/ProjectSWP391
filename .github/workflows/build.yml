@@ -41,6 +41,17 @@ jobs:
         name: test-reports
         path: target/surefire-reports/*.xml
 
+    # Run PMD Static Analysis
+    - name: Run PMD
+      run: mvn pmd:check || true  # Allow workflow to continue even if PMD finds issues
+
+    # Upload PMD Reports
+    - name: Upload PMD Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: pmd-report
+        path: target/site/pmd.html
+
     # Upload WAR file after tests pass
     - name: Upload WAR artifact
       uses: actions/upload-artifact@v4
