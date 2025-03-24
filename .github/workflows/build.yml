@@ -28,7 +28,7 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
 
     - name: Build with Maven
-      run: mvn clean verify -B
+      run: mvn clean package -B
 
     # Run automation tests (JUnit, Selenium, etc.)
     - name: Run Tests
