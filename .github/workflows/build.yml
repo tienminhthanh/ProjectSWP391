@@ -57,11 +57,13 @@ jobs:
         name: mavenproject7
         path: target/
 
-    - name: Stop Tomcat
-      run: cmd.exe /c "C:\apache-tomcat-10.1.29\bin\shutdown.bat"
+    - name: Stop Tomcat Service
+      run: net stop Tomcat10
+
 
     - name: Copy WAR to Tomcat webapps
       run: copy target\*.war C:\apache-tomcat-10.1.29\webapps\
 
-    - name: Start Tomcat
-      run: cmd.exe /c "C:\apache-tomcat-10.1.29\bin\startup.bat"
+    - name: Start Tomcat Service
+      run: net start Tomcat10
+
