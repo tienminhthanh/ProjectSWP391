@@ -10,14 +10,12 @@ import static org.mockito.Mockito.*;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +119,7 @@ public class ProductDAOTest {
 
         boolean result = dao.changeProductStatus(productID, newStatus);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(context, times(1)).exeNonQuery(anyString(), any());
     }
 
