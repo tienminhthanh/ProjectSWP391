@@ -2,9 +2,9 @@ name: ProjectSWP391 CI
 
 on:
   push:
-    branches: [ an ]
+    branches: [ master ]
   pull_request:
-    branches: [ an ]
+    branches: [ master ]
 
 jobs:
   build:
