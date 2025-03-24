@@ -48,7 +48,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: windows-latest  # Runs on your Windows machine
+    runs-on: windows-latest  # Make sure this is a self-hosted Windows runner
 
     steps:
     - name: Download WAR artifact
@@ -58,13 +58,10 @@ jobs:
         path: target/
 
     - name: Stop Tomcat
-      run: |
-        C:\apache-tomcat-10.1.29\bin\shutdown.bat
+      run: cmd.exe /c "C:\apache-tomcat-10.1.29\bin\shutdown.bat"
 
     - name: Copy WAR to Tomcat webapps
-      run: |
-        copy target\*.war C:\apache-tomcat-10.1.29\webapps\
+      run: copy target\*.war C:\apache-tomcat-10.1.29\webapps\
 
     - name: Start Tomcat
-      run: |
-        C:\apache-tomcat-10.1.29\bin\startup.bat
+      run: cmd.exe /c "C:\apache-tomcat-10.1.29\bin\startup.bat"
