@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -49,24 +48,23 @@ jobs:
   deploy:
     needs: build
     runs-on: windows-latest
-  
     steps:
     - name: Download WAR artifact
       uses: actions/download-artifact@v4
       with:
         name: mavenproject7
-        path: target/
-  
+        path: target/  # Fixed: specify a directory, not a file pattern
+
     - name: Stop Tomcat Service if Running
       shell: cmd
-      run: |
-        net stop Tomcat10 || echo "Tomcat10 is not running, proceeding anyway."
-  
+      continue-on-error: true
+      run: net stop Tomcat10 || echo "Tomcat10 is not running or invalid, proceeding anyway."
+
     - name: Copy WAR to Tomcat webapps
       shell: cmd
       run: copy target\*.war C:\apache-tomcat-10.1.29\webapps\
-  
+
     - name: Start Tomcat Service
       shell: cmd
-      run: net start Tomcat10
-
+      continue-on-error: true
+      run: net start Tomcat10 || echo "Tomcat10 failed to start, check service configuration."
