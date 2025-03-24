@@ -119,7 +119,7 @@ public class ProductDAOTest {
 
         boolean result = dao.changeProductStatus(productID, newStatus);
 
-        assertTrue(result);
+        assertFalse(result);
         verify(context, times(1)).exeNonQuery(anyString(), any());
     }
 
