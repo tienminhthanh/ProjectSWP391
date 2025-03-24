@@ -129,7 +129,7 @@ public class CartController extends HttpServlet {
 
     }
 
-    private void addToCart(HttpServletRequest request, int customerID, int productID, int quantity,
+    public void addToCart(HttpServletRequest request, int customerID, int productID, int quantity,
             BigDecimal priceWithQuantity, Product product) throws SQLException, Exception {
         HttpSession session = request.getSession();
 
@@ -183,7 +183,7 @@ public class CartController extends HttpServlet {
         session.setAttribute("cartItems", cartItems);
     }
 
-    private void updateCartItem(CartItem cartItem, Product product) throws SQLException, Exception {
+    public void updateCartItem(CartItem cartItem, Product product) throws SQLException, Exception {
 //         Check if updated quantity exceeds stock
         if (cartItem.getQuantity() > product.getStockCount()) {
             throw new Exception("Updated quantity exceeds available stock! Available: " + product.getStockCount());
@@ -191,7 +191,7 @@ public class CartController extends HttpServlet {
         cartItemDAO.updateCartItem(cartItem);
     }
 
-    private void deleteCartItem(int customerID, int itemID) throws SQLException {
+    public void deleteCartItem(int customerID, int itemID) throws SQLException {
         cartItemDAO.deleteCartItem(customerID, itemID);
 
     }
