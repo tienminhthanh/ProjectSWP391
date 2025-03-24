@@ -17,8 +17,10 @@ jobs:
     - name: Set up JDK 13
       uses: actions/setup-java@v3
       with:
-        java-version: '13'
+        java-version: '13.0.2'  # Exact version from Adoptium archives
         distribution: 'temurin'
+        java-package: 'jdk'     # Ensures full JDK, not JRE
+        architecture: 'x64'     # Matches most runners
 
     - name: Cache Maven packages
       uses: actions/cache@v3
