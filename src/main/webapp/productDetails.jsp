@@ -131,7 +131,7 @@
 
                                         <!--Fomo info-->
                                         <c:choose>
-                                            <c:when test="${product.specialFilter == 'pre-order'}">
+                                            <c:when test="${product.specialFilter == 'upcoming'}">
                                                 <h4 class="fomo-info pre p-2 w-full text-center ">Release Date: <span>${product.releaseDate}</span></h4>
                                             </c:when>
 
@@ -148,15 +148,15 @@
                                                     <c:when test="${product.discountPercentage == 0}">
                                                         <p class="final-price w-full text-orange-500 text-3xl">${product.price}</p>
                                                     </c:when>
-                                                    <c:when test="${product.specialFilter != 'pre-order'}">
+                                                    <c:when test="${product.specialFilter != 'upcoming'}">
                                                         <p class="final-price w-3/10 text-orange-500 text-3xl md:text-base lg:text-3xl">${product.price * (100-product.discountPercentage)/100}</p>
                                                         <p class="initial-price w-2/10 text-base md:text-xs lg:text-base">${product.price}</p>
                                                     </c:when>
                                                 </c:choose>
                                             </div>
 
-                                            <!--Hide ratings if pre-order-->
-                                            <c:if test="${product.specialFilter != 'pre-order'}">
+                                            <!--Hide ratings if UPCOMING-->
+                                            <c:if test="${product.specialFilter != 'upcoming'}">
                                                 <!--Ratings-->
                                                 <div class="ratings-area text-lg mt-4 pl-2 md:text-left">
                                                     <span class="avg-rating"><i class="fa-solid fa-star"></i> ${product.averageRating}</span>
@@ -169,7 +169,7 @@
                                     <!--Purchase form-->
                                     <div class="purchase-form w-[90%] md:w-full bg-white mx-auto">
                                         <c:choose>
-                                            <c:when test="${product.stockCount eq 0 and product.specialFilter ne 'pre-order'}">
+                                            <c:when test="${product.stockCount eq 0 and product.specialFilter ne 'upcoming'}">
                                                 <p class="text-center text-xl text-gray-400 py-8 md:px-2 bg-gray-100 my-16 max-w-full">
                                                     OUT OF STOCK
                                                 </p>
@@ -177,7 +177,7 @@
                                             <c:otherwise>
                                                 <div class="flex flex-row items-center mt-4 w-3/5 md:w-full self-center">
                                                     <c:choose>
-                                                        <c:when test="${product.specialFilter != 'pre-order'}">
+                                                        <c:when test="${product.specialFilter != 'upcoming'}">
                                                             <p class="stock-count w-1/2 pl-5 text-left text-xl md:text-sm lg:text-xl">Stock: ${product.stockCount}</p>
                                                             <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
                                                         </c:when>
@@ -189,17 +189,17 @@
                                                 </div>
 
                                                 <c:choose>
-                                                    <c:when test="${product.specialFilter == 'pre-order'}">
+                                                    <c:when test="${product.specialFilter == 'upcoming'}">
 
-                                                        <!--Quantity = 1 for pre-order-->
+<!--                                                        Quantity = 1 for pre-order
                                                         <form action="preorder" method="post">
-                                                            <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
-                                                            <input type="hidden" name="productID" value="${product.productID}"/>
+                                                            <input type="hidden" name="customerID" value="">  Assuming account has customerID 
+                                                            <input type="hidden" name="productID" value=""/>
                                                             <input type="hidden" name="priceWithQuantity"/>
-                                                            <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
+                                                            <input type="hidden" name="currentURL" class="currentURL" value=""/>
                                                             <input type="hidden" name="quantity" value="1"/>
                                                             <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
-                                                        </form>
+                                                        </form>-->
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- Calculate cart quantity from session -->
@@ -441,7 +441,7 @@
             document.addEventListener("DOMContentLoaded", function () {
 
                 // Stockcount = 0 => Do nothing
-                if (`${product.stockCount}` === '0' && `${product.specialFilter}` !== 'pre-order') {
+                if (`${product.stockCount}` === '0' && `${product.specialFilter}` !== 'upcoming') {
                     return;
                 }
 

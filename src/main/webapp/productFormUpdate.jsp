@@ -44,8 +44,8 @@
                 </select>
                 <label for="specialFilterBook">Special Filter:</label>
                 <select id="specialFilterBook" name="specialFilter" required>
-                    <option value="unset" ${empty product.specialFilter or (product.specialFilter ne 'pre-order' and product.specialFilter ne 'new') ? 'selected' : ''}>Unset</option>
-                    <option value="pre-order ${product.specialFilter eq 'pre-order' ? 'selected' : ''}">Pre-Order</option>
+                    <option value="unset" ${empty product.specialFilter or (product.specialFilter ne 'upcoming' and product.specialFilter ne 'new') ? 'selected' : ''}>Unset</option>
+                    <option value="upcoming" ${product.specialFilter eq 'upcoming' ? 'selected' : ''}">Upcoming</option>
                     <option value="new" ${product.specialFilter eq 'new' ? 'selected' : ''}>New</option>
                 </select>
             </div>

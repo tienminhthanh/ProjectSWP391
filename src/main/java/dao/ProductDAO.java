@@ -67,7 +67,7 @@ public class ProductDAO {
                 stock = rs.getInt(1);
                 specialFilter = rs.getString(2);
             }
-            if ("pre-order".equals(specialFilter) || stock == 0) {
+            if ("upcoming".equals(specialFilter) || stock == 0) {
                 return true;  // Sản phẩm là Pre-order hoặc hết hàng
             }
             return false;  // Sản phẩm còn hàng và không phải Pre-order
@@ -497,12 +497,12 @@ public class ProductDAO {
     private String formatQueryBroad(String query) {
         String normalizedQuery = query.replaceAll("[^A-Za-z0-9_']", " ").trim();
         String[] queryParts = normalizedQuery.split("\\s+");
-        String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and prefix
+        String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and upcomingfix
 
         for (int i = 0; i < queryParts.length; i++) {
             // Add FORMSOF(INFLECTIONAL, word)
             formattedParts[i * 2] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
-            // Add "word*" for prefix wildcard
+            // Add "word*" for upcomingfix wildcard
             formattedParts[i * 2 + 1] = "\"" + queryParts[i] + "*\"";
         }
 
@@ -725,11 +725,11 @@ public class ProductDAO {
             case "crt":
                 return "AND PC.creatorID = ?\n";
             case "gnr":
-                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('pre-order','new')\n" : "AND BG.genreID = ?\n";
+                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n" : "AND BG.genreID = ?\n";
             case "pbl":
                 return "AND B.publisherID = ?\n";
             case "srs":
-                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('pre-order')\n" : "AND M.seriesID = ?\n";
+                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n" : "AND M.seriesID = ?\n";
             case "chr":
                 return "AND M.characterID = ?\n";
             case "brn":

@@ -118,7 +118,7 @@
 
                                 <!--Fomo info-->
                                 <c:choose>
-                                    <c:when test="${product.specialFilter == 'pre-order'}">
+                                    <c:when test="${product.specialFilter == 'upcoming'}">
                                         <h4 class="fomo-info pre p-2 w-full text-center ">Release Date: <span>${product.releaseDate}</span></h4>
                                     </c:when>
 
@@ -135,15 +135,15 @@
                                             <c:when test="${product.discountPercentage == 0}">
                                                 <p class="final-price w-full text-orange-500 text-3xl">${product.price}</p>
                                             </c:when>
-                                            <c:when test="${product.specialFilter != 'pre-order'}">
+                                            <c:when test="${product.specialFilter != 'upcoming'}">
                                                 <p class="final-price w-3/10 text-orange-500 text-3xl md:text-base lg:text-3xl">${product.price * (100-product.discountPercentage)/100}</p>
                                                 <p class="initial-price w-2/10 text-base md:text-xs lg:text-base">${product.price}</p>
                                             </c:when>
                                         </c:choose>
                                     </div>
 
-                                    <!--Hide ratings if pre-order-->
-                                    <c:if test="${product.specialFilter != 'pre-order'}">
+                                    <!--Hide ratings if upcoming-->
+                                    <c:if test="${product.specialFilter != 'upcoming'}">
                                         <!--Ratings-->
                                         <div class="ratings-area text-lg mt-4 pl-2 md:text-left">
                                             <span class="avg-rating"><i class="fa-solid fa-star"></i> ${product.averageRating}</span>

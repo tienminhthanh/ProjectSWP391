@@ -53,7 +53,7 @@
                     <label for="specialFilterBook">Special Filter:</label>
                     <select id="specialFilterBook" name="specialFilter" required>
                         <option value="unset">Unset</option>
-                        <option value="pre-order">Pre-Order</option>
+                        <option value="upcoming">Upcoming</option>
                         <option value="new">New</option>
                     </select>
                 </span>
