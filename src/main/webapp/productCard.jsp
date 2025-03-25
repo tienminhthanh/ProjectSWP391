@@ -80,7 +80,7 @@
 
             <!-- Price Section -->
             <p class="product-price">
-                <span class="discount-price"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ</span>
+                <span class="discount-price text-blue-600"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ</span>
             </p>
         </c:otherwise>
     </c:choose>

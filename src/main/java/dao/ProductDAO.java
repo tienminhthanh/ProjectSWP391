@@ -49,9 +49,8 @@ public class ProductDAO {
     /**
      * For add, update cart
      *
-     * @param productID
+     * @param productId
      * @return
-     * @throws SQLException
      */
     public boolean isSoldOutOrPreOrder(int productId) {
         String sql = "SELECT p.stockCount, \n"
@@ -255,7 +254,10 @@ public class ProductDAO {
      * @throws SQLException
      */
     public int getProductsCount(String query, String type, Map<String, String> filterMap) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
+        //Prepare the query with CTE first
+        StringBuilder sql = getCTETables(null);
+        
+        sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //If there is search query
         sql.append(query != null && !query.trim().isEmpty() ? "\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY]" : "");
@@ -269,9 +271,14 @@ public class ProductDAO {
             sql.append("\nJOIN Merchandise M");
             sql.append("\n    ON M.merchandiseID = P.productID");
         }
+        
+         // Common LEFT JOINs and WHERE clause
+        sql.append("\nLEFT JOIN ProductDiscount PD");
+        sql.append("\n    ON P.productID = PD.productID AND PD.rn = 1");
+        sql.append("\nLEFT JOIN Category AS C");
+        sql.append("\n    ON C.categoryID = P.categoryID");
+        sql.append("\nWHERE P.productIsActive = 1\n");
 
-        //WHERE Clause
-        sql.append("\nWHERE P.productIsActive = 1");
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -285,9 +292,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
-
+                filterParam = filterParam != null ? filterParam.trim() : "";
+                
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -295,7 +303,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -362,9 +370,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
-
+                filterParam = filterParam != null ? filterParam.trim() : "";
+                
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -372,7 +381,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -449,9 +458,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
-
+                filterParam = filterParam != null ? filterParam.trim() : "";
+                
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -459,7 +469,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -553,10 +563,16 @@ public class ProductDAO {
      * @throws SQLException
      */
     public int getProductsCount(int conditionID, Map<String, String> filterMap, String condition, String type) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
+        StringBuilder sql = getCTETables(null);
+        sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //Conditional joins
         sql.append(getSpecificJoin(condition, type));
+        
+        //Discount join
+        sql.append("LEFT JOIN ProductDiscount PD \n"
+                + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+        );
 
         //Initialize where clause
         sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, null));
@@ -572,9 +588,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
-
+                filterParam = filterParam != null ? filterParam.trim() : "";
+                
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -582,7 +599,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -628,9 +645,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
-
+                filterParam = filterParam != null ? filterParam.trim() : "";
+                
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -638,7 +656,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -1235,7 +1253,8 @@ public class ProductDAO {
      * @throws SQLException
      */
     public int getProductsCount(String query, String type) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
+        StringBuilder sql = getCTETables(null);
+        sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //If there is search query
         sql.append(query != null && !query.trim().isEmpty() ? "\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY]" : "");

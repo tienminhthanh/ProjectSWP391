@@ -145,6 +145,10 @@
                                             <!--Price-->
                                             <div class="price-area flex flex-row justify-center md:justify-start items-center font-bold pl-2 mt-4">
                                                 <c:choose>
+                                                    <c:when test="${product.specialFilter == 'upcoming'}">
+                                                        <p class="final-price w-fit text-blue-600 text-3xl mr-2">${product.price}</p>
+                                                        <p class="self-stretch text-xs font-semibold text-gray-500"> (Estimated)</p>
+                                                    </c:when>
                                                     <c:when test="${product.discountPercentage == 0}">
                                                         <p class="final-price w-full text-orange-500 text-3xl">${product.price}</p>
                                                     </c:when>
@@ -169,7 +173,12 @@
                                     <!--Purchase form-->
                                     <div class="purchase-form w-[90%] md:w-full bg-white mx-auto">
                                         <c:choose>
-                                            <c:when test="${product.stockCount eq 0 and product.specialFilter ne 'upcoming'}">
+                                            <c:when test="${product.specialFilter eq 'upcoming'}">
+                                                <p class="text-center text-xl text-gray-400 py-8 md:px-2 bg-gray-100 my-16 max-w-full">
+                                                    UPCOMING
+                                                </p>
+                                            </c:when>
+                                            <c:when test="${product.stockCount eq 0}">
                                                 <p class="text-center text-xl text-gray-400 py-8 md:px-2 bg-gray-100 my-16 max-w-full">
                                                     OUT OF STOCK
                                                 </p>
@@ -182,7 +191,7 @@
                                                             <input type="number" name="purchaseQuantity" class="w-1/2 ml-5 mr-5 text-lg md:text-sm lg:text-lg" id="quantityInput" value="1" min="1" max="${product.stockCount}"/>
                                                         </c:when>
                                                         <c:when test="${product.stockCount <= 10}">
-                                                            <p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold">${product.stockCount}</span></p>
+                                                            <!--<p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold"></span></p>-->
                                                             </c:when>
 
                                                     </c:choose>

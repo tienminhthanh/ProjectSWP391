@@ -51,10 +51,10 @@
                     CUSTOMER SUPPORT
                 </p>
                 <div class="policy-service-content">
-                    <a href="Cauhoithuonggap.jsp" class="link policy-service-text">
+                    <a href="#" class="link policy-service-text">
                         FAQ
                     </a>
-                    <a href="QcHoatDong.jsp" class="link policy-service-text">
+                    <a href="#" class="link policy-service-text">
                         Terms of Service
                     </a>
                 </div>
@@ -64,13 +64,13 @@
                     POLICIES
                 </p>
                 <div class="policy-service-content">
-                    <a href="CSbaoMat.jsp" class="link policy-service-text">
+                    <a href="#" class="link policy-service-text">
                         Privacy Policy
                     </a>
-                    <a href="CSvanChuyen.jsp" class="link policy-service-text">
+                    <a href="#" class="link policy-service-text">
                         Shipping Policy
                     </a>
-                    <a href="CStraHang.jsp" class="link policy-service-text">
+                    <a href="#" class="link policy-service-text">
                         Return & Exchange Policy
                     </a>
                 </div>

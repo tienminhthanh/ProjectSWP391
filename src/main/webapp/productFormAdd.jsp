@@ -27,7 +27,7 @@
                 <label for="priceBook">Price:</label>
                 <input type="number" id="priceBook" name="price" step="0.5" min="1" max="10000" required>
                 <label for="stockCountBook">Stock Count:</label>
-                <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" required>
+                <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" value="0" required readonly>
             </div>
         </div>
 
