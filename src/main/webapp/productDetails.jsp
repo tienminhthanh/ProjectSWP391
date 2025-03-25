@@ -511,13 +511,11 @@
                 priceElements.forEach(priceEl => {
                     let priceText = priceEl.innerText.trim(); // Get the text inside span
                     let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-                    console.log("formatted price: ", price);
-                    price = Math.round(price);
-                    console.log("Rounded price: ", price);
 
                     if (!isNaN(price)) {
+                        price = Math.round(price);
                         // Format price with commas (e.g., 4,400 VND)
-                        priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
+                        priceEl.innerText = price.toLocaleString() + " đ";
                     }
                 });
             });

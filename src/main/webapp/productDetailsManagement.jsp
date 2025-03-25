@@ -457,19 +457,17 @@
                                                       // Select all elements with prices
                                                       let priceElements = document.querySelectorAll(".price-area p");
 
-                                                      priceElements.forEach(priceEl => {
-                                                          let priceText = priceEl.innerText.trim(); // Get the text inside span
-                                                          let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-                                                          console.log("formatted price: ", price);
-                                                          price = Math.round(price);
-                                                          console.log("Rounded price: ", price);
+                                            priceElements.forEach(priceEl => {
+                                                let priceText = priceEl.innerText.trim(); // Get the text inside span
+                                                let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
 
-                                                          if (!isNaN(price)) {
-                                                              // Format price with commas (e.g., 4,400 VND)
-                                                              priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
-                                                          }
-                                                      });
-                                                  });
+                                                if (!isNaN(price)) {
+                                                    price = Math.round(price);
+                                                    // Format price with commas (e.g., 4,400 VND)
+                                                    priceEl.innerText = price.toLocaleString() + " đ";
+                                                }
+                                            });
+                                        });
 
 
                                                   //Format tags-link

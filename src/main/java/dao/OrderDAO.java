@@ -249,7 +249,7 @@ public class OrderDAO {
                 + "    a.phoneNumber,\n"
                 + "    a.birthDate,\n"
                 + "    a.role,\n"
-                + "    a.isActive,\n"
+                + "    a.accountIsActive,\n"
                 + "    a.dateAdded\n"
                 + "FROM Account a\n"
                 + "JOIN Customer c ON a.accountID = c.customerID\n"
@@ -269,7 +269,7 @@ public class OrderDAO {
                 acc.setPhoneNumber(rs.getString("phoneNumber"));
                 acc.setBirthDate(rs.getDate("birthDate") != null ? rs.getDate("birthDate").toString() : null);
                 acc.setRole(rs.getString("role"));
-                acc.setAccountIsActive(rs.getBoolean("isActive"));
+                acc.setAccountIsActive(rs.getBoolean("accountIsActive"));
                 return acc;
             }
         }
@@ -390,7 +390,6 @@ public class OrderDAO {
                 shipper.setEmail(rs.getString("email"));
                 shipper.setPhoneNumber(rs.getString("phoneNumber"));
                 shipper.setBirthDate(rs.getString("birthDate"));
-                shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                 shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
 
                 shipperList.add(shipper);
@@ -465,7 +464,7 @@ public class OrderDAO {
                 rs.getString("email"),
                 rs.getString("phoneNumber"),
                 rs.getString("birthDate"),
-                rs.getBoolean("isActive")
+                rs.getBoolean("accountIsActive")
         );
 
         // Kiểm tra role và ép kiểu sang lớp con để set thêm thuộc tính
@@ -490,7 +489,6 @@ public class OrderDAO {
 
             case "shipper":
                 Shipper shipper = new Shipper(
-                        rs.getString("deliveryAreas"),
                         rs.getInt("totalDeliveries"),
                         account.getAccountID(),
                         account.getUsername(),
@@ -524,7 +522,6 @@ public class OrderDAO {
 
             case "staff":
                 Staff staff = new Staff(
-                        rs.getString("workShift"),
                         rs.getInt("totalOrders"),
                         account.getAccountID(),
                         account.getUsername(),

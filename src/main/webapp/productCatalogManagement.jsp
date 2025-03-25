@@ -9,7 +9,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+    <head> 
         <meta charset="UTF-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
         <title>Product Management - WIBOOKS</title>
@@ -51,10 +51,13 @@
                         <a class="bg-green-600 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="addProduct">
                             <i class="fas fa-plus mr-2"></i> Add New Product
                         </a>
+                        <a class="bg-yellow-500 text-white p-4 rounded-lg hover:bg-orange-700 flex items-center justify-start w-auto transition duration-300 ease-in-out transform hover:scale-105 mb-4" href="queueImport">
+                            <i class="fas fa-plus mr-2"></i> Queue New Import
+                        </a>
                     </c:if>
 
                     <!--Search Field--> 
-                    <form action="" method="get" class="flex items-center space-x-4 mb-4 ">
+                    <form action="manageProductList" method="get" class="flex items-center space-x-4 mb-4 ">
                         <div class="flex items-stretch justify-center">
                             <select class="p-4 border border-gray-300 rounded-l focus:ring-blue-500 focus:border-blue-500" name="type">
                                 <option value="" ${empty param.type ? 'selected' : ''}>All Products</option>
@@ -72,7 +75,7 @@
 
             <!-- TABLE -->
             <div class="overflow-x-auto rounded-lg shadow-md">
-                <table class="min-w-full bg-white border border-gray-200 text-sm">
+                <table class="min-w-full bg-white border border-gray-200 text-md">
                     <thead class="bg-orange-400 text-white">
                         <tr>
                             <th class="px-2 py-3 border-l">ID</th>
@@ -102,7 +105,7 @@
                                     <a href="manageProductDetails?id=${product.productID}&type=${product.generalCategory}">
                                         <figure>
                                             <img loading="lazy" class="object-contain w-full" src="${product.imageURL}" alt="${product.productName}" title="${product.productName}" />
-                                            <figcaption class="font-bold text-xs md:text-md py-2">${product.productName}</figcaption>
+                                            <figcaption class="font-bold text-xs md:text-lg py-2">${product.productName}</figcaption>
                                         </figure>
                                     </a>
                                 </td>
@@ -113,13 +116,17 @@
                                     <span>đ</span>
                                 </td>
                                 <!--Stockcount-->
-                                <td class="px-2 py-3 border-b text-center">${product.stockCount}</td>
+                                <td class="px-2 py-3 border-b text-center">${ product.specialFilter eq 'pre-order' ? 'N/A' : product.stockCount}</td>
                                 <!--Category-->
                                 <td class="px-2 py-3 border-b text-center">${product.specificCategory.categoryName}</td>
                                 <!--Release Date-->
                                 <td class="release-date px-2 py-3 border-b text-center">${product.releaseDate}</td>
                                 <!--Special Filter-->
-                                <td class="px-2 py-3 border-b text-center">${empty product.specialFilter ? 'Unset': product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'pre-order' ? 'Pre-Order' : ''}</td>
+                                <td class="px-2 py-3 border-b text-center">
+                                    <span class="px-3 py-1 rounded text-white ${product.specialFilter eq 'new' ? 'bg-yellow-500' : product.specialFilter eq 'pre-order' ?  'bg-blue-500' : 'bg-black'}">
+                                    ${ product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'pre-order' ? 'Pre-Order' : 'Unset'}
+                                    </span>
+                                </td>
                                 <!--Type-->
                                 <td class="px-6 py-3 border-b text-center w-[7%]">
                                     <span class="px-3 py-1 rounded text-white ${product.generalCategory eq 'book' ? 'bg-orange-500' : product.generalCategory eq 'merch' ?  'bg-yellow-500' : 'bg-gray-500'}">
@@ -150,10 +157,17 @@
                                 </td>
                                 <!--Actions-->
                                 <c:if test="${sessionScope.account ne null and sessionScope.account.role eq 'admin'}">
-                                    <td class="px-2 py-3 border-b text-left w-[10%]">
+                                    <td class="px-2 py-3 border-b text-left w-[10%] text-md">
                                         <a href="updateProduct?id=${product.productID}&type=${product.generalCategory}" class="text-blue-500 hover:text-blue-700">
                                             <i class="fas fa-edit"></i> Update
                                         </a>
+                                        <br/>
+                                        <br/>
+                                        
+                                        <a href="importProduct?id=${product.productID}" class="text-yellow-500 hover:text-yellow-700">
+                                            <i class="fa-solid fa-warehouse"></i> Import
+                                        </a>
+                                        <br/>
                                         <br/>
                                         <c:choose>
                                             <c:when test="${product.isActive}">

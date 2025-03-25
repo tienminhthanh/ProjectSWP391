@@ -15,15 +15,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
 import model.OrderInfo;
-import model.OrderProduct;
 
 /**
  *

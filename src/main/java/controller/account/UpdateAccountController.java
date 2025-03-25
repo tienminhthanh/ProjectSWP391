@@ -2,7 +2,6 @@ package controller.account;
 
 import dao.AccountDAO;
 import model.Account;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,6 +16,7 @@ import model.Customer;
 @WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/updateAccount"})
 public class UpdateAccountController extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);

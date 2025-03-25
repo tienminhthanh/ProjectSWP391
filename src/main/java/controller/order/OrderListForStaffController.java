@@ -84,7 +84,7 @@ public class OrderListForStaffController extends HttpServlet {
         OrderDAO orderDAO = new OrderDAO();
 
         List<OrderInfo> orderList = null;
-        OrderInfo orderInfo = new OrderInfo();
+//        OrderInfo orderInfo = new OrderInfo();
         Map<Integer, Account> customerMap = new HashMap<>(); // Lưu orderID -> Account
         List<Shipper> shipperList = new ArrayList<>();
         DeliveryOption delivery = new DeliveryOption();
@@ -104,7 +104,7 @@ public class OrderListForStaffController extends HttpServlet {
                 if (customer != null) {
                     customerMap.put(order.getOrderID(), customer); // Lưu vào Map
                 }
-                orderInfo = orderDAO.getOrderByID(order.getOrderID(), customer.getAccountID());
+//                orderInfo = orderDAO.getOrderByID(order.getOrderID(), customer.getAccountID());
                 int deliveryTimeInDays;
 
                 delivery = orderDAO.getDeliveryOption(order.getDeliveryOptionID());

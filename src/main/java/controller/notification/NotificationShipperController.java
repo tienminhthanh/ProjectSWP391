@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Notification;
-import model.OrderInfo;
 
 @WebServlet(name = "NotificationShipperController", urlPatterns = {"/notificationshipper"})
 public class NotificationShipperController extends HttpServlet {
@@ -30,8 +29,8 @@ public class NotificationShipperController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        OrderInfo order = (OrderInfo) session.getAttribute("order");
-        Notification notification = new Notification();
+//        OrderInfo order = (OrderInfo) session.getAttribute("order");
+//        Notification notification = new Notification();
         try {
             String receiverIDParam = request.getParameter("receiverID");
             int receiverID = Integer.parseInt(receiverIDParam);
@@ -74,18 +73,18 @@ public class NotificationShipperController extends HttpServlet {
         }
     }
 
-    private void listNotifications(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
-            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
-            request.setAttribute("notifications", notifications);
-            request.getRequestDispatcher("notificationListShipper.jsp").forward(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(NotificationShipperController.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ServletException("Database error", ex);
-        }
-    }
+//    private void listNotifications(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//        try {
+//            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
+//            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
+//            request.setAttribute("notifications", notifications);
+//            request.getRequestDispatcher("notificationListShipper.jsp").forward(request, response);
+//        } catch (SQLException ex) {
+//            Logger.getLogger(NotificationShipperController.class.getName()).log(Level.SEVERE, null, ex);
+//            throw new ServletException("Database error", ex);
+//        }
+//    }
 
     private void insertNotification(HttpServletRequest request, HttpServletResponse response)
             throws IOException {

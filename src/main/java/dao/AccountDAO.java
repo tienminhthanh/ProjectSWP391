@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,14 +11,14 @@ import model.Admin;
 import model.Customer;
 import model.Shipper;
 import model.Staff;
-import utils.DBContext;
+import utils.*;
 
 public class AccountDAO {
 
-    private utils.DBContext context;
+    private DBContext context;
 
     public AccountDAO() {
-        context = new utils.DBContext();
+        context = new DBContext();
     }
 
     /**
@@ -390,13 +389,11 @@ public class AccountDAO {
                     return ad;
                 case "shipper":
                     Shipper shipper = (Shipper) account;
-                    shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                     shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
                     return shipper;
                 case "staff":
                     Staff staff = (Staff) account;
                     staff.setTotalOrders(rs.getInt("totalOrders"));
-                    staff.setWorkShift(rs.getString("workShift"));
                     return staff;
             }
         }

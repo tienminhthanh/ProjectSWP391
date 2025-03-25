@@ -85,7 +85,7 @@
             </c:if>
         </div>
     <!-- If out of stock -> overlay -->
-    <c:if test="${currentProduct.stockCount == 0}">
+    <c:if test="${currentProduct.stockCount == 0 and currentProduct.specialFilter ne 'pre-order'}">
         <div class="out-of-stock rounded-lg">Out of Stock</div>
     </c:if>
     </section>

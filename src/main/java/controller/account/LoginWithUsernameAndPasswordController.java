@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import model.Admin;
-import model.Customer;
 
 /**
  * Servlet responsible for handling user login.

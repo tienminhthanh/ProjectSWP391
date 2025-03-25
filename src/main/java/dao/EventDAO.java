@@ -4,7 +4,6 @@
  */
 package dao;
 
-import com.oracle.wls.shaded.org.apache.xpath.axes.LocPathIterator;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -232,6 +231,7 @@ public class EventDAO {
                 return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -262,6 +262,7 @@ public class EventDAO {
                 return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -309,6 +310,7 @@ public class EventDAO {
                 return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -316,7 +318,7 @@ public class EventDAO {
     public boolean deleteEvent(int id) {
         try {
             Event event = getEventByID(id);
-            LocalDate today = LocalDate.now();
+//            LocalDate today = LocalDate.now();
 
             String sql = "UPDATE [dbo].[Event]\n"
                     + "   SET [eventIsActive] = ?\n"
@@ -335,7 +337,7 @@ public class EventDAO {
             Event event = getEventByID(id);
             LocalDate today = LocalDate.now();
 
-            if ((!event.isExpiry() && !event.isIsActive())) {
+            if (!event.isExpiry() && !event.isIsActive()) {
                 return false;
             } else if (today.isBefore(LocalDate.parse(event.getDateStarted()))) {
                 return false;

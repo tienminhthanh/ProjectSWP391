@@ -6,10 +6,8 @@ package controller.event;
 
 import dao.EventDAO;
 import dao.EventProductDAO;
-import dao.VoucherDAO;
 import jakarta.servlet.ServletContext;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +18,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -96,7 +93,7 @@ public class EventUpdateController extends HttpServlet {
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
-        Event e = new Event();
+//        Event e = new Event();
 
         try {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");

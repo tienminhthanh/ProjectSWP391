@@ -3,19 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
  */
 document.addEventListener("DOMContentLoaded", function () {
-    // Select all elements with prices
-    let priceElements = document.querySelectorAll(".product-price span");
-
-    priceElements.forEach(priceEl => {
-        let priceText = priceEl.innerText.trim(); // Get the text inside span
-        let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-
-        if (!isNaN(price)) {
-            // Format price with commas (e.g., 4,400 VND)
-            priceEl.innerText = new Intl.NumberFormat("en-US").format(price) + " đ";
-        }
-    });
-
     const dateElements = document.querySelectorAll('.fomo-info>span');
     if (!dateElements) {
         console.log("date elements not found!");
@@ -30,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        dateEl.innerText = date.toLocaleDateString("vi-VN");
+        dateEl.innerText = new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
     });
 
 });
@@ -65,3 +52,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 });
+
+
+function checkStockCard(cartQuantity, stockCount, event) {
+    let quantityToAdd = 1; 
+    if (cartQuantity + quantityToAdd > stockCount) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Stock Limit Reached',
+            text: `The quantity in your cart has reached the stock limit. The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+        });
+        event.preventDefault();
+        return false;
+    }
+    return true;
+}
