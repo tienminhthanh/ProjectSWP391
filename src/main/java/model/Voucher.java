@@ -9,57 +9,54 @@ public class Voucher {
     private int voucherID;
     private String voucherName;
     private double voucherValue;
-    private int voucherQuantity;
+    private int quantity;
     private int minimumPurchaseAmount;
-    private String voucherDateCreated;
-    private int voucherDuration;
+    private String dateCreated;
+    private int duration;
     private int adminID;
-    private boolean voucherIsActive;
+    private boolean isActive;
     private boolean expiry;
     private String voucherType;
     private Double maxDiscountAmount;
-    private String voucherDateStarted;
+    private String dateStarted;
+
+    public Voucher(int voucherID, String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
+        this.voucherID = voucherID;
+        this.voucherName = voucherName;
+        this.voucherValue = voucherValue;
+        this.quantity = quantity;
+        this.minimumPurchaseAmount = minimumPurchaseAmount;
+        this.dateCreated = dateCreated;
+        this.duration = duration;
+        this.adminID = adminID;
+        this.isActive = isActive;
+        this.expiry = expiry;
+        this.voucherType = voucherType;
+        this.maxDiscountAmount = maxDiscountAmount;
+        this.dateStarted = dateStarted;
+    }
 
     public Voucher() {
     }
 
-    public Voucher(String voucherName, double voucherValue, int voucherQuantity, int minimumPurchaseAmount, String voucherDateCreated, int voucherDuration, int adminID, boolean voucherIsActive, boolean expiry, String voucherType, Double maxDiscountAmount, String voucherDateStarted) {
+    public Voucher(String voucherName, double voucherValue, int quantity, int minimumPurchaseAmount, String dateCreated, int duration, int adminID, boolean isActive, boolean expiry, String voucherType, Double maxDiscountAmount, String dateStarted) {
         this.voucherName = voucherName;
         this.voucherValue = voucherValue;
-        this.voucherQuantity = voucherQuantity;
+        this.quantity = quantity;
         this.minimumPurchaseAmount = minimumPurchaseAmount;
-        this.voucherDateCreated = voucherDateCreated;
-        this.voucherDuration = voucherDuration;
+        this.dateCreated = dateCreated;
+        this.duration = duration;
         this.adminID = adminID;
-        this.voucherIsActive = voucherIsActive;
+        this.isActive = isActive;
         this.expiry = expiry;
         this.voucherType = voucherType;
         this.maxDiscountAmount = maxDiscountAmount;
-        this.voucherDateStarted = voucherDateStarted;
+        this.dateStarted = dateStarted;
     }
 
-    public Voucher(int voucherID, String voucherName, double voucherValue, int voucherQuantity, int minimumPurchaseAmount, String voucherDateCreated, int voucherDuration, int adminID, boolean voucherIsActive, boolean expiry, String voucherType, Double maxDiscountAmount, String voucherDateStarted) {
-        this.voucherID = voucherID;
-        this.voucherName = voucherName;
-        this.voucherValue = voucherValue;
-        this.voucherQuantity = voucherQuantity;
-        this.minimumPurchaseAmount = minimumPurchaseAmount;
-        this.voucherDateCreated = voucherDateCreated;
-        this.voucherDuration = voucherDuration;
-        this.adminID = adminID;
-        this.voucherIsActive = voucherIsActive;
-        this.expiry = expiry;
-        this.voucherType = voucherType;
-        this.maxDiscountAmount = maxDiscountAmount;
-        this.voucherDateStarted = voucherDateStarted;
-    }
-
-    public String getVoucherDateCreated() {
-        return voucherDateCreated;
-    }
-
-    public void setVoucherDateCreated(String voucherDateCreated) {
-        this.voucherDateCreated = voucherDateCreated;
+    @Override
+    public String toString() {
+        return "Voucher{" + "voucherID=" + voucherID + ", voucherName=" + voucherName + ", voucherValue=" + voucherValue + ", quantity=" + quantity + ", minimumPurchaseAmount=" + minimumPurchaseAmount + ", dateCreated=" + dateCreated + ", duration=" + duration + ", adminID=" + adminID + ", isActive=" + isActive + ", expiry=" + expiry + ", voucherType=" + voucherType + ", maxDiscountAmount=" + maxDiscountAmount + ", dateStarted=" + dateStarted + '}';
     }
 
     public int getVoucherID() {
@@ -86,12 +83,12 @@ public class Voucher {
         this.voucherValue = voucherValue;
     }
 
-    public int getVoucherQuantity() {
-        return voucherQuantity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setVoucherQuantity(int voucherQuantity) {
-        this.voucherQuantity = voucherQuantity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public int getMinimumPurchaseAmount() {
@@ -102,12 +99,20 @@ public class Voucher {
         this.minimumPurchaseAmount = minimumPurchaseAmount;
     }
 
-    public int getVoucherDuration() {
-        return voucherDuration;
+    public String getDateCreated() {
+        return dateCreated;
     }
 
-    public void setVoucherDuration(int voucherDuration) {
-        this.voucherDuration = voucherDuration;
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public int getAdminID() {
@@ -118,12 +123,12 @@ public class Voucher {
         this.adminID = adminID;
     }
 
-    public boolean isVoucherIsActive() {
-        return voucherIsActive;
+    public boolean isIsActive() {
+        return isActive;
     }
 
-    public void setVoucherIsActive(boolean voucherIsActive) {
-        this.voucherIsActive = voucherIsActive;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public boolean isExpiry() {
@@ -150,12 +155,12 @@ public class Voucher {
         this.maxDiscountAmount = maxDiscountAmount;
     }
 
-    public String getVoucherDateStarted() {
-        return voucherDateStarted;
+    public String getDateStarted() {
+        return dateStarted;
     }
 
-    public void setVoucherDateStarted(String voucherDateStarted) {
-        this.voucherDateStarted = voucherDateStarted;
+    public void setDateStarted(String dateStarted) {
+        this.dateStarted = dateStarted;
     }
 
 }

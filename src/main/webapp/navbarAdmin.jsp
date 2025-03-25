@@ -19,7 +19,7 @@
     .logo:hover {
         box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Bóng đổ đậm hơn khi hover */
     }
-    
+
 </style>
 
 <div class="p-4">
@@ -51,22 +51,24 @@
         </a>
 
     </c:if>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="manageProductList">
-        <i class="fas fa-cogs mr-2"></i>
-        Product List
-    </a>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="OrderListForStaffController">
-        <i class="fas fa-box mr-2"></i>
-        Order List
-    </a>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="listnotification">
-        <i class="fas fa-bell mr-2"></i>
-        Notification List
-    </a>
-    <a class="flex items-center p-2 hover:bg-orange-800" href="chat">
-        <i class="fas fa-comment-dots mr-2"></i>
-        Chat
-    </a>
+    <c:if test="${not empty sessionScope.account and (sessionScope.account.getRole() == 'admin' or sessionScope.account.getRole() == 'staff')}">
+        <a class="flex items-center p-2 hover:bg-orange-800" href="manageProductList">
+            <i class="fas fa-cogs mr-2"></i>
+            Product List
+        </a>
+        <a class="flex items-center p-2 hover:bg-orange-800" href="OrderListForStaffController">
+            <i class="fas fa-box mr-2"></i>
+            Order List
+        </a>
+        <a class="flex items-center p-2 hover:bg-orange-800" href="listnotification">
+            <i class="fas fa-bell mr-2"></i>
+            Notification List
+        </a>
+        <a class="flex items-center p-2 hover:bg-orange-800" href="chat">
+            <i class="fas fa-comment-dots mr-2"></i>
+            Chat
+        </a>
+    </c:if>
     <a class="flex items-center p-2 hover:bg-orange-800" href="logout">
         <i class="fas fa-sign-out-alt mr-2"></i> 
         Logout

@@ -3,40 +3,48 @@ package model;
 import java.math.BigDecimal;
 
 public class CartItem {
+
     private int itemID;
     private int customerID;
     private int productID;
-    private int cartItemQuantity;
-    private BigDecimal cartItemPrice;
+    private int quantity;
+
+    private BigDecimal priceWithQuantity;
     private Product product;
 
     public CartItem() {
     }
-
-    public CartItem(int customerID, Product product, int cartItemQuantity, BigDecimal cartItemPrice) {
+//them vo de lay khi mua mot product, mylinh them
+    public CartItem(int customerID, Product product, int quantity, BigDecimal priceWithQuantity) {
         this.customerID = customerID;
-        this.product = product;
+        this.product = product;  // Lưu thông tin sản phẩm
         this.productID = product.getProductID();
-        this.cartItemQuantity = cartItemQuantity;
-        this.cartItemPrice = cartItemPrice;
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
     }
 
-    public CartItem(int itemID, int customerID, int productID, int cartItemQuantity, BigDecimal cartItemPrice) {
+    public CartItem(int itemID, int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.itemID = itemID;
         this.customerID = customerID;
         this.productID = productID;
-        this.cartItemQuantity = cartItemQuantity;
-        this.cartItemPrice = cartItemPrice;
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
     }
 
-    public CartItem(int customerID, int productID, int cartItemQuantity, BigDecimal cartItemPrice) {
+    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity) {
         this.customerID = customerID;
         this.productID = productID;
-        this.cartItemQuantity = cartItemQuantity;
-        this.cartItemPrice = cartItemPrice;
+        this.quantity = quantity;
+        this.priceWithQuantity = priceWithQuantity;
     }
 
-    // Getters and setters
+//    public CartItem(int customerID, int productID, int quantity, BigDecimal priceWithQuantity, int itemID) {
+//        this.customerID = customerID;
+//        this.productID = productID;
+//        this.quantity = quantity;
+//        this.priceWithQuantity = priceWithQuantity;
+//    }
+    // Getters vÃ  setters
     public int getItemID() {
         return itemID;
     }
@@ -61,20 +69,20 @@ public class CartItem {
         this.productID = productID;
     }
 
-    public int getCartItemQuantity() {
-        return cartItemQuantity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setCartItemQuantity(int cartItemQuantity) {
-        this.cartItemQuantity = cartItemQuantity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
-    public BigDecimal getCartItemPrice() {
-        return cartItemPrice;
+    public BigDecimal getPriceWithQuantity() {
+        return priceWithQuantity;
     }
 
-    public void setCartItemPrice(BigDecimal cartItemPrice) {
-        this.cartItemPrice = cartItemPrice;
+    public void setPriceWithQuantity(BigDecimal priceWithQuantity) {
+        this.priceWithQuantity = priceWithQuantity;
     }
 
     public Product getProduct() {
@@ -84,4 +92,5 @@ public class CartItem {
     public void setProduct(Product product) {
         this.product = product;
     }
+
 }

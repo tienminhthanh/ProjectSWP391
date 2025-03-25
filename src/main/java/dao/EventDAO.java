@@ -4,7 +4,6 @@
  */
 package dao;
 
-import com.oracle.wls.shaded.org.apache.xpath.axes.LocPathIterator;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -176,6 +175,39 @@ public class EventDAO {
         return listEvent;
     }
 
+    public List<Event> getListActiveEventsNotContainProduct(int productId) {
+        List<Event> listEvent = new ArrayList<>();
+        String sql = "SELECT * FROM [dbo].[Event] WHERE [eventID] != ?";
+        try {
+
+            Object[] params = {productId};
+            ResultSet rs = context.exeQuery(sql, params);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String dateCreated = rs.getString(3);
+                int duration = rs.getInt(4);
+                String banner = rs.getString(5);
+                String description = rs.getString(6);
+                int adminID = rs.getInt(7);
+                boolean isActive = rs.getBoolean(8);
+                String dateStarted = rs.getString(9);
+                //Handling null
+                LocalDate expiryDate = dateStarted != null ? LocalDate.parse(dateStarted, formatter).plusDays(duration) : LocalDate.EPOCH;
+                Event event = new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
+                //Only add non-expired events
+                if (event.isExpiry()) {
+                    listEvent.add(event);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listEvent;
+    }
+
     public Event getEventByID(int eventID) {
         try {
             String sql = "SELECT * FROM [dbo].[Event] WHERE [eventID] = ?";
@@ -199,6 +231,38 @@ public class EventDAO {
                 return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Event getEventByProductID(int productID) {
+        String sql = "SELECT e.*\n"
+                + "FROM Event e\n"
+                + "INNER JOIN Event_Product ep ON e.eventID = ep.eventID\n"
+                + "WHERE ep.productID = ?;";
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            Object[] params = {productID};
+            ResultSet rs = context.exeQuery(sql, params);
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String dateCreated = rs.getString(3);
+                int duration = rs.getInt(4);
+                String banner = rs.getString(5);
+                String description = rs.getString(6);
+                int adminID = rs.getInt(7);
+                boolean isActive = rs.getBoolean(8);
+                String dateStarted_raw = rs.getString(9);
+
+                LocalDate today = LocalDate.now();
+                LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
+                LocalDate expiryDate = dateStarted.plusDays(duration);
+                return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -246,6 +310,7 @@ public class EventDAO {
                 return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted, !LocalDate.now().isAfter(expiryDate));
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -253,12 +318,12 @@ public class EventDAO {
     public boolean deleteEvent(int id) {
         try {
             Event event = getEventByID(id);
-            LocalDate today = LocalDate.now();
+//            LocalDate today = LocalDate.now();
 
             String sql = "UPDATE [dbo].[Event]\n"
                     + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
-            Object[] params = {!event.isEventIsActive(), id};
+            Object[] params = {!event.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -272,16 +337,16 @@ public class EventDAO {
             Event event = getEventByID(id);
             LocalDate today = LocalDate.now();
 
-            if ((!event.isExpiry() && !event.isEventIsActive())) {
+            if (!event.isExpiry() && !event.isIsActive()) {
                 return false;
-            } else if (today.isBefore(LocalDate.parse(event.getEventDateStarted()))) {
+            } else if (today.isBefore(LocalDate.parse(event.getDateStarted()))) {
                 return false;
             }
 
             String sql = "UPDATE [dbo].[Event]\n"
                     + "   SET [eventIsActive] = ?\n"
                     + " WHERE [eventID] = ?";
-            Object[] params = {!event.isEventIsActive(), id};
+            Object[] params = {!event.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -307,13 +372,13 @@ public class EventDAO {
 //                banner = "img/banner_event/" + banner;
 //            }
             Object[] params = {event.getEventName(),
-                event.getEventDateCreated(),
-                event.getEventDuration(),
+                event.getDateCreated(),
+                event.getDuration(),
                 event.getBanner(),
                 event.getDescription(),
                 event.getAdminID(),
-                event.isEventIsActive(),
-                event.getEventDateStarted()
+                event.isIsActive(),
+                event.getDateStarted()
             };
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
@@ -336,23 +401,23 @@ public class EventDAO {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(event.getEventDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(event.getEventDuration());
+            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getDuration());
             String banner = event.getBanner();
             if (!banner.startsWith("img/")) {
                 banner = "img/banner_event/" + banner;
             }
 
             boolean isActive = false;
-            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getEventDateStarted()).isEqual(today)) {
+            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getDateStarted()).isEqual(today)) {
                 isActive = true;
             }
 
             Object params[] = {event.getEventName(),
-                event.getEventDuration(),
+                event.getDuration(),
                 banner,
                 event.getDescription(),
-                event.getEventDateStarted(),
+                event.getDateStarted(),
                 isActive,
                 event.getEventID()};
 

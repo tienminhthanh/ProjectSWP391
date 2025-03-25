@@ -19,7 +19,8 @@ import jakarta.json.JsonWriter;
 @WebServlet("/ChatServletAI")
 public class ChatAIController extends HttpServlet {
 //AIzaSyAz8Jeb-L8TI_DZw-x7n-OKVs6sQN2ZOPQ
-//    private static final String API_KEY = "AIzaSyAdr95aaOBJifRSD9qEMCH8AHeCu9rGYg8"; // 🔴 Replace with your API key
+    //private static final String API_KEY = "AIzaSyAdr95aaOBJifRSD9qEMCH8AHeCu9rGYg8"; // 🔴 Replace with your API key
+
     private static final String API_KEY = "AIzaSyAz8Jeb-L8TI_DZw-x7n-OKVs6sQN2ZOPQ";
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
     private static final String SYSTEM_PROMPT = "Bạn là một nhân viên tư vấn sách chuyên nghiệp tên là Wibooks AI, chuyên hỗ trợ và giải đáp các thắc mắc liên quan đến sách, bao gồm nội dung truyện, nhân vật trong sách hoặc truyện tranh, cốt truyện, "
@@ -48,6 +49,13 @@ public class ChatAIController extends HttpServlet {
         if (previousUserMessage == null || previousAiResponse == null) {
             previousUserMessage = "";
             previousAiResponse = "";
+        }
+
+        // Introduce a delay of 1 seconds before sending the message to AI
+        try {
+            Thread.sleep(1000);  // Sleep for 30 seconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         // Send message with conversation history

@@ -13,7 +13,6 @@ import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import model.*;
-import dao.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,7 +94,7 @@ public class EventProductDAO {
                 + "    p.adminID, \n"
                 + "    p.keywords, \n"
                 + "    p.generalCategory, \n"
-                + "    p.isActive, \n"
+                + "    p.productIsActive, \n"
                 + "    p.imageURL\n"
                 + "FROM Product p\n"
                 + "LEFT JOIN Event_Product ep ON p.productID = ep.productID AND ep.eventID = ?\n"
@@ -178,7 +177,7 @@ public class EventProductDAO {
                 + "       p.[adminID],\n"
                 + "       p.[keywords],\n"
                 + "       p.[generalCategory],\n"
-                + "       p.[isActive],\n"
+                + "       p.[productIsActive],\n"
                 + "       p.[imageURL]\n"
                 + "FROM [WIBOOKS].[dbo].[Product] p\n"
                 + "JOIN [WIBOOKS].[dbo].[Event_Product] ep\n"
@@ -254,6 +253,7 @@ public class EventProductDAO {
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return false;
     }
@@ -276,6 +276,6 @@ public class EventProductDAO {
 
     public static void main(String[] args) {
         EventProductDAO ep = new EventProductDAO();
-        System.out.println(ep.getListProductToAddForEvent(14, "", "Manga").size());
+        System.out.println(ep.getListProductInEvent(4).size());
     }
 }

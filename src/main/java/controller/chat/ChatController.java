@@ -17,15 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @WebServlet(name = "ChatController", urlPatterns = {"/chat"})
 public class ChatController extends HttpServlet {
 
     private static final int ADMIN_ID = 1;
     private ChatDAO chatDAO;
-    private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
+//    private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
 
     @Override
     public void init() throws ServletException {

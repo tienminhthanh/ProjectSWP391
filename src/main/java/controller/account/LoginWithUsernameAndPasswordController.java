@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import model.Admin;
-import model.Customer;
 
 /**
  * Servlet responsible for handling user login.
@@ -71,7 +69,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
             Account account = accountDAO.getAccountByUsername(username);
 
             if (account != null) { // If account exists
-                if (account.getIsActive()) { // Check if the account is active
+                if (account.getAccountIsActive()) { // Check if the account is active
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
                     if (failedAttempts == null) {
                         failedAttempts = 0;

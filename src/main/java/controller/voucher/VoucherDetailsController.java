@@ -6,7 +6,6 @@ package controller.voucher;
 
 import dao.VoucherDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import model.Voucher;
 
 /**
@@ -46,9 +44,9 @@ public class VoucherDetailsController extends HttpServlet {
             Voucher voucherDetails = vDao.getVoucherByID(id);
             request.setAttribute("VOUCHER_DETAILS", voucherDetails);
 
-            String dateStarted = voucherDetails.getVoucherDateStarted();
+            String dateStarted = voucherDetails.getDateStarted();
             LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-            LocalDate dateEnd = createDate.plusDays(voucherDetails.getVoucherDuration());
+            LocalDate dateEnd = createDate.plusDays(voucherDetails.getDuration());
             request.setAttribute("dateEnd", dateEnd);
 
         } catch (Exception ex) {

@@ -21,7 +21,7 @@ public class DBContext {
             + "trustServerCertificate=true;"
             + "characterEncoding=UTF-8";
     private static final String USERNAME = "sa";
-    private static final String PASSWORD = "sa123456";
+    private static final String PASSWORD = "123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
     public DBContext() {
@@ -74,8 +74,9 @@ public class DBContext {
             LOGGER.info(() -> String.format("Query affected %d rows: %s", rowsAffected, query));
             return rowsAffected;
         } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Non-query execution failed: " + query, ex);
-            throw ex;
+            String errorMessage = "Non-query execution failed: " + query;
+            LOGGER.log(Level.SEVERE, errorMessage, ex);
+            throw new SQLException("executeUpdate() failed!",ex);
         }
     }
 

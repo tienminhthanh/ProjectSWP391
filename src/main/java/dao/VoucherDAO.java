@@ -289,18 +289,18 @@ public class VoucherDAO {
                 + "      WHERE [voucherID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(voucher.getVoucherDateCreated(), formatter);
-            LocalDate expiryDate = createDate.plusDays(voucher.getVoucherDuration());
+//            LocalDate today = LocalDate.now();
+            LocalDate createDate = LocalDate.parse(voucher.getDateCreated(), formatter);
+            LocalDate expiryDate = createDate.plusDays(voucher.getDuration());
 
             Object[] params = {voucher.getVoucherName(),
                 voucher.getVoucherValue(),
-                voucher.getVoucherQuantity(),
+                voucher.getQuantity(),
                 voucher.getMinimumPurchaseAmount(),
-                voucher.getVoucherDuration(),
+                voucher.getDuration(),
                 voucher.getVoucherType(),
                 voucher.getMaxDiscountAmount(),
-                voucher.getVoucherDateStarted(),
+                voucher.getDateStarted(),
                 !LocalDate.now().isAfter(expiryDate),
                 voucher.getVoucherID()};
 
@@ -317,14 +317,14 @@ public class VoucherDAO {
         try {
             Voucher voucher = getVoucherByID(id);
 
-            if (!voucher.isExpiry() && !voucher.isVoucherIsActive()) {
+            if (!voucher.isExpiry() && !voucher.isIsActive()) {
                 return false;
             }
 
             String sql = "UPDATE [dbo].[Voucher]\n"
                     + "   SET [voucherIsActive] = ?\n"
                     + " WHERE [voucherID] = ?";
-            Object[] params = {!voucher.isVoucherIsActive(), id};
+            Object[] params = {!voucher.isIsActive(), id};
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;
         } catch (SQLException ex) {
@@ -343,15 +343,15 @@ public class VoucherDAO {
             Object[] params = {
                 voucher.getVoucherName(),
                 voucher.getVoucherValue(),
-                voucher.getVoucherQuantity(),
+                voucher.getQuantity(),
                 voucher.getMinimumPurchaseAmount(),
-                voucher.getVoucherDateCreated(),
-                voucher.getVoucherDuration(),
+                voucher.getDateCreated(),
+                voucher.getDuration(),
                 voucher.getAdminID(),
-                voucher.isVoucherIsActive(),
+                voucher.isIsActive(),
                 voucher.getVoucherType(),
                 voucher.getMaxDiscountAmount(),
-                voucher.getVoucherDateStarted()};
+                voucher.getDateStarted()};
 
             int rowsAffected = context.exeNonQuery(sql, params);
             return rowsAffected > 0;

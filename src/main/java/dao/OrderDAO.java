@@ -73,8 +73,7 @@ public class OrderDAO {
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
     }
-    
-    
+
 // insert row vao bang Order_product
     //choose
     public void insertOrderProduct(Object[] params) throws SQLException {
@@ -250,7 +249,7 @@ public class OrderDAO {
                 + "    a.phoneNumber,\n"
                 + "    a.birthDate,\n"
                 + "    a.role,\n"
-                + "    a.isActive,\n"
+                + "    a.accountIsActive,\n"
                 + "    a.dateAdded\n"
                 + "FROM Account a\n"
                 + "JOIN Customer c ON a.accountID = c.customerID\n"
@@ -270,7 +269,7 @@ public class OrderDAO {
                 acc.setPhoneNumber(rs.getString("phoneNumber"));
                 acc.setBirthDate(rs.getDate("birthDate") != null ? rs.getDate("birthDate").toString() : null);
                 acc.setRole(rs.getString("role"));
-                acc.setIsActive(rs.getBoolean("isActive"));
+                acc.setAccountIsActive(rs.getBoolean("accountIsActive"));
                 return acc;
             }
         }
@@ -391,7 +390,6 @@ public class OrderDAO {
                 shipper.setEmail(rs.getString("email"));
                 shipper.setPhoneNumber(rs.getString("phoneNumber"));
                 shipper.setBirthDate(rs.getString("birthDate"));
-                shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                 shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
 
                 shipperList.add(shipper);
@@ -466,7 +464,7 @@ public class OrderDAO {
                 rs.getString("email"),
                 rs.getString("phoneNumber"),
                 rs.getString("birthDate"),
-                rs.getBoolean("isActive")
+                rs.getBoolean("accountIsActive")
         );
 
         // Kiểm tra role và ép kiểu sang lớp con để set thêm thuộc tính
@@ -485,13 +483,12 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return admin;
 
             case "shipper":
                 Shipper shipper = new Shipper(
-                        rs.getString("deliveryAreas"),
                         rs.getInt("totalDeliveries"),
                         account.getAccountID(),
                         account.getUsername(),
@@ -502,7 +499,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return shipper;
 
@@ -519,13 +516,12 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return customer;
 
             case "staff":
                 Staff staff = new Staff(
-                        rs.getString("workShift"),
                         rs.getInt("totalOrders"),
                         account.getAccountID(),
                         account.getUsername(),
@@ -536,7 +532,7 @@ public class OrderDAO {
                         account.getEmail(),
                         account.getPhoneNumber(),
                         account.getBirthDate(),
-                        account.getIsActive()
+                        account.getAccountIsActive()
                 );
                 return staff;
 
@@ -692,12 +688,11 @@ public class OrderDAO {
                 + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
                 + "                  Account ON Customer.customerID = Account.accountID\n"
                 + "				  where productID = ? AND (rating is not null OR comment is not null)";
-        Object [] params = {productID};
-        try(Connection connection = context.getConnection();
-                ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)){
+        Object[] params = {productID};
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             Map<String, String[]> reviewMap = new HashMap<>();
             while (rs.next()) {
-                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "",rs.getString("comment")});
+                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "", rs.getString("comment")});
             }
             return reviewMap;
         }

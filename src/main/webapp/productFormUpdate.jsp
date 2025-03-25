@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div id="title-group" class=" bg-orange-400 rounded-t-lg p-4">
-    <h2 class="text-2xl font-bold text-white">Update ${formTitle}</h2>
+    <h2 class="text-2xl font-bold text-white">Update ${type eq 'book' ? 'Books' : type eq 'merch' ? 'Merchandise' : ''}</h2>
 </div>
 
 <div id="mergedForm" class="form-container active">
@@ -84,6 +84,9 @@
         </div>
 
         <!--Creators-->
+        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+            <input type="hidden" name="associatedCreatorID" value="${cre.creatorID}">
+        </c:forEach>
         <div class="creator-wrapper">
             <div class="creator-section">
                 <c:choose>
@@ -137,6 +140,7 @@
                             <c:set var="isChecked" value="${not empty genreList and genreList.contains(genEntry.key)}" />
                             <c:choose>
                                 <c:when test="${isChecked}">
+                                    <input type="hidden" name="associatedGenreID" value="${genEntry.key.genreID}">
                                     <div>
                                         <input type="checkbox" id="genre${loopStatus.index}" name="genre" 
                                                value="${genEntry.key.genreID}" ${isChecked ? 'checked' : ''} />
@@ -158,6 +162,7 @@
                 <!--Publisher-->
                 <div class="form-group">
                     <label for="publisherNameBook">Publisher:</label>
+                    <input type="hidden" name="associatedPublisherID" value="${product.publisher.publisherID}">
                     <input type="text" id="publisherNameBook" name="publisherName" maxlength="50" value="${product.publisher.publisherName}">
                 </div>
 
@@ -189,18 +194,21 @@
                 <!--Series-->
                 <div class="form-group">
                     <label for="seriesNameMerch">Series:</label>
+                    <input type="hidden" name="associatedSeriesID" value="${product.series.seriesID}">
                     <input type="text" id="seriesNameMerch" name="seriesName"  value="${product.series.seriesName}">
                 </div>
 
                 <!--Character-->
                 <div class="form-group">
                     <label for="characterNameMerch">Character:</label>
+                    <input type="hidden" name="associatedCharacterID" value="${product.character.characterID}">
                     <input type="text" id="characterNameMerch" name="characterName" value="${product.character.characterName}">
                 </div>
 
                 <!--Brand-->
                 <div class="form-group">
                     <label for="brandNameMerch">Brand:</label>
+                    <input type="hidden" name="associatedBrandID" value="${product.brand.brandID}">
                     <input type="text" id="brandNameMerch" name="brandName" value="${product.brand.brandName}">
                 </div>
             </c:when>

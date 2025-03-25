@@ -43,11 +43,13 @@
                 <h2 class="font-bold mb-4 text-orange-400">
                     <i class="fas fa-bell mr-2"></i> Notification
                 </h2>
+                <!-- Display error message if present -->
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger" role="alert">
                         ${error}
                     </div>
                 </c:if>
+               
                 <c:choose>
                     <c:when test="${empty notification}">
                         <p>No notification found.</p>
@@ -57,9 +59,10 @@
                             <h3 class="font-bold text-lg">${notification.notificationTitle}</h3><br>
                             <p>${notification.notificationDetails}</p><br>
                             <p class="text-sm mt-2">
-                                Date Created: <fmt:formatDate value="${notification.notificationDateCreated}" pattern="dd/MM/yyyy"/>
+                                Date Created: <fmt:formatDate value="${notification.dateCreated}" pattern="dd/MM/yyyy"/>
                             </p>
                         </div>
+
                         <div class="flex justify-end space-x-4">
                             <a href="listnotification?receiverID=${param.receiverID}" 
                                class="btn btn-primary">

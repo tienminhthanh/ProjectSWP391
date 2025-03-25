@@ -70,18 +70,18 @@ public class NotificationController extends HttpServlet {
         }
     }
 
-    private void listNotifications(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
-            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
-            request.setAttribute("notifications", notifications);
-            request.getRequestDispatcher("notifications.jsp").forward(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ServletException("Database error", ex);
-        }
-    }
+//    private void listNotifications(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//        try {
+//            int receiverID = Integer.parseInt(request.getParameter("receiverID"));
+//            List<Notification> notifications = notificationDAO.getNotificationsByReceiver(receiverID);
+//            request.setAttribute("notifications", notifications);
+//            request.getRequestDispatcher("notifications.jsp").forward(request, response);
+//        } catch (SQLException ex) {
+//            Logger.getLogger(NotificationController.class.getName()).log(Level.SEVERE, null, ex);
+//            throw new ServletException("Database error", ex);
+//        }
+//    }
 
     private void insertNotification(HttpServletRequest request, HttpServletResponse response)
             throws IOException {

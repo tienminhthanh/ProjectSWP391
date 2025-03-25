@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,22 +11,22 @@ import model.Admin;
 import model.Customer;
 import model.Shipper;
 import model.Staff;
-import utils.DBContext;
+import utils.*;
 
 public class AccountDAO {
 
-    private utils.DBContext context;
+    private DBContext context;
 
     public AccountDAO() {
-        context = new utils.DBContext();
+        context = new DBContext();
     }
 
     /**
      * Cập nhật trạng thái tài khoản (kích hoạt hoặc vô hiệu hóa)
      */
-    public boolean updateAccountStatus(String username, boolean isActive) throws SQLException {
+    public boolean updateAccountStatus(String username, boolean accountIsActive) throws SQLException {
         String sql = "UPDATE Account SET accountIsActive = ? WHERE username = ?";
-        Object[] params = {isActive, username};
+        Object[] params = {accountIsActive, username};
         return context.exeNonQuery(sql, params) > 0;
     }
 
@@ -82,7 +81,6 @@ public class AccountDAO {
         ResultSet rs = context.exeQuery(sql, params);
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
-
 
     public Account getIDByUsername(String username) throws SQLException {
         String sql = "SELECT accountID FROM Account WHERE username = ?";
@@ -168,11 +166,21 @@ public class AccountDAO {
         return context.exeNonQuery(sql, params) > 0;
     }
 
+    public boolean updateCustomerAddress(int accountID, String newAddress) throws SQLException {
+        String sql = "UPDATE Customer "
+                + "SET defaultDeliveryAddress = ? "
+                + "FROM Customer c "
+                + "JOIN Account a ON c.customerID = a.accountID "
+                + "WHERE a.accountID = ?";  // Cập nhật dựa trên accountID từ bảng Account
+
+        Object[] params = {newAddress, accountID};  // Tham số cho câu lệnh SQL
+        return context.exeNonQuery(sql, params) > 0;  // Thực thi câu lệnh SQL
+    }
+
     public List<Account> getAccountsPaginated(String roleFilter, int page, int pageSize) throws SQLException {
         List<Account> accounts = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Account");
 
-      
         Object[] params;
         int offset = (page - 1) * pageSize;
 
@@ -194,7 +202,6 @@ public class AccountDAO {
         return accounts;
     }
 
- 
     public int getTotalAccounts(String roleFilter) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Account");
         Object[] params = null;
@@ -265,7 +272,7 @@ public class AccountDAO {
      * Chuyển đổi ResultSet thành đối tượng Account
      */
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
-        String role= rs.getString("role");
+        String role = rs.getString("role");
         switch (role) {
             case "admin":
                 return new Admin(
@@ -382,13 +389,11 @@ public class AccountDAO {
                     return ad;
                 case "shipper":
                     Shipper shipper = (Shipper) account;
-                    shipper.setDeliveryAreas(rs.getString("deliveryAreas"));
                     shipper.setTotalDeliveries(rs.getInt("totalDeliveries"));
                     return shipper;
                 case "staff":
                     Staff staff = (Staff) account;
                     staff.setTotalOrders(rs.getInt("totalOrders"));
-                    staff.setWorkShift(rs.getString("workShift"));
                     return staff;
             }
         }
@@ -413,7 +418,7 @@ public class AccountDAO {
                 account.setEmail(rs.getString("email"));
                 account.setPhoneNumber(rs.getString("phoneNumber"));
                 account.setBirthDate(rs.getString("birthDate"));
-                account.setIsActive(rs.getBoolean("accountIsActive"));
+                account.setAccountIsActive(rs.getBoolean("accountIsActive"));
                 customers.add(account);
             }
         } finally {

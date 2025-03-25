@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.mail.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Random;
 
 @WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
 public class EmailAuthenticationController extends HttpServlet {

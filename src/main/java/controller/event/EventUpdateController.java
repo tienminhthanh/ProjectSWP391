@@ -6,10 +6,8 @@ package controller.event;
 
 import dao.EventDAO;
 import dao.EventProductDAO;
-import dao.VoucherDAO;
 import jakarta.servlet.ServletContext;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +18,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -96,7 +93,7 @@ public class EventUpdateController extends HttpServlet {
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
-        Event e = new Event();
+//        Event e = new Event();
 
         try {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");
@@ -149,7 +146,7 @@ public class EventUpdateController extends HttpServlet {
             // Lấy thông tin từ database nếu cần
             Event existingEvent = eDao.getEventByID(id);
             if (existingEvent != null) {
-                dateCreated = existingEvent.getEventDateCreated();
+                dateCreated = existingEvent.getDateCreated();
                 adminID = existingEvent.getAdminID();
                 banner = existingEvent.getBanner();
             }
@@ -182,14 +179,14 @@ public class EventUpdateController extends HttpServlet {
 
             // Tạo đối tượng Event và cập nhật
             Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
-                    existingEvent.isEventIsActive(), dateStarted.toString(), existingEvent.isExpiry());
+                    existingEvent.isIsActive(), dateStarted.toString(), existingEvent.isExpiry());
 
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(event.getEventDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(event.getEventDuration());
+            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
+            LocalDate expiryDate = createDate.plusDays(event.getDuration());
 
             boolean isActive = false;
-            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getEventDateStarted())).isAfter(today)) {
+            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getDateStarted())).isAfter(today)) {
                 isActive = true;
             }
 

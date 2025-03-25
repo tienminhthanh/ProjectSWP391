@@ -6,7 +6,6 @@ package controller.event;
 
 import dao.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -71,9 +70,9 @@ public class EventDetailsController extends HttpServlet {
                 }
                 request.setAttribute("listEventProduct", updatedProductList);
 
-                String dateStarted = eventDetails.getEventDateStarted();
+                String dateStarted = eventDetails.getDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-                LocalDate dateEnd = createDate.plusDays(eventDetails.getEventDuration());
+                LocalDate dateEnd = createDate.plusDays(eventDetails.getDuration());
                 request.setAttribute("dateEnd", dateEnd);
 
             } else if (action.equals("home")) {
@@ -99,9 +98,9 @@ public class EventDetailsController extends HttpServlet {
                 }
                 request.setAttribute("currentURL", currentURL);
                 request.setAttribute("productList", updatedProductList);
-                String dateStarted = event.getEventDateStarted();
+                String dateStarted = event.getDateStarted();
                 LocalDate createDate = LocalDate.parse(dateStarted, formatter);
-                LocalDate dateEnd = createDate.plusDays(event.getEventDuration());
+                LocalDate dateEnd = createDate.plusDays(event.getDuration());
                 request.setAttribute("dateEnd", dateEnd);
                 url = EVENT_DETAILS_CUS_PAGE;
             }

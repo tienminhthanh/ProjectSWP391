@@ -1,22 +1,19 @@
 package controller.account;
 
 import dao.AccountDAO;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import model.Account;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterController extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -46,7 +43,7 @@ public class RegisterController extends HttpServlet {
 
             if (accountByEmail != null && !"admin".equals(accountByEmail.getRole())) {
                 // If email exists, check if the account is active or locked
-                if (accountByEmail.getIsActive()) {
+                if (accountByEmail.getAccountIsActive()) {
                     // If account is active, deny registration
                     message = "Email already exists!";
                 } else {

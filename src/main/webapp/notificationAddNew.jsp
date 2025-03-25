@@ -6,95 +6,18 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Create New Notification - Admin</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link href="/css/styleHeader.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
-        <link href="/css/styleFooter.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
-        <style>
-            body {
-                background-color: #f1f5f9; /* Nền xám nhạt */
-            }
-            .admin-container {
-                background-color: #ffffff; /* Nền trắng thay vì #1e293b */
-                color: black; /* Đổi từ trắng sang đen để khớp với nền trắng */
-                border-radius: 8px;
-                padding: 20px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-           
-            .btn-primary {
-                border: none;
-                color: #ffffff; /* Chữ trắng */
-            }
-            .btn-primary:hover {
-                background-color: #f97316; /* Orange-500 khi hover */
-            }
-            .btn-secondary {
-                background-color: #fb923c; /* Orange-400 thay vì #64748b */
-                border: none;
-                color: #ffffff; /* Chữ trắng */
-            }
-            .btn-secondary:hover {
-                background-color: #f97316; /* Orange-500 khi hover */
-            }
-            .btn-success {
-                background-color: #fb923c; /* Orange-400 thay vì #10b981 */
-                border: none;
-                color: #ffffff; /* Chữ trắng */
-            }
-            .btn-success:hover {
-                background-color: #f97316; /* Orange-500 khi hover */
-            }
-            .customer-row {
-                cursor: pointer;
-                padding: 10px;
-                border-radius: 5px;
-                transition: background-color 0.2s;
-            }
-            .customer-row:hover {
-                background-color: #cccccc; /* Xám nhạt như notification-item */
-            }
-            .customer-list-container {
-                position: relative;
-            }
-            .customer-list {
-                max-height: 0;
-                overflow-y: auto;
-                transition: max-height 0.3s ease-out;
-                background-color: #ffffff; /* Nền trắng thay vì #1e293b */
-                border: 1px solid #fb923c; /* Viền orange-400 thay vì #475569 */
-                border-radius: 5px;
-                margin-top: 5px;
-            }
-            .customer-list.expanded {
-                max-height: 300px; /* Giữ nguyên */
-            }
-            .customer-list::-webkit-scrollbar {
-                width: 8px;
-            }
-            .customer-list::-webkit-scrollbar-thumb {
-                background-color: #cccccc; /* Xám nhạt thay vì #64748b */
-                border-radius: 4px;
-            }
-            .customer-list::-webkit-scrollbar-thumb:hover {
-                background-color: #f97316; /* Orange-500 khi hover */
-            }
-            .text-orange-400 {
-                color: #fb923c; /* Thêm để dùng nếu cần */
-            }
-            .text-orange-500 {
-                color: #f97316; /* Thêm để dùng nếu cần */
-            }
-        </style>
+        <link rel="stylesheet" href="css/styleAddNoti.css">
     </head>
-    <body>
-        <div class="flex mt-4 mx-0">
-            <!-- Sidebar (unchanged) -->
-            <div class="w-64 bg-orange-400 text-white min-h-screen">
-                <jsp:include page="navbarAdmin.jsp" flush="true"/> 
-            </div> 
-            <main class="flex-1 p-4">
+    <body class="bg-gray-50 min-h-screen flex">
+        <!-- Sidebar (unchanged) -->
+        <div class="w-64 bg-orange-400 text-white min-h-screen">
+            <jsp:include page="navbarAdmin.jsp" flush="true"/> 
+        </div> 
+        <div class="flex-1 p-6">
+            <main >
                 <div class="admin-container">
                     <h1 class="text-2xl font-bold mb-4 text-orange-400">Create New Notification</h1> <!-- Đổi màu tiêu đề -->
                     <!-- Display error message if present -->
@@ -150,11 +73,9 @@
                 </div>
             </main>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-                integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
-        <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
-        <script src="/js/scriptHeader.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+
         <script>
                                     function toggleCheckbox(row) {
                                         const checkbox = row.querySelector('input[type="checkbox"]');
