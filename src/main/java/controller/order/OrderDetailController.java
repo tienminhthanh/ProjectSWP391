@@ -4,7 +4,9 @@
  */
 package controller.order;
 
+import dao.AccountDAO;
 import dao.OrderDAO;
+import dao.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -21,8 +23,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
+import model.DeliveryAddress;
 import model.DeliveryOption;
 import model.OrderInfo;
+import model.Voucher;
 
 /**
  *
@@ -71,7 +75,12 @@ public class OrderDetailController extends HttpServlet {
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
+        AccountDAO accountDAO = new AccountDAO();
         Account account = (Account) session.getAttribute("account");
+        VoucherDAO voucherDao = new VoucherDAO();
+        List<DeliveryAddress> listAddress = new ArrayList<>();
+
+        Voucher voucher = new Voucher();
         try {
             String orderID = request.getParameter("id");
             OrderInfo orderInfo = orderDAO.getOrderByID(Integer.parseInt(orderID), account.getAccountID());
@@ -85,12 +94,26 @@ public class OrderDetailController extends HttpServlet {
             calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
             Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
             orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
+            voucher = voucherDao.getVoucherByID(orderInfo.getVoucherID());
+            double valueOfVoucher = 0;
+            if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                valueOfVoucher = voucher.getVoucherValue();
+            } else {
+                valueOfVoucher = (orderInfo.getPreVoucherAmount() * voucher.getVoucherValue()) / 100;
+                if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                    valueOfVoucher = voucher.getMaxDiscountAmount();
+                }
+            }
+            account = accountDAO.getAdditionalInfo(account);
+            session.setAttribute("account", account);
+            listAddress = accountDAO.getAllAddressByCustomerID(account.getAccountID());
 
-            int voucher = orderDAO.getVoucherValueByOrderID(Integer.parseInt(orderID));
             delivery = (DeliveryOption) orderDAO.getDeliveryOption(orderInfo.getDeliveryOptionID());
             request.setAttribute("orderInfo", orderInfo); // Đặt dữ liệu vào requestScope
             request.setAttribute("delivery", delivery);
-            request.setAttribute("voucher", voucher);
+            request.setAttribute("voucher", valueOfVoucher);
+            request.setAttribute("addressList", listAddress);
+
             // Chuyển hướng đến OrderListView.jsp
             request.getRequestDispatcher("OrderDetailView.jsp").forward(request, response);
         } catch (SQLException e) {

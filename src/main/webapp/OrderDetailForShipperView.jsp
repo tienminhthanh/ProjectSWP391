@@ -23,12 +23,7 @@
             <div class="flex items-center space-x-4">
                 <img src="./img/logo.png" alt="Wibooks Logo" class="h-10 w-25">
                 <h1 class="text-xl font-bold">Delivery</h1>
-                <nav class="space-x-4">
-                    <a href="#" class="hover:underline">Orders</a>
-                    <a href="#" class="hover:underline">Products</a>
-                    <a href="#" class="hover:underline">Reports</a>
-                    <a href="#" class="hover:underline">Settings</a>
-                </nav>
+               
             </div>
             <div class="flex items-center space-x-4">
                 <i class="fas fa-bell"></i>
@@ -45,8 +40,13 @@
                     <div class="space-x-2">
                         <form action="OrderListForShipperController" method="post" class="inline">
                             <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                            <input type="hidden" id="actionType" name="actionType" value="">
+
                             <c:if test="${ orderInfo.deliveryStatus eq 'shipped'}">      
-                                <button class="bg-orange-500 text-white px-4 py-2 rounded">UPDATE STATUS</button>
+                                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded" 
+                                        onclick="setAction('updateStatus')">Update Status</button>
+                                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded" 
+                                        onclick="setAction('cancelOrder')">Cancel</button>
                             </c:if>
                         </form>
                         <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
@@ -80,7 +80,7 @@
                 <div class="border-b pb-2 mb-4">
                     <div class="flex space-x-4">
                         <button class="border-b-2 border-orange-500 pb-2">Products</button>
-                     
+
                     </div>
                 </div>
 
@@ -118,5 +118,10 @@
 
             </div>
         </div>
+        <script>
+            function setAction(action) {
+                document.getElementById("actionType").value = action;
+            }
+        </script>
     </body>
 </html>

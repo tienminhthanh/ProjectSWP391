@@ -37,11 +37,15 @@
                 background-color: #2d3748; /* Màu nền khi hover */
             }
             .main-content {
+                background-color: #f6ad55;
+
                 /*                margin-left: 250px;  Dịch nội dung chính sang phải, tránh bị sidebar che 
                                 padding: 20px;*/
+
                 flex: 1; /* Chiếm toàn bộ không gian còn lại */
             }
             .header {
+                
                 background-color: #f6ad55; /* Màu nền cho header */
                 color: white;
                 padding: 10px 20px;
@@ -79,7 +83,6 @@
                 text-align: left;
             }
             th {
-                background-color: #f9fafb;
                 font-weight: bold; /* Đậm tiêu đề bảng */
             }
             img {
@@ -136,14 +139,11 @@
         <div class="w-64 bg-orange-400 text-white min-h-screen">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
-        <div class="main-content">
+        <div class="main-content overflow-y-auto">
             <div class="header">
-                <div class="flex items-center">
-
-                    <h1 class="text-xl font-bold ml-4">Order List</h1>
-
+                <div class="flex items-center   ">
                     <!-- Main Content -->
-                    <div class="flex-1 p-6 overflow-y-auto ">
+                    <div class="flex-1 overflow-y-auto ">
                         <div class="w-full max-w-full bg-white p-8 shadow-lg rounded-lg">
                             <h1 class="text-3xl font-bold text-gray-800 mb-3">📦 Order List</h1>
                             <hr class="mb-6 border-gray-300"/>
@@ -166,7 +166,9 @@
                                             <th class="px-4 py-3 border border-b w-[100px]">Status</th>
                                             <th class="px-4 py-3 border border-b w-[120px]">Order Date</th>
                                             <th class="px-4 py-3 border border-b w-[120px]">Total</th>
-                                            <th class="px-4 py-3 border border-b w-[150px]">Actions</th>
+                                                <c:if test="${currentStatus eq 'pending'}">
+                                                <th class="px-4 py-3 border border-b w-[150px]">Actions</th>
+                                                </c:if>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -183,21 +185,24 @@
                                                 <td class="px-4 py-3 border border-b text-right">
                                                     <fmt:formatNumber value="${order.preVoucherAmount}" pattern="#,##0"/> đ
                                                 </td>
-                                                <td class="px-4 py-3 border border-b text-center">
-                                                    <c:if test="${order.orderStatus eq 'pending'}">
-                                                        <form action="OrderListForStaffController" method="POST" class="inline" onsubmit="return confirmUpdate()">
+
+                                                <%-- Chỉ hiển thị Action khi orderStatus là "pending" --%>
+                                                <c:if test="${order.orderStatus eq 'pending'}">
+                                                    <td class="px-4 py-3 border border-b text-center" onclick="event.stopPropagation();">
+                                                        <form action="OrderListForStaffController" method="POST" class="inline" onsubmit="return confirmUpdate()" onclick="event.stopPropagation();">
                                                             <input type="hidden" name="orderID" value="${order.orderID}"/>
-                                                            <select name="shipperID" class="select" required>
+                                                            <select name="shipperID" class="select" required onclick="event.stopPropagation();">
                                                                 <option value="">Choose Shipper</option>
                                                                 <c:forEach var="shipper" items="${shipperList}">
                                                                     <option value="${shipper.accountID}">${shipper.username} (${shipper.totalDeliveries})</option>
                                                                 </c:forEach>
                                                             </select>
-                                                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Assign</button>
+                                                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" onclick="event.stopPropagation();">Assign</button>
                                                         </form>
-                                                    </c:if>
-                                                </td>
-                                            </tr>                           
+                                                    </td>
+                                                </c:if>
+                                            </tr>
+
                                         </c:forEach>
 
                                         <c:if test="${empty orderList}">
@@ -241,11 +246,14 @@
                             </c:if>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <script>
-                        function confirmUpdate() {
-                            return confirm("Are you sure you want to assign this shipper?");
-                        }
-                    </script>
-                    </body>
-                    </html>
+        <script>
+            function confirmUpdate() {
+                return confirm("Are you sure you want to assign this shipper?");
+            }
+        </script>
+    </body>
+</html>

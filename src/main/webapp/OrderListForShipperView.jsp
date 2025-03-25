@@ -28,6 +28,18 @@
             .text-gray-700.active {
                 color: #dd6b20;
             }
+            .order-rejected {
+    color: red;             /* Red text to indicate rejection */
+    font-weight: bold;      /* Bold text */
+    font-size: 18px;        /* Larger font size */
+    background-color: #ffe6e6;  /* Light red background */
+    padding: 10px;          /* Padding for spacing */
+    border: 2px solid red;  /* Red border */
+    border-radius: 5px;     /* Rounded corners */
+    text-align: center;     /* Centered text */
+    margin: 10px 0;         /* Margin for spacing */
+}
+
         </style>
     </head>
     <body class="bg-gray-100 text-sm"> 
@@ -67,7 +79,7 @@
                 </a>
                 <a href="OrderListForShipperController?status=delivered" 
                    class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'delivered' ? 'text-orange-600' : ''}">
-                    Delivered
+                    Delivered       
                 </a>
             </div>
         </nav>
@@ -79,7 +91,12 @@
                 <h2 class="text-lg font-bold mb-4">Order List</h2>
                 <div class="space-y-4">
                     <c:forEach var="order" items="${list}" varStatus="loop">
+
                         <div class="p-4 bg-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <c:if test="${order.orderStatus eq 'canceled'}">
+                                <p class="order-rejected">Order rejected</p>
+                            </c:if>
+
                             <div class="flex justify-between items-center mb-2">
                                 <p class="text-base font-semibold">Order #${order.orderID}</p>
                             </div>

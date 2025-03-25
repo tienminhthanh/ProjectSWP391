@@ -25,6 +25,9 @@ public class OrderInfo {
     private String paymentStatus;
     private List<OrderProduct> orderProductList;
     private DeliveryOption deliveryOption;
+    private String vnp_TxnRef;
+    private String vnp_TransactionNo;
+    private String vnp_TransactionDate;
 
     public OrderInfo() {
         this.paymentStatus = "pending";
@@ -32,9 +35,18 @@ public class OrderInfo {
         this.deliveryStatus = "pending";
     }
 
+    public OrderInfo(Double preVoucherAmount, String vnp_TxnRef, String vnp_TransactionNo, String vnp_TransactionDate, String paymentMethod, int orderID) {
+        this.preVoucherAmount = preVoucherAmount;
+        this.vnp_TxnRef = vnp_TxnRef;
+        this.vnp_TransactionNo = vnp_TransactionNo;
+        this.vnp_TransactionDate = vnp_TransactionDate;
+        this.paymentMethod = paymentMethod;
+        this.orderID = orderID;
+    }
+
     // Constructor tạo đơn hàng mới
     public OrderInfo(String deliveryAddress, int deliveryOptionID, int customerID,
-                     String paymentMethod, List<OrderProduct> orderProductList, Integer voucherID) {
+            String paymentMethod, List<OrderProduct> orderProductList, Integer voucherID) {
         this.deliveryAddress = deliveryAddress;
         this.deliveryOptionID = deliveryOptionID;
         this.customerID = customerID;
@@ -47,10 +59,10 @@ public class OrderInfo {
     }
 
     // Constructor đầy đủ
-    public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID, 
-                     Double preVoucherAmount, Integer voucherID, int staffID, int shipperID, 
-                     String deliveryStatus, String orderStatus, int adminID, Date deliveredAt, 
-                     String paymentMethod, int paymentExpiredTime, String paymentStatus) {
+    public OrderInfo(int orderID, Date orderDate, String deliveryAddress, int deliveryOptionID, int customerID,
+            Double preVoucherAmount, Integer voucherID, int staffID, int shipperID,
+            String deliveryStatus, String orderStatus, int adminID, Date deliveredAt,
+            String paymentMethod, int paymentExpiredTime, String paymentStatus) {
         this.orderID = orderID;
         this.orderDate = orderDate;
         this.deliveryAddress = deliveryAddress;
@@ -205,7 +217,6 @@ public class OrderInfo {
         this.deliveryOption = deliveryOption;
     }
 
-
     public Integer getVoucherID() {
         return voucherID;
     }
@@ -222,10 +233,33 @@ public class OrderInfo {
         this.expectedDeliveryDate = expectedDeliveryDate;
     }
 
-    @Override
-    public String toString() {
-        return "OrderInfo{" + "orderID=" + orderID + ", orderDate=" + orderDate + ", expectedDeliveryDate=" + expectedDeliveryDate + ", deliveryAddress=" + deliveryAddress + ", deliveryOptionID=" + deliveryOptionID + ", customerID=" + customerID + ", preVoucherAmount=" + preVoucherAmount + ", voucherID=" + voucherID + ", staffID=" + staffID + ", shipperID=" + shipperID + ", deliveryStatus=" + deliveryStatus + ", orderStatus=" + orderStatus + ", adminID=" + adminID + ", deliveredAt=" + deliveredAt + ", paymentMethod=" + paymentMethod + ", paymentExpiredTime=" + paymentExpiredTime + ", paymentStatus=" + paymentStatus + ", orderProductList=" + orderProductList + ", deliveryOption=" + deliveryOption + '}';
+    public String getVnp_TxnRef() {
+        return vnp_TxnRef;
     }
 
+    public void setVnp_TxnRef(String vnp_TxnRef) {
+        this.vnp_TxnRef = vnp_TxnRef;
+    }
+
+    public String getVnp_TransactionNo() {
+        return vnp_TransactionNo;
+    }
+
+    public void setVnp_TransactionNo(String vnp_TransactionNo) {
+        this.vnp_TransactionNo = vnp_TransactionNo;
+    }
+
+    public String getVnp_TransactionDate() {
+        return vnp_TransactionDate;
+    }
+
+    public void setVnp_TransactionDate(String vnp_TransactionDate) {
+        this.vnp_TransactionDate = vnp_TransactionDate;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderInfo{" + "orderID=" + orderID + ", orderDate=" + orderDate + ", expectedDeliveryDate=" + expectedDeliveryDate + ", deliveryAddress=" + deliveryAddress + ", deliveryOptionID=" + deliveryOptionID + ", customerID=" + customerID + ", preVoucherAmount=" + preVoucherAmount + ", voucherID=" + voucherID + ", staffID=" + staffID + ", shipperID=" + shipperID + ", deliveryStatus=" + deliveryStatus + ", orderStatus=" + orderStatus + ", adminID=" + adminID + ", deliveredAt=" + deliveredAt + ", paymentMethod=" + paymentMethod + ", paymentExpiredTime=" + paymentExpiredTime + ", paymentStatus=" + paymentStatus + ", orderProductList=" + orderProductList + ", deliveryOption=" + deliveryOption + ", vnp_TxnRef=" + vnp_TxnRef + ", vnp_TransactionNo=" + vnp_TransactionNo + '}';
+    }
 
 }

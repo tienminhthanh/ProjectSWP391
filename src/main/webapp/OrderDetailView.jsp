@@ -234,9 +234,12 @@
                             <fmt:formatNumber value="${delivery.optionCost}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
                         </p>
 
-                        <p><strong>Discount: </strong>  
-                            <fmt:formatNumber value="${voucher}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
-                        </p>
+                        <c:if test="${voucher > 0}">
+                            <p><strong>Discount: </strong>  
+                                <fmt:formatNumber value="${voucher}" type="currency" currencySymbol="" groupingUsed="true" maxFractionDigits="0"/> đ
+                            </p>
+                        </c:if>
+
                         <p class="mt-4 text-lg font-bold">
                             Total Order: 
                             <fmt:formatNumber value="${orderInfo.preVoucherAmount}" type="number" groupingUsed="true"/> đ
@@ -259,6 +262,8 @@
                                     </button>
                                 </form>
                             </c:if>
+
+
                             <!-- Nút xác nhận đã nhận hàng (ẩn mặc định, chỉ hiển thị khi trạng thái là 'Đang giao hàng') -->
                             <c:if test="${orderInfo.deliveryStatus eq 'delivered' and orderInfo.orderStatus eq 'delivered'}">                              
                                 <form action="OrderDetailController" method="POST">
@@ -292,7 +297,7 @@
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                         <input type="hidden" name="productID" value="${item.product.productID}">
                                         <c:if test="${ item.rating eq 0 }">
-                                            
+
                                             <button type="submit" id="rateButton_${item.product.productID}" 
                                                     onclick="openRatingPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
                                                     class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
@@ -369,10 +374,29 @@
             <div class="bg-white p-6 rounded-lg shadow-lg w-96">
                 <h2 class="text-xl font-semibold mb-4">Update Shipping Address</h2>
                 <form action="UpdateOrderController" method="POST">
-                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
-                    <label for="newAddress" class="block font-medium mb-2">New Address:</label>
-                    <input type="text" name="newAddress" id="newAddress" class="w-full p-2 border rounded-lg mb-4" required>
+                    <input type="hidden" id="selectedAddress" name="selectedAddress" value="">
 
+                    <input type="hidden" name="orderID" value="${orderInfo.orderID}">
+                    <label for="name">Address</label><br>
+                    <div class="relative">
+                        <div class="flex">
+                            <input class="w-full p-3 border border-gray-300 rounded-l" 
+                                   id="defaultDeliveryAddress" name="defaultDeliveryAddress"
+                                   placeholder="Default Delivery Address" type="text" 
+                                   value="${sessionScope.account.defaultDeliveryAddress}" readonly />
+
+                            <button type="button" id="toggleDropdown" class="px-4 border border-gray-300 bg-gray-200 rounded-r">
+                                ▼
+                            </button>
+                        </div>
+                        <ul id="addressList">
+                            <c:forEach var="address" items="${addressList}">
+                                <li class="flex justify-between px-4 py-2 hover:bg-gray-200 cursor-pointer address-item">
+                                    <span data-value="${address.addressDetails}" class="flex-1"  data-id="${address.addressID}">${address.addressDetails}</span>
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </div>
                     <div class="flex justify-end space-x-2">
                         <button type="button" onclick="hideUpdateForm()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save</button>
@@ -388,6 +412,39 @@
             </div>
         </div>
         <jsp:include page="footer.jsp" flush="true"/> 
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const addressList = document.getElementById("addressList");
+                const toggleDropdown = document.getElementById("toggleDropdown");
+                const defaultAddressInput = document.getElementById("defaultDeliveryAddress");
+                const selectedAddress = document.getElementById("selectedAddress");
 
+                toggleDropdown.addEventListener("click", function () {
+                    addressList.classList.toggle("hidden");
+                });
+                document.getElementById("toggleDropdown").addEventListener("click", function () {
+                    const dropdown = document.getElementById("addressList");
+                    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+                });
+
+                // Đóng dropdown nếu click bên ngoài
+                document.addEventListener("click", function (event) {
+                    const dropdown = document.getElementById("addressList");
+                    const toggleBtn = document.getElementById("toggleDropdown");
+                    if (!toggleBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = "none";
+                    }
+                });
+
+                document.querySelectorAll(".address-item span").forEach(item => {
+                    item.addEventListener("click", function () {
+                        defaultAddressInput.value = this.getAttribute("data-value");
+                        addressList.classList.add("hidden");
+                        selectedAddress.value = this.getAttribute("data-id");
+                        document.getElementById("addressList").style.display = "none";
+                    });
+                });
+            });
+        </script>
     </body>
 </html>
