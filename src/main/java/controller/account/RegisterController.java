@@ -36,6 +36,7 @@ public class RegisterController extends HttpServlet {
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
+        String address = request.getParameter("address"); // from form input
 
         try {
             AccountDAO accountDAO = new AccountDAO();
@@ -69,7 +70,7 @@ public class RegisterController extends HttpServlet {
             else {
                 AccountLib lib = new AccountLib();
                 password = lib.hashMD5(confirmPassword);
-                boolean success = accountDAO.register(username, password, firstName, lastName, null, phoneNumber, birthDate);
+                boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate, address);
                 if (success) {
                     // Store temporary email for verification
                     request.getSession().setAttribute("tempEmail", email);

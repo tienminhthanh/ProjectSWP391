@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import model.Account;
@@ -36,8 +37,20 @@ public class AccountDAO {
     /**
      * Đăng ký tài khoản mới - chỉ dành cho khách hàng (role = 'customer')
      */
-    public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate) throws SQLException {
-        return createAccount(username, password, firstName, lastName, email, phoneNumber, birthDate, "customer");
+    public boolean register(String username, String password, String firstName, String lastName, String email, String phoneNumber, String birthDate, String defaultAddress) throws SQLException {
+        boolean accountCreated = createAccount(username, password, firstName, lastName, email, phoneNumber, birthDate, "customer");
+        if (!accountCreated) {
+            return false;
+        }
+        Account account = getAccountByUsername(username);
+        if (account == null) {
+            return false;
+        }
+        int accountID = account.getAccountID();
+        String sql = "INSERT INTO Customer (customerID, defaultDeliveryAddress, totalPurchasePoints) VALUES (?, ?, 0)";
+        Object[] params = {accountID, defaultAddress};
+        insertNewAddress(accountID, defaultAddress);
+        return context.exeNonQuery(sql, params) > 0;
     }
 
     public Account getAccountByEmail(String email) throws SQLException {
@@ -46,8 +59,7 @@ public class AccountDAO {
         ResultSet rs = context.exeQuery(sql, params);
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
-    
-    
+
     /**
      * Tạo tài khoản với quyền chỉ định (dành cho admin tạo staff hoặc shipper)
      */
@@ -184,15 +196,16 @@ public class AccountDAO {
     public boolean insertNewAddress(int accountID, String newAddress) throws SQLException {
         String sql = "INSERT INTO DeliveryAddress (addressDetails, customerID)\n"
                 + "SELECT ?, customerID\n"
-                + "FROM Customer WHERE customerID = ?;";  
+                + "FROM Customer WHERE customerID = ?;";
 
-        Object[] params = {newAddress, accountID};  
-        return context.exeNonQuery(sql, params) > 0;  
+        Object[] params = {newAddress, accountID};
+        return context.exeNonQuery(sql, params) > 0;
     }
+
     public boolean deleteAddress(int addressID) throws SQLException {
-        String sql = "DELETE FROM DeliveryAddress WHERE addressID = ?";  
-        Object[] params = {addressID};  
-        return context.exeNonQuery(sql, params) > 0;  
+        String sql = "DELETE FROM DeliveryAddress WHERE addressID = ?";
+        Object[] params = {addressID};
+        return context.exeNonQuery(sql, params) > 0;
     }
 
     public List<DeliveryAddress> getAllAddressByCustomerID(int customerID) throws SQLException {
@@ -234,8 +247,6 @@ public class AccountDAO {
 
         return accounts;
     }
-
-    
 
     public int getTotalAccounts(String roleFilter) throws SQLException {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Account");
@@ -288,19 +299,20 @@ public class AccountDAO {
         return roleStats;
     }
 
-    public Map<String, Integer> getMonthlyAccountGrowth() throws SQLException {
-        Map<String, Integer> monthlyGrowth = new HashMap<>();
-        String sql = "SELECT FORMAT(dateAdded, 'yyyy-MM') as month, COUNT(*) as count "
+    public Map<String, Integer> getWeeklyAccountGrowth() throws SQLException {
+        Map<String, Integer> weeklyGrowth = new LinkedHashMap<>();
+        String sql = "SELECT CONCAT('Week ', DATEPART(WEEK, dateAdded), ' - ', YEAR(dateAdded)) as weekLabel, COUNT(*) as count "
                 + "FROM Account "
-                + "WHERE dateAdded >= DATEADD(month, -1, GETDATE()) "
-                + "GROUP BY FORMAT(dateAdded, 'yyyy-MM') "
-                + "ORDER BY month";
+                + "WHERE dateAdded >= DATEADD(week, -6, GETDATE()) "
+                + // Lấy 6 tuần gần nhất
+                "GROUP BY DATEPART(WEEK, dateAdded), YEAR(dateAdded) "
+                + "ORDER BY YEAR(dateAdded), DATEPART(WEEK, dateAdded)";
         ResultSet rs = context.exeQuery(sql, null);
 
         while (rs.next()) {
-            monthlyGrowth.put(rs.getString("month"), rs.getInt("count"));
+            weeklyGrowth.put(rs.getString("weekLabel"), rs.getInt("count"));
         }
-        return monthlyGrowth;
+        return weeklyGrowth;
     }
 
     /**

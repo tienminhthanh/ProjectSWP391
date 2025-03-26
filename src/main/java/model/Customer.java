@@ -12,6 +12,7 @@ public class Customer extends Account {
 
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;
+    
 
     public Customer() {
     }

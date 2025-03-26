@@ -26,7 +26,7 @@
                     <div style="color: red;">
                         ${sessionScope.message}
                     </div>
-                  
+
                     <c:set var="message" value="${sessionScope.message}" scope="session" />
                     <c:remove var="message" scope="session" />
                 </c:if>
@@ -123,11 +123,12 @@
 
 
                 <div class="mt-6">
-                    <a href="${sessionScope.account.role == 'admin' ? 'listAccount' : (sessionScope.account.role == 'customer' ? 'readAccount?username=${account.username}' : 'readAccount?username=${account.username}')}"  class="text-blue-600 hover:underline">
+                    <a href="${sessionScope.account.role == 'admin' ? 'listAccount' : 'readAccount?username='}${sessionScope.account.username}"  
+                       class="text-blue-600 hover:underline">
                         <i class="fas fa-arrow-left mr-2"></i> Back
                     </a>
-
                 </div>
+
 
             </div>
         </main>

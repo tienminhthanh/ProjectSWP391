@@ -107,6 +107,13 @@
                                    placeholder="Enter your phone number" required type="text" 
                                    value="${phoneNumber != null ? phoneNumber : ''}"/>
                         </div>
+                        <!-- Address -->
+                        <div class="mb-2">
+                            <label class="text-gray-700 font-semibold">Address</label>
+                            <input class="w-full p-3 border border-gray-300 rounded" id="address" name="address" 
+                                   placeholder="Enter your address" required type="text" />
+                        </div>
+
                     </div>
 
                     <!-- Register Button -->
