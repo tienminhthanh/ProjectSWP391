@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import java.sql.ResultSet;
@@ -21,7 +17,7 @@ public class DashboardDAO {
         context = new utils.DBContext();
     }
 
-    public String buildFilterCondition(String year, String month, String week, String day, boolean isFilterApplied) {
+    public String buildFilterCondition(String year, String quarter, String month, boolean isFilterApplied) {
         if (!isFilterApplied) {
             return ""; // Không áp dụng bộ lọc nếu isFilterApplied = false
         }
@@ -30,20 +26,17 @@ public class DashboardDAO {
         if (year != null && !year.isEmpty()) {
             condition.append(" AND YEAR(orderDate) = ").append(year);
         }
+        if (quarter != null && !quarter.isEmpty()) {
+            condition.append(" AND DATEPART(QUARTER, orderDate) = ").append(quarter);
+        }
         if (month != null && !month.isEmpty()) {
             condition.append(" AND MONTH(orderDate) = ").append(month);
-        }
-        if (week != null && !week.isEmpty()) {
-            condition.append(" AND DATEPART(WEEK, orderDate) = ").append(week);
-        }
-        if (day != null && !day.isEmpty()) {
-            condition.append(" AND DAY(orderDate) = ").append(day);
         }
 
         return condition.toString();
     }
 
-    public Map<String, Double> getRevenueTrend(String timeFrame, String year, String month, String week, String day, boolean isFilterApplied) {
+    public Map<String, Double> getRevenueTrend(String timeFrame, String year, String quarter, String month, boolean isFilterApplied) {
         String timePeriodColumn = "";
 
         switch (timeFrame) {
@@ -61,8 +54,8 @@ public class DashboardDAO {
         }
 
         String sql = "SELECT " + timePeriodColumn + " AS timePeriod, SUM(finalAmount) AS totalRevenue "
-                + "FROM OrderInfo WHERE orderStatus = 'delivered' ";
-        sql += buildFilterCondition(year, month, week, day, isFilterApplied);
+                + "FROM OrderInfo WHERE orderStatus IN ('delivered', 'completed') ";
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
         sql += " GROUP BY " + timePeriodColumn + " ORDER BY timePeriod;";
 
         Map<String, Double> revenueTrend = new LinkedHashMap<>();
@@ -77,36 +70,53 @@ public class DashboardDAO {
         return revenueTrend;
     }
 
-    public double getGrossProfit(String year, String month, String week, String day, boolean isFilterApplied) {
-        String sql = "SELECT SUM(op.orderProductQuantity * op.orderProductPrice) - "
-                + "SUM(op.orderProductQuantity * ii.importPrice) AS profit "
+    public double getGrossProfit(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "WITH WeightedImportPrice AS ("
+                + "    SELECT productID, "
+                + "           SUM(importPrice * importQuantity) / NULLIF(SUM(importQuantity), 0) AS weightedImportPrice "
+                + "    FROM ImportItem "
+                + "    WHERE isImported = 1 "
+                + "    GROUP BY productID "
+                + ")"
+                + "SELECT SUM(oi.finalAmount) - "
+                + "       SUM(op.orderProductQuantity * wip.weightedImportPrice) AS profit "
                 + "FROM Order_Product op "
                 + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
-                + "JOIN ImportItem ii ON op.productID = ii.productID "
-                + "WHERE oi.orderStatus = 'delivered' ";
-        sql += buildFilterCondition(year, month, week, day, isFilterApplied);
+                + "JOIN WeightedImportPrice wip ON op.productID = wip.productID "
+                + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
             if (rs.next()) {
                 return rs.getDouble(1);
+            } else {
+                System.out.println("No data found for the given time period.");
+                return 0;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error calculating gross profit: " + e.getMessage());
+            throw new RuntimeException("Failed to calculate gross profit", e);
         }
-        return 0;
     }
 
-    public double getProfitMargin(String year, String month, String week, String day, boolean isFilterApplied) {
-        String sql = "SELECT "
-                + "    (SUM(op.orderProductQuantity * op.orderProductPrice) - "
-                + "    SUM(op.orderProductQuantity * ii.importPrice)) / "
+    public double getProfitMargin(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "WITH WeightedImportPrice AS ("
+                + "    SELECT productID, "
+                + "           SUM(importPrice * importQuantity) / NULLIF(SUM(importQuantity), 0) AS weightedImportPrice "
+                + "    FROM ImportItem "
+                + "    WHERE isImported = 1 "
+                + "    GROUP BY productID "
+                + ")"
+                + "SELECT "
+                + "    (SUM(oi.finalAmount) - "
+                + "     SUM(op.orderProductQuantity * wip.weightedImportPrice)) / "
                 + "    NULLIF(SUM(op.orderProductQuantity * op.orderProductPrice), 0) * 100 AS profitMargin "
                 + "FROM Order_Product op "
                 + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
-                + "JOIN ImportItem ii ON op.productID = ii.productID "
-                + "WHERE oi.orderStatus = 'delivered' ";
-        sql += buildFilterCondition(year, month, week, day, isFilterApplied);
+                + "JOIN WeightedImportPrice wip ON op.productID = wip.productID "
+                + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -119,12 +129,12 @@ public class DashboardDAO {
         return 0;
     }
 
-    public double getOrderConversionRate(String year, String month, String week, String day, boolean isFilterApplied) {
+    public double getOrderConversionRate(String year, String quarter, String month, boolean isFilterApplied) {
         String sql = "SELECT "
-                + "(COUNT(DISTINCT CASE WHEN oi.orderStatus = 'delivered' THEN oi.orderID END) * 1.0 / "
+                + "(COUNT(DISTINCT CASE WHEN oi.orderStatus IN ('delivered', 'completed') THEN oi.orderID END) * 1.0 / "
                 + "COUNT(DISTINCT oi.orderID)) * 100 AS conversionRate "
                 + "FROM OrderInfo oi WHERE 1=1 ";
-        sql += buildFilterCondition(year, month, week, day, isFilterApplied);
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -137,12 +147,25 @@ public class DashboardDAO {
         return 0;
     }
 
-    public int getTotalQuantitySold(String year, String month, String week, String day, boolean isFilterApplied) {
-        String sql = "SELECT SUM(op.orderProductQuantity) AS totalQuantity "
-                + "FROM Order_Product op "
-                + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
-                + "WHERE oi.orderStatus = 'delivered' ";
-        sql += buildFilterCondition(year, month, week, day, isFilterApplied);
+    public int getTotalQuantitySold(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "SELECT SUM(soldQuantity) AS totalQuantity "
+                + "FROM SaleHistory "
+                + "WHERE 1=1 ";
+
+        // Thêm bộ lọc thời gian, thay orderDate bằng saleDate
+        if (isFilterApplied) {
+            StringBuilder condition = new StringBuilder();
+            if (year != null && !year.isEmpty()) {
+                condition.append(" AND YEAR(saleDate) = ").append(year);
+            }
+            if (quarter != null && !quarter.isEmpty()) {
+                condition.append(" AND DATEPART(QUARTER, saleDate) = ").append(quarter);
+            }
+            if (month != null && !month.isEmpty()) {
+                condition.append(" AND MONTH(saleDate) = ").append(month);
+            }
+            sql += condition.toString();
+        }
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -155,12 +178,12 @@ public class DashboardDAO {
         return 0;
     }
 
-    public double getTotalRevenue(String year, String month, String week, String day, boolean isFilterApplied) {
-        String sql = "SELECT SUM(op.orderProductQuantity * op.orderProductPrice) AS totalRevenue "
+    public double getTotalRevenue(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "SELECT SUM(oi.finalAmount) AS totalRevenue "
                 + "FROM Order_Product op "
                 + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
-                + "WHERE oi.orderStatus = 'delivered' ";
-        sql += buildFilterCondition(year, month, week, day, isFilterApplied);
+                + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
@@ -210,6 +233,5 @@ public class DashboardDAO {
 
     public static void main(String[] args) {
         DashboardDAO dDao = new DashboardDAO();
-
     }
 }

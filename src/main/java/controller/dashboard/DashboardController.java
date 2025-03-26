@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller.dashboard;
 
 import dao.*;
@@ -41,7 +37,6 @@ public class DashboardController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -54,7 +49,6 @@ public class DashboardController extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -65,30 +59,36 @@ public class DashboardController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy tham số lọc mới
         String year = request.getParameter("year");
+        String quarter = request.getParameter("quarter");
         String month = request.getParameter("month");
-        String week = request.getParameter("week");
-        String day = request.getParameter("day");
-        String timeFrame = request.getParameter("timeFrame");
+        String revenueTrendYear = request.getParameter("revenueTrendYear");
 
         // Nếu không có bộ lọc nào, lấy toàn bộ dữ liệu từ trước đến nay
         boolean isFilterApplied = (year != null && !year.isEmpty())
-                || (month != null && !month.isEmpty())
-                || (week != null && !week.isEmpty())
-                || (day != null && !day.isEmpty());
+                || (quarter != null && !quarter.isEmpty())
+                || (month != null && !month.isEmpty());
+
+        // Nếu year không được chọn, mặc định là năm hiện tại
+        if (year == null || year.isEmpty()) {
+            year = String.valueOf(LocalDate.now().getYear()); // 2025
+        }
+
+        // Nếu revenueTrendYear không được chọn (mới vào dashboard), mặc định là năm hiện tại
+        if (revenueTrendYear == null || revenueTrendYear.isEmpty()) {
+            revenueTrendYear = String.valueOf(LocalDate.now().getYear()); // 2025
+        }
 
         DashboardDAO dao = new DashboardDAO();
-        double totalRevenue = dao.getTotalRevenue(year, month, week, day, isFilterApplied);
-        int totalQuantitySold = dao.getTotalQuantitySold(year, month, week, day, isFilterApplied);
-        double grossProfit = dao.getGrossProfit(year, month, week, day, isFilterApplied);
-        double profitMargin = dao.getProfitMargin(year, month, week, day, isFilterApplied);
-        double orderConversionRate = dao.getOrderConversionRate(year, month, week, day, isFilterApplied);
+        double totalRevenue = dao.getTotalRevenue(year, quarter, month, isFilterApplied);
+        int totalQuantitySold = dao.getTotalQuantitySold(year, quarter, month, isFilterApplied);
+        double grossProfit = dao.getGrossProfit(year, quarter, month, isFilterApplied);
+        double profitMargin = dao.getProfitMargin(year, quarter, month, isFilterApplied);
+        double orderConversionRate = dao.getOrderConversionRate(year, quarter, month, isFilterApplied);
 
-        // Nếu không có bộ lọc, lấy toàn bộ xu hướng theo năm
-        if (timeFrame == null || timeFrame.isEmpty()) {
-            timeFrame = "year";
-        }
-        Map<String, Double> revenueTrend = dao.getRevenueTrend(timeFrame, year, month, week, day, isFilterApplied);
+        // Luôn lấy Revenue Trend theo tháng cho năm được chọn
+        Map<String, Double> revenueTrend = dao.getRevenueTrend("month", revenueTrendYear, null, null, true);
 
         // Đưa dữ liệu vào request
         request.setAttribute("totalRevenue", totalRevenue);
@@ -97,8 +97,14 @@ public class DashboardController extends HttpServlet {
         request.setAttribute("profitMargin", profitMargin);
         request.setAttribute("orderConversionRate", orderConversionRate);
         request.setAttribute("revenueTrend", revenueTrend);
+        request.setAttribute("selectedRevenueTrendYear", revenueTrendYear); // Truyền năm đã chọn để JSP hiển thị
         Map<String, Integer> ageStats = dao.getAgeStatistics();
         request.setAttribute("ageStatistics", ageStats);
+
+        // Truyền các tham số lọc để JSP hiển thị giá trị đã chọn
+        request.setAttribute("selectedYear", year);
+        request.setAttribute("selectedQuarter", quarter);
+        request.setAttribute("selectedMonth", month);
 
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
@@ -125,6 +131,5 @@ public class DashboardController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }
