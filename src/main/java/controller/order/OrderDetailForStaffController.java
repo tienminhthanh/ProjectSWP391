@@ -89,14 +89,14 @@ public class OrderDetailForStaffController extends HttpServlet {
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = null;
-        Account handler = null;
+        List<Account> handlerList = new ArrayList<>();
         String orderID = request.getParameter("id");
         int valueVoucher = 0;
         try {
             if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
                 int id = Integer.parseInt(orderID);
                 customer = orderDAO.getCustomerByOrderID(id);
-                handler = orderDAO.getOrderHandlerByOrderID(id);
+                handlerList = orderDAO.getOrderHandlerByOrderID(id);
                 accShipper = orderDAO.getShipperByOrderID(id);
                 if (customer != null) {
                     int idcus = customer.getAccountID();
@@ -122,7 +122,7 @@ public class OrderDetailForStaffController extends HttpServlet {
         Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
         orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
         request.setAttribute("account", account);
-        request.setAttribute("handler", handler);
+        request.setAttribute("handlerList", handlerList);
         request.setAttribute("accShipper", accShipper);
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);

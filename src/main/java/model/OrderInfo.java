@@ -28,6 +28,7 @@ public class OrderInfo {
     private String vnp_TxnRef;
     private String vnp_TransactionNo;
     private String vnp_TransactionDate;
+    private String vnp_TransactionStatus;
 
     public OrderInfo() {
         this.paymentStatus = "pending";
@@ -35,11 +36,12 @@ public class OrderInfo {
         this.deliveryStatus = "pending";
     }
 
-    public OrderInfo(Double preVoucherAmount, String vnp_TxnRef, String vnp_TransactionNo, String vnp_TransactionDate, String paymentMethod, int orderID) {
+    public OrderInfo(Double preVoucherAmount, String vnp_TxnRef, String vnp_TransactionNo, String vnp_TransactionDate,String vnp_TransactionStatus, String paymentMethod, int orderID) {
         this.preVoucherAmount = preVoucherAmount;
         this.vnp_TxnRef = vnp_TxnRef;
         this.vnp_TransactionNo = vnp_TransactionNo;
         this.vnp_TransactionDate = vnp_TransactionDate;
+        this.vnp_TransactionStatus = vnp_TransactionStatus;
         this.paymentMethod = paymentMethod;
         this.orderID = orderID;
     }
@@ -257,6 +259,14 @@ public class OrderInfo {
         this.vnp_TransactionDate = vnp_TransactionDate;
     }
 
+    public String getVnp_TransactionStatus() {
+        return vnp_TransactionStatus;
+    }
+
+    public void setVnp_TransactionStatus(String vnp_TransactionStatus) {
+        this.vnp_TransactionStatus = vnp_TransactionStatus;
+    }
+//fluent setter  ( tìm hiểu thêm ) 
     @Override
     public String toString() {
         return "OrderInfo{" + "orderID=" + orderID + ", orderDate=" + orderDate + ", expectedDeliveryDate=" + expectedDeliveryDate + ", deliveryAddress=" + deliveryAddress + ", deliveryOptionID=" + deliveryOptionID + ", customerID=" + customerID + ", preVoucherAmount=" + preVoucherAmount + ", voucherID=" + voucherID + ", staffID=" + staffID + ", shipperID=" + shipperID + ", deliveryStatus=" + deliveryStatus + ", orderStatus=" + orderStatus + ", adminID=" + adminID + ", deliveredAt=" + deliveredAt + ", paymentMethod=" + paymentMethod + ", paymentExpiredTime=" + paymentExpiredTime + ", paymentStatus=" + paymentStatus + ", orderProductList=" + orderProductList + ", deliveryOption=" + deliveryOption + ", vnp_TxnRef=" + vnp_TxnRef + ", vnp_TransactionNo=" + vnp_TransactionNo + '}';

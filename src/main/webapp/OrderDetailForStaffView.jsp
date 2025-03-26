@@ -112,7 +112,7 @@
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold ml-4">Order Detail</h1>
                 </div>
-                
+
             </div>  
             <div class="p-4">
                 <div class="bg-white p-4 rounded shadow">
@@ -170,24 +170,36 @@
                             <p><i class="fas fa-coins icon"></i> Total Amount: <fmt:formatNumber value="${orderInfo.preVoucherAmount}" pattern="#,##0"/> đ</p>
                             <p><i class="fas fa-check-circle icon mb-2""></i> Payment Status: ${orderInfo.paymentStatus}</p>
 
-
-
                             <c:if test="${account.role eq 'admin' and orderInfo.orderStatus ne 'pending' }">
-                                <h1 class="text-2xl font-bold ">Order Processing Information</h1>  
-                                <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>  
-                                <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p> 
-                                <c:if test="${orderInfo.orderStatus ne 'canceled' }">
-                                    <p class="text-lg">Assigned Shipper: <span>${accShipper.lastName} ${accShipper.firstName}</span></p>  
-                                    <p class="text-lg">Shipper ID: <span>${accShipper.accountID}</span></p>
-                                </c:if>
+                                <h1 class="text-2xl font-bold ">Order Processing Information</h1>   
+                                <c:forEach var="handler" items="${handlerList}">
+                                    <c:if test="${orderInfo.orderStatus eq 'delivery'}">
+                                        <c:if test="${handler.role eq 'admin' or handler.role eq 'staff'}">
+                                            <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                            <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
+                                        </c:if>
+                                        <c:if test="${handler.role eq 'shipper'}">
+                                            <p class="text-lg">Assigned Shipper: <span>${handler.lastName} ${handler.firstName}</span></p>
+                                            <p class="text-lg">Shipper ID: <span>${handler.accountID}</span></p>
+                                        </c:if>
+                                    </c:if>
+
+                                    <c:if test="${orderInfo.orderStatus eq 'canceled'}">
+                                        <c:if test="${handler.role eq 'admin' or handler.role eq 'staff' or handler.role eq 'customer' }">
+                                            <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                            <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
+                                        </c:if>
+                                        <c:if test="${handler.role eq 'shipper'}">
+                                            <p class="text-lg">Order refunded by (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                            <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
+                                        </c:if>
+                                    </c:if>
+                                </c:forEach>
 
                             </c:if>
 
                         </div>
                     </div>
-
-
-
                     <table class="w-full text-left">
                         <thead>
                             <tr>

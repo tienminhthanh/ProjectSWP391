@@ -113,7 +113,7 @@
 
             <div class="container mx-auto px-4 py-2 flex justify-around">
 
-<!--                <a href="OrderListController?status=#" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == '#' ? 'active' : ''}">Payment Due</a>-->
+                <a href="OrderListController?status=paid" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'paid' ? 'active' : ''}">Paid</a>
                 <a href="OrderListController?status=pending" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'pending' ? 'active' : ''}">Pending</a>
                 <a href="OrderListController?status=shipped" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'shipped' ? 'active' : ''}">Shipping</a>
                 <a href="OrderListController?status=delivered" class="text-gray-700 hover:text-orange-600 font-semibold ${currentStatus == 'delivered' ? 'active' : ''}">Delivered</a>

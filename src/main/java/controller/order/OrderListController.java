@@ -77,10 +77,19 @@ public class OrderListController extends HttpServlet {
         String vnp_TxnRef = request.getParameter("vnp_TxnRef");
         String vnp_TransactionNo = request.getParameter("vnp_TransactionNo");
         String vnp_TransactionDate = request.getParameter("vnp_PayDate");
+        String vnp_TransactionStatus = request.getParameter("vnp_TransactionStatus");
+        Object orderId = session.getAttribute("orderIdNew");
+        int orderID =0;
+        if (orderId != null) {
+            orderID = (int) orderId; // Ép kiểu nếu biết chắc kiểu dữ liệu
+       
+        }
         if (vnp_TxnRef != null && vnp_TransactionNo != null) {
             try {
                 orderDAO.updateTransactionNoByTxnRef(vnp_TransactionNo, vnp_TxnRef);
-                orderDAO.updateTransactionDateByOrderID(vnp_TransactionDate, vnp_TxnRef);
+                orderDAO.updateTransactionDateByOrderID(vnp_TransactionDate, vnp_TransactionStatus, vnp_TxnRef);
+           
+                orderDAO.updatepaymentStatusByOrderID(orderID);
             } catch (SQLException ex) {
                 Logger.getLogger(OrderListController.class.getName()).log(Level.SEVERE, null, ex);
             }

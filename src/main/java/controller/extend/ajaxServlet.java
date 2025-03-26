@@ -79,6 +79,9 @@ public class ajaxServlet extends HttpServlet {
             orderInfo.setOrderProductList(orderProductList);
             orderDAO.insertOrderInfo(orderInfo);
             id = orderDAO.getLastInsertedOrderID(account.getAccountID());
+            session.setAttribute("orderIdNew", id);
+            
+//            orderDAO.updatepaymentStatusByOrderID(id); bỏ bên đây
             if (voucherID != null) {
                 orderDAO.updateQuantityVoucher(voucherID);
             }
@@ -99,7 +102,6 @@ public class ajaxServlet extends HttpServlet {
         String vnp_TxnRef = newTxnRef;
         String vnp_IpAddr = Config.getIpAddress(req);
         String vnp_TmnCode = Config.vnp_TmnCode;
-
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);

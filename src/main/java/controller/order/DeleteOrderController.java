@@ -88,7 +88,6 @@ public class DeleteOrderController extends HttpServlet {
             String status = "canceled";
             orderDAO.restoreProductStockByOrderID(id);
             orderDAO.updateOrderstatus(id, status);
-
             orderInfo = orderDAO.getTransactionInfoByOrderID(id);
             if (orderInfo.getPaymentMethod().equals("online")) {
                 // Nếu thanh toán online, lưu thông báo vào session
@@ -99,7 +98,7 @@ public class DeleteOrderController extends HttpServlet {
                         + "Transaction Reference: " + orderInfo.getVnp_TxnRef() + ".<br>"
                         + "Transaction Number: " + orderInfo.getVnp_TransactionNo() + ".<br>"
                         + "Transaction Date: " + orderInfo.getVnp_TransactionDate() + ".<br>"
-                        + "Total Amount: " + orderInfo.getPreVoucherAmount() + " VND.<br>"
+                        + "Total Amount: " + orderInfo.getPreVoucherAmount() + " đ.<br>"
                         + "Please wait 2-3 days for processing.<br>"
                         + "<strong>We sincerely apologize for any inconvenience caused.</strong>");
                 // Điều hướng về danh sách đơn hàng

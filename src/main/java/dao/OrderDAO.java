@@ -175,8 +175,6 @@ public class OrderDAO {
         return rs.next() ? mapResultSetToOrderInfo(rs) : null;
     }
 
-  
-
     //choose
     public Account getInfoCustomerByOrderID(int orderID) throws SQLException {
         String sql = "SELECT a.*, c.*, ad.*, s.* "
@@ -198,44 +196,44 @@ public class OrderDAO {
         }
     }
 
-    public Account getOrderHandlerByOrderID(int orderID) throws SQLException {
-        String sql = "SELECT a.*, ad.*, s.*, c.*\n"
+    public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
+        String sql = "SELECT oi.*, a.*, ad.*, s.*, sp.*, c.*\n"
                 + "FROM OrderInfo oi\n"
-                + "JOIN Account a ON a.accountID = \n"
-                + "    CASE \n"
-                + "        WHEN oi.adminID IS NOT NULL THEN oi.adminID \n"
-                + "        WHEN oi.staffID IS NOT NULL THEN oi.staffID \n"
-                + "        ELSE oi.customerID \n"
-                + "    END\n"
-                + "LEFT JOIN Customer c ON a.accountID = c.customerID\n"
-                + "LEFT JOIN Admin ad ON a.accountID = ad.adminID\n"
-                + "LEFT JOIN Staff s ON a.accountID = s.staffID\n"
-                + "WHERE oi.orderID = ?;";
+                + "LEFT JOIN Account a ON a.accountID IN (oi.adminID, oi.staffID, oi.shipperID, oi.customerID)\n"
+                + "LEFT JOIN Admin ad ON ad.adminID = oi.adminID\n"
+                + "LEFT JOIN Staff s ON s.staffID = oi.staffID\n"
+                + "LEFT JOIN Shipper sp ON sp.shipperID = oi.shipperID\n"
+                + "LEFT JOIN Customer c ON \n"
+                + "    (oi.adminID IS NULL AND oi.staffID IS NULL AND oi.shipperID IS NULL AND c.customerID = oi.adminID)\n"
+                + "WHERE oi.orderID = ?";
+        List<Account> accounts = new ArrayList<>();
         Object[] params = {orderID};
         ResultSet rs = context.exeQuery(sql, params);
-        return rs.next() ? mapResultSetToAccount(rs) : null;
+        while (rs.next()) {
+            accounts.add(mapResultSetToAccount(rs));
+        }
+        return accounts;
     }
 
     public OrderInfo getTransactionInfoByOrderID(int orderID) throws SQLException {
-        String sql = "select o.vnp_TxnRef, o.vnp_TransactionNo, o.finalAmount, o.vnp_TransactionDate, o.paymentMethod, o.orderID from OrderInfo o where orderID =?";
+        String sql = "select o.vnpTxnRef, o.vnpTransactionNo, o.finalAmount, o.vnpTransactionDate, o.paymentMethod, o.orderID, o.vnpTransactionStatus from OrderInfo o where orderID =?";
         Object[] params = {orderID};
         ResultSet rs = context.exeQuery(sql, params);
         if (rs.next()) {
             OrderInfo orderinfo;
             orderinfo = new OrderInfo(
                     rs.getDouble("finalAmount"),
-                    rs.getString("vnp_TxnRef"),
-                    rs.getString("vnp_TransactionNo"),
-                    rs.getString("vnp_TransactionDate"),
+                    rs.getString("vnpTxnRef"),
+                    rs.getString("vnpTransactionNo"),
+                    rs.getString("vnpTransactionDate"),
+                    rs.getString("vnpTransactionStatus"),
                     rs.getString("paymentMethod"),
                     rs.getInt("orderID")
-                   
             );
             return orderinfo;
         }
         return null;
     }
-    
 
     //choose
     public Account getCustomerByOrderID(int orderID) throws SQLException {
@@ -341,7 +339,7 @@ public class OrderDAO {
 
     public OrderInfo getOrderByID(int orderID, int customerID) throws SQLException {
         String sql = "SELECT OrderInfo.*\n"
-               + "FROM     OrderInfo\n"
+                + "FROM     OrderInfo\n"
                 + "WHERE  (orderID = ?) AND (customerID = ?)";
         Object[] params = {orderID, customerID};
 
@@ -570,24 +568,32 @@ public class OrderDAO {
     }
 
     public boolean updateTxnRefByOrderID(int orderID, String vnp_TxnRef) throws SQLException {
-        String sql = "	update orderinfo set vnp_TxnRef = ? where orderID = ?";
+        String sql = "	update orderinfo set vnpTxnRef = ? where orderID = ?";
         Object[] params = {vnp_TxnRef, orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " rows affected");
         return rowsAffected > 0;
     }
-    
-    public boolean updateTransactionDateByOrderID(String vnp_TransactionDate, String vnp_TxnRef) throws SQLException {
-        String sql = "	update orderinfo set vnp_TransactionDate = ? where vnp_TxnRef = ?";
-        Object[] params = {vnp_TransactionDate, vnp_TxnRef};
+
+    public boolean updateTransactionDateByOrderID(String vnp_TransactionDate, String vnp_TransactionStatus, String vnp_TxnRef) throws SQLException {
+        String sql = "	update orderinfo set vnpTransactionDate = ?, vnpTransactionStatus =? where vnpTxnRef = ?";
+        Object[] params = {vnp_TransactionDate, vnp_TransactionStatus, vnp_TxnRef};
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " rows affected");
         return rowsAffected > 0;
     }
 
     public boolean updateTransactionNoByTxnRef(String vnp_TransactionNo, String vnp_TxnRef) throws SQLException {
-        String sql = "	update orderinfo set vnp_TransactionNo = ? where vnp_TxnRef = ?";
+        String sql = "	update orderinfo set vnpTransactionNo = ? where vnpTxnRef = ?";
         Object[] params = {vnp_TransactionNo, vnp_TxnRef};
+        int rowsAffected = context.exeNonQuery(sql, params);
+        System.out.println(rowsAffected + " rows affected");
+        return rowsAffected > 0;
+    }
+
+    public boolean updatepaymentStatusByOrderID(int orderID) throws SQLException {
+        String sql = "update OrderInfo set paymentStatus ='paid'  where  orderID = ? and vnpTransactionStatus = '00'";
+        Object[] params = {orderID};
         int rowsAffected = context.exeNonQuery(sql, params);
         System.out.println(rowsAffected + " rows affected");
         return rowsAffected > 0;

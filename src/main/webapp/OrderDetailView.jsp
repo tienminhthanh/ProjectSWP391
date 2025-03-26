@@ -246,16 +246,14 @@
                         </p>
 
                         <div class="flex space-x-2 mt-4">
-                            <c:if test="${orderInfo.orderStatus eq 'pending'}">
-                                <button type="button" onclick="showUpdateForm()" 
-                                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            <c:if test="${orderInfo.orderStatus eq 'pending' or orderInfo.orderStatus eq 'paid'}">                                <button type="button" onclick="showUpdateForm()" 
+                                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                                     Update
                                 </button>
                             </c:if>
-                            <c:if test="${orderInfo.orderStatus eq 'pending'}">
+                            <c:if test="${orderInfo.orderStatus eq 'pending' or orderInfo.orderStatus eq 'paid'}">
                                 <form action="DeleteOrderController" method="POST" 
                                       onsubmit="return confirm('Are you sure you want to delete item with ID = ${orderInfo.orderID}?')">
-
                                     <input type="hidden" name="id" value="${orderInfo.orderID}">
                                     <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                                         Cancel

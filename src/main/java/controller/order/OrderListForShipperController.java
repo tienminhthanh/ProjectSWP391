@@ -94,7 +94,7 @@ public class OrderListForShipperController extends HttpServlet {
             }
 
             final String finalStatus = status;
-            orderList = orderList.stream()                 
+            orderList = orderList.stream()
                     .filter(order -> finalStatus.equals(order.getDeliveryStatus()))
                     .collect(Collectors.toList());
 
@@ -165,10 +165,11 @@ public class OrderListForShipperController extends HttpServlet {
                 orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
                 request.setAttribute("message", "Cập nhật trạng thái đơn hàng thành công!");
             } else if ("cancelOrder".equals(actionType)) {
-                String status = "canceled";
-                orderDao.updateOrderstatus(orderID, status);
                 String statusDeli = "delivered";
                 orderDao.updateDeliverystatus(orderID, statusDeli);
+                String status = "canceled";
+                orderDao.updateOrderstatus(orderID, status);
+
                 totalDeliveries = accShipper.getTotalDeliveries();
                 totalDeliveries = totalDeliveries + 1;
                 request.setAttribute("message", "Đơn hàng đã bị hủy!");
