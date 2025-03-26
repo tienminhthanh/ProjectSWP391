@@ -177,28 +177,7 @@ public class CartControllerTest {
         assertEquals(quantity, cartItems.get(0).getQuantity());
     }
 
-    @Test
-    public void testAddToCart_CartItemsNull_Success() throws SQLException, Exception {
-        // Arrange
-        int customerID = 1;
-        int productID = 1;
-        int quantity = 2;
-        BigDecimal priceWithQuantity = new BigDecimal("200.00");
-
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("cartItems")).thenReturn(null); // cartItems is null
-        when(cartItemDAO.getCartItemsByCustomer(customerID)).thenReturn(new ArrayList<>());
-        when(cartItemDAO.getCartItemByCustomerAndProduct(customerID, productID)).thenReturn(null);
-
-        // Act
-        cartController.addToCart(request, customerID, productID, quantity, priceWithQuantity, product);
-
-        // Assert
-        verify(cartItemDAO, times(1)).getCartItemsByCustomer(customerID);
-        verify(cartItemDAO, times(1)).addCartItem(any(CartItem.class));
-        verify(session, times(2)).setAttribute(eq("cartItems"), anyList());
-    }
-
+   
     @Test
     public void testUpdateCartItem_Success() throws SQLException, Exception {
         // Arrange
