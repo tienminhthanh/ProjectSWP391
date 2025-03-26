@@ -32,20 +32,19 @@ public class ProductDAO {
 
     private final DBContext context;
     private final Utility tool;
-    
+
     //Normal run
     public ProductDAO() {
         context = new DBContext();
         tool = new Utility();
     }
-    
+
     //Test run
     public ProductDAO(DBContext context, Utility tool) {
         this.context = context;
         this.tool = tool;
     }
-   
-    
+
     /**
      * For add, update cart
      *
@@ -256,7 +255,7 @@ public class ProductDAO {
     public int getProductsCount(String query, String type, Map<String, String> filterMap) throws SQLException {
         //Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
-        
+
         sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //If there is search query
@@ -271,14 +270,13 @@ public class ProductDAO {
             sql.append("\nJOIN Merchandise M");
             sql.append("\n    ON M.merchandiseID = P.productID");
         }
-        
-         // Common LEFT JOINs and WHERE clause
+
+        // Common LEFT JOINs and WHERE clause
         sql.append("\nLEFT JOIN ProductDiscount PD");
         sql.append("\n    ON P.productID = PD.productID AND PD.rn = 1");
         sql.append("\nLEFT JOIN Category AS C");
         sql.append("\n    ON C.categoryID = P.categoryID");
         sql.append("\nWHERE P.productIsActive = 1\n");
-
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -293,7 +291,7 @@ public class ProductDAO {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
                 filterParam = filterParam != null ? filterParam.trim() : "";
-                
+
                 //Split the filter params if there are more than 1
                 String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
@@ -371,7 +369,7 @@ public class ProductDAO {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
                 filterParam = filterParam != null ? filterParam.trim() : "";
-                
+
                 //Split the filter params if there are more than 1
                 String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
@@ -459,7 +457,7 @@ public class ProductDAO {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
                 filterParam = filterParam != null ? filterParam.trim() : "";
-                
+
                 //Split the filter params if there are more than 1
                 String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
@@ -538,9 +536,9 @@ public class ProductDAO {
             case "hotDeal":
                 return "PD.discountPercentage DESC";
             case "priceLowToHigh":
-                return "P.price ASC";
+                return "P.price * (100 - ISNULL(PD.discountPercentage,0) )/100 ASC";
             case "priceHighToLow":
-                return "P.price DESC";
+                return "P.price * (100 - ISNULL(PD.discountPercentage,0) )/100 DESC";
             case "rating":
                 return "P.averageRating DESC, P.numberOfRating DESC";
             case "releaseDate":
@@ -568,7 +566,7 @@ public class ProductDAO {
 
         //Conditional joins
         sql.append(getSpecificJoin(condition, type));
-        
+
         //Discount join
         sql.append("LEFT JOIN ProductDiscount PD \n"
                 + "    ON P.productID = PD.productID AND PD.rn = 1\n"
@@ -589,7 +587,7 @@ public class ProductDAO {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
                 filterParam = filterParam != null ? filterParam.trim() : "";
-                
+
                 //Split the filter params if there are more than 1
                 String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
@@ -646,7 +644,7 @@ public class ProductDAO {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
                 filterParam = filterParam != null ? filterParam.trim() : "";
-                
+
                 //Split the filter params if there are more than 1
                 String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
@@ -669,7 +667,7 @@ public class ProductDAO {
         //Append order
         sql.append("ORDER BY ");
         sql.append(processSort(sortCriteria));
-        
+
         //Append paginated (these values are ZERO for home lists)
         if (page > 0 && pageSize > 0) {
             sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
@@ -857,12 +855,12 @@ public class ProductDAO {
 
         LocalDate eventEndDate = tool.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
         int discountPercentage = 0;
-        if(eventEndDate !=null){
+        if (eventEndDate != null) {
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
-        
-        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"),0);
-        
+
+        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"), 0);
+
         LocalDateTime lastMdfTime = tool.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
 
         switch (type != null ? type : "") {
@@ -991,6 +989,7 @@ public class ProductDAO {
                 + "    c.creatorID, \n"
                 + "    c.creatorName, \n"
                 + "    c.creatorRole, \n"
+                + "    p.generalCategory, \n"
                 + "    COUNT(p.productID) AS productCount\n"
                 + "FROM Creator c\n"
                 + " JOIN Product_Creator pc \n"
@@ -998,14 +997,15 @@ public class ProductDAO {
                 + "LEFT JOIN Product p\n"
                 + "    ON pc.productID = p.productID \n"
                 + "    AND p.productIsActive = 1  \n"
-                + "GROUP BY c.creatorID, c.creatorName, c.creatorRole;";
+                + "GROUP BY c.creatorID, c.creatorName, c.creatorRole, p.generalCategory";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             Map<Creator, Integer> creatorMap = new HashMap<>();
             while (rs.next()) {
 
                 creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
-                        tool.toTitleCase(rs.getString("creatorRole"))), rs.getInt("productCount"));
+                        tool.toTitleCase(rs.getString("creatorRole"))).setGeneralCategory(rs.getString("generalCategory")),
+                         rs.getInt("productCount"));
             }
             return creatorMap;
         }
@@ -2144,7 +2144,5 @@ public class ProductDAO {
         }
 
     }
-
-    
 
 }

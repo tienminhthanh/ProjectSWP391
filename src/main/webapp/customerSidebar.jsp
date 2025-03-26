@@ -92,7 +92,6 @@
             </li>
         </ul>
     </div>
-
     <div class="mb-4 bg-white">
         <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
             <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
@@ -101,10 +100,12 @@
         </h3>
         <ul id="catList" class="text-xs leading-loose">
             <c:forEach var="catEntry" items="${applicationScope.categories}">
-                <c:if test="${catEntry.value > 0}">
+                <c:set var="key" value="${catEntry.key}"/>
+                <c:set var="val" value="${catEntry.value}"/>
+                <c:if test="${val > 0 and key.generalCategory eq requestScope.type}">
                     <li class="p-2 mb-2 rounded-md mx-2">
-                        <a href="category?id=${catEntry.key.categoryID}" data-filter="ftCtg-${catEntry.key.categoryID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
-                            <span class="w-[calc(90%)]">${catEntry.key.categoryName} (${catEntry.value})</span>
+                        <a href="category?id=${key.categoryID}" data-filter="ftCtg-${key.categoryID}" onmouseover="updateHrefOnHover(this,`${key.generalCategory}`,`${type}`)" class="flex flex-row items-center hover:font-bold">
+                            <span class="w-[calc(90%)]">${key.categoryName} (${val})</span>
                             <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                         </a>
                     </li>
@@ -120,12 +121,16 @@
             Creator
         </h3>
         <ul id="creList" class="text-xs leading-loose">
+            <c:set var="i" value="0"/>
             <c:forEach var="creEntry" items="${applicationScope.creators}" varStatus="status">
-                <c:if test="${creEntry.value > 0}">
-                    <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2">
-                        <a href="creator?id=${creEntry.key.creatorID}" data-filter="ftCrt-${creEntry.key.creatorID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                <c:set var="key" value="${creEntry.key}"/>
+                <c:set var="val" value="${creEntry.value}"/>
+                <c:if test="${val> 0 and key.generalCategory eq requestScope.type}">
+                    <c:set var="i" value="${i + 1}"/>
+                    <li class="${i >= 4 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2">
+                        <a href="creator?id=${key.creatorID}" data-filter="ftCrt-${key.creatorID}" onmouseover="updateHrefOnHover(this,`${key.generalCategory}`,`${type}`)" class="flex flex-row items-center hover:font-bold">
                             <span class="w-[calc(90%)]">
-                                ${creEntry.key.creatorName} - ${creEntry.key.creatorRole} (${creEntry.value})
+                                ${key.creatorName} - ${key.creatorRole} (${val})
                             </span>
                             <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                         </a>
@@ -152,7 +157,7 @@
                     <c:forEach var="genEntry" items="${applicationScope.genres}" varStatus="status">
                         <c:if test="${genEntry.value > 0}">
                             <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                                <a href="genre?id=${genEntry.key.genreID}" data-filter="ftGnr-${genEntry.key.genreID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                <a href="genre?id=${genEntry.key.genreID}" data-filter="ftGnr-${genEntry.key.genreID}" onmouseover="updateHrefOnHover(this,'book',`${type}`)" class="flex flex-row items-center hover:font-bold">
                                     <span class="w-[calc(90%)]">${genEntry.key.genreName} (${genEntry.value})</span>
                                     <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                                 </a>
@@ -174,7 +179,7 @@
                     <c:forEach var="pubEntry" items="${applicationScope.publishers}" varStatus="status">
                         <c:if test="${pubEntry.value > 0}">
                             <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                                <a href="publisher?id=${pubEntry.key.publisherID}" data-filter="ftPbl-${pubEntry.key.publisherID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                <a href="publisher?id=${pubEntry.key.publisherID}" data-filter="ftPbl-${pubEntry.key.publisherID}" onmouseover="updateHrefOnHover(this,'book',`${type}`)" class="flex flex-row items-center hover:font-bold">
                                     <span class="w-[calc(90%)]">${pubEntry.key.publisherName} (${pubEntry.value})</span>
                                     <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                                 </a>
@@ -204,7 +209,7 @@
                     <c:forEach var="braEntry" items="${applicationScope.brands}" varStatus="status">
                         <c:if test="${braEntry.value > 0}">
                             <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                                <a href="brand?id=${braEntry.key.brandID}" data-filter="ftBrn-${braEntry.key.brandID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                <a href="brand?id=${braEntry.key.brandID}" data-filter="ftBrn-${braEntry.key.brandID}" onmouseover="updateHrefOnHover(this,'merch',`${type}`)" class="flex flex-row items-center hover:font-bold">
                                     <span class="w-[calc(90%)]">${braEntry.key.brandName} (${braEntry.value})</span>
                                     <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                                 </a>
@@ -226,7 +231,7 @@
                     <c:forEach var="serEntry" items="${applicationScope.series}" varStatus="status">
                         <c:if test="${serEntry.value > 0}">
                             <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                                <a href="series?id=${serEntry.key.seriesID}" data-filter="ftSrs-${serEntry.key.seriesID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                <a href="series?id=${serEntry.key.seriesID}" data-filter="ftSrs-${serEntry.key.seriesID}" onmouseover="updateHrefOnHover(this,'merch',`${type}`)" class="flex flex-row items-center hover:font-bold">
                                     <span class="w-[calc(90%)]">${serEntry.key.seriesName} (${serEntry.value})</span>
                                     <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                                 </a>
@@ -248,7 +253,7 @@
                     <c:forEach var="chaEntry" items="${applicationScope.characters}" varStatus="status">
                         <c:if test="${chaEntry.value > 0}">
                             <li class="${status.index >= 3 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2 cursor-pointer">
-                                <a href="character?id=${chaEntry.key.characterID}" data-filter="ftChr-${chaEntry.key.characterID}" onmouseover="updateHrefOnHover(this)" class="flex flex-row items-center hover:font-bold">
+                                <a href="character?id=${chaEntry.key.characterID}" data-filter="ftChr-${chaEntry.key.characterID}" onmouseover="updateHrefOnHover(this,'merch',`${type}`)" class="flex flex-row items-center hover:font-bold">
                                     <span class="w-[calc(90%)]">${chaEntry.key.characterName} (${chaEntry.value})</span>
                                     <span class="hidden w-[calc(10%)] hover:text-white text-base px-1"><i class="fa-solid fa-xmark"></i></span>
                                 </a>
