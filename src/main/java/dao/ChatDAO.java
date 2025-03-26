@@ -19,7 +19,7 @@ public class ChatDAO {
         context = new DBContext();
     }
 
-    // Phương thức lấy tên khách hàng dựa trên customerID
+   
     public String getCustomerName(int customerID) throws SQLException {
         String sql = "SELECT firstName FROM [dbo].[Account] WHERE accountID = ?";
         Object[] params = {customerID};
@@ -27,7 +27,7 @@ public class ChatDAO {
         if (rs.next()) {
             return rs.getString("firstName");
         }
-        return "Unknown Customer"; // Trả về mặc định nếu không tìm thấy
+        return "Unknown Customer";
     }
 
     public boolean insertChat(Chat chat) throws SQLException {
