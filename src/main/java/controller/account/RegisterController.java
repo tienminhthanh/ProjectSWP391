@@ -1,22 +1,20 @@
 package controller.account;
 
 import dao.AccountDAO;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import model.Account;
+
+import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterController extends HttpServlet {
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -27,7 +25,6 @@ public class RegisterController extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        // Retrieve form data
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -36,43 +33,36 @@ public class RegisterController extends HttpServlet {
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
-        String address = request.getParameter("address"); // from form input
+        String address = request.getParameter("address");
 
         try {
             AccountDAO accountDAO = new AccountDAO();
+            AccountLib lib = new AccountLib();
             String message = null;
 
-            // Check if the email exists in the system
             Account accountByEmail = accountDAO.getAccountByEmail(email);
-
             if (accountByEmail != null && !"admin".equals(accountByEmail.getRole())) {
-                // If email exists, check if the account is active or locked
                 if (accountByEmail.getAccountIsActive()) {
-                    // If account is active, deny registration
-                    message = "Email already exists!";
+                    message = "This email is already in use!";
                 } else {
                     request.getSession().setAttribute("tempEmail", email);
-                    // If account is locked, redirect to unlock/re-register page
                     request.setAttribute("lockedAccount", accountByEmail);
-                    request.setAttribute("message", "This email is associated with a locked account. Do you want to unlock it or remove the email?");
+                    request.setAttribute("message", "This email belongs to a locked account. Do you want to unlock it or remove the email?");
                     request.getRequestDispatcher("unlockOrRegister.jsp").forward(request, response);
                     return;
                 }
             }
 
-            // Check if username already exists
             if (accountDAO.getAccountByUsername(username) != null) {
-                message = "Username already exists!";
-            } // Check if passwords match
-            else if (!password.equals(confirmPassword)) {
+                message = "Username is already taken!";
+            } else if (!password.equals(confirmPassword)) {
                 message = "Passwords do not match!";
-            } // Proceed with registration
-            else {
-                AccountLib lib = new AccountLib();
-                password = lib.hashMD5(confirmPassword);
-                boolean success = accountDAO.register(username, password, firstName, lastName, email, phoneNumber, birthDate, address);
+            } else if (!lib.isValidPassword(password)) {
+                message = "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.";
+            } else {
+                String hashedPassword = lib.hashMD5(confirmPassword);
+                boolean success = accountDAO.register(username, hashedPassword, firstName, lastName, null, phoneNumber, birthDate, address);
                 if (success) {
-                    // Store temporary email for verification
                     request.getSession().setAttribute("tempEmail", email);
                     request.getSession().setAttribute("tempUsername", username);
                     response.sendRedirect("emailAuthentication");
@@ -82,11 +72,11 @@ public class RegisterController extends HttpServlet {
                 }
             }
 
-            // If there is an error, return to the registration page
             if (message != null) {
                 request.setAttribute("message", message);
                 forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("message", "Database error: " + e.getMessage());
@@ -94,7 +84,6 @@ public class RegisterController extends HttpServlet {
         }
     }
 
-    // Forward request to register page and keep entered data
     private void forwardToRegisterPage(HttpServletRequest request, HttpServletResponse response,
             String username, String firstName, String lastName,
             String email, String phoneNumber, String birthDate)
@@ -107,5 +96,4 @@ public class RegisterController extends HttpServlet {
         request.setAttribute("birthDate", birthDate);
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
-
 }

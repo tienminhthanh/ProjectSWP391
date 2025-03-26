@@ -34,7 +34,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
      * Handles GET requests by forwarding users to the login page.
      */
     @Override
-   protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String currentURL = request.getParameter("currentURL");
         if (currentURL != null && !currentURL.trim().isEmpty()) {
@@ -55,7 +55,8 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
         // Retrieve login details from the request
         String username = request.getParameter("username");
-        String password = lib.hashMD5(request.getParameter("password")); // Hash the password using MD5
+        String password = request.getParameter("password"); // Hash the password using MD5
+       
         HttpSession session = request.getSession();
 
         // Retrieve previous attempted username from session
