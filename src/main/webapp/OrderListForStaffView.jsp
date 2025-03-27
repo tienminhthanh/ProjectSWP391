@@ -114,7 +114,7 @@
                 border: 1px solid #D1D5DB;
                 border-radius: 6px;
                 padding: 10px;
-/*                width: 25px;*/
+                width: 150px;
                 margin-right: 8px;
             }
             .input:focus, .select:focus {
