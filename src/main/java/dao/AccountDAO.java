@@ -413,10 +413,10 @@ public class AccountDAO {
                 sql = "SELECT * from Customer where customerID = ?";
                 break;
             case "staff":
-                sql = "SELECT * from Customer where staffID = ?";
+                sql = "SELECT * from Staff where staffID = ?";
                 break;
             case "shipper":
-                sql = "SELECT * from Customer where shipperID = ?";
+                sql = "SELECT * from Shipper where shipperID = ?";
                 break;
         }
 

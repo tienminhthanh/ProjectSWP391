@@ -14,23 +14,34 @@ public class AuthorizationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        roleAccessMap.put("admin", null);
-        
-        roleAccessMap.put("staff", Arrays.asList("/staff", "/manageOrders", "/home"));
-        
-        roleAccessMap.put("customer", Arrays.asList("/changePassword", "/deleteAccount", "/emailAuthentication",
-                "/emailForgot", "/emailUnlock", "/forgotPassword", "/loginGoogle",
-                "/login", "/logout", "/processPassword", "/register", "/readAccount",
-                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home", "/cart", "/notification", "/chat",
-                "/OrderController"));
-        
-        roleAccessMap.put("shipper", Arrays.asList("/OrderDetailForShipperController", "/viewOrders", "/home"));
-        
-        
-        roleAccessMap.put("guest", Arrays.asList("/emailAuthentication",
-                "/emailForgot", "/emailUnlock", "/forgotPassword", "/loginGoogle",
-                "/login", "/logout", "/processPassword", "/register", "/readAccount",
-                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home","/cart.jsp","/chatAI.jsp"));
+        roleAccessMap.put("admin", Arrays.asList("/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus", "/importProduct",
+                "/queueImport", "/search", "/category", "/genre", "/publisher", "/creator", "/series", "/brand", "/character",
+                "/new", "/sale", "/ranking", "/productDetails", "/addAccount",
+                "/OrderDetailForStaffController", "/OrderListForStaffController",
+                "/chat", "/listnotification", "/notificationdetail", "/createnotification","/changePassword"));
+
+        roleAccessMap.put("staff", Arrays.asList("/staff", "/manageOrders", "/search", "/category", "/genre", "/publisher",
+                "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
+                "/OrderDetailForStaffController", "/OrderListForStaffController",
+                "/chat", "/listnotification", "/notificationdetail", "/createnotification","/changePassword"));
+
+        roleAccessMap.put("customer", Arrays.asList("/changePassword", "/deleteAccount", "/emailAuthentication", "/emailForgot",
+                "/emailUnlock", "/forgotPassword", "/loginGoogle", "/login", "/logout", "/processPassword", "/register", "/readAccount",
+                "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home", "/cart", "/notification", "/chat", "/OrderController",
+                "/search", "/category", "/genre", "/publisher", "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
+                "/DeleteOrderController", "/OrderController", "/OrderDetailController", "/OrderListController", "/UpdateOrderController",
+                "/cart", "/notification", "/notificationDetail", "/chat"));
+
+        roleAccessMap.put("shipper", Arrays.asList("/OrderDetailForShipperController", "/viewOrders", "/home", "/search", "/category", "/genre",
+                "/publisher", "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
+                "/OrderListForShipperController", "/OrderDetailForShipperController",
+                "/notificationshipper", "/notificationdetail","/changePassword"));
+
+        roleAccessMap.put("guest", Arrays.asList("/emailAuthentication", "/emailForgot", "/emailUnlock", "/forgotPassword",
+                "/loginGoogle", "/login", "/logout", "/processPassword", "/register", "/readAccount", "/removeEmailFromLockedAccount",
+                "/unlockAccount", "/updateAccount", "/home", "/cart.jsp", "/chatAI.jsp", "/search", "/category", "/genre", "/publisher",
+                "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails"));
+
     }
 
     @Override

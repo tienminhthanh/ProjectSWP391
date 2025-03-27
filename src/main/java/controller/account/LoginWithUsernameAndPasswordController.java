@@ -56,7 +56,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         // Retrieve login details from the request
         String username = request.getParameter("username");
         String password = request.getParameter("password"); // Hash the password using MD5
-       
+        password=lib.hashMD5(password);
         HttpSession session = request.getSession();
 
         // Retrieve previous attempted username from session
@@ -163,4 +163,14 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         request.setAttribute("username", username);
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
+
+    public static void main(String[] args) {
+        // Simulate the servlet process manually
+        
+        
+       
+     
+       
+    }
+
 }

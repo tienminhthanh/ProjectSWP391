@@ -44,7 +44,14 @@ public class AddAccountController extends HttpServlet {
         String birthDate = request.getParameter("birthDate");
         String role = request.getParameter("role");
         AccountDAO accountDAO = new AccountDAO();
+
         try {
+            if (!lib.isValidPassword(password)) {
+                request.setAttribute("erorrMessage", "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.");
+                request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
+                return;
+               
+            }
             if (accountDAO.isEmailExist(email, null)) {
                 request.setAttribute("erorrMessage", "The email address is already in use.");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
