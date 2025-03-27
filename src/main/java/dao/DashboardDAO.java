@@ -5,10 +5,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- *
- * @author ADMIN
- */
 public class DashboardDAO {
 
     private utils.DBContext context;
@@ -111,7 +107,7 @@ public class DashboardDAO {
                 + "SELECT "
                 + "    (SUM(oi.finalAmount) - "
                 + "     SUM(op.orderProductQuantity * wip.weightedImportPrice)) / "
-                + "    NULLIF(SUM(op.orderProductQuantity * op.orderProductPrice), 0) * 100 AS profitMargin "
+                + "    NULLIF(SUM(oi.finalAmount), 0) * 100 AS profitMargin "
                 + "FROM Order_Product op "
                 + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
                 + "JOIN WeightedImportPrice wip ON op.productID = wip.productID "
@@ -131,15 +127,50 @@ public class DashboardDAO {
 
     public double getOrderConversionRate(String year, String quarter, String month, boolean isFilterApplied) {
         String sql = "SELECT "
-                + "(COUNT(DISTINCT CASE WHEN oi.orderStatus IN ('delivered', 'completed') THEN oi.orderID END) * 1.0 / "
-                + "COUNT(DISTINCT oi.orderID)) * 100 AS conversionRate "
-                + "FROM OrderInfo oi WHERE 1=1 ";
+                + "    (SUM(CASE WHEN orderStatus IN ('delivered', 'completed') THEN 1 ELSE 0 END) * 100.0) / "
+                + "    NULLIF(COUNT(*), 0) AS orderConversionRate "
+                + "FROM OrderInfo "
+                + "WHERE orderStatus IN ('delivered', 'completed') "; // Chỉ tính đơn hàng thành công
         sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
             if (rs.next()) {
                 return rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getTotalOrders(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "SELECT COUNT(*) AS totalOrders "
+                + "FROM OrderInfo "
+                + "WHERE orderStatus IN ('delivered', 'completed') "; // Chỉ đếm đơn hàng thành công
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
+
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getSuccessfulOrders(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "SELECT SUM(CASE WHEN orderStatus IN ('delivered', 'completed') THEN 1 ELSE 0 END) AS successfulOrders "
+                + "FROM OrderInfo "
+                + "WHERE orderStatus IN ('delivered', 'completed') "; // Chỉ đếm đơn hàng thành công
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
+
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            if (rs.next()) {
+                return rs.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,10 +209,28 @@ public class DashboardDAO {
         return 0;
     }
 
+    // Thêm hàm mới để lấy Total Quantity Sold từ Order_Product (để so sánh)
+    public int getTotalQuantitySoldFromOrder(String year, String quarter, String month, boolean isFilterApplied) {
+        String sql = "SELECT SUM(op.orderProductQuantity) AS totalQuantitySold "
+                + "FROM OrderInfo oi "
+                + "JOIN Order_Product op ON oi.orderID = op.orderID "
+                + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
+        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
+
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public double getTotalRevenue(String year, String quarter, String month, boolean isFilterApplied) {
         String sql = "SELECT SUM(oi.finalAmount) AS totalRevenue "
-                + "FROM Order_Product op "
-                + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
+                + "FROM OrderInfo oi "
                 + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
         sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 

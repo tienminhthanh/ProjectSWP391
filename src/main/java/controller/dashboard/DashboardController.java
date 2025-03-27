@@ -15,28 +15,15 @@ import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author ADMIN
- */
 @WebServlet(name = "DashboardController", urlPatterns = {"/dashboard"})
 public class DashboardController extends HttpServlet {
 
     private final DashboardDAO dashboardDAO = new DashboardDAO();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -49,14 +36,6 @@ public class DashboardController extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Lấy tham số lọc mới
@@ -70,22 +49,25 @@ public class DashboardController extends HttpServlet {
                 || (quarter != null && !quarter.isEmpty())
                 || (month != null && !month.isEmpty());
 
-        // Nếu year không được chọn, mặc định là năm hiện tại
+        // Nếu year không được chọn, mặc định là năm 2024
         if (year == null || year.isEmpty()) {
-            year = String.valueOf(LocalDate.now().getYear()); // 2025
+            year = "2025"; // Đặt mặc định là 2024
         }
 
-        // Nếu revenueTrendYear không được chọn (mới vào dashboard), mặc định là năm hiện tại
+        // Nếu revenueTrendYear không được chọn (mới vào dashboard), mặc định là năm 2024
         if (revenueTrendYear == null || revenueTrendYear.isEmpty()) {
-            revenueTrendYear = String.valueOf(LocalDate.now().getYear()); // 2025
+            revenueTrendYear = "2025"; // Đặt mặc định là 2024
         }
 
         DashboardDAO dao = new DashboardDAO();
         double totalRevenue = dao.getTotalRevenue(year, quarter, month, isFilterApplied);
         int totalQuantitySold = dao.getTotalQuantitySold(year, quarter, month, isFilterApplied);
+        int totalQuantitySoldFromOrder = dao.getTotalQuantitySoldFromOrder(year, quarter, month, isFilterApplied); // Thêm để so sánh
         double grossProfit = dao.getGrossProfit(year, quarter, month, isFilterApplied);
         double profitMargin = dao.getProfitMargin(year, quarter, month, isFilterApplied);
         double orderConversionRate = dao.getOrderConversionRate(year, quarter, month, isFilterApplied);
+        int totalOrders = dao.getTotalOrders(year, quarter, month, isFilterApplied);
+        int successfulOrders = dao.getSuccessfulOrders(year, quarter, month, isFilterApplied);
 
         // Luôn lấy Revenue Trend theo tháng cho năm được chọn
         Map<String, Double> revenueTrend = dao.getRevenueTrend("month", revenueTrendYear, null, null, true);
@@ -93,11 +75,14 @@ public class DashboardController extends HttpServlet {
         // Đưa dữ liệu vào request
         request.setAttribute("totalRevenue", totalRevenue);
         request.setAttribute("totalQuantitySold", totalQuantitySold);
+        request.setAttribute("totalQuantitySoldFromOrder", totalQuantitySoldFromOrder); // Thêm để so sánh
         request.setAttribute("grossProfit", grossProfit);
         request.setAttribute("profitMargin", profitMargin);
         request.setAttribute("orderConversionRate", orderConversionRate);
+        request.setAttribute("totalOrders", totalOrders);
+        request.setAttribute("successfulOrders", successfulOrders);
         request.setAttribute("revenueTrend", revenueTrend);
-        request.setAttribute("selectedRevenueTrendYear", revenueTrendYear); // Truyền năm đã chọn để JSP hiển thị
+        request.setAttribute("selectedRevenueTrendYear", revenueTrendYear);
         Map<String, Integer> ageStats = dao.getAgeStatistics();
         request.setAttribute("ageStatistics", ageStats);
 
@@ -109,25 +94,12 @@ public class DashboardController extends HttpServlet {
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

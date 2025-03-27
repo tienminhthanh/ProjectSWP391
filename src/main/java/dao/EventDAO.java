@@ -229,7 +229,7 @@ public class EventDAO {
                 LocalDate today = LocalDate.now();
                 LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
                 LocalDate expiryDate = dateStarted.plusDays(duration);
-                return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate));
+                return new Event(id, name, dateCreated, duration, banner, description, adminID, isActive, dateStarted_raw, !today.isAfter(expiryDate)); //hôm nay <= ngay hết hạn
             }
         } catch (Exception e) {
         }
@@ -406,17 +406,17 @@ public class EventDAO {
                 banner = "img/banner_event/" + banner;
             }
 
-            boolean isActive = false;
-            if (!(today.isAfter(expiryDate)) && LocalDate.parse(event.getDateStarted()).isEqual(today)) {
-                isActive = true;
-            }
-
+//            boolean isActive = false;
+//            LocalDate startDate = LocalDate.parse(event.getDateStarted());
+//            if (!expiryDate.isBefore(today) && (startDate.isBefore(today) || startDate.isEqual(today))) {
+//                isActive = true;
+//            }
             Object params[] = {event.getEventName(),
                 event.getDuration(),
                 banner,
                 event.getDescription(),
                 event.getDateStarted(),
-                isActive,
+                event.isIsActive(),
                 event.getEventID()};
 
             int rowsAffected = context.exeNonQuery(sql, params);
