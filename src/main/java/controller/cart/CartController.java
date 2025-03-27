@@ -74,17 +74,22 @@ public class CartController extends HttpServlet {
 
             // Validate session
             if (session.getAttribute("account") == null) {
-                throw new Exception("Please login to add items to cart!");
+                response.sendRedirect("login");
+                return;
             }
 
             if ("add".equals(action)) {
                 int productID = Integer.parseInt(productIdStr);
                 int quantity = Integer.parseInt(quantityStr);
                 BigDecimal priceWithQuantity = new BigDecimal(priceStr);
+                double price = Double.parseDouble(priceStr);
                 Product product = productDAO.getProductById(productID);
+                
                 if (product == null) {
                     throw new Exception("Product not found!");
                 }
+                product.setPrice(price);
+                double a = product.getPrice();
                 addToCart(request, customerID, productID, quantity, priceWithQuantity, product);
 
                 if (currentURL == null || currentURL.trim().isEmpty()) {

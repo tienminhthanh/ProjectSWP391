@@ -35,12 +35,12 @@
     </head>
     <body class="bg-gray-50 min-h-screen flex">
 
-        <div class="w-64 bg-orange-400 text-white min-h-screen">
+        <div class="w-64 bg-orange-400 text-white min-h-screen fixed">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 p-6">
+        <div class="flex-1 ml-64 p-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Product List</h1>
             <hr class="mb-6 border-gray-300"/>
             <div class="mt-6 flex flex-col items-start">

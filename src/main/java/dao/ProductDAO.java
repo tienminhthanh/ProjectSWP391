@@ -92,10 +92,11 @@ public class ProductDAO {
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
                 + "WHERE P.productIsActive = 1 AND P.productID = ?\n");
+        System.out.println(sql);
         try {
             Object[] params = {productID};
             ResultSet rs = context.exeQuery(sql.toString(), params);
-
+            
             if (rs.next()) {
                 return mapResultSetToProduct(rs, null);
 

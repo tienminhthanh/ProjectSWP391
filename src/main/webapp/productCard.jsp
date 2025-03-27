@@ -110,7 +110,7 @@
         <input type="hidden" name="productID" value="${currentProduct.productID}">
         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
-        <input type="hidden" name="priceWithQuantity">
+        <input type="hidden" name="priceWithQuantity"/>
         <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'upcoming' 
                       && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
               <button name="action" value="add" ${empty sessionScope.account ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>

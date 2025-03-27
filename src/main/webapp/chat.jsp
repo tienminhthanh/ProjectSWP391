@@ -142,19 +142,37 @@
                     return;
                 }
 
-                const data = new URLSearchParams();
-                data.append('messageContent', messageContent);
-
+                // Kiểm tra trạng thái đăng nhập bằng cách gửi một yêu cầu kiểm tra đơn giản
                 fetch(`${contextPath}/chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: data
+                    method: 'GET', // Sử dụng GET để kiểm tra trạng thái đăng nhập
+                    credentials: 'include' // Gửi cookie/session để server kiểm tra
                 })
                         .then(response => {
-                            if (!response.ok)
+                            if (response.redirected && response.url.includes('login')) {
+                                // Nếu server chuyển hướng về login, có nghĩa là chưa đăng nhập
+                                alert('Please login to send messages!');
+                                window.location.href = `${contextPath}/login.jsp`;
+                                return Promise.reject('Not logged in'); // Ngắt chuỗi promise
+                            }
+                            return response; // Tiếp tục nếu đã đăng nhập
+                        })
+                        .then(() => {
+                            // Gửi tin nhắn nếu đã đăng nhập
+                            const data = new URLSearchParams();
+                            data.append('messageContent', messageContent);
+
+                            return fetch(`${contextPath}/chat`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: data
+                            });
+                        })
+                        .then(response => {
+                            if (!response.ok) {
                                 throw new Error('Network response was not ok');
+                            }
                             return response.json();
                         })
                         .then(data => {
@@ -166,10 +184,13 @@
                             }
                         })
                         .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while sending the message!');
+                            if (error !== 'Not logged in') { // Bỏ qua lỗi đã xử lý ở bước kiểm tra đăng nhập
+                                console.error('Error:', error);
+                                alert('An error occurred while sending the message!');
+                            }
                         });
             }
+
 
             // Function to scroll to the last message
             function scrollToBottom() {
