@@ -56,7 +56,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         // Retrieve login details from the request
         String username = request.getParameter("username");
         String password = request.getParameter("password"); // Hash the password using MD5
-        password=lib.hashMD5(password);
+        password = lib.hashMD5(password);
         HttpSession session = request.getSession();
 
         // Retrieve previous attempted username from session
@@ -79,7 +79,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                     }
 
                     // Lock the account if login fails 5 times (only for non-admin users)
-                    if (!"admin".equals(account.getRole())||!"staff".equals(account.getRole())||!"shipper".equals(account.getRole()) && failedAttempts >= 5) {
+                    if (!"admin".equals(account.getRole()) && failedAttempts >= 5) {
                         response.sendRedirect("deleteAccount?username=" + username);
                         return;
                     }
@@ -129,7 +129,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                         session.setAttribute("failedAttempts", failedAttempts);
 
                         // Lock the account if login fails 5 times (only for non-admin users)
-                        if (!"admin".equals(account.getRole()) && failedAttempts >= 5) {
+                        if (!"admin".equals(account.getRole()) || !"staff".equals(account.getRole()) || !"".equals(account.getRole()) && failedAttempts >= 5) {
                             response.sendRedirect("deleteAccount?username=" + username);
                             return;
                         }
@@ -166,11 +166,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
     public static void main(String[] args) {
         // Simulate the servlet process manually
-        
-        
-       
-     
-       
+
     }
 
 }
