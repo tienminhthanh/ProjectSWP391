@@ -1,6 +1,5 @@
 package dao;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,15 +16,16 @@ public class CartItemDAO {
     }
 
     public boolean addCartItem(CartItem cartItem) throws SQLException {
+      
         String sql = "INSERT INTO CartItem (customerID, productID, cartItemQuantity, cartItemPrice) VALUES (?, ?, ?, ?)";
-        Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getCartItemQuantity(), cartItem.getCartItemPrice()};
+        Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getQuantity(), cartItem.getPriceWithQuantity()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 
     public boolean updateCartItem(CartItem cartItem) throws SQLException {
-        String sql = "UPDATE CartItem SET cartItemQuantity = ? WHERE itemID = ?";
-        Object[] params = {cartItem.getCartItemQuantity(), cartItem.getItemID()};
+        String sql = "UPDATE CartItem SET cartItemQuantity = ?, cartItemPrice = ? WHERE itemID = ? ";
+        Object[] params = {cartItem.getQuantity(), cartItem.getPriceWithQuantity(), cartItem.getItemID()};
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }

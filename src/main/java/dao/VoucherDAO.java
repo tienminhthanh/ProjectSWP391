@@ -289,7 +289,7 @@ public class VoucherDAO {
                 + "      WHERE [voucherID] = ?";
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate today = LocalDate.now();
+//            LocalDate today = LocalDate.now();
             LocalDate createDate = LocalDate.parse(voucher.getDateCreated(), formatter);
             LocalDate expiryDate = createDate.plusDays(voucher.getDuration());
 

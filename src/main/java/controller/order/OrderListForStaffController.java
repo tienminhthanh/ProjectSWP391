@@ -126,6 +126,8 @@ public class OrderListForStaffController extends HttpServlet {
         request.setAttribute("orderList", orderList);
         request.setAttribute("orderInfo", orderList);
         request.setAttribute("account", account);
+        session.setAttribute("orderInfo", orderInfo);
+
         request.setAttribute("customerMap", customerMap); // Gửi Map sang JSP
         request.getRequestDispatcher("OrderListForStaffView.jsp").forward(request, response);
     }
@@ -159,7 +161,7 @@ public class OrderListForStaffController extends HttpServlet {
             }else{
                 orderDAO.updateAdminAndShipperForOrder(orderID, account.getAccountID(), shipperID);
             }
-            
+
             orderDAO.updateDeliverystatus(orderID, status);
             orderDAO.updateOrderstatus(orderID, status);
             session.setAttribute("orderID", orderID);
@@ -170,7 +172,7 @@ public class OrderListForStaffController extends HttpServlet {
             notification.setSenderID(1); // Staff who assigned the order
             notification.setReceiverID(7); // Shipper's account ID
             notification.setNotificationDetails("You have a new order to deliver! Order ID: " + orderID);
-            notification.setNotificationDateCreated(new Date(System.currentTimeMillis()));
+            notification.setDateCreated(new Date(System.currentTimeMillis()));
             notification.setDeleted(false);
             notification.setNotificationTitle("New Delivery Assignment");
             notification.setRead(false);

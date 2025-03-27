@@ -22,7 +22,7 @@
 
         function updateBanner() {
             bannerImg.src = banners[current].img;
-            bannerLink.href = "/eventDetails?banner=" + encodeURIComponent(banners[current].img) + "&action=home";
+            bannerLink.href = "/eventDetailsCus?banner=" + encodeURIComponent(banners[current].img);
 
             dotsContainer.innerHTML = "";
             banners.forEach((_, index) => {

@@ -6,7 +6,6 @@ package controller.order;
 
 import dao.NotificationDAO;
 import dao.OrderDAO;
-import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,21 +16,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
 import model.Notification;
 import model.OrderInfo;
-import model.OrderProduct;
-import model.Product;
-import model.Shipper;
 
 /**
  *
@@ -89,14 +82,14 @@ public class OrderDetailForStaffController extends HttpServlet {
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = null;
-        Account handler = null;
+        List<Account> handlerList = new ArrayList<>();
         String orderID = request.getParameter("id");
         int valueVoucher = 0;
         try {
             if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
                 int id = Integer.parseInt(orderID);
                 customer = orderDAO.getCustomerByOrderID(id);
-                handler = orderDAO.getOrderHandlerByOrderID(id);
+                handlerList = orderDAO.getOrderHandlerByOrderID(id);
                 accShipper = orderDAO.getShipperByOrderID(id);
                 if (customer != null) {
                     int idcus = customer.getAccountID();
@@ -122,7 +115,7 @@ public class OrderDetailForStaffController extends HttpServlet {
         Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
         orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
         request.setAttribute("account", account);
-        request.setAttribute("handler", handler);
+        request.setAttribute("handlerList", handlerList);
         request.setAttribute("accShipper", accShipper);
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
@@ -154,8 +147,9 @@ public class OrderDetailForStaffController extends HttpServlet {
         String cusID = request.getParameter("customerID");
 
         try {
-               int customerID = Integer.parseInt(cusID);
              orderDao.restoreProductStockByOrderID(orderID);
+
+            int customerID = Integer.parseInt(cusID);
             orderDao.updateOrderstatus(orderID, status);
            
             orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
@@ -164,7 +158,7 @@ public class OrderDetailForStaffController extends HttpServlet {
             notification.setSenderID(account.getAccountID()); // Staff who assigned the order
             notification.setReceiverID(customerID); // Shipper's account ID
             notification.setNotificationDetails("Your order has been canceled by the system! Order ID: " + orderID);
-            notification.setNotificationDateCreated(new Date(System.currentTimeMillis()));
+            notification.setDateCreated(new Date(System.currentTimeMillis()));
             notification.setDeleted(false);
             notification.setNotificationTitle("Order Cancellation");
             notification.setRead(false);

@@ -75,8 +75,9 @@ public class DBContext {
             LOGGER.info(() -> String.format("Query affected %d rows: %s", rowsAffected, query));
             return rowsAffected;
         } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Non-query execution failed: " + query, ex);
-            throw ex;
+            String errorMessage = "Non-query execution failed: " + query;
+            LOGGER.log(Level.SEVERE, errorMessage, ex);
+            throw new SQLException("executeUpdate() failed!",ex);
         }
     }
 

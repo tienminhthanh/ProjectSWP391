@@ -46,11 +46,7 @@
                             <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName"
                                    placeholder="Last Name" required type="text" value="${account.lastName}"/>
                         </div>
-                        <div class="mb-4">
-                            <label class="sr-only" for="email">Email</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" id="email" name="email"
-                                   placeholder="Email" required type="email" value="${account.email}"/>
-                        </div>
+                            
                         <div class="mb-4">
                             <label class="sr-only" for="phoneNumber">Phone Number</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber"

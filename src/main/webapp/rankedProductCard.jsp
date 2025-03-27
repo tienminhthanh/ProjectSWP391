@@ -55,7 +55,7 @@
                 <span><fmt:formatNumber value="${currentProduct.discountPercentage > 0 ? currentProduct.price * (100-currentProduct.discountPercentage)/100 : currentProduct.price}" type="number" groupingUsed="true" /></span>
                 <span>đ</span>
             </div>
-            <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order'}">
+            <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'upcoming'}">
                 <!-- Buttons (Buy Now & Cart) -->
                 <div class="m-card-btn-box">
                     <form action="OrderController" method="get">
@@ -85,7 +85,7 @@
             </c:if>
         </div>
     <!-- If out of stock -> overlay -->
-    <c:if test="${currentProduct.stockCount == 0}">
+    <c:if test="${currentProduct.stockCount == 0 and currentProduct.specialFilter ne 'upcoming'}">
         <div class="out-of-stock rounded-lg">Out of Stock</div>
     </c:if>
     </section>

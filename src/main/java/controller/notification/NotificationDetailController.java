@@ -26,7 +26,7 @@ public class NotificationDetailController extends HttpServlet {
             throws ServletException, IOException {
         try {
             int notificationID = Integer.parseInt(request.getParameter("notificationID"));
-            String receiverID = request.getParameter("receiverID");
+//            String receiverID = request.getParameter("receiverID");
             HttpSession session = request.getSession();
             Account account = (Account) session.getAttribute("account");
             String role = account.getRole();

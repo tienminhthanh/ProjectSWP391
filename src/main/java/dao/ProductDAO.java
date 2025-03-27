@@ -4,29 +4,29 @@
  */
 package dao;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Stream;
 import model.*;
+import utils.*;
 
 /**
  *
@@ -34,18 +34,26 @@ import model.*;
  */
 public class ProductDAO {
 
-    private final utils.DBContext context;
+    private final DBContext context;
+    private final Utility tool;
 
+    //Normal run
     public ProductDAO() {
-        context = new utils.DBContext();
+        context = new DBContext();
+        tool = new Utility();
+    }
+
+    //Test run
+    public ProductDAO(DBContext context, Utility tool) {
+        this.context = context;
+        this.tool = tool;
     }
 
     /**
      * For add, update cart
      *
-     * @param productID
+     * @param productId
      * @return
-     * @throws SQLException
      */
     public boolean isSoldOutOrPreOrder(int productId) {
         String sql = "SELECT p.stockCount, \n"
@@ -61,7 +69,7 @@ public class ProductDAO {
                 stock = rs.getInt(1);
                 specialFilter = rs.getString(2);
             }
-            if ("pre-order".equals(specialFilter) || stock == 0) {
+            if ("upcoming".equals(specialFilter) || stock == 0) {
                 return true;  // Sản phẩm là Pre-order hoặc hết hàng
             }
             return false;  // Sản phẩm còn hàng và không phải Pre-order
@@ -84,10 +92,11 @@ public class ProductDAO {
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
                 + "WHERE P.productIsActive = 1 AND P.productID = ?\n");
+        System.out.println(sql);
         try {
             Object[] params = {productID};
             ResultSet rs = context.exeQuery(sql.toString(), params);
-
+            
             if (rs.next()) {
                 return mapResultSetToProduct(rs, null);
 
@@ -240,15 +249,93 @@ public class ProductDAO {
     }
 
     /**
+     * Count search result
+     *
+     * @param query
+     * @param type
+     * @param filterMap
+     * @return
+     * @throws SQLException
+     */
+    public int getProductsCount(String query, String type, Map<String, String> filterMap) throws SQLException {
+        //Prepare the query with CTE first
+        StringBuilder sql = getCTETables(null);
+
+        sql.append("SELECT COUNT(*) FROM Product P\n");
+
+        //If there is search query
+        sql.append(query != null && !query.trim().isEmpty() ? "\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY]" : "");
+
+        // Type-specific JOIN if needed
+        type = type != null ? type : "";    //Handling null
+        if (type.equals("book")) {
+            sql.append("\nJOIN Book B");
+            sql.append("\n    ON B.bookID = P.productID");
+        } else if (type.equals("merch")) {
+            sql.append("\nJOIN Merchandise M");
+            sql.append("\n    ON M.merchandiseID = P.productID");
+        }
+
+        // Common LEFT JOINs and WHERE clause
+        sql.append("\nLEFT JOIN ProductDiscount PD");
+        sql.append("\n    ON P.productID = PD.productID AND PD.rn = 1");
+        sql.append("\nLEFT JOIN Category AS C");
+        sql.append("\n    ON C.categoryID = P.categoryID");
+        sql.append("\nWHERE P.productIsActive = 1\n");
+
+        //Initialize the param list
+        List<Object> paramList = new ArrayList<>();
+        //Add search term if any
+        if (query != null && !query.trim().isEmpty()) {
+            paramList.add(formatQueryBroad(query));
+        }
+
+        //Append filter
+        if (filterMap != null && !filterMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
+                String filterOption = entry.getKey();
+                String filterParam = entry.getValue();
+                filterParam = filterParam != null ? filterParam.trim() : "";
+
+                //Split the filter params if there are more than 1
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
+
+                //Append filter clause based on filterOption
+                sql.append(processFilter(filterOption, selectedFilters.length));
+
+                //Then add filter param to the param list to match with the appended clause
+                if (filterOption.equals("ftPrc")) {
+                    //Handle special case with price range
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
+                    paramList.add(valParts[0]);
+                    paramList.add(valParts[1]);
+                } else {
+                    //Normal case
+                    Collections.addAll(paramList, selectedFilters);
+                }
+            }
+        }
+
+        Object[] params = paramList.toArray();
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+
+    }
+
+    /**
      * When user does not enter anything in the search bar
      *
      * @param type
      * @param sortCriteria
      * @param filterMap
+     * @param page
+     * @param pageSize
      * @return
      * @throws SQLException
      */
-    public List<Product> getActiveProducts(String type, String sortCriteria, Map<String, String> filterMap) throws SQLException {
+    public List<Product> getActiveProducts(String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
 //        Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
 
@@ -286,9 +373,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
+                filterParam = filterParam != null ? filterParam.trim() : "";
 
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -296,7 +384,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -309,6 +397,12 @@ public class ProductDAO {
         //Append order
         sql.append("ORDER BY ");
         sql.append(processSort(sortCriteria));
+
+        //Append paginated
+        sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        int offset = (page - 1) * pageSize;
+        paramList.add(offset);
+        paramList.add(pageSize);
 
         //Print the final query to console
         System.out.println(sql);
@@ -326,7 +420,7 @@ public class ProductDAO {
 
     }
 
-    public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap) throws SQLException {
+    public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
 
         //Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
@@ -367,9 +461,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
+                filterParam = filterParam != null ? filterParam.trim() : "";
 
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -377,7 +472,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -390,6 +485,12 @@ public class ProductDAO {
         // Append sorting
         sql.append("\nORDER BY ");
         sql.append(processSort(sortCriteria));
+
+        //Append paginated
+        sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+        int offset = (page - 1) * pageSize;
+        paramList.add(offset);
+        paramList.add(pageSize);
 
         //Print the final query to console
         System.out.println(sql);
@@ -407,13 +508,16 @@ public class ProductDAO {
     }
 
     private String formatQueryBroad(String query) {
-        String[] queryParts = query.split("\\s+");
-        String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and prefix
+        
+        String normalizedQuery = query.replaceAll("[/\\\\().\"!,:-]", " ").trim();
+        System.out.println(normalizedQuery);
+        String[] queryParts = normalizedQuery.split("\\s+");
+        String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and upcomingfix
 
         for (int i = 0; i < queryParts.length; i++) {
             // Add FORMSOF(INFLECTIONAL, word)
             formattedParts[i * 2] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
-            // Add "word*" for prefix wildcard
+            // Add "word*" for upcomingfix wildcard
             formattedParts[i * 2 + 1] = "\"" + queryParts[i] + "*\"";
         }
 
@@ -421,13 +525,16 @@ public class ProductDAO {
     }
 
     private String formatQueryTight(String query, String logic) {
-        String[] queryParts = query.split("\\s+");
+        String normalizedQuery = query.replaceAll("[/\\\\().\"!,:-]", " ").trim();
+        System.out.println(normalizedQuery);
+        String[] queryParts = normalizedQuery.split("\\s+");
         for (int i = 0; i < queryParts.length; i++) {
             queryParts[i] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
         }
 
         return String.join(" " + logic + " ", queryParts);
     }
+    
 
     private String processSort(String sortCriteria) {
         switch (sortCriteria) {
@@ -438,9 +545,9 @@ public class ProductDAO {
             case "hotDeal":
                 return "PD.discountPercentage DESC";
             case "priceLowToHigh":
-                return "P.price ASC";
+                return "P.price * (100 - ISNULL(PD.discountPercentage,0) )/100 ASC";
             case "priceHighToLow":
-                return "P.price DESC";
+                return "P.price * (100 - ISNULL(PD.discountPercentage,0) )/100 DESC";
             case "rating":
                 return "P.averageRating DESC, P.numberOfRating DESC";
             case "releaseDate":
@@ -452,7 +559,72 @@ public class ProductDAO {
         }
     }
 
-    public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location) throws SQLException {
+    /**
+     * Overload for filtered list
+     *
+     * @param conditionID
+     * @param condition
+     * @param type
+     * @param filterMap
+     * @return
+     * @throws SQLException
+     */
+    public int getProductsCount(int conditionID, Map<String, String> filterMap, String condition, String type) throws SQLException {
+        StringBuilder sql = getCTETables(null);
+        sql.append("SELECT COUNT(*) FROM Product P\n");
+
+        //Conditional joins
+        sql.append(getSpecificJoin(condition, type));
+
+        //Discount join
+        sql.append("LEFT JOIN ProductDiscount PD \n"
+                + "    ON P.productID = PD.productID AND PD.rn = 1\n"
+        );
+
+        //Initialize where clause
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, null));
+
+        //Initialize the param list
+        List<Object> paramList = new ArrayList<>();
+        if (conditionID > 0) {
+            paramList.add(conditionID);
+        }
+
+        //Append filter
+        if (filterMap != null && !filterMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
+                String filterOption = entry.getKey();
+                String filterParam = entry.getValue();
+                filterParam = filterParam != null ? filterParam.trim() : "";
+
+                //Split the filter params if there are more than 1
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
+
+                //Append filter clause based on filterOption
+                sql.append(processFilter(filterOption, selectedFilters.length));
+
+                //Then add filter param to the param list to match with the appended clause
+                if (filterOption.equals("ftPrc")) {
+                    //Handle special case with price range
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
+                    paramList.add(valParts[0]);
+                    paramList.add(valParts[1]);
+                } else {
+                    //Normal case
+                    Collections.addAll(paramList, selectedFilters);
+                }
+            }
+        }
+
+        Object[] params = paramList.toArray();
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+
+    }
+
+    public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location, int page, int pageSize) throws SQLException {
         StringBuilder sql = getCTETables(null);
         sql.append(location.equals("home") ? "SELECT TOP 7\n" : "SELECT\n");
         sql.append("P.*, C.categoryName, PD.discountPercentage, PD.eventDateStarted, PD.eventDuration\n"
@@ -480,9 +652,10 @@ public class ProductDAO {
             for (Map.Entry<String, String> entry : filterMap.entrySet()) {
                 String filterOption = entry.getKey();
                 String filterParam = entry.getValue();
+                filterParam = filterParam != null ? filterParam.trim() : "";
 
                 //Split the filter params if there are more than 1
-                String[] selectedFilters = filterParam != null && !filterParam.trim().isEmpty() ? filterParam.split(",") : new String[0];
+                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
 
                 //Append filter clause based on filterOption
                 sql.append(processFilter(filterOption, selectedFilters.length));
@@ -490,7 +663,7 @@ public class ProductDAO {
                 //Then add filter param to the param list to match with the appended clause
                 if (filterOption.equals("ftPrc")) {
                     //Handle special case with price range
-                    String[] valParts = filterParam.split("-");
+                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
                     paramList.add(valParts[0]);
                     paramList.add(valParts[1]);
                 } else {
@@ -503,6 +676,14 @@ public class ProductDAO {
         //Append order
         sql.append("ORDER BY ");
         sql.append(processSort(sortCriteria));
+
+        //Append paginated (these values are ZERO for home lists)
+        if (page > 0 && pageSize > 0) {
+            sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            int offset = (page - 1) * pageSize;
+            paramList.add(offset);
+            paramList.add(pageSize);
+        }
 
         //Print the final query to console
         System.out.println(sql);
@@ -522,7 +703,8 @@ public class ProductDAO {
 
     private StringBuilder getSpecificJoin(String condition, String generalCategory) {
         StringBuilder joinClause = new StringBuilder();
-        switch (condition) {
+        generalCategory = generalCategory != null ? generalCategory.toLowerCase() : "";
+        switch (condition != null ? condition.toLowerCase() : "") {
             case "ctg":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
@@ -568,11 +750,11 @@ public class ProductDAO {
             case "crt":
                 return "AND PC.creatorID = ?\n";
             case "gnr":
-                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter is null\n" : "AND BG.genreID = ?\n";
+                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n" : "AND BG.genreID = ?\n";
             case "pbl":
                 return "AND B.publisherID = ?\n";
             case "srs":
-                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter is null\n" : "AND M.seriesID = ?\n";
+                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n" : "AND M.seriesID = ?\n";
             case "chr":
                 return "AND M.characterID = ?\n";
             case "brn":
@@ -680,13 +862,15 @@ public class ProductDAO {
     private Product mapResultSetToProduct(ResultSet rs, String type) throws SQLException {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
 
-        LocalDate eventEndDate = null;
+        LocalDate eventEndDate = tool.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
         int discountPercentage = 0;
-        java.sql.Date sqlDateStarted = rs.getDate("eventDateStarted");
-        if (sqlDateStarted != null) {
-            eventEndDate = sqlDateStarted.toLocalDate().plusDays(rs.getInt("eventDuration"));
+        if (eventEndDate != null) {
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
+
+        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"), 0);
+
+        LocalDateTime lastMdfTime = tool.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
 
         switch (type != null ? type : "") {
             case "book":
@@ -699,8 +883,8 @@ public class ProductDAO {
                         rs.getInt("stockCount"),
                         category,
                         rs.getString("description"),
-                        rs.getDate("releaseDate").toLocalDate(),
-                        rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                        rlsDate,
+                        lastMdfTime,
                         rs.getDouble("averageRating"),
                         rs.getInt("numberOfRating"),
                         rs.getString("specialFilter"),
@@ -723,8 +907,8 @@ public class ProductDAO {
                         rs.getInt("stockCount"),
                         category,
                         rs.getString("description"),
-                        rs.getDate("releaseDate").toLocalDate(),
-                        rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                        rlsDate,
+                        lastMdfTime,
                         rs.getDouble("averageRating"),
                         rs.getInt("numberOfRating"),
                         rs.getString("specialFilter"),
@@ -744,8 +928,8 @@ public class ProductDAO {
                         rs.getInt("stockCount"),
                         category,
                         rs.getString("description"),
-                        rs.getDate("releaseDate").toLocalDate(),
-                        rs.getTimestamp("lastModifiedTime").toLocalDateTime(),
+                        rlsDate,
+                        lastMdfTime,
                         rs.getDouble("averageRating"),
                         rs.getInt("numberOfRating"),
                         rs.getString("specialFilter"),
@@ -801,17 +985,20 @@ public class ProductDAO {
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             if (rs.next()) {
-                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), rs.getString("creatorRole"), rs.getString("generalCategory"));
+                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
+                        tool.toTitleCase(rs.getString("creatorRole")), rs.getString("generalCategory"));
             }
         }
         return null;
     }
 
     public Map<Creator, Integer> getAllCreators() throws SQLException {
+
         String sql = "SELECT \n"
                 + "    c.creatorID, \n"
                 + "    c.creatorName, \n"
                 + "    c.creatorRole, \n"
+                + "    p.generalCategory, \n"
                 + "    COUNT(p.productID) AS productCount\n"
                 + "FROM Creator c\n"
                 + " JOIN Product_Creator pc \n"
@@ -819,12 +1006,15 @@ public class ProductDAO {
                 + "LEFT JOIN Product p\n"
                 + "    ON pc.productID = p.productID \n"
                 + "    AND p.productIsActive = 1  \n"
-                + "GROUP BY c.creatorID, c.creatorName, c.creatorRole;";
+                + "GROUP BY c.creatorID, c.creatorName, c.creatorRole, p.generalCategory";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             Map<Creator, Integer> creatorMap = new HashMap<>();
             while (rs.next()) {
-                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), rs.getString("creatorRole")), rs.getInt("productCount"));
+
+                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
+                        tool.toTitleCase(rs.getString("creatorRole"))).setGeneralCategory(rs.getString("generalCategory")),
+                        rs.getInt("productCount"));
             }
             return creatorMap;
         }
@@ -1063,8 +1253,17 @@ public class ProductDAO {
         }
     }
 
+    /**
+     * Overload for management
+     *
+     * @param query
+     * @param type
+     * @return
+     * @throws SQLException
+     */
     public int getProductsCount(String query, String type) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Product P\n");
+        StringBuilder sql = getCTETables(null);
+        sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //If there is search query
         sql.append(query != null && !query.trim().isEmpty() ? "\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL ON P.productID = KEY_TBL.[KEY]" : "");
@@ -1123,8 +1322,9 @@ public class ProductDAO {
             for (Object dataObj : dataArray) {
                 if (dataObj instanceof Creator) {
                     Creator creator = (Creator) dataObj;
-                    creatorID = getCreatorIDByNameAndRole(creator.getCreatorName(), creator.getCreatorRole());
+                    creatorID = creator.getCreatorID();
 
+                    //Add new Creator
                     if (creatorID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "creator");
                         creatorID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
@@ -1133,19 +1333,23 @@ public class ProductDAO {
                             throw new SQLException("Error adding creator: " + creator.getCreatorName() + " - " + creator.getCreatorRole());
 
                         }
+                        creator.setCreatorID(creatorID);
                     }
 
+                    //Associate creators with product
                     if (creatorID > 0 && !associatedCreatorIDs.contains(creatorID) && insertedProductID > 0) {
                         stmtEntry = generateInsertStatement(new Object[]{insertedProductID, creatorID}, "product_creator");
                         if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
                             throw new SQLException("Error assigning creatorID " + creatorID + " to productID " + insertedProductID);
                         }
+                        //Track associated ids to ensure only non-duplicate ids are associated
                         associatedCreatorIDs.add(creatorID);
                     }
 
                 } else if (dataObj instanceof Genre) {
                     Genre genre = (Genre) dataObj;
                     genreID = genre.getGenreID();
+                    //Associate genres with book
                     if (genreID > 0 && insertedProductID > 0) {
                         stmtEntry = generateInsertStatement(new Object[]{insertedProductID, genreID}, "book_genre");
                         if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
@@ -1154,64 +1358,67 @@ public class ProductDAO {
                     }
                 } else if (dataObj instanceof Publisher) {
                     publisher = (Publisher) dataObj;
-                    int publisherID = getPublisherIDByName(publisher.getPublisherName());
+                    int publisherID = publisher.getPublisherID();
+
+                    //Add new Publisher
                     if (publisherID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "publisher");
                         publisherID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (publisherID == 0) {
                             throw new SQLException("Error adding publisher: " + publisher.getPublisherName());
-
                         }
+                        publisher.setPublisherID(publisherID);
                     }
-                    publisher.setPublisherID(publisherID);
 
                 } else if (dataObj instanceof Series) {
                     series = (Series) dataObj;
-                    int seriesID = getSeriesIDByName(series.getSeriesName());
+                    int seriesID = series.getSeriesID();
+
+                    //Add new Series
                     if (seriesID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "series");
                         seriesID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (seriesID == 0) {
                             throw new SQLException("Error adding merch series: " + series.getSeriesName());
-
                         }
-
+                        series.setSeriesID(seriesID);
                     }
-                    series.setSeriesID(seriesID);
                 } else if (dataObj instanceof Brand) {
                     brand = (Brand) dataObj;
-                    int brandID = getBrandIDByName(brand.getBrandName());
+                    int brandID = brand.getBrandID();
+
+                    //Add new Brand
                     if (brandID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "brand");
                         brandID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (brandID == 0) {
                             throw new SQLException("Error adding merch brand: " + brand.getBrandName());
-
                         }
-
+                        brand.setBrandID(brandID);
                     }
-                    brand.setBrandID(brandID);
                 } else if (dataObj instanceof OGCharacter) {
                     character = (OGCharacter) dataObj;
-                    int characterID = getCharacterIDByName(character.getCharacterName());
+                    int characterID = character.getCharacterID();
+
+                    //Add new Character
                     if (characterID == 0) {
                         stmtEntry = generateInsertStatement(new Object[]{dataObj}, "character");
                         characterID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
                         //Insert failed
                         if (characterID == 0) {
                             throw new SQLException("Error adding merch character: " + character.getCharacterName());
-
                         }
 
+                        character.setCharacterID(characterID);
                     }
-                    character.setCharacterID(characterID);
                 }
 
             }
 
+            //Handle type-specific data
             String className = "";
             if (newProduct instanceof Book) {
                 ((Book) newProduct).setPublisher(publisher);
@@ -1223,6 +1430,7 @@ public class ProductDAO {
 
             stmtEntry = generateUpdateStatement(new Object[]{newProduct}, className);
 
+            //Update Book or Merch based on type
             if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0) {
                 connection.commit();
                 return true;
@@ -1255,7 +1463,7 @@ public class ProductDAO {
     }
 
     private SimpleEntry<String, Object[]> generateInsertStatement(Object[] newObjects, String classNames) {
-        newObjects = newObjects != null ? newObjects : new Object[0];
+        newObjects = newObjects != null ? newObjects : new Object[1];
         StringBuilder sql = new StringBuilder();
         List<Object> paramList = new ArrayList<>();
 
@@ -1368,11 +1576,33 @@ public class ProductDAO {
     }
 
     private SimpleEntry<String, Object[]> generateUpdateStatement(Object[] updatedObjs, String classNames) {
-        updatedObjs = updatedObjs != null ? updatedObjs : new Object[0];
+        updatedObjs = updatedObjs != null ? updatedObjs : new Object[1];
         StringBuilder sql = new StringBuilder();
         List<Object> paramList = new ArrayList<>();
 
         switch (classNames != null ? classNames.toLowerCase() : "") {
+            case "product":
+                if (updatedObjs[0] instanceof Product) {
+                    Product updatedProduct = (Product) updatedObjs[0];
+                    sql.append("UPDATE Product SET categoryID = ?, adminID = ?, keywords = ?, generalCategory = ?, "
+                            + "productIsActive = ?, imageURL = ?, description = ?, releaseDate = ?, specialFilter = ?, "
+                            + "productName = ?, price = ?, stockCount = ? "
+                            + "WHERE productID = ?");
+                    paramList.add(updatedProduct.getSpecificCategory().getCategoryID());
+                    paramList.add(updatedProduct.getAdminID());
+                    paramList.add(updatedProduct.getKeywords());
+                    paramList.add(updatedProduct.getGeneralCategory());
+                    paramList.add(updatedProduct.isIsActive());
+                    paramList.add(updatedProduct.getImageURL());
+                    paramList.add(updatedProduct.getDescription());
+                    paramList.add(java.sql.Date.valueOf(updatedProduct.getReleaseDate()));
+                    paramList.add(updatedProduct.getSpecialFilter());
+                    paramList.add(updatedProduct.getProductName());
+                    paramList.add(updatedProduct.getPrice());
+                    paramList.add(updatedProduct.getStockCount());
+                    paramList.add(updatedProduct.getProductID());
+                }
+                break;
             case "book":
                 if (updatedObjs[0] instanceof Book) {
                     Book updatedBook = (Book) updatedObjs[0];
@@ -1414,11 +1644,103 @@ public class ProductDAO {
                 }
 
                 break;
+            case "importitem":
+                String placeHolder = String.join(",", Collections.nCopies(updatedObjs.length, "?"));
+                sql.append("UPDATE ImportItem SET isImported = ? WHERE importItemID IN (")
+                        .append(placeHolder)
+                        .append(")\n");
+
+                paramList.add(true);
+                for (Object updatedObj : updatedObjs) {
+                    if (updatedObj instanceof ImportItem) {
+                        ImportItem item = (ImportItem) updatedObj;
+                        paramList.add(item.getImportItemID());
+                    }
+                }
+
+                break;
+            case "importedproduct":
+                int quantity = 0;
+                int productID = 0;
+                String specialFilter = "";
+                LocalDate releaseDate = null;
+                for (Object updatedObj : updatedObjs) {
+                    if (updatedObj instanceof ImportItem) {
+                        ImportItem item = (ImportItem) updatedObj;
+                        Product product = item.getProduct();
+                        quantity += item.getImportQuantity();
+                        if (productID == 0) {
+                            productID = product.getProductID();
+                        }
+                        if (specialFilter.equals("")) {
+                            specialFilter = product.getSpecialFilter();
+                        }
+
+                        if (releaseDate == null) {
+                            releaseDate = product.getReleaseDate();
+                        }
+                    }
+                }
+
+                sql.append("UPDATE Product SET stockCount = stockCount + ?\n");
+                paramList.add(quantity);
+
+                if (releaseDate != null && releaseDate.isBefore(LocalDate.now())) {
+                    sql.append(", releaseDate = ?\n");
+                    paramList.add(LocalDate.now());
+                }
+
+                if (!specialFilter.equalsIgnoreCase("new")) {
+                    sql.append(", specialFilter = ?\n");
+                    paramList.add("new");
+                }
+
+                sql.append("WHERE productID = ?\n");
+                paramList.add(productID);
+
+                break;
             default:
                 throw new IllegalArgumentException("Unexpected entity name: " + classNames);
         }
 
         return new SimpleEntry<>(sql.toString(), paramList.toArray());
+    }
+
+    private SimpleEntry<String, Object[]> generateDeleteStatement(Object[] deletedParams, String classNames) {
+        if (deletedParams == null || deletedParams.length == 0) {
+            throw new IllegalArgumentException("Cannot generate statement from NULLs!");
+        }
+        int length = deletedParams.length;
+
+        String placeHolder = length > 1 ? String.join(",", Collections.nCopies(length - 1, "?")) : "";
+        StringBuilder sql = new StringBuilder();
+
+        switch (classNames != null ? classNames.toLowerCase() : "") {
+            case "product_creator":
+                sql.append("DELETE FROM Product_Creator\n")
+                        .append("WHERE productID = ? AND creatorID NOT IN (")
+                        .append(placeHolder)
+                        .append(")\n");
+
+                break;
+            case "book_genre":
+                sql.append("DELETE FROM Book_Genre\n")
+                        .append("WHERE bookID = ?\n");
+
+                if (length == 1) {
+                    break;
+                }
+
+                sql.append("AND genreID NOT IN (")
+                        .append(placeHolder)
+                        .append(")\n");
+
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid entity name: " + classNames);
+        }
+
+        return new SimpleEntry<>(sql.toString(), deletedParams);
     }
 
     public int getCreatorIDByNameAndRole(String name, String role) throws SQLException {
@@ -1485,103 +1807,200 @@ public class ProductDAO {
         return 0;
     }
 
-    public boolean addNewMerchSeries(Series newSeries) {
+    public boolean updateProducts(Product updatedProduct, Object[] dataArray) throws SQLException {
+        Connection connection = null;
         try {
-            String sql = "INSERT INTO [dbo].[Series]\n"
-                    + "           ([seriesName])\n"
-                    + "     VALUES\n"
-                    + "           (?)";
-            Object[] params = {newSeries.getSeriesName()};
-            return context.exeNonQuery(sql, params) > 0;
-        } catch (SQLException ex) {
-            return false;
+            connection = context.getConnection();
+            connection.setAutoCommit(false);
+            SimpleEntry<String, Object[]> stmtEntry;
+
+            dataArray = dataArray != null ? dataArray : new Object[0];
+            int updatedProductID = updatedProduct.getProductID();
+            int creatorID = 0;
+            int genreID = 0;
+
+            Publisher publisher = new Publisher();
+            Series series = new Series();
+            OGCharacter character = new OGCharacter();
+            Brand brand = new Brand();
+
+            stmtEntry = generateUpdateStatement(new Object[]{updatedProduct}, "product");
+            boolean updateSuccess = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0;
+            //Update failed
+            if (!updateSuccess) {
+                throw new SQLException("Failed to update this product!");
+            }
+
+            Set<Integer> associatedCreatorIDs = new LinkedHashSet<>();
+            Set<Integer> associatedGenreIDs = new LinkedHashSet<>();
+            Set<Integer> deleteAllGenreIDs = new LinkedHashSet<>();
+
+            for (Object dataObj : dataArray) {
+                if (dataObj instanceof Creator) {
+                    Creator creator = (Creator) dataObj;
+                    creatorID = creator.getCreatorID();
+                    String creatorName = creator.getCreatorName();
+
+                    if (creatorName.trim().endsWith("(associated)")) {
+                        associatedCreatorIDs.add(creatorID);
+                        continue;
+                    }
+
+                    if (creatorID == 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{dataObj}, "creator");
+                        creatorID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
+                        //Insert failed
+                        if (creatorID == 0) {
+                            throw new SQLException("Error adding creator: " + creator.getCreatorName() + " - " + creator.getCreatorRole());
+
+                        }
+                    }
+
+                    if (creatorID > 0 && !associatedCreatorIDs.contains(creatorID) && updatedProductID > 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{updatedProductID, creatorID}, "product_creator");
+                        if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                            throw new SQLException("Error assigning creatorID " + creatorID + " to productID " + updatedProductID);
+                        }
+                        associatedCreatorIDs.add(creatorID);
+                    }
+
+                } else if (dataObj instanceof Genre) {
+                    Genre genre = (Genre) dataObj;
+                    genreID = genre.getGenreID();
+                    String genreName = genre.getGenreName();
+                    genreName = genreName != null ? genreName : "";
+
+                    if (genreName.trim().endsWith("(deleteAll)")) {
+                        deleteAllGenreIDs.add(genreID);
+                        continue;
+                    }
+
+                    if (genreName.trim().endsWith("(associated)")) {
+                        associatedGenreIDs.add(genreID);
+                        continue;
+                    }
+
+                    if (genreID > 0 && !associatedGenreIDs.contains(genreID) && updatedProductID > 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{updatedProductID, genreID}, "book_genre");
+                        if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                            throw new SQLException("Error assigning genreID " + genreID + " to productID " + updatedProductID);
+                        }
+                        associatedGenreIDs.add(genreID);
+                    }
+                } else if (dataObj instanceof Publisher) {
+                    publisher = (Publisher) dataObj;
+                    int publisherID = publisher.getPublisherID();
+                    if (publisherID == 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{dataObj}, "publisher");
+                        publisherID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
+                        //Insert failed
+                        if (publisherID == 0) {
+                            throw new SQLException("Error adding publisher: " + publisher.getPublisherName());
+
+                        }
+                        publisher.setPublisherID(publisherID);
+                    }
+
+                } else if (dataObj instanceof Series) {
+                    series = (Series) dataObj;
+                    int seriesID = series.getSeriesID();
+                    if (seriesID == 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{dataObj}, "series");
+                        seriesID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
+                        //Insert failed
+                        if (seriesID == 0) {
+                            throw new SQLException("Error adding merch series: " + series.getSeriesName());
+
+                        }
+                        series.setSeriesID(seriesID);
+                    }
+                } else if (dataObj instanceof Brand) {
+                    brand = (Brand) dataObj;
+                    int brandID = brand.getBrandID();
+                    if (brandID == 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{dataObj}, "brand");
+                        brandID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
+                        //Insert failed
+                        if (brandID == 0) {
+                            throw new SQLException("Error adding merch brand: " + brand.getBrandName());
+
+                        }
+                        brand.setBrandID(brandID);
+                    }
+                } else if (dataObj instanceof OGCharacter) {
+                    character = (OGCharacter) dataObj;
+                    int characterID = character.getCharacterID();
+                    if (characterID == 0) {
+                        stmtEntry = generateInsertStatement(new Object[]{dataObj}, "character");
+                        characterID = context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
+                        //Insert failed
+                        if (characterID == 0) {
+                            throw new SQLException("Error adding merch character: " + character.getCharacterName());
+
+                        }
+                        character.setCharacterID(characterID);
+                    }
+                }
+
+            }
+
+            if (!associatedCreatorIDs.isEmpty()) {
+                Integer[] params = Stream.concat(Stream.of(updatedProductID), associatedCreatorIDs.stream()).toArray(Integer[]::new);
+                stmtEntry = generateDeleteStatement(params, "product_creator");
+                context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
+            }
+
+            if (!associatedGenreIDs.isEmpty()) {
+                //Delete some
+                Integer[] params = Stream.concat(Stream.of(updatedProductID), associatedGenreIDs.stream()).toArray(Integer[]::new);
+                stmtEntry = generateDeleteStatement(params, "book_genre");
+                context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
+            } else if (!deleteAllGenreIDs.isEmpty()) {
+                //Delete all
+                stmtEntry = generateDeleteStatement(new Object[]{updatedProductID}, "book_genre");
+                context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false);
+            }
+
+            String className = "";
+            if (updatedProduct instanceof Book) {
+                ((Book) updatedProduct).setPublisher(publisher);
+                className = Book.class.getSimpleName();
+            } else if (updatedProduct instanceof Merchandise) {
+                ((Merchandise) updatedProduct).setBrand(brand).setCharacter(character).setSeries(series);
+                className = Merchandise.class.getSimpleName();
+            }
+
+            stmtEntry = generateUpdateStatement(new Object[]{updatedProduct}, className);
+
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) > 0) {
+                connection.commit();
+                return true;
+            } else {
+                connection.rollback();
+                return false;
+            }
+
+        } catch (Exception e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    e.addSuppressed(ex);
+                }
+
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true); // Restore auto-commit
+                    connection.close();
+                } catch (SQLException e) {
+                    throw e;
+                }
+            }
+
         }
-    }
-
-    public boolean addNewMerchBrand(Brand newBrand) {
-        try {
-            String sql = "INSERT INTO [dbo].[Brand]\n"
-                    + "           ([brandName])\n"
-                    + "     VALUES\n"
-                    + "           (?)";
-            Object[] params = {newBrand.getBrandName()};
-            return context.exeNonQuery(sql, params) > 0;
-        } catch (SQLException ex) {
-            return false;
-        }
-    }
-
-    public boolean addNewMerchCharacter(OGCharacter newCharacter) {
-        try {
-            String sql = "INSERT INTO [dbo].[Character]\n"
-                    + "           ([characterName])\n"
-                    + "     VALUES\n"
-                    + "           (?)";
-            Object[] params = {newCharacter.getCharacterName()};
-            return context.exeNonQuery(sql, params) > 0;
-        } catch (SQLException ex) {
-            return false;
-        }
-    }
-
-    public boolean updateBooks(Book updatedBook) throws SQLException {
-        StringBuilder sql = new StringBuilder("update book set\n");
-        List<Object> paramList = new ArrayList<>();
-        if (updatedBook.getPublisher() != null) {
-            sql.append("publisherID = ?,\n");
-            paramList.add(updatedBook.getPublisher().getPublisherID());
-        }
-        sql.append("duration = ? where bookID = ?\n");
-        paramList.add(updatedBook.getDuration());
-        paramList.add(updatedBook.getProductID());
-        Object[] params = paramList.toArray();
-        return context.exeNonQuery(sql.toString(), params) > 0;
-    }
-
-    public boolean updateMerch(Merchandise updatedMerch) throws SQLException {
-        List<Object> paramList = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("UPDATE [dbo].[Merchandise] SET\n");
-
-        if (updatedMerch.getSeries() != null) {
-            sql.append("[seriesID] = ?,\n");
-            paramList.add(updatedMerch.getSeries().getSeriesID());
-        }
-
-        if (updatedMerch.getCharacter() != null) {
-            sql.append("[characterID] = ?,\n");
-            paramList.add(updatedMerch.getCharacter().getCharacterID());
-        }
-
-        if (updatedMerch.getBrand() != null) {
-            sql.append("[brandID] = ?,\n");
-            paramList.add(updatedMerch.getBrand().getBrandID());
-        }
-
-        sql.append("[size] = ?, [scaleLevel] = ?, [material] = ? WHERE [merchandiseID] = ?\n");
-        paramList.add(updatedMerch.getSize());
-        paramList.add(updatedMerch.getScaleLevel());
-        paramList.add(updatedMerch.getMaterial());
-        paramList.add(updatedMerch.getProductID());
-
-        Object[] params = paramList.toArray();
-
-        return context.exeNonQuery(sql.toString(), params) > 0;
-    }
-
-    public boolean updateProducts(Product updatedProduct) {
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        //WIP
-        return true;
     }
 
     public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
@@ -1590,20 +2009,159 @@ public class ProductDAO {
         return context.exeNonQuery(sql, params) > 0;
     }
 
-    public static void main(String[] args) throws SQLException {
-        ProductDAO productDAO = new ProductDAO();
-//        try ( Connection connection = productDAO.context.getConnection()) {
-//            connection.setAutoCommit(false);
-//            SimpleEntry<String, Object[]> stmtEntry;
-//
-//            stmtEntry = productDAO.generateInsertStatement(new Object[]{new Creator().setCreatorName("sayaka anuman").setCreatorRole("author")}, "creator");
-//            int id = productDAO.context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), true);
-//            System.out.println(id);
-//            connection.setAutoCommit(true);
-//        } catch (SQLException ex) {
-//            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        System.out.println(productDAO.isSoldOutOrPreOrder(116));
+    public Map<Supplier, List<ImportItem>> getPendingImportMapByProductID(int productID) throws SQLException {
+        String sql = "SELECT ii.*, \n"
+                + "       p.productName, \n"
+                + "       p.specialFilter, \n"
+                + "       p.releaseDate, \n"
+                + "       s.supplierName\n"
+                + "FROM ImportItem AS ii\n"
+                + "INNER JOIN Product AS p ON ii.productID = p.productID\n"
+                + "INNER JOIN Supplier AS s ON ii.supplierID = s.supplierID\n"
+                + "WHERE ii.productID = ? AND ii.isImported = 0";
+
+        Object[] params = {productID};
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            Map<Supplier, List<ImportItem>> importMap = new HashMap<>();
+            while (rs.next()) {
+                LocalDate importDate = rs.getDate("importDate") != null ? rs.getDate("importDate").toLocalDate() : LocalDate.EPOCH;
+                LocalDate releaseDate = rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX;
+                Supplier supplier = new Supplier(rs.getInt("supplierID"), rs.getString("supplierName"));
+                ImportItem item = new ImportItem()
+                        .setImportItemID(rs.getInt("importItemID"))
+                        .setProduct(new Product().setProductID(rs.getInt("productID")).setProductName(rs.getString("productName"))
+                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate))
+                        .setSupplier(supplier)
+                        .setImportDate(importDate)
+                        .setImportPrice(rs.getDouble("importPrice"))
+                        .setImportQuantity(rs.getInt("importQuantity"))
+                        .setIsImported(rs.getBoolean("isImported"));
+
+                importMap.computeIfAbsent(supplier, key -> new ArrayList<>()).add(item);
+            }
+
+            return importMap;
+        }
+    }
+
+    public boolean importProducts(List<ImportItem> items) throws SQLException {
+        if (items == null) {
+            throw new IllegalArgumentException("Cannot import null items!");
+        }
+
+        Connection connection = null;
+        try {
+            connection = context.getConnection();
+            connection.setAutoCommit(false);
+            SimpleEntry<String, Object[]> stmtEntry;
+            ImportItem[] itemArr = items.toArray(ImportItem[]::new);
+
+            stmtEntry = generateUpdateStatement(itemArr, "ImportItem");
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                throw new SQLException("Failed to update import status!");
+            }
+
+            stmtEntry = generateUpdateStatement(itemArr, "ImportedProduct");
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                throw new SQLException("Failed to update product info after import!");
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (Exception e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    e.addSuppressed(ex);
+                }
+
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true); // Restore auto-commit
+                    connection.close();
+                } catch (SQLException e) {
+                    throw e;
+                }
+            }
+
+        }
+    }
+
+    public List<Product> getAllProductsForQueueing() throws SQLException {
+        String sql = "SELECT productID, \n"
+                + "       productName, \n"
+                + "       stockCount, \n"
+                + "       releaseDate\n"
+                + "FROM Product\n"
+                + "WHERE releaseDate <= DATEADD(DAY, 30, GETDATE())\n"
+                + "ORDER BY stockCount ASC, \n"
+                + "         DATEDIFF(DAY, releaseDate, GETDATE()) ASC";
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
+            List<Product> productList = new ArrayList<>();
+            while (rs.next()) {
+                productList.add(new Product().setProductID(rs.getInt("productID"))
+                        .setProductName(rs.getString("productName"))
+                        .setStockCount(rs.getInt("stockCount"))
+                        .setReleaseDate(rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX));
+            }
+            return productList;
+        }
+
+    }
+
+    public List<Supplier> getAllSuppliers() throws SQLException {
+        String sql = "SELECT supplierID, supplierName FROM Supplier";
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
+            List<Supplier> supplierList = new ArrayList<>();
+            while (rs.next()) {
+                supplierList.add(new Supplier(rs.getInt("supplierID"), rs.getString("supplierName")));
+            }
+            return supplierList;
+        }
+    }
+
+    public boolean queueImport(ImportItem queuedItem) throws SQLException {
+        String sql = "INSERT INTO ImportItem (productID, supplierID, importPrice, "
+                + "importQuantity, importDate, isImported) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+
+        Object[] params = {
+            queuedItem.getProduct().getProductID(),
+            queuedItem.getSupplier().getSupplierID(),
+            queuedItem.getImportPrice(),
+            queuedItem.getImportQuantity(),
+            queuedItem.getImportDate(),
+            queuedItem.isIsImported()
+        };
+
+        return context.exeNonQuery(sql, params) > 0;
+    }
+
+    public static void main(String[] args) {
+        try {
+            ProductDAO productDAO = new ProductDAO();
+            // Checking the final map
+            while (true) {
+                Scanner sc = new Scanner(System.in);
+                System.out.print("Enter keywords: ");
+                String i = sc.nextLine();
+                System.out.println(i);
+                System.out.println(productDAO.formatQueryBroad(i)); // Output: {1=[Item A, Item B]}
+                System.out.println(productDAO.formatQueryTight(i, "AND")); // Output: {1=[Item A, Item B]}
+                if (i.equalsIgnoreCase("break")) {
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

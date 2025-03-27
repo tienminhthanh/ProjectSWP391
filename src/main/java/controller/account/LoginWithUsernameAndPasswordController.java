@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import model.Admin;
-import model.Customer;
 
 /**
  * Servlet responsible for handling user login.
@@ -49,7 +47,6 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //String currentURL = request.getParameter("currentURL");
         String currentURL = request.getParameter("currentURL") != null && !request.getParameter("currentURL").isBlank() ? request.getParameter("currentURL") : "home";
         AccountLib lib = new AccountLib(); // Utility class for password hashing
 
@@ -79,7 +76,9 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                     }
 
                     // Lock the account if login fails 5 times (only for non-admin users)
-                    if (!"admin".equals(account.getRole()) && failedAttempts >= 5) {
+                    if (failedAttempts >= 5) {
+                        // Lock the account in the database
+                        accountDAO.updateAccountStatus(username, false);  // Method to deactivate the account in the database
                         response.sendRedirect("deleteAccount?username=" + username);
                         return;
                     }
@@ -128,18 +127,18 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                         failedAttempts++;
                         session.setAttribute("failedAttempts", failedAttempts);
 
-                        // Lock the account if login fails 5 times (only for non-admin users)
-                        if (!"admin".equals(account.getRole()) || !"staff".equals(account.getRole()) || !"".equals(account.getRole()) && failedAttempts >= 5) {
-                            response.sendRedirect("deleteAccount?username=" + username);
-                            return;
-                        }
-
-                        // Display remaining attempts
                         if (!"admin".equals(account.getRole())) {
                             request.setAttribute("errorMessage", "Wrong password! You have " + (5 - failedAttempts) + " attempts left.");
+                            if (failedAttempts >= 5) {
+                                // Lock the account in the database when failed attempts reach 5
+                                accountDAO.updateAccountStatus(username, false);
+                                response.sendRedirect("deleteAccount?username=" + username);
+                                return;
+                            }
                         } else {
                             request.setAttribute("errorMessage", "Wrong password!");
                         }
+
                         forwardToLoginPage(request, response, username);
                     }
                 } else { // Account is locked or deactivated
@@ -163,10 +162,4 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         request.setAttribute("username", username);
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
-
-    public static void main(String[] args) {
-        // Simulate the servlet process manually
-
-    }
-
 }

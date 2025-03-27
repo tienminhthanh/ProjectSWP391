@@ -6,7 +6,6 @@ package controller.event;
 
 import dao.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -68,10 +67,10 @@ public class EventListController extends HttpServlet {
                 eventProductCountMap.put(eventID, productCount);
             }
 
-            Boolean isActive = null;
-            if (isActiveParam != null && !isActiveParam.isEmpty()) {
-                isActive = Boolean.parseBoolean(isActiveParam);
-            }
+//            Boolean isActive = null;
+//            if (isActiveParam != null && !isActiveParam.isEmpty()) {
+//                isActive = Boolean.parseBoolean(isActiveParam);
+//            }
 
             request.setAttribute("EVENT_PRODUCT_COUNT", eventProductCountMap);
             request.setAttribute("currentPage", page);

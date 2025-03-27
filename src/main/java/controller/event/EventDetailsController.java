@@ -6,7 +6,6 @@ package controller.event;
 
 import dao.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,7 +23,9 @@ import model.*;
  *
  * @author ADMIN
  */
-@WebServlet(name = "EventDetailsServlet", urlPatterns = {"/eventDetails"})
+@WebServlet({
+    "/eventDetails", "/eventDetailsCus"
+})
 public class EventDetailsController extends HttpServlet {
 
     private final String EVENT_DETAILS_ADMIN_PAGE = "eventDetailsAdmin.jsp";
@@ -42,7 +43,8 @@ public class EventDetailsController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        /* TODO output your page here. You may use following sample code. */
+        String path = request.getServletPath();
+
         String url = EVENT_DETAILS_ADMIN_PAGE;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
@@ -52,8 +54,7 @@ public class EventDetailsController extends HttpServlet {
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
 
         try {
-            String action = request.getParameter("action");
-            if (action == null) {
+            if (path.equals("/eventDetails")) {
                 int id = Integer.parseInt(request.getParameter("eventId"));
                 Event eventDetails = eDao.getEventByID(id);
                 request.setAttribute("EVENT_DETAILS", eventDetails);
@@ -76,7 +77,7 @@ public class EventDetailsController extends HttpServlet {
                 LocalDate dateEnd = createDate.plusDays(eventDetails.getDuration());
                 request.setAttribute("dateEnd", dateEnd);
 
-            } else if (action.equals("home")) {
+            } else if (path.equals("/eventDetailsCus")) {
                 ProductDAO productDAO = new ProductDAO();
 
                 String banner = request.getParameter("banner");
@@ -87,8 +88,13 @@ public class EventDetailsController extends HttpServlet {
 
                 Event event = eDao.getEventByBanner(banner);
                 request.setAttribute("eventDetails", event);
-
+                EventProductDAO epDAO = new EventProductDAO();
+//                List<EventProduct> listEventProduct = null;
+//                if (!event.isExpiry()) {
+//                    epDAO.deleteListProductInEvent(event.getEventID());
+//                } else {
                 List<EventProduct> listEventProduct = epDao.getListEventProduct(event.getEventID());
+//                }
                 List<Product> updatedProductList = new ArrayList<>();
                 for (EventProduct ep : listEventProduct) {
                     Product product = productDAO.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID

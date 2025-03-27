@@ -1,4 +1,3 @@
-
 package controller.chat;
 
 import dao.ChatDAO;
@@ -17,15 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @WebServlet(name = "ChatController", urlPatterns = {"/chat"})
 public class ChatController extends HttpServlet {
 
     private static final int ADMIN_ID = 1;
     private ChatDAO chatDAO;
-    private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
+//    private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
 
     @Override
     public void init() throws ServletException {
@@ -40,6 +37,8 @@ public class ChatController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Account account = (Account) request.getSession().getAttribute("account");
+        Chat chat = new Chat();
+
         if (account == null) {
             response.sendRedirect("login");
             return;
@@ -64,14 +63,28 @@ public class ChatController extends HttpServlet {
                 if (customerIDParam != null && !customerIDParam.isEmpty()) {
                     int customerID = Integer.parseInt(customerIDParam);
                     List<Chat> chats = chatDAO.getChatsBetweenUsers(ADMIN_ID, customerID);
+                    chat.setSenderID(ADMIN_ID);
+                    chat.setReceiverID(customerID);
+
                     request.setAttribute("chats", chats);
                     request.setAttribute("selectedCustomerID", customerID);
                 }
-                request.getRequestDispatcher("/chatList.jsp").forward(request, response);
+                if (chatDAO.updateStatusSeen(ADMIN_ID, chat)) {
+                    request.getRequestDispatcher("/chatList.jsp").forward(request, response);
+                } else {
+                    request.getRequestDispatcher("/chatList.jsp").forward(request, response);
+                }
+
             } else {
                 List<Chat> chats = chatDAO.getChatsBetweenUsers(userID, ADMIN_ID);
+                chat.setReceiverID(ADMIN_ID);
+                chat.setSenderID(userID);
                 request.setAttribute("chats", chats);
-                request.getRequestDispatcher("/chat.jsp").forward(request, response);
+                if (chatDAO.updateStatusSeen(ADMIN_ID, chat)) {
+                    request.getRequestDispatcher("/chat.jsp").forward(request, response);
+                } else {
+                    request.getRequestDispatcher("/chat.jsp").forward(request, response);
+                }
             }
         } catch (SQLException e) {
             throw new ServletException("Failed to retrieve chat data", e);
@@ -84,10 +97,11 @@ public class ChatController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-
+        
         Account account = (Account) request.getSession().getAttribute("account");
-        if (account == null) {
-            throw new ServletException("User not logged in");
+        if (account.getRole() == null || account.getRole().trim().isEmpty()) {
+            response.sendRedirect("login");
+            return;
         }
         int userID = account.getAccountID();
         String userRole = account.getRole();

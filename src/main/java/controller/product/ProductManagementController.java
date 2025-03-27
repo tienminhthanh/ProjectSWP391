@@ -4,6 +4,9 @@
  */
 package controller.product;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
 import dao.EventDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
@@ -14,35 +17,29 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Account;
-import model.Book;
-import model.Brand;
-import model.Category;
-import model.Creator;
-import model.Event;
-import model.Genre;
-import model.Merchandise;
-import model.OGCharacter;
-import model.Product;
-import model.Publisher;
-import model.Series;
+import model.*;
 import utils.LoggingConfig;
 
 /**
  *
  * @author anhkc
  */
-@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus"})
+@WebServlet({"/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus", "/importProduct", "/queueImport"})
 public class ProductManagementController extends HttpServlet {
 
     private static final Logger LOGGER = LoggingConfig.getLogger(ProductManagementController.class);
@@ -88,6 +85,12 @@ public class ProductManagementController extends HttpServlet {
             case "/changeProductStatus":
                 manageStatus(request, response);
                 break;
+            case "/importProduct":
+                manageImport(request, response);
+                break;
+            case "/queueImport":
+                manageQueue(request, response);
+                break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid product management url: " + path);
                 break;
@@ -96,7 +99,7 @@ public class ProductManagementController extends HttpServlet {
 
     private void manageList(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //Three items per page
+        //Five items per page
         int pageSize = 5;
         String pageStr = request.getParameter("page");
         String query = request.getParameter("query");
@@ -107,7 +110,8 @@ public class ProductManagementController extends HttpServlet {
         //Prevent unauthorized access
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
-        if (currentAccount == null || (!currentAccount.getRole().equals("admin") && !currentAccount.getRole().equals("staff"))) {
+        boolean isManagement = currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff");
+        if (currentAccount == null || !isManagement) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -154,7 +158,8 @@ public class ProductManagementController extends HttpServlet {
         //Prevent unauthorized access
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
-        if (currentAccount == null || (!currentAccount.getRole().equals("admin") && !currentAccount.getRole().equals("staff"))) {
+        boolean isManagement = currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff");
+        if (currentAccount == null || !isManagement) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -226,43 +231,213 @@ public class ProductManagementController extends HttpServlet {
         }
 
         if (action == null) {
-            retrieveProduct(request, response);
-            return;
+            retrieveProductForUpdate(request, response);
         } else {
 
-            //Update general info
-            //
-            //For related entities, keep the input type=text, then use either one of these 2 approaches:
-            //Easy (maybe) but require more database connection:
-            //Use where contains(name,formatQueryTight('inputText')) to dynammically fetch full-text search from database
-            //After submission, check if exist ( double check )
-            //If not, add new
-            //If exist -> re-associate if the association is new
-            //NOT includes update existing entries of related entities
-            //Difficult, less database connection:
-            //Use the entityMap in applicationScope and similarity check with Levenshtein and Jaro-Winkler instead of database search
-            //After submission, check if exist with full-text search ( double check )
-            //If not, add new
-            //If exist -> re-associate if the association is new
-            //NOT includes update existing entries of related entities
-            switch (action) {
-                case "updateBook":
-//                    updateBook(request, response, paramMap, newBook);
-                    break;
-                case "updateMerch":
-//                    updateMerch(request, response, paramMap, newBook);
-                    break;
-                default:
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid product management action: " + action);
+            Map<String, String[]> paramMap = request.getParameterMap() != null ? request.getParameterMap() : new HashMap<>();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            List<Object> dataList = new ArrayList<>();
+            List<Object> tempObjects = new ArrayList<>();
+            int associatedCounter = 0;
+
+            try {
+                //Instantiate updatedProduct
+                Product updatedProduct = action.equals("updateBook") ? new Book()
+                        : action.equals("updateMerch") ? new Merchandise()
+                        : new Product();
+
+                updatedProduct.setProductID(Integer.parseInt(paramMap.get("productID")[0]))
+                        .setProductName(paramMap.get("productName")[0])
+                        .setPrice(1000 * Double.parseDouble(paramMap.get("price")[0])) //Multiply prices by 1000
+                        .setStockCount(Integer.parseInt(paramMap.get("stockCount")[0]))
+                        .setSpecificCategory(new Category().setCategoryID(Integer.parseInt(paramMap.get("category")[0])))
+                        .setSpecialFilter(paramMap.get("specialFilter")[0])
+                        .setDescription(paramMap.get("description")[0])
+                        .setReleaseDate(LocalDate.parse(paramMap.get("releaseDate")[0], formatter))
+                        .setIsActive(Boolean.parseBoolean(paramMap.get("isActive")[0]))
+                        .setKeywords(paramMap.get("keywords")[0])
+                        .setImageURL(paramMap.get("imageURL")[0])
+                        .setAdminID(currentAccount.getAccountID())
+                        .setGeneralCategory(action.equals("updateBook") ? "book"
+                                : action.equals("updateMerch") ? "merch" : "unset");
+
+                //Handling creators
+                String[] associatedCreatorIDs = paramMap.get("associatedCreatorID");
+                Set<String> creIDSet = associatedCreatorIDs != null
+                        ? new HashSet<>(Arrays.asList(associatedCreatorIDs))
+                        : new HashSet<>();
+                String[] creatorNames = paramMap.get("creatorName");
+                String[] creatorRoles = paramMap.get("creatorRole");
+
+                for (int i = 0; i < creatorNames.length; i++) {
+                    //Skip if name is empty
+                    if (creatorNames[i].trim().isEmpty()) {
+                        continue;
+                    }
+
+                    Creator creator = new Creator();
+                    int creatorID = productDAO.getCreatorIDByNameAndRole(creatorNames[i], creatorRoles[i]);
+
+                    if (creatorID == 0) {
+                        //New creator -> add new + associate
+                        creator.setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]);
+                    } else if (creIDSet.contains(String.valueOf(creatorID))) {
+                        //Existing creator that already associated -> mark them
+                        associatedCounter++;
+                        creator.setCreatorID(creatorID).setCreatorName(creatorNames[i] + "(associated)").setCreatorRole(creatorRoles[i]);
+                    } else {
+                        //Existing creator that not associated yet-> associate
+                        creator.setCreatorID(creatorID).setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]);
+                    }
+
+                    tempObjects.add(creator);
+
+                }
+                //Only add if there are changes
+                if (associatedCounter < creIDSet.size() || tempObjects.size() != creIDSet.size()) {
+                    dataList.addAll(tempObjects);
+                }
+
+                //Reset after done with an entity
+                tempObjects.clear();
+                associatedCounter = 0;
+
+                //Type-specific atributes
+                if (updatedProduct instanceof Book) {
+                    Book updatedBook = (Book) updatedProduct;
+                    updatedBook.setDuration(paramMap.get("duration")[0]);
+
+                    String[] associatedGenreIDs = paramMap.get("associatedGenreID");
+                    Set<String> genIDSet = associatedGenreIDs != null
+                            ? new HashSet<>(Arrays.asList(associatedGenreIDs))
+                            : new HashSet<>();
+                    String[] genres = paramMap.get("genre");
+                    genres = genres != null ? genres : new String[0];
+                    if (genres.length > 0) {
+                        for (String genIdStr : genres) {
+                            int genreID = Integer.parseInt(genIdStr);
+                            Genre genre = new Genre().setGenreID(genreID).setGenreName("");
+                            if (genIDSet.contains(String.valueOf(genreID))) {
+                                //Mark if associated
+                                associatedCounter++;
+                                genre.setGenreName("(associated)");
+                            }
+                            tempObjects.add(genre);
+                        }
+
+                        //Only add if there are changes
+                        if (associatedCounter < genIDSet.size() || tempObjects.size() != genIDSet.size()) {
+                            dataList.addAll(tempObjects);
+                        }
+                    } else {
+                        //Delete all
+                        dataList.add(new Genre().setGenreID(Integer.parseInt(associatedGenreIDs[0])).setGenreName("(deleteAll)"));
+                    }
+
+                    String associatedPublisherID = paramMap.get("associatedPublisherID")[0];
+                    associatedPublisherID = associatedPublisherID != null ? associatedPublisherID : "";
+                    if (!paramMap.get("publisherName")[0].trim().isEmpty()) {
+
+                        Publisher publisher = new Publisher().setPublisherName(paramMap.get("publisherName")[0]);
+                        int publisherID = productDAO.getPublisherIDByName(paramMap.get("publisherName")[0]);
+
+                        if (publisherID > 0) {
+                            //Set if exist
+                            publisher.setPublisherID(publisherID).setPublisherName(paramMap.get("publisherName")[0]);
+                        }
+
+                        dataList.add(publisher);
+                    }
+
+                    if (productDAO.updateProducts(updatedBook, dataList.toArray())) {
+                        LOGGER.log(Level.INFO, "The Book has been updated successfully!");
+                        request.setAttribute("message", "The Book has been updated successfully!");
+                    } else {
+                        LOGGER.log(Level.SEVERE, "Failed to update the product!");
+                        request.setAttribute("errorMessage", "Failed to update the product!");
+                    }
+
+                } else if (updatedProduct instanceof Merchandise) {
+                    Merchandise updatedMerch = (Merchandise) updatedProduct;
+                    //set String attributes
+                    updatedMerch.setScaleLevel(paramMap.get("scaleLevel")[0])
+                            .setMaterial(paramMap.get("material")[0])
+                            .setSize(paramMap.get("size")[0]);
+
+                    //Handle series,character,brand
+                    String associatedMerchAttrID = paramMap.get("associatedSeriesID")[0];
+                    associatedMerchAttrID = associatedMerchAttrID != null ? associatedMerchAttrID : "";
+                    if (!paramMap.get("seriesName")[0].trim().isEmpty()) {
+                        Series series = new Series().setSeriesName(paramMap.get("seriesName")[0]);
+                        int id = productDAO.getSeriesIDByName(paramMap.get("seriesName")[0]);
+
+                        if (id > 0 ) {
+                            series.setSeriesID(id);
+                        }
+
+                        dataList.add(series);
+                    }
+
+                    associatedMerchAttrID = paramMap.get("associatedCharacterID")[0];
+                    associatedMerchAttrID = associatedMerchAttrID != null ? associatedMerchAttrID : "";
+                    if (!paramMap.get("characterName")[0].trim().isEmpty()) {
+                        OGCharacter character = new OGCharacter().setCharacterName(paramMap.get("characterName")[0]);
+                        int id = productDAO.getCharacterIDByName(paramMap.get("characterName")[0]);
+
+                        if (id > 0 ) {
+                            character.setCharacterID(id);
+                        }
+
+                        dataList.add(character);
+                    }
+
+                    associatedMerchAttrID = paramMap.get("associatedBrandID")[0];
+                    associatedMerchAttrID = associatedMerchAttrID != null ? associatedMerchAttrID : "";
+                    if (!paramMap.get("brandName")[0].trim().isEmpty()) {
+                        Brand brand = new Brand().setBrandName(paramMap.get("brandName")[0]);
+                        int id = productDAO.getBrandIDByName(paramMap.get("brandName")[0]);
+
+                        if (id > 0 ) {
+                            brand.setBrandID(id);
+                        }
+                        dataList.add(brand);
+                    }
+
+                    if (productDAO.updateProducts(updatedMerch, dataList.toArray())) {
+                        LOGGER.log(Level.INFO, "The Merch has been updated successfully!");
+                        request.setAttribute("message", "The Merch has been updated successfully!");
+                    } else {
+                        LOGGER.log(Level.SEVERE, "Failed to update the product!");
+                        request.setAttribute("errorMessage", "Failed to update the product!");
+                    }
+                }
+
+                //Ensure application scope attributes are up to date
+                getServletContext().setAttribute("creators", productDAO.getAllCreators());
+                getServletContext().setAttribute("publishers", productDAO.getAllPublishers());
+                getServletContext().setAttribute("brands", productDAO.getAllBrands());
+                getServletContext().setAttribute("series", productDAO.getAllSeries());
+                getServletContext().setAttribute("characters", productDAO.getAllCharacters());
+
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
+
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+
+                request.setAttribute("errorMessage", "Failed to update the product due to:<br>" + e.toString());
             }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
         }
     }
 
-    private void retrieveProduct(HttpServletRequest request, HttpServletResponse response)
+    private void retrieveProductForUpdate(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //Retrieve product info from database based on id and generalCategory (product type)
-        //Set the formAction to ensure the page show the correct form
-
         String productID = request.getParameter("id");
         String type = request.getParameter("type");
         try {
@@ -287,10 +462,9 @@ public class ProductManagementController extends HttpServlet {
                     request.setAttribute("genreList", genreList);
                 }
 
-                //Check if product is currently featured in an event
                 request.setAttribute("product", requestedProduct);
                 request.setAttribute("type", type);
-
+                //Set the formAction to ensure the page show the correct form
                 request.setAttribute("formAction", "update");
                 request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
             }
@@ -301,18 +475,6 @@ public class ProductManagementController extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
-    }
-
-    private void updateBook(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
-            throws Exception {
-//       Handle book specific attributes and related entities
-
-    }
-
-    private void updateMerch(HttpServletRequest request, HttpServletResponse response, Map<String, String[]> paramMap, Book newBook)
-            throws Exception {
-
-//       Handle merch specific attributes and related entities
     }
 
     private void manageAdd(HttpServletRequest request, HttpServletResponse response)
@@ -343,7 +505,7 @@ public class ProductManagementController extends HttpServlet {
                         : new Product();
 
                 newProduct.setProductName(paramMap.get("productName")[0])
-                        .setPrice(1000 * Integer.parseInt(paramMap.get("price")[0])) //Multiply prices by 1000
+                        .setPrice(1000 * Double.parseDouble(paramMap.get("price")[0])) //Multiply prices by 1000
                         .setStockCount(Integer.parseInt(paramMap.get("stockCount")[0]))
                         .setSpecificCategory(new Category().setCategoryID(Integer.parseInt(paramMap.get("category")[0])))
                         .setSpecialFilter(paramMap.get("specialFilter")[0])
@@ -365,24 +527,60 @@ public class ProductManagementController extends HttpServlet {
                         continue;
                     }
 
-                    dataList.add(new Creator().setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]));
+                    //Instantitate creator without id
+                    Creator creator = new Creator().setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]);
+
+                    //Check if exist
+                    int id = productDAO.getCreatorIDByNameAndRole(creatorNames[i], creatorRoles[i]);
+
+                    //If exist => assign the found id to creator
+                    if (id > 0) {
+                        creator.setCreatorID(id);
+                    }
+
+                    //Add to dataList
+                    dataList.add(creator);
+
                 }
 
                 //Type-specific atributes
                 if (newProduct instanceof Book) {
                     Book newBook = (Book) newProduct;
+
+                    //Set duration
                     newBook.setDuration(paramMap.get("duration")[0]);
 
-                    String[] genres = paramMap.get("genre") != null ? paramMap.get("genre") : new String[0];
-                    for (String genre : genres) {
-                        int genreID = Integer.parseInt(genre);
-                        dataList.add(new Genre().setGenreID(genreID));
+                    //Handle genres
+                    String[] genres = paramMap.get("genre");
+                    if (genres != null) {
+                        for (String genIdStr : genres) {
+                            //Parse to ensure genIdStr is an integer
+                            int genreID = Integer.parseInt(genIdStr);
+                            //Assign id if valid
+                            Genre genre = new Genre().setGenreID(genreID);
+                            //Add to dataList
+                            dataList.add(genre);
+                        }
                     }
 
+                    //Hanlde publisher
                     if (!paramMap.get("publisherName")[0].trim().isEmpty()) {
-                        dataList.add(new Publisher().setPublisherName(paramMap.get("publisherName")[0]));
+                        //Instantiate publisher without id
+                        Publisher publisher = new Publisher().setPublisherName(paramMap.get("publisherName")[0]);
+
+                        //Check if exist
+                        int id = productDAO.getPublisherIDByName(paramMap.get("publisherName")[0]);
+
+                        //If exist => assign id to publisher
+                        if (id > 0) {
+                            publisher.setPublisherID(id);
+                        }
+
+                        //Add to dataList
+                        dataList.add(publisher);
                     }
 
+                    //Add new book and its related data
                     if (productDAO.addNewProducts(newBook, dataList.toArray())) {
                         LOGGER.log(Level.INFO, "A new Book has been added successfully!");
                         request.setAttribute("message", "A new Book has been added successfully!");
@@ -400,15 +598,43 @@ public class ProductManagementController extends HttpServlet {
 
                     //Handle series,character,brand
                     if (!paramMap.get("seriesName")[0].trim().isEmpty()) {
-                        dataList.add(new Series().setSeriesName(paramMap.get("seriesName")[0]));
+                        //Instantite series without id
+                        Series series = new Series().setSeriesName(paramMap.get("seriesName")[0]);
+                        //Check if exist
+                        int id = productDAO.getSeriesIDByName(paramMap.get("seriesName")[0]);
+                        //If exist => assign id to series
+                        if (id > 0) {
+                            series.setSeriesID(id);
+                        }
+                        //Add to dataList
+                        dataList.add(series);
                     }
                     if (!paramMap.get("characterName")[0].trim().isEmpty()) {
-                        dataList.add(new OGCharacter().setCharacterName(paramMap.get("characterName")[0]));
+                        //Instantiate character without id
+                        OGCharacter character = new OGCharacter().setCharacterName(paramMap.get("characterName")[0]);
+                        //Check if exist
+                        int id = productDAO.getCharacterIDByName(paramMap.get("characterName")[0]);
+                        //If exist => assign id to character
+                        if (id > 0) {
+                            character.setCharacterID(id);
+                        }
+                        //Add to dataList
+                        dataList.add(character);
                     }
                     if (!paramMap.get("brandName")[0].trim().isEmpty()) {
-                        dataList.add(new Brand().setBrandName(paramMap.get("brandName")[0]));
+                        //Instantiate brand without id
+                        Brand brand = new Brand().setBrandName(paramMap.get("brandName")[0]);
+                        //Check if exist
+                        int id = productDAO.getBrandIDByName(paramMap.get("brandName")[0]);
+                        //If exist = > assign id to brand
+                        if (id > 0) {
+                            brand.setBrandID(id);
+                        }
+                        //Add to dataList
+                        dataList.add(brand);
                     }
 
+                    //Add new merch and its related data
                     if (productDAO.addNewProducts(newMerch, dataList.toArray())) {
                         LOGGER.log(Level.INFO, "A new Merchandise has been added successfully!");
                         request.setAttribute("message", "A new Merchandise has been added successfully!");
@@ -427,6 +653,13 @@ public class ProductManagementController extends HttpServlet {
 
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.toString(), e);
+
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+
                 request.setAttribute("errorMessage", "Failed to add new product due to:<br>" + e.toString());
             }
         }
@@ -468,12 +701,176 @@ public class ProductManagementController extends HttpServlet {
             String message = transactionState ? "The product has been " + action + "d" + " successfully"
                     : "Failed to " + action + " the product!";
             request.setAttribute(transactionState ? "successfulMessage" : "failedMessage", message);
-
+            
             request.getRequestDispatcher("manageProductList").forward(request, response);
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error: " + e.getMessage(), e);
             request.setAttribute("errorMessage", "An error occurred while changing product status: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+    }
+
+    private void manageImport(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        //Prevent unauthorized access
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        if (action == null) {
+            retrieveProductsForImport(request, response);
+        } else {
+            try {
+                // Get the encoded JSON string from request parameters
+                String[] encodedJsons = request.getParameterValues("importItem");
+                int productID = Integer.parseInt(request.getParameter("productID"));
+
+                if (encodedJsons == null) {
+                    throw new Exception("Cannot retrieve import data from form submission!");
+                }
+
+                List<ImportItem> items = new ArrayList<>();
+                for (String encodedJson : encodedJsons) {
+                    // Decode the URL-encoded JSON
+                    String decodedJson = URLDecoder.decode(encodedJson, StandardCharsets.UTF_8);
+                    // Parse JSON into Java object
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ImportItem importItem = objectMapper.readValue(decodedJson, ImportItem.class);
+                    if (importItem != null) {
+                        items.add(importItem);
+                    }
+                }
+                if (productDAO.importProducts(items)) {
+                    LOGGER.log(Level.INFO, "Products has been imported to inventory successfully! (ID:{0})", productID);
+                    request.setAttribute("message", "The product has been imported to inventory successfully! (ID:" + productID + ")");
+                } else {
+                    LOGGER.log(Level.SEVERE, "Failed to import products!");
+                    request.setAttribute("errorMessage", "Failed to import the product!");
+                }
+
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+                request.setAttribute("errorMessage", "Failed to import the product due to:<br>" + e.toString());
+
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
+        }
+
+    }
+
+    private void retrieveProductsForImport(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        //Retrieve import info from database based on id 
+        String productID = request.getParameter("id");
+        try {
+            int id = Integer.parseInt(productID);
+
+            Map<Supplier, List<ImportItem>> importMap = productDAO.getPendingImportMapByProductID(id);
+            if (importMap.isEmpty()) {
+                request.setAttribute("errorMessage", "No pending import found for this product (ID:" + id + ").");
+            } else {
+                String json = new Gson().toJson(importMap);
+                request.setAttribute("importMap", importMap);
+                request.setAttribute("jsonMap", json);
+                //Set the formAction to ensure the page show the correct form
+                request.setAttribute("formAction", "import");
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while fetching import info of the product: {0}", e.toString());
+            request.setAttribute("errorMessage", "An error occurred while fetching import info of the product: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+
+    }
+
+    private void manageQueue(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        //Prevent unauthorized access
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        if (action == null) {
+            retrieveProductsAndSuppliers(request, response);
+            return;
+        } else {
+            try {
+                int productID = Integer.parseInt(request.getParameter("product"));
+                int supplierID = Integer.parseInt(request.getParameter("supplier"));
+                double price = Double.parseDouble(request.getParameter("price"));
+                int quantity = Integer.parseInt(request.getParameter("quantity"));
+
+                ImportItem queuedItem = new ImportItem()
+                        .setProduct(new Product().setProductID(productID))
+                        .setSupplier(new Supplier().setSupplierID(supplierID))
+                        .setImportDate(LocalDate.now())
+                        .setImportPrice(price * 1000)
+                        .setImportQuantity(quantity)
+                        .setIsImported(false);
+
+                if (productDAO.queueImport(queuedItem)) {
+                    LOGGER.log(Level.INFO, "A new import has been queued successfully! (productID:{0} - supplierID:{1})",
+                            new Object[]{productID, supplierID});
+                    request.setAttribute("message", "A new import has been queued successfully! (productID:" + productID + " - supplierID:" + supplierID + ")");
+                } else {
+                    LOGGER.log(Level.SEVERE, "Failed to queue the import!");
+                    request.setAttribute("errorMessage", "Failed to queue the import!");
+                }
+
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.toString(), e);
+                // Retrieve and log suppressed exceptions
+                Throwable[] suppressed = e.getSuppressed();
+                for (Throwable sup : suppressed) {
+                    LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
+                }
+                request.setAttribute("errorMessage", "Failed to queue the import due to:<br>" + e.toString());
+
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
+        }
+
+    }
+
+    private void retrieveProductsAndSuppliers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            List<Product> productList = productDAO.getAllProductsForQueueing();
+            List<Supplier> supplierList = productDAO.getAllSuppliers();
+
+            if (productList.isEmpty() || supplierList.isEmpty()) {
+                request.setAttribute("errorMessage", "Failed to retrieve sufficient information for queueing imports!");
+            } else {
+                request.setAttribute("productList", productList);
+                request.setAttribute("supplierList", supplierList);
+                request.setAttribute("formAction", "queue");
+
+            }
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while fetching products and suppliers for queueing imports", e);
+            request.setAttribute("errorMessage", "An error occurred while fetching products and suppliers for queueing imports: " + e.getMessage());
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
@@ -495,4 +892,5 @@ public class ProductManagementController extends HttpServlet {
     public String getServletInfo() {
         return "Manages product-related operations";
     }// </editor-fold>
+
 }

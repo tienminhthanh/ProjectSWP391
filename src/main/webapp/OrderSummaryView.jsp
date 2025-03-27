@@ -155,12 +155,13 @@
                 <div class="content">
                     <div class="left-content" style="width: 60%">
                         <h2>Shipping Information</h2> <hr>
-                        <form id="orderForm" action="OrderController" method="POST" onsubmit="return updateOrderTotal()">
+                        <form id="orderForm" action="OrderController" method="POST" 
+                              onsubmit="updateOrderTotal(); updatePaymentAction();">
                             <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
                             <input type="hidden" id="selectedAddress" name="selectedAddress" value="">
                             <div class="input-custom">
                                 <label for="name">Full Name</label><br>
-                                <input type="text" name="name" id="name" value="${fullName}" required/>
+                                <input type="text" name="name" id="name" value="${sessionScope.account.firstName}" required/>
                             </div>
                             <label for="name">Address</label><br>
                             <div class="relative">
@@ -189,13 +190,13 @@
                             </div>
                             <div class="input-custom">
                                 <label for="email">Email</label><br>
-                                <input type="text" name="email" id="email" value="${email}" required/>
+                                <input type="text" name="email" id="email" value="${email}" readonly/>
                             </div>
 
                             <div class="payment-custom">
                                 <h2>Payment Method</h2>
                                 <label><input type="radio" name="paymentMethod" value="COD" checked/> Cash on Delivery (COD)</label><br>  
-                                <label><input type="radio" name="paymentMethod" value="VNPay" /> Pay via VNPay </label><br>
+                                <label><input type="radio" name="paymentMethod" value="online" /> Pay via VNPay </label><br>
                             </div> <hr>
 
                             <!-- Voucher Selection -->
@@ -311,8 +312,8 @@
                 var form = document.getElementById("orderForm");
                 var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
 
-                if (paymentMethod === "VNPay") {
-                    form.action = "VNPayController"; // Chuyển hướng sang VNPayController
+                if (paymentMethod === "online") {
+                    form.action = "ajaxServlet"; // Chuyển hướng sang VNPayController
                 } else {
                     form.action = "OrderController"; // Giữ nguyên cho COD
                 }

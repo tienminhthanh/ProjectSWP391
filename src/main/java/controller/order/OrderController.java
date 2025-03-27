@@ -99,8 +99,7 @@ public class OrderController extends HttpServlet {
             for (CartItem item : cartItems) {
                 Product product = null;
                 ProductDAO productDAO = new ProductDAO();
-
-                BigDecimal priceWithQuantity = item.getCartItemPrice().multiply(BigDecimal.valueOf(item.getCartItemQuantity()));
+                BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 subtotal += priceWithQuantity.doubleValue();
                 try {
                     product = productDAO.getProductById(item.getProductID());
@@ -191,6 +190,8 @@ public class OrderController extends HttpServlet {
             ProductDAO productDAO = new ProductDAO();
             Product product = null;
             try {
+                account = accountDAO.getAdditionalInfo(account);
+                session.setAttribute("account", account);
                 listAddress = accountDAO.getAllAddressByCustomerID(account.getAccountID());
                 product = productDAO.getProductById(productID);
             } catch (SQLException ex) {
@@ -204,6 +205,7 @@ public class OrderController extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
             if (product.getDiscountPercentage() > 0) {
                 Double priceWithDiscount = 0.0;
                 priceWithDiscount = product.getPrice() * (100 - product.getDiscountPercentage()) / 100;
@@ -280,6 +282,8 @@ public class OrderController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         String voucherIDParam = request.getParameter("voucherID");
         String selectedAddress = request.getParameter("selectedAddress");
+        String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
+
         OrderDAO orderDAO = new OrderDAO();
         VoucherDAO voucherDAO = new VoucherDAO();
         if (account == null) {
@@ -294,7 +298,11 @@ public class OrderController extends HttpServlet {
         }
         try {
             orderInfo.setCustomerID(account.getAccountID());
-            orderInfo.setDeliveryAddress(selectedAddress);
+            if (selectedAddress != "") {
+                orderInfo.setDeliveryAddress(orderDAO.getAddressDetailByAddressID(Integer.parseInt(selectedAddress)));
+            } else {
+                orderInfo.setDeliveryAddress(defaultDeliveryAddress);
+            }
             orderInfo.setDeliveryOptionID(Integer.parseInt(request.getParameter("shippingOption")));
             orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
             orderInfo.setPreVoucherAmount(orderTotal);
@@ -305,7 +313,7 @@ public class OrderController extends HttpServlet {
             }
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
-                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getCartItemQuantity(), item.getCartItemPrice().intValue());
+                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);

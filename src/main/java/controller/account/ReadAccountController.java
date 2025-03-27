@@ -12,9 +12,12 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Customer;
+import model.DeliveryAddress;
 
 @WebServlet(name = "ReadAccountServlet", urlPatterns = {"/readAccount"})
 public class ReadAccountController extends HttpServlet {
@@ -31,6 +34,7 @@ public class ReadAccountController extends HttpServlet {
             // Retrieve additional information based on the role
             AccountDAO accountDAO = new AccountDAO();
             try {
+
                 account = accountDAO.getAdditionalInfo(account);
             } catch (SQLException ex) {
                 Logger.getLogger(ReadAccountController.class.getName()).log(Level.SEVERE, null, ex);

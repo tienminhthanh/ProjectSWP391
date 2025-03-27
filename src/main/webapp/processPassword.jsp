@@ -50,12 +50,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="bg-gray-200 py-4 w-full">
-            <div class="container mx-auto px-4 text-center text-sm text-gray-600">
-                <p>© WIBOOKS Co.,Ltd.</p>
-            </div>
-        </footer>
-
+       
     </body>
 </html>
