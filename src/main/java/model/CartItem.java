@@ -8,7 +8,6 @@ public class CartItem {
     private int customerID;
     private int productID;
     private int quantity;
-
     private BigDecimal priceWithQuantity;
     private Product product;
 

@@ -6,6 +6,7 @@ package controller.order;
 
 import dao.NotificationDAO;
 import dao.OrderDAO;
+import dao.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -25,6 +26,7 @@ import model.Account;
 import model.DeliveryOption;
 import model.Notification;
 import model.OrderInfo;
+import model.Voucher;
 
 /**
  *
@@ -74,17 +76,20 @@ public class OrderDetailForStaffController extends HttpServlet {
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
         Account accShipper = new Account();
+        Voucher voucher = new Voucher();
         if (account == null) {
             response.sendRedirect("login");
             return;
         }
         OrderDAO orderDAO = new OrderDAO();
+        VoucherDAO voucherDao = new VoucherDAO();
+
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = null;
         List<Account> handlerList = new ArrayList<>();
         String orderID = request.getParameter("id");
-        int valueVoucher = 0;
+        double valueOfVoucher = 0;
         try {
             if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
                 int id = Integer.parseInt(orderID);
@@ -94,7 +99,15 @@ public class OrderDetailForStaffController extends HttpServlet {
                 if (customer != null) {
                     int idcus = customer.getAccountID();
                     orderInfo = orderDAO.getOrderByID(id, idcus);
-                    valueVoucher = orderDAO.getVoucherValueByOrderID(id);
+                    voucher = voucherDao.getVoucherByID(orderInfo.getVoucherID());
+                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                        valueOfVoucher = voucher.getVoucherValue();
+                    } else {
+                        valueOfVoucher = (orderInfo.getPreVoucherAmount() * voucher.getVoucherValue()) / 100;
+                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                            valueOfVoucher = voucher.getMaxDiscountAmount();
+                        }
+                    }
                 }
             }
         } catch (SQLException | NumberFormatException ex) {
@@ -119,7 +132,7 @@ public class OrderDetailForStaffController extends HttpServlet {
         request.setAttribute("accShipper", accShipper);
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
-        request.setAttribute("valueVoucher", valueVoucher);
+        request.setAttribute("valueVoucher", valueOfVoucher);
         request.getRequestDispatcher("OrderDetailForStaffView.jsp").forward(request, response);
     }
 
@@ -147,11 +160,11 @@ public class OrderDetailForStaffController extends HttpServlet {
         String cusID = request.getParameter("customerID");
 
         try {
-             orderDao.restoreProductStockByOrderID(orderID);
+            orderDao.restoreProductStockByOrderID(orderID);
 
             int customerID = Integer.parseInt(cusID);
             orderDao.updateOrderstatus(orderID, status);
-           
+
             orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
             // Send notification to shipper
             Notification notification = new Notification();

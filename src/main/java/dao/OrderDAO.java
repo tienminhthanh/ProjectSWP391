@@ -64,10 +64,7 @@ public class OrderDAO {
             updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
         }
 
-        callInsertOrderProduct(orderInfo, orderID);
-        for (OrderProduct orderProduct : orderInfo.getOrderProductList()) {
-            updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
-        }
+    
 
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
