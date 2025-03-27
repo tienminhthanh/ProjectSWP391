@@ -100,8 +100,11 @@ public class EventProductDAO {
                 + "LEFT JOIN Event_Product ep ON p.productID = ep.productID AND ep.eventID = ?\n"
                 + "WHERE ep.productID IS NULL\n"
                 + "AND NOT EXISTS (\n"
-                + "SELECT 1 FROM Event_Product ep2 WHERE ep2.productID = p.productID)\n"
-                + "AND ([specialFilter] != 'pre-order' or [specialFilter] is null)";
+                + "    SELECT 1 FROM Event_Product ep2 \n"
+                + "    JOIN Event e ON ep2.eventID = e.eventID \n"
+                + "    WHERE ep2.productID = p.productID AND e.eventIsActive = 1\n"
+                + ")\n"
+                + "AND (p.specialFilter != 'pre-order' OR p.specialFilter IS NULL)";
 
         if (filtered != null && !filtered.isEmpty()) {
             sql += " AND p.categoryID = (SELECT categoryID FROM Category WHERE categoryName = ?)";
