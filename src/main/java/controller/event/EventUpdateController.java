@@ -196,18 +196,12 @@ public class EventUpdateController extends HttpServlet {
                     isActive, dateStarted.toString(), existingEvent.isExpiry());
 
             EventProductDAO epDAO = new EventProductDAO();
-            if (eDao.updateEvent(event) && !isActive) {
-                epDAO.deleteListProductInEvent(event.getEventID());
-                if (epDAO.getListProductInEvent(event.getEventID()).isEmpty()) {
-                    session.setAttribute("message", "Event updated successfully! List Product is removed");
-                    session.setAttribute("messageType", "success");
-                } else {
-                    session.setAttribute("message", "Event updated successfully!");
-                    session.setAttribute("messageType", "success");
-                }
-            } else if (eDao.updateEvent(event) && isActive) {
+            if (eDao.updateEvent(event)) {
                 session.setAttribute("message", "Event updated successfully!");
                 session.setAttribute("messageType", "success");
+                if (!event.isExpiry()) {
+                    epDAO.deleteListProductInEvent(event.getEventID());
+                }
             } else {
                 session.setAttribute("message", "Failed to update event.");
                 session.setAttribute("messageType", "error");
