@@ -18,15 +18,15 @@
             canvas {
                 font-family: 'Arial', sans-serif !important;
             }
-            /* LÃ m nhá» kÃ­ch thÆ°á»c biá»u Äá» Order Conversion Rate */
+            /* LÃ m nhá» kÃ­ch thÆ°á»c biá»u đá» Order Conversion Rate */
             #orderConversionChart {
                 max-height: 250px !important; /* Giáº£m chiá»u cao */
                 max-width: 300px !important; /* Giáº£m chiá»u rá»ng */
-                margin: 0 auto; /* CÄn giá»¯a biá»u Äá» */
+                margin: 0 auto; /* CÄn giá»¯a biá»u đá» */
             }
-            /* Äiá»u chá»nh kÃ­ch thÆ°á»c biá»u Äá» Total Revenue vs Gross Profit náº¿u cáº§n */
+            /* Äiá»u chá»nh kÃ­ch thÆ°á»c biá»u đá» Total Revenue vs Gross Profit náº¿u cáº§n */
             #revenueVsProfitChart {
-                max-height: 300px !important; /* Äáº£m báº£o Äá»ng bá» chiá»u cao */
+                max-height: 300px !important; /* Äáº£m báº£o đá»ng bá» chiá»u cao */
             }
         </style>
     </head>
@@ -39,7 +39,7 @@
         <div class="flex-1 p-6 ml-64">
             <!-- Main Content -->
             <div class="w-full max-w-full bg-white p-8 shadow-lg rounded-lg">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">ð Sales Dashboard</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">📊 Sales Dashboard</h1>
                 <!-- Charts -->
                 <section class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
                     <!-- Revenue Trend Chart -->
@@ -53,7 +53,7 @@
                                     <option value="${y}" ${y == selectedRevenueTrendYear ? 'selected' : ''}>${y}</option>
                                 </c:forEach>
                             </select>
-                            <!-- Giá»¯ cÃ¡c tham sá» khÃ¡c Äá» khÃ´ng bá» máº¥t khi submit -->
+                            <!-- Giá»¯ cÃ¡c tham sá» khÃ¡c đá» khÃ´ng bá» máº¥t khi submit -->
                             <input type="hidden" name="year" value="${param.year}">
                             <input type="hidden" name="month" value="${param.month}">
                             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">Filter</button>
@@ -99,7 +99,7 @@
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-lg font-semibold text-black">Total Revenue</h2>
                         <p class="text-3xl font-bold text-blue-600">
-                            <fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> Ä
+                            <fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> đ
                         </p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -115,7 +115,7 @@
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-lg font-semibold text-black">Gross Profit</h2>
                         <p class="text-3xl font-bold text-orange-600">
-                            <fmt:formatNumber value="${grossProfit}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> Ä
+                            <fmt:formatNumber value="${grossProfit}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> đ
                         </p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -137,7 +137,7 @@
                                 No data available for this period
                             </div>
                         </c:if>
-                        <!-- Hiá»n thá» biá»u Äá» náº¿u cÃ³ dá»¯ liá»u -->
+                        <!-- Hiá»n thá» biá»u đá» náº¿u cÃ³ dá»¯ liá»u -->
                         <div <c:if test="${totalRevenue == 0 && grossProfit == 0}">style="display: none;"</c:if>>
                                 <canvas id="revenueVsProfitChart"></canvas>
                             </div>
@@ -152,7 +152,7 @@
                                 No orders available for this period
                             </div>
                         </c:if>
-                        <!-- Hiá»n thá» biá»u Äá» náº¿u cÃ³ dá»¯ liá»u -->
+                        <!-- Hiá»n thá» biá»u đá» náº¿u cÃ³ dá»¯ liá»u -->
                         <div <c:if test="${totalOrders == 0}">style="display: none;"</c:if>>
                                 <canvas id="orderConversionChart"></canvas>
                                 <!-- Hiá»n thá» giÃ¡ trá» Order Conversion Rate vÃ  thÃ´ng tin chi tiáº¿t bÃªn dÆ°á»i -->
@@ -179,12 +179,12 @@
 
         <!-- JavaScript -->
         <script>
-            // Äáº·t font máº·c Äá»nh cho toÃ n bá» Chart.js
+            // Äáº·t font máº·c đá»nh cho toÃ n bá» Chart.js
             Chart.defaults.font.family = 'Arial, sans-serif';
             Chart.defaults.font.size = 12;
             Chart.defaults.color = '#000000';
 
-            // Gá»i hÃ m khi trang ÄÆ°á»£c táº£i
+            // Gá»i hÃ m khi trang đÆ°á»£c táº£i
             document.addEventListener("DOMContentLoaded", function () {
                 // Revenue Trend Chart
                 const revenueTrendCtx = document.getElementById('revenueTrendChart').getContext('2d');
@@ -216,7 +216,7 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Revenue (Ä)',
+                                    text: 'Revenue (đ)',
                                     color: '#000000',
                                     font: {
                                         family: 'Arial',
@@ -290,7 +290,7 @@ new Chart(revenueVsProfitCtx, {
         labels: ['Total Revenue', 'Gross Profit', 'Profit Margin'],
         datasets: [
             {
-                label: 'Total Revenue (Ä)', // Separate label for Total Revenue
+                label: 'Total Revenue (đ)', // Separate label for Total Revenue
                 data: [${totalRevenue}, null, null], // Only show Total Revenue
                 backgroundColor: 'rgba(54, 162, 235, 0.6)', // Blue for Total Revenue
                 borderColor: 'rgba(54, 162, 235, 1)',
@@ -298,7 +298,7 @@ new Chart(revenueVsProfitCtx, {
                 yAxisID: 'y' // Link to the first y-axis (for revenue and profit)
             },
             {
-                label: 'Gross Profit (Ä)', // Separate label for Gross Profit
+                label: 'Gross Profit (đ)', // Separate label for Gross Profit
                 data: [null, ${grossProfit}, null], // Only show Gross Profit
                 backgroundColor: 'rgba(255, 99, 132, 0.6)', // Pink for Gross Profit
                 borderColor: 'rgba(255, 99, 132, 1)',
@@ -322,7 +322,7 @@ new Chart(revenueVsProfitCtx, {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Amount (Ä)',
+                    text: 'Amount (đ)',
                     color: '#000000',
                     font: {
                         family: 'Arial',
@@ -399,7 +399,7 @@ new Chart(revenueVsProfitCtx, {
                         if (context.dataset.label === 'Profit Margin (%)') {
                             return context.dataset.label + ': ' + Number(context.parsed.y).toFixed(2) + '%'; // Format to 2 decimal places
                         }
-                        return context.dataset.label + ': ' + context.parsed.y.toLocaleString('vi-VN') + ' Ä';
+                        return context.dataset.label + ': ' + context.parsed.y.toLocaleString('vi-VN') + ' đ';
                     }
                 }
             },
@@ -424,7 +424,7 @@ new Chart(revenueVsProfitCtx, {
                         datasets: [{
                                 data: [orderConversionRate, 100 - orderConversionRate], // Use formatted value
                                 backgroundColor: [
-                                    orderConversionRate >= 80 ? 'rgba(75, 192, 192, 0.6)' : orderConversionRate >= 50 ? 'rgba(255, 206, 86, 0.6)' : 'rgba(255, 99, 132, 0.6)', // MÃ u thay Äá»i theo giÃ¡ trá»
+                                    orderConversionRate >= 80 ? 'rgba(75, 192, 192, 0.6)' : orderConversionRate >= 50 ? 'rgba(255, 206, 86, 0.6)' : 'rgba(255, 99, 132, 0.6)', // MÃ u thay đá»i theo giÃ¡ trá»
                                     'rgba(200, 200, 200, 0.2)' // MÃ u ná»n cho pháº§n cÃ²n láº¡i
                                 ],
                                 borderColor: [
@@ -433,7 +433,7 @@ new Chart(revenueVsProfitCtx, {
                                 ],
                                 borderWidth: 1,
                                 circumference: 180, // Chá» váº½ ná»­a vÃ²ng trÃ²n (gauge chart)
-                                rotation: 270 // Xoay Äá» báº¯t Äáº§u tá»« dÆ°á»i
+                                rotation: 270 // Xoay đá» báº¯t đáº§u tá»« dÆ°á»i
                             }]
                     },
                     options: {

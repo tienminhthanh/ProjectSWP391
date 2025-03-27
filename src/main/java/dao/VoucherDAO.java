@@ -301,7 +301,7 @@ public class VoucherDAO {
                 voucher.getVoucherType(),
                 voucher.getMaxDiscountAmount(),
                 voucher.getDateStarted(),
-                !LocalDate.now().isAfter(expiryDate),
+                voucher.isIsActive(),
                 voucher.getVoucherID()};
 
             voucher.setExpiry(!LocalDate.now().isAfter(expiryDate));
@@ -329,6 +329,29 @@ public class VoucherDAO {
             return rowsAffected > 0;
         } catch (SQLException ex) {
             Logger.getLogger(VoucherDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public boolean unlockVoucher(int id) {
+        try {
+            Voucher voucher = getVoucherByID(id);
+            LocalDate today = LocalDate.now();
+
+            if (!voucher.isExpiry() && !voucher.isIsActive()) {
+                return false;
+            } else if (today.isBefore(LocalDate.parse(voucher.getDateStarted()))) {
+                return false;
+            }
+
+            String sql = "UPDATE [dbo].[Voucher]\n"
+                    + "   SET [voucherIsActive] = ?\n"
+                    + " WHERE [voucherID] = ?";
+            Object[] params = {!voucher.isIsActive(), id};
+            int rowsAffected = context.exeNonQuery(sql, params);
+            return rowsAffected > 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(EventDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -363,6 +386,12 @@ public class VoucherDAO {
 
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
-        System.out.println(vd.getVoucherByPage("name", "", "", 1, 5));
+        Voucher v = new Voucher(3, "ss", 100, 12,12, "2025-02-24", 122, 1, false, true, "PERCENTAGE", 0.0, "2025-03-31");
+        vd.updateVoucher(v);
+//        for (Voucher voucher : vd.getListVoucher()) {
+//            System.out.println(voucher.toString());
+//        }
+        
+        System.out.println(vd.getVoucherByID(3));
     }
 }

@@ -49,9 +49,9 @@ public class VoucherDeleteController extends HttpServlet {
 //                session.setAttribute("messageType", "error");
 //            }
             String action = request.getParameter("action");
-            boolean success = vDao.deleteVoucher(id);
+            boolean success = false;
             if ("delete".equals(action)) {
-                if (success) {
+                if (vDao.deleteVoucher(id)) {
                     session.setAttribute("message", "Voucher deleted successfully!");
                     session.setAttribute("messageType", "delete");
                 } else {
@@ -59,7 +59,7 @@ public class VoucherDeleteController extends HttpServlet {
                     session.setAttribute("messageType", "error");
                 }
             } else if ("unlock".equals(action)) {
-                if (success) {
+                if (vDao.unlockVoucher(id)) {
                     session.setAttribute("message", "Voucher unlocked successfully!");
                     session.setAttribute("messageType", "unlock");
                 } else {
