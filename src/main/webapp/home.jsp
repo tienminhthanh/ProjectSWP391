@@ -443,13 +443,13 @@
                     document.getElementById("chatPopup1").classList.add("hidden");
                 });
 
-                document.getElementById("openChat").addEventListener("click", function () {
-                    document.getElementById("chatPopup").classList.remove("hidden");
-                });
-
-                document.getElementById("closeChatAI").addEventListener("click", function () {
-                    document.getElementById("chatPopup").classList.add("hidden");
-                });
+//                document.getElementById("openChat").addEventListener("click", function () {
+//                    document.getElementById("chatPopup").classList.remove("hidden");
+//                });
+//
+//                document.getElementById("closeChatAI").addEventListener("click", function () {
+//                    document.getElementById("chatPopup").classList.add("hidden");
+//                });
 
             });
 
