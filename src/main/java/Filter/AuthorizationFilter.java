@@ -14,33 +14,41 @@ public class AuthorizationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-        roleAccessMap.put("admin", Arrays.asList("/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus", "/importProduct",
+        roleAccessMap.put("admin", Arrays.asList("/updateAccount","/manageProductList", "/manageProductDetails", "/updateProduct", "/addProduct", "/changeProductStatus", "/importProduct",
                 "/queueImport", "/search", "/category", "/genre", "/publisher", "/creator", "/series", "/brand", "/character",
                 "/new", "/sale", "/ranking", "/productDetails", "/addAccount",
                 "/OrderDetailForStaffController", "/OrderListForStaffController",
-                "/chat", "/listnotification", "/notificationdetail", "/createnotification","/changePassword"));
+                "/chat", "/listnotification", "/notificationdetail", "/createnotification", "/changePassword",
+                "/eventAddNew", "/eventDelete", "/eventDetails", "/eventList", "/eventProductAddNew", "/eventProductDelete", "/eventUpdate",
+                "/voucherAddNew", "/voucherDelete", "/voucherDetails", "/voucherList", "/voucherUpdate","/deleteAccount","/dashboard","/unlockAccount"));
 
-        roleAccessMap.put("staff", Arrays.asList("/staff", "/manageOrders", "/search", "/category", "/genre", "/publisher",
+        roleAccessMap.put("staff", Arrays.asList("/updateAccount","/staff", "/manageOrders", "/search", "/category", "/genre", "/publisher",
                 "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
                 "/OrderDetailForStaffController", "/OrderListForStaffController",
-                "/chat", "/listnotification", "/notificationdetail", "/createnotification","/changePassword"));
+                "/chat", "/listnotification", "/notificationdetail", "/createnotification", "/changePassword", "/logout", "/processPassword",
+                "/eventList", "/eventDetails", "/eventUpdate", "/eventProductAddNew", "/eventProductDelete"));
 
         roleAccessMap.put("customer", Arrays.asList("/changePassword", "/deleteAccount", "/emailAuthentication", "/emailForgot",
                 "/emailUnlock", "/forgotPassword", "/loginGoogle", "/login", "/logout", "/processPassword", "/register", "/readAccount",
                 "/removeEmailFromLockedAccount", "/unlockAccount", "/updateAccount", "/home", "/cart", "/notification", "/chat", "/OrderController",
                 "/search", "/category", "/genre", "/publisher", "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
-                "/DeleteOrderController", "/OrderController", "/OrderDetailController", "/OrderListController", "/UpdateOrderController",
-                "/cart", "/notification", "/notificationDetail", "/chat"));
+                "/DeleteOrderController", "/OrderDetailController", "/OrderListController", "/UpdateOrderController",
+                "/notificationDetail",
+                "/eventList", "/eventDetails",
+                "/voucherList", "/voucherDetails"));
 
-        roleAccessMap.put("shipper", Arrays.asList("/OrderDetailForShipperController", "/viewOrders", "/home", "/search", "/category", "/genre",
+        roleAccessMap.put("shipper", Arrays.asList("/updateAccount", "/OrderDetailForShipperController", "/viewOrders", "/home", "/search", "/category", "/genre",
                 "/publisher", "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
                 "/OrderListForShipperController", "/OrderDetailForShipperController",
-                "/notificationshipper", "/notificationdetail","/changePassword"));
+                "/notificationshipper", "/notificationdetail", "/changePassword",
+                "/eventDetails", "/eventList"));
 
         roleAccessMap.put("guest", Arrays.asList("/emailAuthentication", "/emailForgot", "/emailUnlock", "/forgotPassword",
                 "/loginGoogle", "/login", "/logout", "/processPassword", "/register", "/readAccount", "/removeEmailFromLockedAccount",
                 "/unlockAccount", "/updateAccount", "/home", "/cart.jsp", "/chatAI.jsp", "/search", "/category", "/genre", "/publisher",
-                "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails"));
+                "/creator", "/series", "/brand", "/character", "/new", "/sale", "/ranking", "/productDetails",
+                "/eventList", "/eventDetails",
+                "/voucherList", "/voucherDetails"));
 
     }
 

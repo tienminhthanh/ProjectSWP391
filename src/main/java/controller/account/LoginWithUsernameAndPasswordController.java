@@ -79,7 +79,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                     }
 
                     // Lock the account if login fails 5 times (only for non-admin users)
-                    if (!"admin".equals(account.getRole()) && failedAttempts >= 5) {
+                    if (!"admin".equals(account.getRole())||!"staff".equals(account.getRole())||!"shipper".equals(account.getRole()) && failedAttempts >= 5) {
                         response.sendRedirect("deleteAccount?username=" + username);
                         return;
                     }
