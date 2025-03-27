@@ -157,14 +157,14 @@ public class OrderListForShipperController extends HttpServlet {
         int totalDeliveries;
 
         try {
-            if ("updateStatus".equals(actionType)) {
+            if ("update".equals(actionType)) {
                 String status = "delivered";
                 orderDao.updateDeliverystatus(orderID, status);
                 totalDeliveries = accShipper.getTotalDeliveries();
                 totalDeliveries = totalDeliveries + 1;
                 orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
                 request.setAttribute("message", "Cập nhật trạng thái đơn hàng thành công!");
-            } else if ("cancelOrder".equals(actionType)) {
+            } else if ("cancel".equals(actionType)) {
                 String statusDeli = "delivered";
                 orderDao.updateDeliverystatus(orderID, statusDeli);
                 String status = "canceled";

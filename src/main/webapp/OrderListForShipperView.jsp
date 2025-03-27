@@ -114,7 +114,7 @@
                                    class="inline-block px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm">Details</a>
                                 <form action="OrderListForShipperController" method="post" class="inline" onsubmit="return confirmUpdate()">
                                     <input type="hidden" name="orderID" value="${order.orderID}">
-                                    <input type="hidden" name="actionType" value="updateStatus">
+                                    <input type="hidden" name="actionType" value="update">
                                     <c:if test="${ order.deliveryStatus eq 'shipped'}">      
                                         <button type="submit" class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow-sm">Update</button>
                                     </c:if>

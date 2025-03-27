@@ -38,15 +38,16 @@
                 <div class="flex justify-between items-center border-b pb-2 mb-4">
                     <h2 class="text-xl font-bold">Delivery Information / <span>${orderInfo.orderID}</span></h2>
                     <div class="space-x-2">
-                        <form action="OrderListForShipperController" method="post" class="inline" onsubmit="return confirmUpdate()">
+                        <form action="OrderListForShipperController" method="post" class="inline" id="orderForm">
                             <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                             <input type="hidden" id="actionType" name="actionType" value="">
 
                             <c:if test="${ orderInfo.deliveryStatus eq 'shipped'}">      
-                                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded" 
-                                        onclick="return handleCancel()">Cancel</button>
-                                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded" 
-                                        onclick="return handleUpdate()">Update Status</button>
+                                <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
+                                        onclick="submitForm('cancel')">Cancel</button>
+
+                                <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
+                                        onclick="submitForm('update')">Update Status</button>
                             </c:if>
                         </form>
                         <button onclick="history.back()" class="bg-blue-500 text-white px-4 py-2 rounded">BACK</button>
@@ -90,7 +91,6 @@
                             <th class="py-2">Product</th>
                             <th class="py-2">Description</th>
                             <th class="py-2">Quantity</th>
-
                             <th class="py-2">Price</th>
                         </tr>
                     </thead>
@@ -131,21 +131,14 @@
                 return confirm("Are you sure you want to cancel this order?");
             }
 
-            function handleUpdate() {
-                if (confirmUpdate()) {
-                    setAction('updateStatus');
-                    return true; // Cho phép submit form
+            function submitForm(action) {
+                if (confirm(action === 'cancel' ? "Are you sure you want to cancel this order?"
+                        : "Are you sure you want to update the status?")) {
+                    document.getElementById("actionType").value = action;
+                    document.getElementById("orderForm").submit();
                 }
-                return false; // Ngăn không cho form submit nếu hủy
             }
 
-            function handleCancel() {
-                if (confirmCancel()) {
-                    setAction('cancelOrder');
-                    return true;
-                }
-                return false;
-            }
         </script>
 
     </body>
