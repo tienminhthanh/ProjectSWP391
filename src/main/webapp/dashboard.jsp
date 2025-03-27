@@ -14,19 +14,19 @@
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script> <!-- Added ChartDataLabels plugin -->
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
-            /* Đảm bảo canvas của Chart.js không bị ảnh hưởng bởi Tailwind CSS */
+            /* Äáº£m báº£o canvas cá»§a Chart.js khÃ´ng bá» áº£nh hÆ°á»ng bá»i Tailwind CSS */
             canvas {
                 font-family: 'Arial', sans-serif !important;
             }
-            /* Làm nhỏ kích thước biểu đồ Order Conversion Rate */
+            /* LÃ m nhá» kÃ­ch thÆ°á»c biá»u Äá» Order Conversion Rate */
             #orderConversionChart {
-                max-height: 250px !important; /* Giảm chiều cao */
-                max-width: 300px !important; /* Giảm chiều rộng */
-                margin: 0 auto; /* Căn giữa biểu đồ */
+                max-height: 250px !important; /* Giáº£m chiá»u cao */
+                max-width: 300px !important; /* Giáº£m chiá»u rá»ng */
+                margin: 0 auto; /* CÄn giá»¯a biá»u Äá» */
             }
-            /* Điều chỉnh kích thước biểu đồ Total Revenue vs Gross Profit nếu cần */
+            /* Äiá»u chá»nh kÃ­ch thÆ°á»c biá»u Äá» Total Revenue vs Gross Profit náº¿u cáº§n */
             #revenueVsProfitChart {
-                max-height: 300px !important; /* Đảm bảo đồng bộ chiều cao */
+                max-height: 300px !important; /* Äáº£m báº£o Äá»ng bá» chiá»u cao */
             }
         </style>
     </head>
@@ -39,13 +39,13 @@
         <div class="flex-1 p-6 ml-64">
             <!-- Main Content -->
             <div class="w-full max-w-full bg-white p-8 shadow-lg rounded-lg">
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">📊 Sales Dashboard</h1>
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">ð Sales Dashboard</h1>
                 <!-- Charts -->
                 <section class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
                     <!-- Revenue Trend Chart -->
                     <div class="bg-white p-4 rounded-lg shadow-lg">
                         <h2 class="text-lg font-semibold text-black mb-2">Revenue Trend</h2>
-                        <!-- Bộ lọc năm cho Revenue Trend -->
+                        <!-- Bá» lá»c nÄm cho Revenue Trend -->
                         <form action="dashboard" method="GET" class="mb-4">
                             <label for="revenueTrendYear" class="mr-2">Year:</label>
                             <select name="revenueTrendYear" id="revenueTrendYear" class="border rounded p-2">
@@ -53,7 +53,7 @@
                                     <option value="${y}" ${y == selectedRevenueTrendYear ? 'selected' : ''}>${y}</option>
                                 </c:forEach>
                             </select>
-                            <!-- Giữ các tham số khác để không bị mất khi submit -->
+                            <!-- Giá»¯ cÃ¡c tham sá» khÃ¡c Äá» khÃ´ng bá» máº¥t khi submit -->
                             <input type="hidden" name="year" value="${param.year}">
                             <input type="hidden" name="month" value="${param.month}">
                             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">Filter</button>
@@ -67,7 +67,7 @@
                     </div>
                 </section>
 
-                <!-- Bộ lọc chính -->
+                <!-- Bá» lá»c chÃ­nh -->
                 <form action="dashboard" method="GET" class="mb-6 mt-6 grid grid-cols-3 gap-4">
                     <div>
                         <label for="year" class="mr-2">Year:</label>
@@ -90,7 +90,7 @@
                     <div class="flex items-end">
                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Filter</button>
                     </div>
-                    <!-- Giữ revenueTrendYear khi submit bộ lọc chính -->
+                    <!-- Giá»¯ revenueTrendYear khi submit bá» lá»c chÃ­nh -->
                     <input type="hidden" name="revenueTrendYear" value="${param.revenueTrendYear}">
                 </form>
 
@@ -99,7 +99,7 @@
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-lg font-semibold text-black">Total Revenue</h2>
                         <p class="text-3xl font-bold text-blue-600">
-                            <fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> đ
+                            <fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> Ä
                         </p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -115,7 +115,7 @@
                     <div class="bg-white p-6 rounded-lg shadow-lg">
                         <h2 class="text-lg font-semibold text-black">Gross Profit</h2>
                         <p class="text-3xl font-bold text-orange-600">
-                            <fmt:formatNumber value="${grossProfit}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> đ
+                            <fmt:formatNumber value="${grossProfit}" type="number" groupingUsed="true" minFractionDigits="2" maxFractionDigits="2"/> Ä
                         </p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -126,18 +126,18 @@
                     </div>
                 </section>
 
-                <!-- Total Revenue vs Gross Profit và Order Conversion Rate trong cùng một hàng -->
+                <!-- Total Revenue vs Gross Profit vÃ  Order Conversion Rate trong cÃ¹ng má»t hÃ ng -->
                 <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <!-- Total Revenue vs Gross Profit Bar Chart -->
                     <div class="bg-white p-4 rounded-lg shadow-lg">
                         <h2 class="text-lg font-semibold text-black mb-2">Total Revenue vs Gross Profit</h2>
-                        <!-- Hiển thị thông báo nếu không có dữ liệu -->
+                        <!-- Hiá»n thá» thÃ´ng bÃ¡o náº¿u khÃ´ng cÃ³ dá»¯ liá»u -->
                         <c:if test="${totalRevenue == 0 && grossProfit == 0}">
                             <div class="text-center text-gray-500 py-4">
                                 No data available for this period
                             </div>
                         </c:if>
-                        <!-- Hiển thị biểu đồ nếu có dữ liệu -->
+                        <!-- Hiá»n thá» biá»u Äá» náº¿u cÃ³ dá»¯ liá»u -->
                         <div <c:if test="${totalRevenue == 0 && grossProfit == 0}">style="display: none;"</c:if>>
                                 <canvas id="revenueVsProfitChart"></canvas>
                             </div>
@@ -146,16 +146,16 @@
                         <!-- Order Conversion Rate Gauge Chart -->
                         <div class="bg-white p-4 rounded-lg shadow-lg">
                             <h2 class="text-lg font-semibold text-black mb-2">Order Conversion Rate</h2>
-                            <!-- Hiển thị thông báo nếu không có dữ liệu -->
+                            <!-- Hiá»n thá» thÃ´ng bÃ¡o náº¿u khÃ´ng cÃ³ dá»¯ liá»u -->
                         <c:if test="${totalOrders == 0}">
                             <div class="text-center text-gray-500 py-4">
                                 No orders available for this period
                             </div>
                         </c:if>
-                        <!-- Hiển thị biểu đồ nếu có dữ liệu -->
+                        <!-- Hiá»n thá» biá»u Äá» náº¿u cÃ³ dá»¯ liá»u -->
                         <div <c:if test="${totalOrders == 0}">style="display: none;"</c:if>>
                                 <canvas id="orderConversionChart"></canvas>
-                                <!-- Hiển thị giá trị Order Conversion Rate và thông tin chi tiết bên dưới -->
+                                <!-- Hiá»n thá» giÃ¡ trá» Order Conversion Rate vÃ  thÃ´ng tin chi tiáº¿t bÃªn dÆ°á»i -->
                                 <div class="text-center mt-2">
                                     <div class="text-lg font-bold text-purple-600">
                                     <fmt:formatNumber value="${orderConversionRate}" type="number" pattern="0.00"/>%
@@ -179,19 +179,20 @@
 
         <!-- JavaScript -->
         <script>
-            // Đặt font mặc định cho toàn bộ Chart.js
+            // Äáº·t font máº·c Äá»nh cho toÃ n bá» Chart.js
             Chart.defaults.font.family = 'Arial, sans-serif';
             Chart.defaults.font.size = 12;
             Chart.defaults.color = '#000000';
 
-            // Gọi hàm khi trang được tải
+            // Gá»i hÃ m khi trang ÄÆ°á»£c táº£i
             document.addEventListener("DOMContentLoaded", function () {
                 // Revenue Trend Chart
                 const revenueTrendCtx = document.getElementById('revenueTrendChart').getContext('2d');
                 const labels = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
                 const data = new Array(12).fill(0);
+                let month;
             <c:forEach items="${revenueTrend}" var="entry">
-                const month = parseInt("${entry.key}".split("-")[1]) - 1;
+                 month = parseInt("${entry.key}".split("-")[1]) - 1;
                 data[month] = ${entry.value};
             </c:forEach>
 
@@ -215,7 +216,7 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Revenue (đ)',
+                                    text: 'Revenue (Ä)',
                                     color: '#000000',
                                     font: {
                                         family: 'Arial',
@@ -289,7 +290,7 @@ new Chart(revenueVsProfitCtx, {
         labels: ['Total Revenue', 'Gross Profit', 'Profit Margin'],
         datasets: [
             {
-                label: 'Total Revenue (đ)', // Separate label for Total Revenue
+                label: 'Total Revenue (Ä)', // Separate label for Total Revenue
                 data: [${totalRevenue}, null, null], // Only show Total Revenue
                 backgroundColor: 'rgba(54, 162, 235, 0.6)', // Blue for Total Revenue
                 borderColor: 'rgba(54, 162, 235, 1)',
@@ -297,7 +298,7 @@ new Chart(revenueVsProfitCtx, {
                 yAxisID: 'y' // Link to the first y-axis (for revenue and profit)
             },
             {
-                label: 'Gross Profit (đ)', // Separate label for Gross Profit
+                label: 'Gross Profit (Ä)', // Separate label for Gross Profit
                 data: [null, ${grossProfit}, null], // Only show Gross Profit
                 backgroundColor: 'rgba(255, 99, 132, 0.6)', // Pink for Gross Profit
                 borderColor: 'rgba(255, 99, 132, 1)',
@@ -321,7 +322,7 @@ new Chart(revenueVsProfitCtx, {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: 'Amount (đ)',
+                    text: 'Amount (Ä)',
                     color: '#000000',
                     font: {
                         family: 'Arial',
@@ -398,7 +399,7 @@ new Chart(revenueVsProfitCtx, {
                         if (context.dataset.label === 'Profit Margin (%)') {
                             return context.dataset.label + ': ' + Number(context.parsed.y).toFixed(2) + '%'; // Format to 2 decimal places
                         }
-                        return context.dataset.label + ': ' + context.parsed.y.toLocaleString('vi-VN') + ' đ';
+                        return context.dataset.label + ': ' + context.parsed.y.toLocaleString('vi-VN') + ' Ä';
                     }
                 }
             },
@@ -410,7 +411,7 @@ new Chart(revenueVsProfitCtx, {
     plugins: [ChartDataLabels] // Include the ChartDataLabels plugin
 });
 
-                // Order Conversion Rate Gauge Chart (dựa trên Doughnut Chart)
+                // Order Conversion Rate Gauge Chart (dá»±a trÃªn Doughnut Chart)
                 const orderConversionCtx = document.getElementById('orderConversionChart').getContext('2d');
                 const orderConversionRate = Number(${orderConversionRate}).toFixed(2); // Format to 2 decimal places
                 console.log("Order Conversion Rate (raw):", ${orderConversionRate});
@@ -419,29 +420,29 @@ new Chart(revenueVsProfitCtx, {
                 new Chart(orderConversionCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Successful', 'Fail'], // Nhãn cho legend
+                        labels: ['Successful', 'Fail'], // NhÃ£n cho legend
                         datasets: [{
                                 data: [orderConversionRate, 100 - orderConversionRate], // Use formatted value
                                 backgroundColor: [
-                                    orderConversionRate >= 80 ? 'rgba(75, 192, 192, 0.6)' : orderConversionRate >= 50 ? 'rgba(255, 206, 86, 0.6)' : 'rgba(255, 99, 132, 0.6)', // Màu thay đổi theo giá trị
-                                    'rgba(200, 200, 200, 0.2)' // Màu nền cho phần còn lại
+                                    orderConversionRate >= 80 ? 'rgba(75, 192, 192, 0.6)' : orderConversionRate >= 50 ? 'rgba(255, 206, 86, 0.6)' : 'rgba(255, 99, 132, 0.6)', // MÃ u thay Äá»i theo giÃ¡ trá»
+                                    'rgba(200, 200, 200, 0.2)' // MÃ u ná»n cho pháº§n cÃ²n láº¡i
                                 ],
                                 borderColor: [
                                     orderConversionRate >= 80 ? 'rgba(75, 192, 192, 1)' : orderConversionRate >= 50 ? 'rgba(255, 206, 86, 1)' : 'rgba(255, 99, 132, 1)',
                                     'rgba(200, 200, 200, 0.5)'
                                 ],
                                 borderWidth: 1,
-                                circumference: 180, // Chỉ vẽ nửa vòng tròn (gauge chart)
-                                rotation: 270 // Xoay để bắt đầu từ dưới
+                                circumference: 180, // Chá» váº½ ná»­a vÃ²ng trÃ²n (gauge chart)
+                                rotation: 270 // Xoay Äá» báº¯t Äáº§u tá»« dÆ°á»i
                             }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: true,
-                        cutout: '70%', // Tạo lỗ ở trung tâm
+                        cutout: '70%', // Táº¡o lá» á» trung tÃ¢m
                         plugins: {
                             legend: {
-                                display: true, // Hiển thị legend
+                                display: true, // Hiá»n thá» legend
                                 position: 'bottom',
                                 labels: {
                                     color: '#000000',
@@ -449,7 +450,7 @@ new Chart(revenueVsProfitCtx, {
                                         family: 'Arial',
                                         size: 12
                                     },
-                                    // Tùy chỉnh màu sắc trong legend
+                                    // TÃ¹y chá»nh mÃ u sáº¯c trong legend
                                     generateLabels: function (chart) {
                                         const data = chart.data;
                                         return data.labels.map((label, index) => {
@@ -467,7 +468,7 @@ new Chart(revenueVsProfitCtx, {
                                 }
                             },
                             tooltip: {
-                                enabled: false // Ẩn tooltip
+                                enabled: false // áº¨n tooltip
                             }
                         }
                     }
