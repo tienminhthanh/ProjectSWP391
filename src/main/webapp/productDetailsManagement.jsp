@@ -564,6 +564,56 @@
 
 
 
+                                                  document.addEventListener('DOMContentLoaded', function () {
+                                                      const creators = document.querySelectorAll('.cre-details-gr');
+                                                      if (creators) {
+                                                          creators.forEach(cre => {
+                                                              let content = cre.querySelector('td:nth-child(2)');
+                                                              if (content) {
+                                                                  let text = content.innerText.trim();
+                                                                  text = text !== '' ? text : 'Unknown';
+                                                                  content.innerText = text;
+                                                              }
+                                                          });
+                                                      }
+                                                  });
+
+
+        </script>
+        <script>
+            function validateForm() {
+                let discountInput = document.getElementById('discountInput');
+                let discountValue = discountInput.value.trim();
+                if (discountValue === "" || isNaN(discountValue) || discountValue < 1 || discountValue > 99) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        html: 'Product have invalid discounts.<br>Please enter a discount between 1% and 99%.'
+                    });
+                    return false; // Ngăn form submit nếu giá trị không hợp lệ
+                }
+                return true; // Cho phép submit nếu hợp lệ
+            }
+
+        </script>
+        <script>
+            function prepareDiscountData() {
+                const discountInput = document.getElementById("discountInput");
+                const discountDataField = document.getElementById("discountData");
+                const productId = document.querySelector("input[name='selectedProducts']").value;
+                if (!discountInput.value) {
+                    alert("Please enter a valid discount.");
+                    return false;
+                }
+
+                // Tạo JSON: { "productID": discount }
+                const discountData = {}
+                ;
+                discountData[productId] = parseInt(discountInput.value);
+                // Gán vào input ẩn
+                discountDataField.value = JSON.stringify(discountData);
+                return true; // Cho phép gửi form
+            }
 
         </script>
 

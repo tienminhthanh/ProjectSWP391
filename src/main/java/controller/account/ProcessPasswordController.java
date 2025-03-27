@@ -19,42 +19,46 @@ public class ProcessPasswordController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get the input values from the form
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect("login.jsp"); // Redirect to login if session is invalid
+            response.sendRedirect("login.jsp");
             return;
         }
 
         Account account = (Account) session.getAttribute("account");
 
-        // Check if the current password matches the password in session
-        if (newPassword.equals(confirmPassword)) {
-            try {
-                // Update the account with the new password
-                AccountDAO accountDAO = new AccountDAO();
-                AccountLib lib = new AccountLib();
-                boolean success = accountDAO.updatePassword(account.getUsername(), lib.hashMD5(newPassword));
-                if (success) {
-                    // Successfully changed the password
-                    request.setAttribute("message", "Password changed successfully.");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
-                } else {
-                    request.setAttribute("errorMessage", "Failed to change password.");
-                    request.getRequestDispatcher("processPassword.jsp").forward(request, response);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "Database error occurred.");
-                request.getRequestDispatcher("processPassword.jsp").forward(request, response);
-            }
-        } else {
+        if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "New passwords do not match.");
             request.getRequestDispatcher("processPassword.jsp").forward(request, response);
+            return;
         }
 
+        AccountLib lib = new AccountLib();
+        if (!lib.isValidPassword(newPassword)) {
+            request.setAttribute("errorMessage", "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.");
+            request.getRequestDispatcher("processPassword.jsp").forward(request, response);
+            return;
+        }
+
+        try {
+
+            AccountDAO accountDAO = new AccountDAO();
+            boolean success = accountDAO.updatePassword(account.getUsername(), lib.hashMD5(newPassword));
+            if (success) {
+
+                request.setAttribute("message", "Password changed successfully.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            } else {
+                request.setAttribute("errorMessage", "Failed to change password.");
+                request.getRequestDispatcher("processPassword.jsp").forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Database error occurred.");
+            request.getRequestDispatcher("processPassword.jsp").forward(request, response);
+        }
     }
 }

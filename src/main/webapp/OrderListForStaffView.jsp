@@ -247,6 +247,37 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Pagination -->
+                <c:if test="${totalPage > 1}">
+                    <div class="flex justify-center mt-6">
+                        <nav class="flex space-x-2">
+                            <!-- Previous Button -->
+                            <c:if test="${currentPage > 1}">
+                                <a href="OrderListForStaffController?page=${currentPage - 1}"
+                                   class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                    &laquo; Previous
+                                </a>
+                            </c:if>
+
+                            <!-- Page Numbers -->
+                            <c:forEach var="i" begin="1" end="${totalPage}">
+                                <a href="OrderListForStaffController?page=${i}"
+                                   class="px-4 py-2 rounded ${i == currentPage ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 transition'}">
+                                    ${i}
+                                </a>
+                            </c:forEach>
+
+                            <!-- Next Button -->
+                            <c:if test="${currentPage < totalPage}">
+                                <a href="OrderListForStaffController?page=${currentPage + 1}"
+                                   class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
+                                    Next &raquo;
+                                </a>
+                            </c:if>
+                        </nav>
+                    </div>
+                </c:if>
             </div>
         </div>
 

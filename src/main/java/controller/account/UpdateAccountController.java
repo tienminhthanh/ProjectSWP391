@@ -76,6 +76,13 @@ public class UpdateAccountController extends HttpServlet {
         AccountDAO accountDAO = new AccountDAO();
 
         try {
+            if (accountDAO.isEmailExist(email, username)) {
+                session.setAttribute("message", "Email already exists! Please try again.");
+                session.setAttribute("account", loggedInAccount);
+                response.sendRedirect("updateAccount?username=" + username);
+                return;
+            }
+
             // Cập nhật thông tin tài khoản chung
             boolean success = accountDAO.updateAccount(username, firstName, lastName, email, phoneNumber, birthDate, role);
 
@@ -91,21 +98,22 @@ public class UpdateAccountController extends HttpServlet {
                 accountDAO.insertNewAddress(loggedInAccount.getAccountID(), selectedAddress);
                 response.sendRedirect("updateAccount?username=" + loggedInAccount.getUsername());
                 return;
-
             } else if ("deleteAddress".equals(actionType)) {
                 int id = Integer.parseInt(selectedAddress);
                 accountDAO.deleteAddress(id);
                 response.sendRedirect("updateAccount?username=" + loggedInAccount.getUsername());
                 return;
+
             }
             // Cập nhật thông tin tài khoản
 
+            // Nếu cập nhật thành công, chỉ cập nhật session nếu người dùng đang cập nhật chính tài khoản của mình
             if (success) {
                 Account updatedAccount = accountDAO.getAccountByUsername(username);
 
                 // Chỉ cập nhật session nếu user đang cập nhật chính tài khoản của mình
                 if (loggedInAccount.getUsername().equals(username)) {
-                    session.setAttribute("account", updatedAccount);
+                    session.setAttribute("account", updatedAccount); // Cập nhật lại session
                 }
 
                 // Điều hướng dựa trên vai trò
@@ -115,9 +123,10 @@ public class UpdateAccountController extends HttpServlet {
                     response.sendRedirect("readAccount?message=Account updated successfully!");
                 }
             } else {
-                request.setAttribute("message", "Account update failed! Please try again.");
+                session.setAttribute("message", "Account update failed! Please try again.");
                 request.getRequestDispatcher("accountUpdate.jsp").forward(request, response);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -64,6 +64,11 @@ public class OrderDAO {
             updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
         }
 
+        callInsertOrderProduct(orderInfo, orderID);
+        for (OrderProduct orderProduct : orderInfo.getOrderProductList()) {
+            updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
+        }
+
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
     }
@@ -146,6 +151,9 @@ public class OrderDAO {
                 // Gán phương thức giao hàng cho đơn hàng
                 orderInfo.setDeliveryOption(deliveryOption);
 
+                // Gán phương thức giao hàng cho đơn hàng
+                orderInfo.setDeliveryOption(deliveryOption);
+
                 // Thêm vào danh sách
                 orderList.add(orderInfo);
             }
@@ -196,7 +204,8 @@ public class OrderDAO {
         }
     }
 
-    public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
+
+public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
         String sql = "SELECT oi.*, a.*, ad.*, s.*, sp.*, c.*\n"
                 + "FROM OrderInfo oi\n"
                 + "LEFT JOIN Account a ON a.accountID IN (oi.adminID, oi.staffID, oi.shipperID, oi.customerID)\n"
@@ -250,6 +259,7 @@ public class OrderDAO {
         }
     }
 
+
     public Account getShipperByOrderID(int orderID) throws SQLException {
         String sql = "SELECT a.*, s.* "
                 + "FROM Account a "
@@ -264,6 +274,8 @@ public class OrderDAO {
         }
     }
 
+
+
     //choose maybe fix lai
     public Account getAccountByShipperIDAndOrderID(int orderID, int shipperID) throws SQLException {
         String sql = "SELECT "
@@ -275,7 +287,7 @@ public class OrderDAO {
                 + "JOIN OrderInfo o ON c.customerID = o.customerID "
                 + "WHERE o.shipperID = ? AND o.orderID = ?;";
 
-        Object[] params = {shipperID, orderID};
+    Object[] params = {shipperID, orderID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
             if (rs.next()) {
@@ -292,8 +304,10 @@ public class OrderDAO {
                 return acc;
             }
         }
-        return null;
-    }
+    
+    return null;
+}
+
 
     //lay gia tri vocher de dua vao orderdeatil
     //choose
@@ -681,7 +695,7 @@ public class OrderDAO {
     public boolean updateRatingForProduct(int orderID, int productID, int rate) throws SQLException {
         String sql = "UPDATE Order_Product SET rating =  ? WHERE productID = ? and orderID = ?";
         Object[] params = {rate, productID, orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);
+        int rowsAffected = context.exeNonQuery(sql, params);    
         return rowsAffected > 0;
     }
 // review

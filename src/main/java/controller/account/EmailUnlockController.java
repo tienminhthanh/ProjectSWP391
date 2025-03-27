@@ -37,7 +37,7 @@ public class EmailUnlockController extends HttpServlet {
 
         // Kiểm tra nếu không có email hợp lệ
         if (email == null || email.trim().isEmpty()) {
-            request.setAttribute("message", "Please enter a valid email.");
+            request.setAttribute("message", "Enter a valid email.");
             request.getRequestDispatcher("accountUnlock.jsp").forward(request, response);
             return;
         }

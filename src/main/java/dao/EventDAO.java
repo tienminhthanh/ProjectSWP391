@@ -267,6 +267,8 @@ public class EventDAO {
         return null;
     }
 
+   
+
     public List<String> getBannerEvent() {
         String sql = "SELECT e.[banner]\n"
                 + "FROM [dbo].[Event] e\n"

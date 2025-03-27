@@ -62,4 +62,63 @@ public class AccountLib {
             throw new RuntimeException("Error while hashing MD5", e);
         }
     }
+
+    public boolean isValidPassword(String password) {
+
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+
+        boolean hasUpperCase = false;
+        boolean hasLowerCase = false;
+        boolean hasNumber = false;
+        boolean hasSpecialChar = false;
+
+        for (char c : password.toCharArray()) {
+            if (!hasUpperCase && Character.isUpperCase(c)) {
+                hasUpperCase = true;
+                continue;
+            }
+            if (!hasLowerCase && Character.isLowerCase(c)) {
+                hasLowerCase = true;
+                continue;
+            }
+            if (!hasNumber && Character.isDigit(c)) {
+                hasNumber = true;
+                continue;
+            }
+            if (!hasSpecialChar) {
+                hasSpecialChar = true; // Nếu không phải các loại trên, coi là ký tự đặc biệt
+            }
+
+            // Nếu tất cả đã true thì thoát sớm luôn để tiết kiệm thời gian
+            if (hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
+                break;
+            }
+        }
+
+        // Kết quả trả về là phải thỏa mãn đủ cả 4 điều kiện
+        return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+    }
+
+    public static void main(String[] args) {
+        AccountLib validator = new AccountLib();
+
+        // Test cases for different passwords
+        String[] testPasswords = {
+            "Password1!", // Valid password
+            "password", // Invalid (no uppercase, special character, and digit)
+            "PASSWORD123", // Invalid (no lowercase, special character)
+            "Pass123", // Invalid (no special character)
+            "Pass@123", // Valid password
+            "12345678", // Invalid (no letters or special character)
+            "Abcd123@" // Valid password
+        };
+
+        // Test each password and print result
+        for (String password : testPasswords) {
+            boolean isValid = validator.isValidPassword(password);
+            System.out.println("Password: " + password + " is valid: " + isValid);
+        }
+    }
 }

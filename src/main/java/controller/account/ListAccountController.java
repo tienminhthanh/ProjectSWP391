@@ -19,7 +19,7 @@ import model.Account;
 @WebServlet(name = "ListAccountSevlet", urlPatterns = {"/listAccount"})
 public class ListAccountController extends HttpServlet {
 
-    private static final int PAGE_SIZE = 3; // Hiển thị 3 tài khoản mỗi trang
+    private static final int PAGE_SIZE = 5; // Hiển thị 5 tài khoản mỗi trang
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

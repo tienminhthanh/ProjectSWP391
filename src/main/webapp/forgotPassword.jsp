@@ -16,7 +16,7 @@
         <!-- Header -->
         <header class="bg-white shadow w-full mb-4">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-                <a href="home.jsp">
+                <a href="home">
                     <img alt="WIBOOKS Logo" class="h-12" src="./img/logoWibooks-removebg-preview.png" />
                 </a>
                 <div class="flex items-center space-x-4">

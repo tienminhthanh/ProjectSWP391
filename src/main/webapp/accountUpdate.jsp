@@ -23,7 +23,12 @@
                 <h1 class="text-2xl font-semibold mb-4">Update Account</h1>
                 <hr class="mb-6"/>
                 <c:if test="${not empty message}">
-                    <p class="text-red-600 text-center mb-4">${message}</p>
+                    <div style="color: red;">
+                        ${sessionScope.message}
+                    </div>
+
+                    <c:set var="message" value="${sessionScope.message}" scope="session" />
+                    <c:remove var="message" scope="session" />
                 </c:if>
                 <form action="updateAccount" method="post" id="updateAccountForm">
                     <input type="hidden" name="username" value="${account.username}">
@@ -118,19 +123,12 @@
 
 
                 <div class="mt-6">
-                    <c:choose>
-                        <c:when test="${account != null && account.role == 'admin'}">
-                            <a class="text-blue-600 hover:underline" href="listAccount">
-                                <i class="fas fa-arrow-left mr-2"></i> Back
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class="text-blue-600 hover:underline" href="readAccount?username=${account.username}">
-                                <i class="fas fa-arrow-left mr-2"></i> Back
-                            </a>
-                        </c:otherwise>
-                    </c:choose>
+                    <a href="${sessionScope.account.role == 'admin' ? 'listAccount' : 'readAccount?username='}${sessionScope.account.username}"  
+                       class="text-blue-600 hover:underline">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </a>
                 </div>
+
 
             </div>
         </main>
@@ -166,7 +164,7 @@
 
                 document.getElementById("addNewAddress").addEventListener("click", function () {
                     newAddressContainer.classList.remove("hidden");
-                     addressList.classList.toggle("hidden")
+                    addressList.classList.toggle("hidden")
                     newAddressInput.focus();
                 });
 

@@ -10,7 +10,6 @@ package model;
  */
 public class Shipper extends Account {
 
-
     private int totalDeliveries;
 
     public Shipper() {
