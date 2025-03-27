@@ -9,6 +9,7 @@ import java.util.Map;
 import model.Account;
 import model.Admin;
 import model.Customer;
+import model.DeliveryAddress;
 import model.Shipper;
 import model.Staff;
 import utils.*;
@@ -175,6 +176,35 @@ public class AccountDAO {
 
         Object[] params = {newAddress, accountID};  // Tham số cho câu lệnh SQL
         return context.exeNonQuery(sql, params) > 0;  // Thực thi câu lệnh SQL
+    }
+
+    public boolean insertNewAddress(int accountID, String newAddress) throws SQLException {
+        String sql = "INSERT INTO DeliveryAddress (addressDetails, customerID)\n"
+                + "SELECT ?, customerID\n"
+                + "FROM Customer WHERE customerID = ?;";  
+
+        Object[] params = {newAddress, accountID};  
+        return context.exeNonQuery(sql, params) > 0;  
+    }
+    public boolean deleteAddress(int addressID) throws SQLException {
+        String sql = "DELETE FROM DeliveryAddress WHERE addressID = ?";  
+        Object[] params = {addressID};  
+        return context.exeNonQuery(sql, params) > 0;  
+    }
+
+    public List<DeliveryAddress> getAllAddressByCustomerID(int customerID) throws SQLException {
+        List<DeliveryAddress> listAddress = new ArrayList<>();
+        String sql = "select * from DeliveryAddress where customerID = ?";
+        Object[] params = {customerID};
+        ResultSet rs = context.exeQuery(sql, params);
+        while (rs.next()) {
+            DeliveryAddress address = new DeliveryAddress(
+                    rs.getInt("addressID"),
+                    rs.getString("addressDetails"),
+                    rs.getInt("customerID"));
+            listAddress.add(address);
+        }
+        return listAddress;
     }
 
     public List<Account> getAccountsPaginated(String roleFilter, int page, int pageSize) throws SQLException {

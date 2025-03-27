@@ -4,6 +4,7 @@
  */
 package controller.order;
 
+import controller.extend.VNPayRefundAPI;
 import dao.OrderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,9 +13,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.OrderInfo;
 
 /**
  *
@@ -77,14 +80,33 @@ public class DeleteOrderController extends HttpServlet {
             throws ServletException, IOException {
         OrderDAO orderDAO = new OrderDAO();
         String orderID = request.getParameter("id");
+        OrderInfo orderInfo = new OrderInfo();
         int id = Integer.parseInt(orderID);
         try {
 
             System.out.println(id);
             String status = "canceled";
             orderDAO.restoreProductStockByOrderID(id);
-//            orderDAO.deleteOrderProductByOrderID(id);
             orderDAO.updateOrderstatus(id, status);
+            orderInfo = orderDAO.getTransactionInfoByOrderID(id);
+            if (orderInfo.getPaymentMethod().equals("online")) {
+                // Nếu thanh toán online, lưu thông báo vào session
+                HttpSession session = request.getSession();
+                session.setAttribute("refundMessage",
+                        "A refund request has been sent to the bank for the order.<br>"
+                        + "Order ID: " + orderInfo.getOrderID() + ".<br>"
+                        + "Transaction Reference: " + orderInfo.getVnp_TxnRef() + ".<br>"
+                        + "Transaction Number: " + orderInfo.getVnp_TransactionNo() + ".<br>"
+                        + "Transaction Date: " + orderInfo.getVnp_TransactionDate() + ".<br>"
+                        + "Total Amount: " + orderInfo.getPreVoucherAmount() + " đ.<br>"
+                        + "Please wait 2-3 days for processing.<br>"
+                        + "<strong>We sincerely apologize for any inconvenience caused.</strong>");
+                // Điều hướng về danh sách đơn hàng
+                response.sendRedirect("OrderListController");
+                return;
+            }
+
+            request.setAttribute("Transaction", orderInfo);
 
         } catch (SQLException ex) {
             Logger.getLogger(DeleteOrderController.class.getName()).log(Level.SEVERE, null, ex);

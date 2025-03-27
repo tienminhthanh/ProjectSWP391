@@ -52,12 +52,10 @@
                             </c:when>
 
                             <c:when test="${account.role eq 'staff'}">
-                                <p class="flex items-center"><i class="fas fa-clock mr-2"></i> Work Shift: ${account.workShift}</p>
                                 <p class="flex items-center"><i class="fas fa-box mr-2"></i> Total Orders Processed: ${account.totalOrders}</p>
                             </c:when>
 
                             <c:when test="${account.role eq 'shipper'}">
-                                <p class="flex items-center"><i class="fas fa-map-marked-alt mr-2"></i> Delivery Areas: ${account.deliveryAreas}</p>
                                 <p class="flex items-center"><i class="fas fa-truck-moving mr-2"></i> Total Deliveries: ${account.totalDeliveries}</p>
                             </c:when>
                         </c:choose>

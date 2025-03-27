@@ -68,6 +68,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
+
             if (account != null) { // If account exists
                 if (account.getAccountIsActive()) { // Check if the account is active
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
@@ -104,6 +105,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 }
                                 break;
                             case "staff":
+
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking

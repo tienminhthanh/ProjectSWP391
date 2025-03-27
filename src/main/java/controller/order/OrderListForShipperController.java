@@ -92,6 +92,7 @@ public class OrderListForShipperController extends HttpServlet {
                     accountList.add(acc); // Chỉ thêm nếu không null
                 }
             }
+
             final String finalStatus = status;
             orderList = orderList.stream()
                     .filter(order -> finalStatus.equals(order.getDeliveryStatus()))
@@ -138,11 +139,12 @@ public class OrderListForShipperController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
+        String actionType = request.getParameter("actionType");
         Account account = new Account();
         OrderDAO orderDao = new OrderDAO();
         Shipper accShipper = null;
         try {
-             account = orderDao.getShipperByOrderID(orderID); // Lấy thông tin từ DAO
+            account = orderDao.getShipperByOrderID(orderID); // Lấy thông tin từ DAO
             if (account instanceof Shipper) { // Kiểm tra xem có đúng là Shipper không
                 accShipper = (Shipper) account;
             } else {
@@ -154,14 +156,23 @@ public class OrderListForShipperController extends HttpServlet {
         }
         int totalDeliveries;
 
-        String status = "delivered";
-
         try {
-            orderDao.updateDeliverystatus(orderID, status);
+            if ("update".equals(actionType)) {
+                String status = "delivered";
+                orderDao.updateDeliverystatus(orderID, status);
+                totalDeliveries = accShipper.getTotalDeliveries();
+                totalDeliveries = totalDeliveries + 1;
+                orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
+                request.setAttribute("message", "Cập nhật trạng thái đơn hàng thành công!");
+            } else if ("cancel".equals(actionType)) {
+                String statusDeli = "delivered";
+                orderDao.updateDeliverystatus(orderID, statusDeli);
+                String status = "canceled";
+                orderDao.updateOrderstatus(orderID, status);
+               request.setAttribute("message", "Đơn hàng đã bị hủy!");
+            }
+
 //            accshipper = orderDao.getShipperByOrderID(orderID);
-            totalDeliveries = accShipper.getTotalDeliveries();
-            totalDeliveries = totalDeliveries + 1;
-            orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
         } catch (SQLException ex) {
             Logger.getLogger(OrderListForShipperController.class.getName()).log(Level.SEVERE, null, ex);
         }
