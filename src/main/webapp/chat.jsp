@@ -190,7 +190,7 @@
                             }
                         });
             }
-
+            
 
             // Function to scroll to the last message
             function scrollToBottom() {
