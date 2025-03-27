@@ -4,32 +4,26 @@
  */
 package utils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.Normalizer;
-import java.util.ArrayList;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author anhkc
  */
 public class Utility {
+    public LocalDate getLocalDate(Date date, int duration) {
+        return date != null ? date.toLocalDate().plusDays(duration) : null;
+    }
+    
+    public LocalDateTime getLocalDateTime(Timestamp dateTime) {
+        return dateTime != null ? dateTime.toLocalDateTime() : null;
+    }
 
     // Convert LocalDate to String
     public String formatLocalDate(LocalDate date) {
@@ -48,45 +42,21 @@ public class Utility {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
     }
+    
+    //Format String for Display
+    public String toTitleCase(String input) {
+    if (input == null || input.isEmpty()) return input;
 
-    public String removeAccents(String input) {
-        // Normalize and remove diacritics
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        return normalized.replaceAll("\\p{M}", "");
-    }
-
-    public String generateKeywordsFromProductName(String productName) {
-        if (productName == null) {
-            return null;
-        }
-        ArrayList<String> keywords = new ArrayList<>();
-
-        keywords.add(productName);
-        keywords.add(productName.toLowerCase());
-        keywords.add(removeAccents(productName));
-        keywords.add(removeAccents(productName).toLowerCase());
-
-        return String.join(",", keywords);
-    }
-
-    public void processFile(String inputFilePath, String outputFilePath) {
-        try ( BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));  BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(generateKeywordsFromProductName(line));
-                writer.newLine(); // Preserve line breaks
-            }
-            System.out.println("Processing complete! Output saved to: " + outputFilePath);
-
-        } catch (IOException e) {
-            System.err.println("Error reading/writing file: " + e.getMessage());
-        }
-    }
+    return Arrays.stream(input.toLowerCase().split("\\s+"))
+        .filter(word -> !word.isEmpty())
+        .map(word -> word.substring(0, 1).toUpperCase() + 
+                     (word.length() > 1 ? word.substring(1).toLowerCase() : ""))
+        .collect(Collectors.joining(" "));
+}
 
 
     public static void main(String[] args) {
-        Utility main = new Utility();
+//        Utility main = new Utility();
         
     }
 }

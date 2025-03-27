@@ -73,7 +73,7 @@ public class ajaxServlet extends HttpServlet {
             orderInfo.setPaymentMethod(req.getParameter("paymentMethod"));
             List< OrderProduct> orderProductList = new ArrayList<>();
             for (CartItem item : cartItems) {
-                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getCartItemQuantity(), item.getCartItemPrice().intValue());
+                OrderProduct orderProduct = new OrderProduct(item.getProductID(), item.getQuantity(), item.getPriceWithQuantity().intValue());
                 orderProductList.add(orderProduct);
             }
             orderInfo.setOrderProductList(orderProductList);

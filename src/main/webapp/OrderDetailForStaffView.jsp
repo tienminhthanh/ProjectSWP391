@@ -1,6 +1,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -173,7 +176,7 @@
                             <c:if test="${account.role eq 'admin' and orderInfo.orderStatus ne 'pending' }">
                                 <h1 class="text-2xl font-bold ">Order Processing Information</h1>   
                                 <c:forEach var="handler" items="${handlerList}">
-                                    <c:if test="${orderInfo.orderStatus eq 'delivery'}">
+                                    <c:if test="${orderInfo.orderStatus ne 'pending' and orderInfo.orderStatus ne 'canceled'  }">
                                         <c:if test="${handler.role eq 'admin' or handler.role eq 'staff'}">
                                             <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
                                             <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
@@ -182,59 +185,61 @@
                                             <p class="text-lg">Assigned Shipper: <span>${handler.lastName} ${handler.firstName}</span></p>
                                             <p class="text-lg">Shipper ID: <span>${handler.accountID}</span></p>
                                         </c:if>
-                                    </c:if>
+                                    </c:if>                 
+                                    <c:if test="${orderInfo.orderStatus eq 'canceled' and fn:length(handlerList) == 1 and handler.role eq 'customer' }">
+                                        <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
 
-                                    <c:if test="${orderInfo.orderStatus eq 'canceled'}">
-                                        <c:if test="${handler.role eq 'admin' or handler.role eq 'staff' or handler.role eq 'customer' }">
-                                            <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
-                                            <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
-                                        </c:if>
-                                        <c:if test="${handler.role eq 'shipper'}">
-                                            <p class="text-lg">Order refunded by (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
-                                            <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
-                                        </c:if>
+                                    </c:if>   
+                                    <c:if test="${orderInfo.orderStatus eq 'canceled' and fn:length(handlerList) > 1 and (handler.role eq 'staff' or handler.role eq 'admin' )}">
+                                        <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>                           
+                                    <c:if test="${handler.role eq 'shipper'}">
+                                        <p class="text-lg">Order refunded by (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
                                     </c:if>
-                                </c:forEach>
-
                             </c:if>
+                        </c:forEach>
 
-                        </div>
-                    </div>
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr>
-                                <th>Product Image</th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="item" items="${orderInfo.orderProductList}">
-                                <tr>
-                                    <td class="text-center">
-                                        <img src="${item.product.imageURL}" alt="${item.product.productName}">
-                                    </td>
-                                    <td>${item.product.productName}</td>
-                                    <td>${item.quantity}</td>
-                                    <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                    </c:if>
+
                 </div>
             </div>
+            <table class="w-full text-left">
+                <thead>
+                    <tr>
+                        <th>Product Image</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="item" items="${orderInfo.orderProductList}">
+                        <tr>
+                            <td class="text-center">
+                                <img src="${item.product.imageURL}" alt="${item.product.productName}">
+                            </td>
+                            <td>${item.product.productName}</td>
+                            <td>${item.quantity}</td>
+                            <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
         </div>
-        <script>
-            function confirmCancel(event) {
-                if (confirm("Are you sure you want to cancel this order?")) {
-                    alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
-                    return true; // Tiếp tục submit form
-                } else {
-                    event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
-                    return false;
-                }
-            }
-        </script>
-    </body>
+    </div>
+</div>
+<script>
+    function confirmCancel(event) {
+        if (confirm("Are you sure you want to cancel this order?")) {
+            alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
+            return true; // Tiếp tục submit form
+        } else {
+            event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
+            return false;
+        }
+    }
+</script>
+</body>
 </html>

@@ -4,7 +4,6 @@
  */
 package controller.order;
 
-import dao.NotificationDAO;
 import dao.OrderDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
-import model.Notification;
 import model.OrderInfo;
 
 /**

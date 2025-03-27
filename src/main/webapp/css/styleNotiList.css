@@ -1,0 +1,68 @@
+
+/*body {
+    background-color: #f1f5f9;  Nền xám nhạt cho toàn trang 
+    margin: 0;
+    display: flex;
+}*/
+.admin-container {
+    background-color: #ffffff; /* Nền trắng cho container chính */
+    border-radius: 8px;
+
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.notification-scroll {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.notification-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.notification-scroll::-webkit-scrollbar-thumb {
+    background-color: #cccccc; /* Thanh cuộn màu orange-400 */
+    border-radius: 4px;
+}
+.notification-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #f97316; /* Orange-500 khi hover */
+}
+.notification-item {
+    transition: background-color 0.3s;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 10px;
+    background-color: #ffffff; /* Nền trắng cho notification-item */
+    cursor: pointer;
+    /*border: 1px solid #fb923c;  Viền orange-400 để nổi bật */
+}
+.notification-item:hover {
+    background-color: #cccccc; /* Màu nền nhạt (gần orange-50) khi hover */
+}
+.btn-primary {
+    background-color: red;  /*Nút màu orange-400 */
+    border: none;
+    color: #ffffff; /* Chữ trắng */
+}
+.btn-primary:hover {
+    background-color: red;  /*Orange-500 khi hover */
+    font-weight: bold;
+}
+/* Điều chỉnh màu chữ của liên kết và tiêu đề */
+.text-orange-400 {
+    color: #fb923c; /* Màu chữ orange-400 */
+}
+.text-orange-500 {
+    color: #f97316; /* Màu chữ orange-500 khi cần nhấn mạnh */
+}
+
+.p-4 {
+    padding: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1rem !important;
+}
+
+.logo {
+    margin-top: 0px !important;
+}
+
