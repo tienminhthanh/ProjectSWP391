@@ -1,0 +1,80 @@
+
+.admin-container {
+    background-color: #ffffff; /* Nền trắng thay vì #1e293b */
+    color: black; /* Đổi từ trắng sang đen để khớp với nền trắng */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    border: none;
+    color: #ffffff; /* Chữ trắng */
+}
+.btn-primary:hover {
+    background-color: #f97316; /* Orange-500 khi hover */
+}
+.btn-secondary {
+    background-color: #fb923c; /* Orange-400 thay vì #64748b */
+    border: none;
+    color: #ffffff; /* Chữ trắng */
+}
+.btn-secondary:hover {
+    background-color: #f97316; /* Orange-500 khi hover */
+}
+.btn-success {
+    background-color: #fb923c; /* Orange-400 thay vì #10b981 */
+    border: none;
+    color: #ffffff; /* Chữ trắng */
+}
+.btn-success:hover {
+    background-color: #f97316; /* Orange-500 khi hover */
+}
+.customer-row {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+.customer-row:hover {
+    background-color: #cccccc; /* Xám nhạt như notification-item */
+}
+.customer-list-container {
+    position: relative;
+}
+.customer-list {
+    max-height: 0;
+    overflow-y: auto;
+    transition: max-height 0.3s ease-out;
+    background-color: #ffffff; /* Nền trắng thay vì #1e293b */
+    border: 1px solid #fb923c; /* Viền orange-400 thay vì #475569 */
+    border-radius: 5px;
+    margin-top: 5px;
+}
+.customer-list.expanded {
+    max-height: 300px; /* Giữ nguyên */
+}
+.customer-list::-webkit-scrollbar {
+    width: 8px;
+}
+.customer-list::-webkit-scrollbar-thumb {
+    background-color: #cccccc; /* Xám nhạt thay vì #64748b */
+    border-radius: 4px;
+}
+.customer-list::-webkit-scrollbar-thumb:hover {
+    background-color: #f97316; /* Orange-500 khi hover */
+}
+.text-orange-400 {
+    color: #fb923c; /* Thêm để dùng nếu cần */
+}
+.text-orange-500 {
+    color: #f97316; /* Thêm để dùng nếu cần */
+}
+
+.p-4 {
+    padding: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1rem !important;
+}

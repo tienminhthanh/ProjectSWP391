@@ -1,7 +1,6 @@
 package controller.account;
 
 import dao.AccountDAO;
-import jakarta.mail.MessagingException;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

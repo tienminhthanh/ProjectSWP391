@@ -4,11 +4,8 @@
  */
 package controller.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.EventDAO;
 import dao.EventProductDAO;
-import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -18,10 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import model.Product;
 
@@ -72,7 +67,7 @@ public class EventProductDeleteController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ProductDAO pDao = new ProductDAO();
+//        ProductDAO pDao = new ProductDAO();
         EventProductDAO epDao = new EventProductDAO();
         EventDAO eDao = new EventDAO();
         try {
@@ -164,35 +159,35 @@ public class EventProductDeleteController extends HttpServlet {
         response.sendRedirect("eventDetails?eventId=" + eventId);
     }
 
-    private Map<Integer, Integer> parseDiscountData(String jsonString) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<Integer, Integer> discountMap = new HashMap<>();
-
-        try {
-            // Parse JSON thành Map<String, String>
-            Map<String, String> tempMap = objectMapper.readValue(jsonString, new TypeReference<Map<String, String>>() {
-            });
-
-            // Chuyển đổi key và value thành Integer, đồng thời kiểm tra giá trị hợp lệ
-            for (Map.Entry<String, String> entry : tempMap.entrySet()) {
-                try {
-                    int productId = Integer.parseInt(entry.getKey());
-                    int discount = Integer.parseInt(entry.getValue());
-                    if (discount < 0 || discount > 99) {
-                        throw new IllegalArgumentException("Discount for product ID " + productId + " must be between 0 and 99.");
-                    }
-                    discountMap.put(productId, discount);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid number format in discount data for key: " + entry.getKey() + " or value: " + entry.getValue());
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to parse discount data: " + jsonString + " - Error: " + e.getMessage());
-            throw e; // Ném lại ngoại lệ để doPost xử lý
-        }
-
-        return discountMap;
-    }
+//    private Map<Integer, Integer> parseDiscountData(String jsonString) throws Exception {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        Map<Integer, Integer> discountMap = new HashMap<>();
+//
+//        try {
+//            // Parse JSON thành Map<String, String>
+//            Map<String, String> tempMap = objectMapper.readValue(jsonString, new TypeReference<Map<String, String>>() {
+//            });
+//
+//            // Chuyển đổi key và value thành Integer, đồng thời kiểm tra giá trị hợp lệ
+//            for (Map.Entry<String, String> entry : tempMap.entrySet()) {
+//                try {
+//                    int productId = Integer.parseInt(entry.getKey());
+//                    int discount = Integer.parseInt(entry.getValue());
+//                    if (discount < 0 || discount > 99) {
+//                        throw new IllegalArgumentException("Discount for product ID " + productId + " must be between 0 and 99.");
+//                    }
+//                    discountMap.put(productId, discount);
+//                } catch (NumberFormatException e) {
+//                    throw new IllegalArgumentException("Invalid number format in discount data for key: " + entry.getKey() + " or value: " + entry.getValue());
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.err.println("Failed to parse discount data: " + jsonString + " - Error: " + e.getMessage());
+//            throw e; // Ném lại ngoại lệ để doPost xử lý
+//        }
+//
+//        return discountMap;
+//    }
 
     /**
      * Returns a short description of the servlet.

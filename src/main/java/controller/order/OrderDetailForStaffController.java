@@ -6,7 +6,6 @@ package controller.order;
 
 import dao.NotificationDAO;
 import dao.OrderDAO;
-import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,21 +16,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.DeliveryOption;
 import model.Notification;
 import model.OrderInfo;
-import model.OrderProduct;
-import model.Product;
-import model.Shipper;
 
 /**
  *
@@ -165,7 +156,7 @@ public class OrderDetailForStaffController extends HttpServlet {
             notification.setSenderID(account.getAccountID()); // Staff who assigned the order
             notification.setReceiverID(customerID); // Shipper's account ID
             notification.setNotificationDetails("Your order has been canceled by the system! Order ID: " + orderID);
-            notification.setNotificationDateCreated(new Date(System.currentTimeMillis()));
+            notification.setDateCreated(new Date(System.currentTimeMillis()));
             notification.setDeleted(false);
             notification.setNotificationTitle("Order Cancellation");
             notification.setRead(false);

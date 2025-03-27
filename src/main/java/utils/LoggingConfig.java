@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.logging.*;
 
 public class LoggingConfig {
-    private static final Logger LOGGER = Logger.getLogger("WIBOOKS");
+//    private static final Logger LOGGER = Logger.getLogger("WIBOOKS");
     
     static {
         try {
