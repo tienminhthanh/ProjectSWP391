@@ -35,12 +35,12 @@
     </head>
     <body class="bg-gray-50 min-h-screen flex">
 
-        <div class="w-64 bg-orange-400 text-white min-h-screen">
+        <div class="w-64 bg-orange-400 text-white min-h-screen fixed">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 p-6">
+        <div class="flex-1 ml-64 p-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-6">📌 Product List</h1>
             <hr class="mb-6 border-gray-300"/>
             <div class="mt-6 flex flex-col items-start">
@@ -116,15 +116,15 @@
                                     <span>đ</span>
                                 </td>
                                 <!--Stockcount-->
-                                <td class="px-2 py-3 border-b text-center">${ product.specialFilter eq 'pre-order' ? 'N/A' : product.stockCount}</td>
+                                <td class="px-2 py-3 border-b text-center">${ product.specialFilter eq 'upcoming' ? 'N/A' : product.stockCount}</td>
                                 <!--Category-->
                                 <td class="px-2 py-3 border-b text-center">${product.specificCategory.categoryName}</td>
                                 <!--Release Date-->
                                 <td class="release-date px-2 py-3 border-b text-center">${product.releaseDate}</td>
                                 <!--Special Filter-->
                                 <td class="px-2 py-3 border-b text-center">
-                                    <span class="px-3 py-1 rounded text-white ${product.specialFilter eq 'new' ? 'bg-yellow-500' : product.specialFilter eq 'pre-order' ?  'bg-blue-500' : 'bg-black'}">
-                                    ${ product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'pre-order' ? 'Pre-Order' : 'Unset'}
+                                    <span class="px-3 py-1 rounded text-white ${product.specialFilter eq 'new' ? 'bg-yellow-500' : product.specialFilter eq 'upcoming' ?  'bg-blue-500' : 'bg-black'}">
+                                    ${ product.specialFilter eq 'new' ? 'New' : product.specialFilter eq 'upcoming' ? 'Upcoming' : 'Unset'}
                                     </span>
                                 </td>
                                 <!--Type-->

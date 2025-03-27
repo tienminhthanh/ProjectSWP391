@@ -8,13 +8,13 @@
         <div class="sale-label">${currentProduct.discountPercentage}%</div>
     </c:if>
 
-    <!-- New / Pre-order Ribbon -->
+    <!-- New / UPCOMING Ribbon -->
     <c:choose>
         <c:when test="${currentProduct.specialFilter == 'new'}">
             <div class="ribbon ribbon-new">NEW</div>
         </c:when>
-        <c:when test="${currentProduct.specialFilter == 'pre-order' && currentProduct.discountPercentage == 0}">
-            <div class="ribbon ribbon-pre">PRE-ORDER</div>
+        <c:when test="${currentProduct.specialFilter == 'upcoming' && currentProduct.discountPercentage == 0}">
+            <div class="ribbon ribbon-pre">UPCOMING</div>
         </c:when>
     </c:choose>
 
@@ -51,9 +51,9 @@
     <!-- Product Name -->
     <a href="productDetails?id=${currentProduct.productID}&type=${currentProduct.generalCategory}" class="product-title" title="${currentProduct.productName}">${currentProduct.productName}</a>
 
-    <!--Stock count & price for NON pre-order-->
+    <!--Stock count & price for NON UPCOMING -->
     <c:choose>
-        <c:when test="${currentProduct.specialFilter ne 'pre-order'}">
+        <c:when test="${currentProduct.specialFilter ne 'upcoming'}">
             <!-- Stock count section -->
             <p class="stock-count">Stock count: ${currentProduct.stockCount}</p>
 
@@ -77,14 +77,10 @@
             </p>
         </c:when>
         <c:otherwise>
-            <!-- Remaining slots -->
-            <c:if test="${currentProduct.stockCount <= 10}">
-                <p class="stock-count">Remaining slots: <span class="text-blue-500 font-bold md:text-lg">${currentProduct.stockCount}</span></p>
-            </c:if>
 
             <!-- Price Section -->
             <p class="product-price">
-                <span class="discount-price"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ</span>
+                <span class="discount-price text-blue-600"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ</span>
             </p>
         </c:otherwise>
     </c:choose>
@@ -94,7 +90,7 @@
         <c:when test="${currentProduct.discountPercentage != 0}">
             <p class="fomo-info sale-expiry">Sale ends on: <span>${currentProduct.eventEndDate}</span></p>
         </c:when>
-        <c:when test="${currentProduct.specialFilter == 'pre-order'}">
+        <c:when test="${currentProduct.specialFilter == 'upcoming'}">
             <p class="fomo-info release-date">Release on: <span>${currentProduct.releaseDate}</span></p>
         </c:when>
     </c:choose>
@@ -114,15 +110,15 @@
         <input type="hidden" name="productID" value="${currentProduct.productID}">
         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
-        <input type="hidden" name="priceWithQuantity">
-        <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'pre-order' 
+        <input type="hidden" name="priceWithQuantity"/>
+        <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'upcoming' 
                       && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
               <button name="action" value="add" ${empty sessionScope.account ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </c:if>
     </form>
 
     <!-- If out of stock -> overlay -->
-    <c:if test="${currentProduct.stockCount == 0 and currentProduct.specialFilter ne 'pre-order'}">
+    <c:if test="${currentProduct.stockCount == 0 and currentProduct.specialFilter ne 'upcoming'}">
         <div class="out-of-stock">Out of Stock</div>
     </c:if>
 

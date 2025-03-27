@@ -47,6 +47,17 @@ public class ChatDAO {
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
+    
+     public boolean updateStatusSeen(int user, Chat chat) throws SQLException {
+        int dialogueID = getOrCreateDialogueID(chat.getSenderID(), chat.getReceiverID());
+        String sql = "UPDATE [dbo].[Message] SET isSeen = 1 WHERE senderID = ? AND dialogueID = ? AND isSeen = 0";
+        Object[] params = {
+            user,
+            dialogueID
+        };
+        int rowsAffected = context.exeNonQuery(sql, params);
+         return rowsAffected > 0;
+    }
 
     private int getOrCreateDialogueID(int user1ID, int user2ID) throws SQLException {
         String selectSql = "SELECT TOP 1 dialogueID FROM [dbo].[Dialogue] "
@@ -105,5 +116,12 @@ public class ChatDAO {
                 rs.getInt("dialogueID"),
                 rs.getBoolean("isSeen")
         );
+    }
+    public static void main(String[] args) throws SQLException {
+        ChatDAO cd = new ChatDAO();
+        Chat chat = new Chat();
+        chat.setReceiverID(5);
+        chat.setSenderID(ADMIN_ID);
+        cd.updateStatusSeen(ADMIN_ID, chat);
     }
 }

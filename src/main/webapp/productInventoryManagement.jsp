@@ -29,6 +29,17 @@
 
         <!--Forms-->
         <script src="js/scriptProductForms.js" defer></script>
+
+        <style>
+            input[readonly]
+            {
+                background-color: #f3cf8d66;
+                color: brown;
+                font-weight: bold;
+                border-color: #f3cf8d66;
+
+            }
+        </style>
     </head>
 
     <body class="bg-gray-50 min-h-screen flex">
@@ -76,14 +87,14 @@
                             if (options) {
                                 options.forEach(option => {
                                     option.classList.toggle("hidden", (`${requestScope.type}` === "book" && option.value === 'sculptor') || (`${requestScope.type}` === 'merch' && option.value === 'author'));
-                                    if(option.classList.contains('hidden')){
-                                        option.selected = false ;
+                                    if (option.classList.contains('hidden')) {
+                                        option.selected = false;
                                     }
                                 });
                             }
                         });
                     }
-                } 
+                }
             });
 
 

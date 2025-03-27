@@ -140,7 +140,7 @@
                     <!-- Pagination Links -->
                     <c:if test="${totalPages > 1}">
 
-                        <div class="relative mt-6">
+                        <div class="relative mt-6 pb-4">
                             <nav aria-label="Page navigation" class="w-full">
                                 <ul class="flex flex-wrap justify-center max-w-full flex-row">
                                     <c:if test="${currentPage > 1}">

@@ -27,7 +27,7 @@
                 <label for="priceBook">Price:</label>
                 <input type="number" id="priceBook" name="price" step="0.5" min="1" max="10000" required>
                 <label for="stockCountBook">Stock Count:</label>
-                <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" required>
+                <input type="number" id="stockCountBook" name="stockCount" min="0"  max="1000" value="0" required readonly>
             </div>
         </div>
 
@@ -53,7 +53,7 @@
                     <label for="specialFilterBook">Special Filter:</label>
                     <select id="specialFilterBook" name="specialFilter" required>
                         <option value="unset">Unset</option>
-                        <option value="pre-order">Pre-Order</option>
+                        <option value="upcoming">Upcoming</option>
                         <option value="new">New</option>
                     </select>
                 </span>

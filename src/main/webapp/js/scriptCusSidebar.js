@@ -20,7 +20,7 @@ function closeMobileMenu() {
 
 
 
-function updateHrefOnHover(anchorElement) {
+function updateHrefOnHover(anchorElement,thisType = "",requestedType = "") {
 
     //    Paths to productCatalog, ensure the function only applies to productCatalog
     const paths = ["/search", "/category", "/genre", "/publisher", "/creator",
@@ -64,6 +64,25 @@ function updateHrefOnHover(anchorElement) {
         if(filterName === 'ftBrn' && pathname === '/brand'){
             return;
         }
+        
+        
+        //Ensure only type-related filters are modified
+        //For /search, modify the type directly
+         if( thisType.toString() !== requestedType.toString()){
+            return;
+        }
+        
+//        if(pathname !== '/search' && thisType.toString() !== requestedType.toString()){
+//            return;
+//        }
+//        else if(thisType.toString() !== requestedType.toString()){
+//            let value = params.get('type') ? thisType : null;
+//            if(value !== null){
+//                params.set('type',thisType);
+//            }
+//        }
+        
+        
         
         //Get the whole list of the filter group from url params
         let filterList = params.get(filterName) ? params.get(filterName).split(',') : [];
@@ -251,35 +270,35 @@ document.addEventListener("DOMContentLoaded", function () {
     //Update display of selected filter
     function updateFilterAppearance(filterName, listID) {
         
-    if (!params.has(filterName)) {
-        return;
-        
-    }
-    
-    const list = document.querySelector(`#${listID}`);
-    if (!list) {
-        console.warn("Filter Group not found!");
-        return;
-    }
-    
-    const values = params.get(filterName).split(",");
+        if (!params.has(filterName)) {
+            return;
 
-    values.forEach(value => {
-        const anchor = list.querySelector(`li a[data-filter="${filterName}-${value}"]`);
-        if (!anchor) {
+        }
+
+        const list = document.querySelector(`#${listID}`);
+        if (!list) {
+            console.warn("Filter Group not found!");
             return;
         }
 
-        let parent = anchor.parentElement;
-        let closeIcon = anchor.querySelector(`span.hidden`);
-        if (!parent || !closeIcon) {
-            return;
-        }
+        const values = params.get(filterName).split(",");
 
-        parent.classList.add("bg-gray-300", "hover:bg-gray-400");
-        closeIcon.classList.remove("hidden");
-    });
-}
+        values.forEach(value => {
+            const anchor = list.querySelector(`li a[data-filter="${filterName}-${value}"]`);
+            if (!anchor) {
+                return;
+            }
+
+            let parent = anchor.parentElement;
+            let closeIcon = anchor.querySelector(`span.hidden`);
+            if (!parent || !closeIcon) {
+                return;
+            }
+
+            parent.classList.add("bg-gray-300", "hover:bg-gray-400");
+            closeIcon.classList.remove("hidden");
+        });
+    }
     updateFilterAppearance("ftGnr", "genList");
     updateFilterAppearance("ftCrt", "creList");
     updateFilterAppearance("ftCtg", "catList");

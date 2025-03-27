@@ -44,7 +44,7 @@
                 </span>
                 <span class="!w-1/3 !pl-0">
                     <label class="!block !text-left" for="stockCountBook">Quantity:</label>
-                    <input class="!w-full" type="number" id="stockCountBook" name="quantity" min="0"  max="1000" required>
+                    <input class="!w-full" type="number" id="stockCountBook" name="quantity" min="1"  max="1000" required>
                 </span>
             </div>
         </div>
