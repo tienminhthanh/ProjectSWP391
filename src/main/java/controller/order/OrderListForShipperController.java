@@ -169,10 +169,7 @@ public class OrderListForShipperController extends HttpServlet {
                 orderDao.updateDeliverystatus(orderID, statusDeli);
                 String status = "canceled";
                 orderDao.updateOrderstatus(orderID, status);
-
-                totalDeliveries = accShipper.getTotalDeliveries();
-                totalDeliveries = totalDeliveries + 1;
-                request.setAttribute("message", "Đơn hàng đã bị hủy!");
+               request.setAttribute("message", "Đơn hàng đã bị hủy!");
             }
 
 //            accshipper = orderDao.getShipperByOrderID(orderID);
