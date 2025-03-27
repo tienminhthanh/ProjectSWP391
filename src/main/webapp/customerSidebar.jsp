@@ -93,6 +93,7 @@
         </ul>
     </div>
     <div class="mb-4 bg-white">
+        <c:set var="path" value="${pageContext.request.servletPath}"/>
         <h3 class="text-lg font-bold relative pl-5 mb-3 pb-1 text-black">
             <span class="absolute left-0 top-0 h-full w-2 bg-orange-500"></span>
             <span class="absolute left-0 bottom-0 w-full h-0.5 bg-gray-300/50"></span>
@@ -102,7 +103,11 @@
             <c:forEach var="catEntry" items="${applicationScope.categories}">
                 <c:set var="key" value="${catEntry.key}"/>
                 <c:set var="val" value="${catEntry.value}"/>
-                <c:if test="${val > 0 and key.generalCategory eq requestScope.type}">
+                <c:if test="${val > 0 
+                              and (
+                              (path ne '/productCatalog.jsp') 
+                              or (key.generalCategory eq requestScope.type)
+                              )}">
                     <li class="p-2 mb-2 rounded-md mx-2">
                         <a href="category?id=${key.categoryID}" data-filter="ftCtg-${key.categoryID}" onmouseover="updateHrefOnHover(this,`${key.generalCategory}`,`${type}`)" class="flex flex-row items-center hover:font-bold">
                             <span class="w-[calc(90%)]">${key.categoryName} (${val})</span>
@@ -125,7 +130,11 @@
             <c:forEach var="creEntry" items="${applicationScope.creators}" varStatus="status">
                 <c:set var="key" value="${creEntry.key}"/>
                 <c:set var="val" value="${creEntry.value}"/>
-                <c:if test="${val> 0 and key.generalCategory eq requestScope.type}">
+                <c:if test="${val > 0 
+                              and (
+                              (path ne '/productCatalog.jsp') 
+                              or (key.generalCategory eq requestScope.type)
+                              )}">
                     <c:set var="i" value="${i + 1}"/>
                     <li class="${i >= 4 ? 'hidden' : ''} p-2 mb-2 rounded-md mx-2">
                         <a href="creator?id=${key.creatorID}" data-filter="ftCrt-${key.creatorID}" onmouseover="updateHrefOnHover(this,`${key.generalCategory}`,`${type}`)" class="flex flex-row items-center hover:font-bold">
