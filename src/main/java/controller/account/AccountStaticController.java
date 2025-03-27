@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Account;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,13 +34,13 @@ public class AccountStaticController extends HttpServlet {
             // Tổng số tài khoản
             int totalAccounts = accountDAO.getTotalAccounts(null);
 
-            // Tài khoản đang hoạt động
+            // Số tài khoản đang hoạt động
             int activeAccounts = accountDAO.getTotalActiveAccounts();
 
-            // Tài khoản bị khóa
+            // Số tài khoản bị khóa
             int lockedAccounts = totalAccounts - activeAccounts;
 
-            // Tài khoản mới trong ngày, tuần, tháng
+            // Số tài khoản mới trong ngày, tuần, tháng
             int newAccountsDay = accountDAO.getNewAccountsByPeriod("day");
             int newAccountsWeek = accountDAO.getNewAccountsByPeriod("week");
             int newAccountsMonth = accountDAO.getNewAccountsByPeriod("month");
@@ -47,10 +48,10 @@ public class AccountStaticController extends HttpServlet {
             // Thống kê theo vai trò
             Map<String, Integer> accountsByRole = accountDAO.getAccountsByRole();
 
-            // Thống kê tăng trưởng theo tháng
-            Map<String, Integer> monthlyGrowth = accountDAO.getMonthlyAccountGrowth();
+            // Thống kê tăng trưởng theo tuần
+            Map<String, Integer> weeklyGrowth = accountDAO.getWeeklyAccountGrowth();
 
-            // Truyền dữ liệu vào request
+            // Gửi dữ liệu sang JSP
             request.setAttribute("totalAccounts", totalAccounts);
             request.setAttribute("activeAccounts", activeAccounts);
             request.setAttribute("lockedAccounts", lockedAccounts);
@@ -58,7 +59,7 @@ public class AccountStaticController extends HttpServlet {
             request.setAttribute("newAccountsWeek", newAccountsWeek);
             request.setAttribute("newAccountsMonth", newAccountsMonth);
             request.setAttribute("accountsByRole", accountsByRole);
-            request.setAttribute("monthlyGrowth", monthlyGrowth);
+            request.setAttribute("weeklyGrowth", weeklyGrowth);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("accountStatic.jsp");
             dispatcher.forward(request, response);
@@ -70,3 +71,4 @@ public class AccountStaticController extends HttpServlet {
         }
     }
 }
+    

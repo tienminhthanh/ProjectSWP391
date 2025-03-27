@@ -32,7 +32,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
      * Handles GET requests by forwarding users to the login page.
      */
     @Override
-   protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String currentURL = request.getParameter("currentURL");
         if (currentURL != null && !currentURL.trim().isEmpty()) {
@@ -53,7 +53,8 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
         // Retrieve login details from the request
         String username = request.getParameter("username");
-        String password = lib.hashMD5(request.getParameter("password")); // Hash the password using MD5
+        String password = request.getParameter("password"); // Hash the password using MD5
+        password=lib.hashMD5(password);
         HttpSession session = request.getSession();
 
         // Retrieve previous attempted username from session
@@ -67,6 +68,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
         try {
             Account account = accountDAO.getAccountByUsername(username);
+
 
             if (account != null) { // If account exists
                 if (account.getAccountIsActive()) { // Check if the account is active
@@ -104,6 +106,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 }
                                 break;
                             case "staff":
+
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
@@ -160,4 +163,14 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         request.setAttribute("username", username);
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
+
+    public static void main(String[] args) {
+        // Simulate the servlet process manually
+        
+        
+       
+     
+       
+    }
+
 }

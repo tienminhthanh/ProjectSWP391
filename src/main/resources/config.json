@@ -1,0 +1,7 @@
+{
+  "vnp_TmnCode": "032ISTIY",
+  "vnp_HashSecret": "OW0S5NSH34KCTAMZ8YYB9JDNTCIPEJQW",
+  "vnp_Url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+  "vnp_ReturnUrl": "https://111a-2402-800-6343-c8-600c-80cf-8620-be3d.ngrok-free.app/VNPayReturn",
+  "vnp_IpnUrl": "https://111a-2402-800-6343-c8-600c-80cf-8620-be3d.ngrok-free.app/VNPayIPN"
+}

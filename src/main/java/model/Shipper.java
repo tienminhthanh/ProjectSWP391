@@ -15,15 +15,16 @@ public class Shipper extends Account {
     public Shipper() {
     }
 
-    public Shipper(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountIsActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountIsActive);
+    public Shipper(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountAccountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountAccountIsActive);
     }
 
-    public Shipper( int totalDeliveries, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
-        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, isActive);
+    public Shipper(int totalDeliveries, int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountAccountIsActive) {
+        super(accountID, username, password, role, firstName, lastName, email, phoneNumber, birthDate, accountAccountIsActive);
         this.totalDeliveries = totalDeliveries;
     }
 
+ 
 
     public int getTotalDeliveries() {
         return totalDeliveries;

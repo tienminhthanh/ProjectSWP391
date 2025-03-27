@@ -4,9 +4,12 @@
  */
 package dao;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.logging.Logger;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Stream;
 import model.*;
@@ -504,7 +508,9 @@ public class ProductDAO {
     }
 
     private String formatQueryBroad(String query) {
-        String normalizedQuery = query.replaceAll("[^A-Za-z0-9_']", " ").trim();
+        
+        String normalizedQuery = query.replaceAll("[/\\\\().\"!,:-]", " ").trim();
+        System.out.println(normalizedQuery);
         String[] queryParts = normalizedQuery.split("\\s+");
         String[] formattedParts = new String[queryParts.length * 2]; // Double the size for FORMSOF and upcomingfix
 
@@ -519,7 +525,8 @@ public class ProductDAO {
     }
 
     private String formatQueryTight(String query, String logic) {
-        String normalizedQuery = query.replaceAll("[^A-Za-z0-9_']", " ").trim();
+        String normalizedQuery = query.replaceAll("[/\\\\().\"!,:-]", " ").trim();
+        System.out.println(normalizedQuery);
         String[] queryParts = normalizedQuery.split("\\s+");
         for (int i = 0; i < queryParts.length; i++) {
             queryParts[i] = "FORMSOF(INFLECTIONAL, " + queryParts[i] + ")";
@@ -527,6 +534,7 @@ public class ProductDAO {
 
         return String.join(" " + logic + " ", queryParts);
     }
+    
 
     private String processSort(String sortCriteria) {
         switch (sortCriteria) {
@@ -1006,7 +1014,7 @@ public class ProductDAO {
 
                 creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
                         tool.toTitleCase(rs.getString("creatorRole"))).setGeneralCategory(rs.getString("generalCategory")),
-                         rs.getInt("productCount"));
+                        rs.getInt("productCount"));
             }
             return creatorMap;
         }
@@ -2139,8 +2147,18 @@ public class ProductDAO {
         try {
             ProductDAO productDAO = new ProductDAO();
             // Checking the final map
-            System.out.println(productDAO.getProductById(2)); // Output: {1=[Item A, Item B]}
-        } catch (SQLException ex) {
+            while (true) {
+                Scanner sc = new Scanner(System.in);
+                System.out.print("Enter keywords: ");
+                String i = sc.nextLine();
+                System.out.println(i);
+                System.out.println(productDAO.formatQueryBroad(i)); // Output: {1=[Item A, Item B]}
+                System.out.println(productDAO.formatQueryTight(i, "AND")); // Output: {1=[Item A, Item B]}
+                if (i.equalsIgnoreCase("break")) {
+                    break;
+                }
+            }
+        } catch (Exception ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 

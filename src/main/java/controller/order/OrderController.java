@@ -1,5 +1,6 @@
 package controller.order;
 
+import dao.AccountDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
 import dao.VoucherDAO;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
 import model.CartItem;
+import model.DeliveryAddress;
 import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
@@ -72,6 +74,8 @@ public class OrderController extends HttpServlet {
         String action = request.getParameter("action");
         Map<Integer, Double> computedValues = new HashMap<>();
         List<Double> computedValuesList = new ArrayList<>();
+        AccountDAO accountDAO = new AccountDAO();
+        List<DeliveryAddress> listAddress = new ArrayList<>();
         int bestVoucherID = 0;
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
 
@@ -93,8 +97,18 @@ public class OrderController extends HttpServlet {
             }
 
             for (CartItem item : cartItems) {
+                Product product = null;
+                ProductDAO productDAO = new ProductDAO();
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 subtotal += priceWithQuantity.doubleValue();
+                try {
+                    product = productDAO.getProductById(item.getProductID());
+                    double a = product.getDiscountPercentage() > 0 ? product.getPrice() * (100 - product.getDiscountPercentage()) / 100 : product.getPrice();
+                    item.getProduct().setPrice(a);
+                } catch (SQLException ex) {
+                    Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
 
             VoucherDAO vDao = new VoucherDAO();
@@ -135,11 +149,22 @@ public class OrderController extends HttpServlet {
             request.setAttribute("bestVoucherID", bestVoucherID);
             request.setAttribute("listVoucher", validVouchers);
             Account account = (Account) session.getAttribute("account");
-            if (account != null) {
-                request.setAttribute("fullName", account.getUsername());
-                request.setAttribute("phone", account.getPhoneNumber());
-                request.setAttribute("email", account.getEmail());
+
+            try {
+                account = accountDAO.getAdditionalInfo(account);
+                session.setAttribute("account", account);
+                listAddress = accountDAO.getAllAddressByCustomerID(account.getAccountID());
+
+                if (account != null) {
+                    request.setAttribute("addressList", listAddress);
+                    request.setAttribute("fullName", account.getUsername());
+                    request.setAttribute("phone", account.getPhoneNumber());
+                    request.setAttribute("email", account.getEmail());
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
             }
+
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("deliveryOptions", deliveryOptions);
             request.setAttribute("computedValues", computedValues);
@@ -165,6 +190,9 @@ public class OrderController extends HttpServlet {
             ProductDAO productDAO = new ProductDAO();
             Product product = null;
             try {
+                account = accountDAO.getAdditionalInfo(account);
+                session.setAttribute("account", account);
+                listAddress = accountDAO.getAllAddressByCustomerID(account.getAccountID());
                 product = productDAO.getProductById(productID);
             } catch (SQLException ex) {
                 Logger.getLogger(OrderController.class.getName()).log(Level.SEVERE, null, ex);
@@ -177,14 +205,14 @@ public class OrderController extends HttpServlet {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
             if (product.getDiscountPercentage() > 0) {
                 Double priceWithDiscount = 0.0;
                 priceWithDiscount = product.getPrice() * (100 - product.getDiscountPercentage()) / 100;
                 product.setPrice(priceWithDiscount);
             }
 
-            Double sum = product.getPrice() * quantity;
-
+            Double sum = product.getDiscountPercentage() > 0 ? (quantity * product.getPrice() * (100 - product.getDiscountPercentage()) / 100) : (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
             VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
@@ -220,6 +248,7 @@ public class OrderController extends HttpServlet {
                     break;
                 }
             }
+            request.setAttribute("addressList", listAddress);
             request.setAttribute("bestVoucherID", bestVoucherID);
             request.setAttribute("computedValues", computedValues);
             request.setAttribute("listVoucher", validVouchers);
@@ -252,6 +281,8 @@ public class OrderController extends HttpServlet {
         Double orderTotal = Double.parseDouble(orderTotalStr);
         Account account = (Account) session.getAttribute("account");
         String voucherIDParam = request.getParameter("voucherID");
+        String selectedAddress = request.getParameter("selectedAddress");
+        String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
 
         OrderDAO orderDAO = new OrderDAO();
         VoucherDAO voucherDAO = new VoucherDAO();
@@ -267,7 +298,11 @@ public class OrderController extends HttpServlet {
         }
         try {
             orderInfo.setCustomerID(account.getAccountID());
-            orderInfo.setDeliveryAddress(request.getParameter("addr"));
+            if (selectedAddress != "") {
+                orderInfo.setDeliveryAddress(orderDAO.getAddressDetailByAddressID(Integer.parseInt(selectedAddress)));
+            } else {
+                orderInfo.setDeliveryAddress(defaultDeliveryAddress);
+            }
             orderInfo.setDeliveryOptionID(Integer.parseInt(request.getParameter("shippingOption")));
             orderInfo.setPaymentMethod(request.getParameter("paymentMethod"));
             orderInfo.setPreVoucherAmount(orderTotal);

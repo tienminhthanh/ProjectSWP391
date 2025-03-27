@@ -177,33 +177,28 @@ public class EventUpdateController extends HttpServlet {
                 fileName = banner;
             }
 
-            // Tạo đối tượng Event và cập nhật
-            Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
-                    existingEvent.isIsActive(), dateStarted.toString(), existingEvent.isExpiry());
-
             LocalDate today = LocalDate.now();
-            LocalDate createDate = LocalDate.parse(event.getDateStarted(), formatter);
-            LocalDate expiryDate = createDate.plusDays(event.getDuration());
+            LocalDate createDate = LocalDate.parse(dateStarted.toString(), formatter);
+            LocalDate expiryDate = createDate.plusDays(duration);
 
             boolean isActive = false;
-            if (!(expiryDate.isBefore(today)) && !(LocalDate.parse(event.getDateStarted())).isAfter(today)) {
+            //ngày hết hạn >= hôm nay               ngày bắt đầu <= hôm nay
+            LocalDate startDate = LocalDate.parse(dateStarted.toString());
+            if (!expiryDate.isBefore(today) && (startDate.isBefore(today) || startDate.isEqual(today))) {
                 isActive = true;
             }
 
-            EventProductDAO epDAO = new EventProductDAO();
+            // Tạo đối tượng Event và cập nhật
+            Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
+                    isActive, dateStarted.toString(), existingEvent.isExpiry());
 
-            if (eDao.updateEvent(event) && !isActive) {
-                epDAO.deleteListProductInEvent(event.getEventID());
-                if (epDAO.getListProductInEvent(event.getEventID()).isEmpty()) {
-                    session.setAttribute("message", "Event updated successfully! List Product is removed");
-                    session.setAttribute("messageType", "success");
-                } else {
-                    session.setAttribute("message", "Event updated successfully!");
-                    session.setAttribute("messageType", "success");
-                }
-            } else if (eDao.updateEvent(event) && isActive) {
+            EventProductDAO epDAO = new EventProductDAO();
+            if (eDao.updateEvent(event)) {
                 session.setAttribute("message", "Event updated successfully!");
                 session.setAttribute("messageType", "success");
+                if (!event.isExpiry()) {
+                    epDAO.deleteListProductInEvent(event.getEventID());
+                }
             } else {
                 session.setAttribute("message", "Failed to update event.");
                 session.setAttribute("messageType", "error");

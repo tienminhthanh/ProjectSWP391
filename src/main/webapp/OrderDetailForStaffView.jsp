@@ -1,6 +1,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -111,27 +114,33 @@
             <div class="header">
                 <div class="flex items-center">
                     <h1 class="text-xl font-bold ml-4">Order Detail</h1>
+                </div>
 
-                </div>
-                <div class="flex items-center">
-                    <i class="fas fa-bell mr-4"></i>
-                    <a href="readAccount" class="fas fa-user-circle mr-4"></a>
-                    <span>${account.role}</span>
-                    <a href="logout" class="fas fa-sign-out-alt ml-4"></a>
-                </div>
             </div>  
             <div class="p-4">
                 <div class="bg-white p-4 rounded shadow">
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
                         <div class="space-x-2">
                             <c:if test="${ account.role eq 'admin'}">
-                                <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel();">
+                                <form action="OrderDetailForStaffController" method="POST" onsubmit="return confirmCancel(event);">
                                     <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                     <input type="hidden" name="customerID" value="${customer.accountID}">
                                     <input type="hidden" name="action" value="cancel">
                                     <c:if test="${ orderInfo.orderStatus eq 'pending'}">
                                         <button type="submit" class="bg-gray-200 text-black px-4 py-2 rounded">CANCEL ORDER</button>
                                     </c:if>
+                                </form>
+                            </c:if>
+                            <c:if test="${order.orderStatus eq 'pending'}">
+                                <form action="OrderListForStaffController" method="POST" class="inline" onsubmit="return confirmUpdate()">
+                                    <input type="hidden" name="orderID" value="${order.orderID}"/>
+                                    <select name="shipperID" class="select" required>
+                                        <option value="">Choose Shipper</option>
+                                        <c:forEach var="shipper" items="${shipperList}">
+                                            <option value="${shipper.accountID}">${shipper.username} (${shipper.totalDeliveries})</option>
+                                        </c:forEach>
+                                    </select>
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Assign</button>
                                 </form>
                             </c:if>
 
@@ -164,59 +173,73 @@
                             <p><i class="fas fa-coins icon"></i> Total Amount: <fmt:formatNumber value="${orderInfo.preVoucherAmount}" pattern="#,##0"/> đ</p>
                             <p><i class="fas fa-check-circle icon mb-2""></i> Payment Status: ${orderInfo.paymentStatus}</p>
 
-                            
-                            
                             <c:if test="${account.role eq 'admin' and orderInfo.orderStatus ne 'pending' }">
-                                <h1 class="text-2xl font-bold ">Order Processing Information</h1>  
-                                <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>  
-                                <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p> 
-                                <c:if test="${orderInfo.orderStatus ne 'canceled' }">
-                                    <p class="text-lg">Assigned Shipper: <span>${accShipper.lastName} ${accShipper.firstName}</span></p>  
-                                    <p class="text-lg">Shipper ID: <span>${accShipper.accountID}</span></p>
-                                </c:if>
+                                <h1 class="text-2xl font-bold ">Order Processing Information</h1>   
+                                <c:forEach var="handler" items="${handlerList}">
+                                    <c:if test="${orderInfo.orderStatus ne 'pending' and orderInfo.orderStatus ne 'canceled'  }">
+                                        <c:if test="${handler.role eq 'admin' or handler.role eq 'staff'}">
+                                            <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                            <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
+                                        </c:if>
+                                        <c:if test="${handler.role eq 'shipper'}">
+                                            <p class="text-lg">Assigned Shipper: <span>${handler.lastName} ${handler.firstName}</span></p>
+                                            <p class="text-lg">Shipper ID: <span>${handler.accountID}</span></p>
+                                        </c:if>
+                                    </c:if>                 
+                                    <c:if test="${orderInfo.orderStatus eq 'canceled' and fn:length(handlerList) == 1 and handler.role eq 'customer' }">
+                                        <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
 
+                                    </c:if>   
+                                    <c:if test="${orderInfo.orderStatus eq 'canceled' and fn:length(handlerList) > 1 and (handler.role eq 'staff' or handler.role eq 'admin' )}">
+                                        <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>                           
+                                    <c:if test="${handler.role eq 'shipper'}">
+                                        <p class="text-lg">Order refunded by (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
+                                    </c:if>
                             </c:if>
+                        </c:forEach>
 
-                        </div>
-                    </div>
+                    </c:if>
 
-
-
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr>
-                                <th>Product Image</th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="item" items="${orderInfo.orderProductList}">
-                                <tr>
-                                    <td class="text-center">
-                                        <img src="${item.product.imageURL}" alt="${item.product.productName}">
-                                    </td>
-                                    <td>${item.product.productName}</td>
-                                    <td>${item.quantity}</td>
-                                    <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
                 </div>
             </div>
+            <table class="w-full text-left">
+                <thead>
+                    <tr>
+                        <th>Product Image</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="item" items="${orderInfo.orderProductList}">
+                        <tr>
+                            <td class="text-center">
+                                <img src="${item.product.imageURL}" alt="${item.product.productName}">
+                            </td>
+                            <td>${item.product.productName}</td>
+                            <td>${item.quantity}</td>
+                            <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
         </div>
-        <script>
-            function confirmCancel(event) {
-                if (confirm("Are you sure you want to cancel this order?")) {
-                    alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
-                    return true; // Tiếp tục submit form
-                } else {
-                    event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
-                    return false;
-                }
-            }
-        </script>
-    </body>
+    </div>
+</div>
+<script>
+    function confirmCancel(event) {
+        if (confirm("Are you sure you want to cancel this order?")) {
+            alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
+            return true; // Tiếp tục submit form
+        } else {
+            event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
+            return false;
+        }
+    }
+</script>
+</body>
 </html>

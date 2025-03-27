@@ -155,48 +155,55 @@
 
                                 <!-- Add to Event form with availability check - Admin only -->
                                 <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() eq 'admin'}">
-                                    <c:if test="${not isSoldOrPreOrder}">
-                                        <c:set var="p_e_status" value="${productEventStatus}"/>
-                                        <form class="flex flex-col items-stretch px-2 space-y-2" 
-                                              action="eventProductAddNew" 
-                                              method="post" 
-                                              onsubmit="return validateForm() && prepareDiscountData()" novalidate>
+                                    <c:choose>
+                                        <c:when test="${not isSoldOrPreOrder and product.isActive eq true}">
+                                            <c:set var="p_e_status" value="${productEventStatus}"/>
+                                            <form class="flex flex-col items-stretch px-2 space-y-2" 
+                                                  action="eventProductAddNew" 
+                                                  method="post" 
+                                                  onsubmit="return validateForm() && prepareDiscountData()" novalidate>
 
-                                            <!-- Ẩn ID sản phẩm -->
-                                            <input type="hidden" name="selectedProducts" value="${product.productID}" />
+                                                <!-- Ẩn ID sản phẩm -->
+                                                <input type="hidden" name="selectedProducts" value="${product.productID}" />
 
-                                            <!-- Ẩn URL hiện tại -->
-                                            <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}" />
+                                                <!-- Ẩn URL hiện tại -->
+                                                <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}" />
 
-                                            <c:choose>
-                                                <c:when test="${not empty event}">
-                                                    <span class="w-full p-4 border border-gray-300 rounded-lg bg-green-100 text-green-800 text-md text-center">
-                                                        Now Sale On: ${event.eventName}
-                                                    </span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <!-- Chọn sự kiện -->
-                                                    <select class="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="eventId">
-                                                        <c:forEach var="eventItem" items="${eventList}">
-                                                            <option value="${eventItem.eventID}">${eventItem.eventName}</option>
-                                                        </c:forEach>
-                                                    </select>
+                                                <c:choose>
+                                                    <c:when test="${not empty event}">
+                                                        <span class="w-full p-4 border border-gray-300 rounded-lg bg-green-100 text-green-800 text-md text-center">
+                                                            Now Sale On: ${event.eventName}
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <!-- Chọn sự kiện -->
+                                                        <select class="w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-md" name="eventId">
+                                                            <c:forEach var="eventItem" items="${eventList}">
+                                                                <option value="${eventItem.eventID}">${eventItem.eventName}</option>
+                                                            </c:forEach>
+                                                        </select>
 
-                                                    <!-- Nhập Discount -->
-                                                    <input type="number" id="discountInput" placeholder="Discount %" min="1" max="99" step="1" required
-                                                           class="w-full p-4 border border-gray-300 rounded-lg text-center focus:ring-blue-500 focus:border-blue-500 text-md"/>
+                                                        <!-- Nhập Discount -->
+                                                        <input type="number" id="discountInput" placeholder="Discount %" min="1" max="99" step="1" required
+                                                               class="w-full p-4 border border-gray-300 rounded-lg text-center focus:ring-blue-500 focus:border-blue-500 text-md"/>
 
-                                                    <!-- Trường ẩn để gửi discount dạng JSON -->
-                                                    <input type="hidden" id="discountData" name="discountData" />
+                                                        <!-- Trường ẩn để gửi discount dạng JSON -->
+                                                        <input type="hidden" id="discountData" name="discountData" />
 
-                                                    <!-- Nút Submit -->
-                                                    <button class="w-full p-4 rounded-lg bg-orange-400 text-center text-white text-md" type="submit">
-                                                        Add to Event
-                                                    </button>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </form>
-                                    </c:if>
+                                                        <!-- Nút Submit -->
+                                                        <button class="w-full p-4 rounded-lg bg-orange-400 text-center text-white text-md" type="submit">
+                                                            Add to Event
+                                                        </button>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </form>
+                                        </c:when>
+                                        <c:otherwise>
+                                             <p class="text-center text-xl text-red-400 py-8 md:px-2 bg-red-100 my-16 max-w-full">
+                                                    DEACTIVATED
+                                                </p>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:if>
                             </div>
 
@@ -557,6 +564,56 @@
 
 
 
+                                                  document.addEventListener('DOMContentLoaded', function () {
+                                                      const creators = document.querySelectorAll('.cre-details-gr');
+                                                      if (creators) {
+                                                          creators.forEach(cre => {
+                                                              let content = cre.querySelector('td:nth-child(2)');
+                                                              if (content) {
+                                                                  let text = content.innerText.trim();
+                                                                  text = text !== '' ? text : 'Unknown';
+                                                                  content.innerText = text;
+                                                              }
+                                                          });
+                                                      }
+                                                  });
+
+
+        </script>
+        <script>
+            function validateForm() {
+                let discountInput = document.getElementById('discountInput');
+                let discountValue = discountInput.value.trim();
+                if (discountValue === "" || isNaN(discountValue) || discountValue < 1 || discountValue > 99) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        html: 'Product have invalid discounts.<br>Please enter a discount between 1% and 99%.'
+                    });
+                    return false; // Ngăn form submit nếu giá trị không hợp lệ
+                }
+                return true; // Cho phép submit nếu hợp lệ
+            }
+
+        </script>
+        <script>
+            function prepareDiscountData() {
+                const discountInput = document.getElementById("discountInput");
+                const discountDataField = document.getElementById("discountData");
+                const productId = document.querySelector("input[name='selectedProducts']").value;
+                if (!discountInput.value) {
+                    alert("Please enter a valid discount.");
+                    return false;
+                }
+
+                // Tạo JSON: { "productID": discount }
+                const discountData = {}
+                ;
+                discountData[productId] = parseInt(discountInput.value);
+                // Gán vào input ẩn
+                discountDataField.value = JSON.stringify(discountData);
+                return true; // Cho phép gửi form
+            }
 
         </script>
 

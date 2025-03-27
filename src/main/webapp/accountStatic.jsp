@@ -11,10 +11,9 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body class="bg-gray-50 min-h-screen flex">
-        <div class="w-64 bg-orange-400 text-white min-h-screen fixed left-30">
+        <div class="w-64 bg-orange-400 text-white min-h-screen fixed">
             <jsp:include page="navbarAdmin.jsp" flush="true"/> 
         </div>
-
 
         <!-- Main Content -->
         <div class="flex-1 ml-64 p-6">
@@ -81,9 +80,9 @@
                     <canvas id="accountsByRolePieChart"></canvas>
                 </div>
 
-                <!-- Line Chart: Account Growth -->
+                <!-- Line Chart: Account Growth Weekly -->
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Account Growth (1 Months)</h2>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Account Growth (Weekly)</h2>
                     <canvas id="accountGrowthChart"></canvas>
                 </div>
             </div>
@@ -134,17 +133,17 @@
                     responsive: true
                     }
             });
-            // Line Chart: Account Growth
+            // Line Chart: Account Growth Weekly
             const accountGrowthCtx = document.getElementById('accountGrowthChart').getContext('2d');
             new Chart(accountGrowthCtx, {
             type: 'line',
                     data: {
-                    labels: [<c:forEach items="${monthlyGrowth.keySet()}" var="month"> '${month}', </c:forEach>].reverse(), // Reverse the order of months
+                    labels: [<c:forEach items="${weeklyGrowth.keySet()}" var="week"> '${week}', </c:forEach>],
                             datasets: [{
-                            label: 'New Accounts',
-                                    data: [<c:forEach items="${monthlyGrowth.values()}" var="count"> ${count}, </c:forEach>].reverse(), // Reverse the order of data points
+                            label: 'New Accounts per Week',
+                                    data: [<c:forEach items="${weeklyGrowth.values()}" var="count"> ${count}, </c:forEach>],
                                     borderColor: 'rgba(75, 192, 192, 1)',
-                                    tension: 0.1,
+                                    tension: 0.3,
                                     fill: false
                             }]
                     },
@@ -155,7 +154,6 @@
                             }
                     }
             });
-
         </script>
     </body>
 </html>

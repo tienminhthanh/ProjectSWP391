@@ -99,11 +99,9 @@
     <c:set var="cartQuantity" value="0" />
     <c:forEach var="cartItem" items="${sessionScope.cartItems}">
         <c:if test="${cartItem.productID == currentProduct.productID}">
-            <c:set var="cartQuantity" value="${cartItem.quantity}" />
+            <c:set var="cartQuantity" value="${cartItem.cartItemQuantity}" />
         </c:if>
     </c:forEach>
-
-
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
     <form action="cart" method="post" onsubmit="return checkStockCard(${cartQuantity}, ${currentProduct.stockCount}, event)">
         <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->

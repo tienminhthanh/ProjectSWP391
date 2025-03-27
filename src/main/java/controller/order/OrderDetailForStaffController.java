@@ -16,7 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
@@ -80,14 +82,14 @@ public class OrderDetailForStaffController extends HttpServlet {
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = null;
-        Account handler = null;
+        List<Account> handlerList = new ArrayList<>();
         String orderID = request.getParameter("id");
         int valueVoucher = 0;
         try {
             if (orderID != null && !orderID.isEmpty()) {  // Kiểm tra orderID hợp lệ
                 int id = Integer.parseInt(orderID);
                 customer = orderDAO.getCustomerByOrderID(id);
-                handler = orderDAO.getOrderHandlerByOrderID(id);
+                handlerList = orderDAO.getOrderHandlerByOrderID(id);
                 accShipper = orderDAO.getShipperByOrderID(id);
                 if (customer != null) {
                     int idcus = customer.getAccountID();
@@ -113,7 +115,7 @@ public class OrderDetailForStaffController extends HttpServlet {
         Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
         orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
         request.setAttribute("account", account);
-        request.setAttribute("handler", handler);
+        request.setAttribute("handlerList", handlerList);
         request.setAttribute("accShipper", accShipper);
         request.setAttribute("orderInfo", orderInfo);
         request.setAttribute("customer", customer);
@@ -145,8 +147,11 @@ public class OrderDetailForStaffController extends HttpServlet {
         String cusID = request.getParameter("customerID");
 
         try {
+             orderDao.restoreProductStockByOrderID(orderID);
+
             int customerID = Integer.parseInt(cusID);
             orderDao.updateOrderstatus(orderID, status);
+           
             orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
             // Send notification to shipper
             Notification notification = new Notification();

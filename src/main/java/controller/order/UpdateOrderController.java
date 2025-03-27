@@ -76,12 +76,17 @@ public class UpdateOrderController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        String newAddress = request.getParameter("newAddress");
-
+        String selectedAddress = request.getParameter("selectedAddress");
+        String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
         OrderDAO orderDAO = new OrderDAO();
         boolean updated = false;
+
         try {
-            updated = orderDAO.updateDeliveryAddressByOrderID(orderID, newAddress);
+            if (selectedAddress != "") {
+                updated = orderDAO.updateDeliveryAddressByOrderID(orderID, orderDAO.getAddressDetailByAddressID(Integer.parseInt(selectedAddress)));
+            } else {
+                updated = orderDAO.updateDeliveryAddressByOrderID(orderID, defaultDeliveryAddress);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(UpdateOrderController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -91,7 +96,7 @@ public class UpdateOrderController extends HttpServlet {
         } else {
             response.getWriter().println("Failed to update address.");
         }
-        processRequest(request, response);
+
     }
 
     /**

@@ -701,7 +701,7 @@ public class ProductManagementController extends HttpServlet {
             String message = transactionState ? "The product has been " + action + "d" + " successfully"
                     : "Failed to " + action + " the product!";
             request.setAttribute(transactionState ? "successfulMessage" : "failedMessage", message);
-
+            
             request.getRequestDispatcher("manageProductList").forward(request, response);
 
         } catch (Exception e) {

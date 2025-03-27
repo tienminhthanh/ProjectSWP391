@@ -11,15 +11,15 @@ public class Account {
     private String email;
     private String phoneNumber;
     private String birthDate;
-    private boolean accountAccountIsActive;
-    // private String dateCreated; 
+    private boolean isActive;
+    private String dateCreated; 
 
     
 
     public Account() {
     }
 
-    public Account(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean accountAccountIsActive) {
+    public Account(int accountID, String username, String password, String role, String firstName, String lastName, String email, String phoneNumber, String birthDate, boolean isActive) {
         this.accountID = accountID;
         this.username = username;
         this.password = password;
@@ -29,7 +29,7 @@ public class Account {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
-        this.accountAccountIsActive = accountAccountIsActive;
+        this.isActive = isActive;
     }
 
     public int getAccountID() {
@@ -105,11 +105,11 @@ public class Account {
     }
 
     public boolean getAccountIsActive() {
-        return accountAccountIsActive;
+        return isActive;
     }
 
-    public void setAccountIsActive(boolean accountAccountIsActive) {
-        this.accountAccountIsActive = accountAccountIsActive;
+    public void setAccountIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
 }
