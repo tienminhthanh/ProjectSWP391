@@ -99,7 +99,7 @@
     <c:set var="cartQuantity" value="0" />
     <c:forEach var="cartItem" items="${sessionScope.cartItems}">
         <c:if test="${cartItem.productID == currentProduct.productID}">
-            <c:set var="cartQuantity" value="${cartItem.cartItemQuantity}" />
+            <c:set var="cartQuantity" value="${cartItem.priceWithQuantity}" />
         </c:if>
     </c:forEach>
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
@@ -111,7 +111,7 @@
         <input type="hidden" name="priceWithQuantity"/>
         <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'upcoming' 
                       && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
-              <button name="action" value="add" ${empty sessionScope.account ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+              <button name="action" value="add" ${empty sessionScope.account || sessionScope.account.getRole() ne 'customer' ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </c:if>
     </form>
 
