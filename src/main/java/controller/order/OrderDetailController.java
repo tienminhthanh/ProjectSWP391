@@ -96,12 +96,14 @@ public class OrderDetailController extends HttpServlet {
             orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
             voucher = voucherDao.getVoucherByID(orderInfo.getVoucherID());
             double valueOfVoucher = 0;
-            if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
-                valueOfVoucher = voucher.getVoucherValue();
-            } else {
-                valueOfVoucher = (orderInfo.getPreVoucherAmount() * voucher.getVoucherValue()) / 100;
-                if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
-                    valueOfVoucher = voucher.getMaxDiscountAmount();
+            if (voucher != null) {
+                if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                    valueOfVoucher = voucher.getVoucherValue();
+                } else {
+                    valueOfVoucher = (orderInfo.getPreVoucherAmount() * voucher.getVoucherValue()) / 100;
+                    if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                        valueOfVoucher = voucher.getMaxDiscountAmount();
+                    }
                 }
             }
             account = accountDAO.getAdditionalInfo(account);
