@@ -34,6 +34,10 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false); // Lấy session hiện tại, không tạo mới
+        if (session != null) {
+            session.invalidate(); 
+        }
         String currentURL = request.getParameter("currentURL");
         if (currentURL != null && !currentURL.trim().isEmpty()) {
             request.setAttribute("currentURL", currentURL);

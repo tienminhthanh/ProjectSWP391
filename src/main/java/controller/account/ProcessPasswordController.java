@@ -23,10 +23,7 @@ public class ProcessPasswordController extends HttpServlet {
         String confirmPassword = request.getParameter("confirmPassword");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
+       
         AccountLib lib = new AccountLib();
         Account account = (Account) session.getAttribute("account");
 

@@ -29,13 +29,7 @@
                 <hr class="mb-4"/>
 
                 <!-- Displaying the message -->
-                <div class="text-center mb-4">
-                    <c:if test="${not empty message}">
-                        <div class="text-red-600">
-                            <c:out value="${message}" />
-                        </div>
-                    </c:if>
-                </div>
+                
 
                 <!-- OTP Input Form -->
                 <form action="emailForgot" method="post" id="otpForm">
@@ -57,6 +51,12 @@
                         </button>
                     </div>
                 </form>
+                <c:if test="${not empty message}">
+                    <p class="text-green-600 text-center mt-4">${message}</p>
+                </c:if>
+                <c:if test="${not empty errorMessage}">
+                    <p class="text-red-600 text-center mt-4">${errorMessage}</p>
+                </c:if>
 
                 <!-- Resend OTP -->
                 <div class="text-center mb-4">
