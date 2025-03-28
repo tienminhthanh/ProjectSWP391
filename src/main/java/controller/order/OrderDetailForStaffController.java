@@ -100,12 +100,15 @@ public class OrderDetailForStaffController extends HttpServlet {
                     int idcus = customer.getAccountID();
                     orderInfo = orderDAO.getOrderByID(id, idcus);
                     voucher = voucherDao.getVoucherByID(orderInfo.getVoucherID());
-                    if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
-                        valueOfVoucher = voucher.getVoucherValue();
-                    } else {
-                        valueOfVoucher = (orderInfo.getPreVoucherAmount() * voucher.getVoucherValue()) / 100;
-                        if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
-                            valueOfVoucher = voucher.getMaxDiscountAmount();
+
+                    if (voucher != null) {
+                        if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
+                            valueOfVoucher = voucher.getVoucherValue();
+                        } else {
+                            valueOfVoucher = (orderInfo.getPreVoucherAmount() * voucher.getVoucherValue()) / 100;
+                            if (valueOfVoucher >= voucher.getMaxDiscountAmount()) {
+                                valueOfVoucher = voucher.getMaxDiscountAmount();
+                            }
                         }
                     }
                 }
