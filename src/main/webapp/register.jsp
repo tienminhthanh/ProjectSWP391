@@ -127,7 +127,7 @@
                     <p class="text-red-600 text-center mt-4">${errorMessage}</p>
                 </c:if>
                 <c:if test="${not empty message}">
-                    <p class="text-green-600 text-center mt-4">${message}</p>
+                    <p class="text-red-600 text-center mt-4">${message}</p>
                 </c:if>
             </div>
         </main>
