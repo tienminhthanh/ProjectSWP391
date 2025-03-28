@@ -42,10 +42,11 @@
                             <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                             <input type="hidden" id="actionType" name="actionType" value="">
 
-                            <c:if test="${ orderInfo.deliveryStatus eq 'shipped'}">      
-                                <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
-                                        onclick="submitForm('cancel')">Cancel</button>
-
+                            <c:if test="${ orderInfo.deliveryStatus eq 'shipped' }">      
+                                <c:if test="${ orderInfo.paymentStatus ne 'paid' }">      
+                                    <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
+                                            onclick="submitForm('cancel')">Cancel</button>
+                                </c:if>
                                 <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
                                         onclick="submitForm('update')">Update Status</button>
                             </c:if>
