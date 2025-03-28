@@ -69,6 +69,13 @@ public class UpdateAccountController extends HttpServlet {
         String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
         String actionType = request.getParameter("actionType");
         String selectedAddress = request.getParameter("selectedAddress");
+        AccountLib lib = new AccountLib();
+        if (!lib.isValidPhoneNumber(phoneNumber)) {
+            session.setAttribute("message", "The phone number must be phone Viet Nam has 10 number");
+            session.setAttribute("account", loggedInAccount);
+            response.sendRedirect("updateAccount?username=" + username);
+            return;
+        }
 
         // Chỉ admin mới có quyền cập nhật vai trò
         String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("role") : null;

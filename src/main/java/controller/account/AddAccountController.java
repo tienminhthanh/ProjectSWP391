@@ -62,6 +62,11 @@ public class AddAccountController extends HttpServlet {
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
+            if (!lib.isValidPhoneNumber(phoneNumber)) {
+                request.setAttribute("errorMessage", "The phonenumber must be phone Viet Nam");
+                request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
+                return;
+            }
             if (accountDAO.isEmailExist(email, null)) {
                 request.setAttribute("errorMessage", "The email address is already in use.");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
@@ -76,7 +81,7 @@ public class AddAccountController extends HttpServlet {
             boolean success = accountDAO.createAccount(username, password, firstName, lastName, email, phoneNumber, birthDate, role);
             if (success) {
                 request.setAttribute("message", "Account successfully created!");
-             
+
             } else {
                 request.setAttribute("message", "There was an issue creating the account. Please try again.");
             }

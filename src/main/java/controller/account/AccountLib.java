@@ -88,17 +88,38 @@ public class AccountLib {
                 continue;
             }
             if (!hasSpecialChar) {
-                hasSpecialChar = true; // Nếu không phải các loại trên, coi là ký tự đặc biệt
+                hasSpecialChar = true;
             }
 
-            // Nếu tất cả đã true thì thoát sớm luôn để tiết kiệm thời gian
             if (hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
                 break;
             }
         }
 
-        // Kết quả trả về là phải thỏa mãn đủ cả 4 điều kiện
         return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+    }
+
+    public boolean isValidPhoneNumber(String phoneNumber) {
+
+        if (phoneNumber == null || phoneNumber.length() != 10 || !phoneNumber.startsWith("0")) {
+            return false;
+        }
+
+        try {
+            Long.parseLong(phoneNumber);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        String[] validPrefixes = {"09", "03", "08", "07", "05", "06"};
+
+        for (String prefix : validPrefixes) {
+            if (phoneNumber.startsWith(prefix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void main(String[] args) {
@@ -119,6 +140,20 @@ public class AccountLib {
         for (String password : testPasswords) {
             boolean isValid = validator.isValidPassword(password);
             System.out.println("Password: " + password + " is valid: " + isValid);
+        }
+        String[] testPhoneNumbers = {
+            "0987654321", // Valid phone number
+            "0123456789", // Valid phone number
+            "1234567890", // Invalid phone number (does not start with 0)
+            "09876A4321", // Invalid phone number (contains non-numeric character)
+            "0999999999", // Valid phone number
+            "012345678" // Invalid phone number (too short)
+        };
+
+        // Test each phone number and print result
+        for (String phoneNumber : testPhoneNumbers) {
+            boolean isValid = validator.isValidPhoneNumber(phoneNumber);
+            System.out.println("Phone Number: " + phoneNumber + " is valid: " + isValid);
         }
     }
 }

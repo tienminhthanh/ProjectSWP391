@@ -48,7 +48,7 @@ public class EmailAuthenticationController extends HttpServlet {
         String generatedOTP = (String) session.getAttribute("otp");
 
         if (generatedOTP == null || enteredOTP == null || !enteredOTP.equals(generatedOTP)) {
-            request.setAttribute("message", "Invalid OTP. Please try again.");
+            request.setAttribute("errorMessage", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("verifyEmail.jsp").forward(request, response);
             return;
         }
