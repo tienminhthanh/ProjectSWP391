@@ -73,11 +73,13 @@
                         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-full w-full hover:bg-blue-700 transition duration-200">
                             Verify
                         </button>
-                       
+
                     </div>
 
                 </form>
-
+                <c:if test="${not empty message}">
+                    <p class="text-green-600 text-center mt-4">${message}</p>
+                </c:if>
                 <!-- Resend OTP -->
                 <div class="text-center mb-4">
                     <a href="emailAuthentication" class="text-blue-600 hover:underline">
