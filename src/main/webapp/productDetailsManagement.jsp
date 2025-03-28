@@ -525,15 +525,25 @@
             });
 
             document.addEventListener("DOMContentLoaded", function () {
-                const mess = `${message}`;
-                if (mess && mess.trim() !== "") {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: mess
-                    });
+    const mess = `${sessionScope.message}`;
+    const messType = `${sessionScope.messageType}` || 'error';
+    const productId = `${product.productID}`; // Lấy productId từ product
+    if (mess && mess.trim() !== "" && !window.formValidationFailed) {
+        Swal.fire({
+            icon: messType === "success" ? "success" : "error",
+            title: messType === "success" ? "Success" : "Error",
+            text: mess
+        }).then(() => {
+            // Gọi servlet manageProductDetails với action=clearMessage để xóa session
+            fetch(`manageProductDetails?productId=${productId}&action=clearMessage`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 }
-            });
+            }).catch(error => console.error('Error clearing session message:', error));
+        });
+    }
+});
 
             function validateForm() {
                 let discountInput = document.getElementById('discountInput');

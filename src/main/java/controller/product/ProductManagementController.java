@@ -68,7 +68,14 @@ public class ProductManagementController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String path = request.getServletPath();
+        String action = request.getParameter("action");
 
+        // Nếu action=clearMessage, xóa session và trả về response
+        if ("clearMessage".equals(action)) {
+            HttpSession session = request.getSession();
+            session.removeAttribute("message");
+            session.removeAttribute("messageType");
+        }
         switch (path) {
             case "/manageProductList":
                 manageList(request, response);
