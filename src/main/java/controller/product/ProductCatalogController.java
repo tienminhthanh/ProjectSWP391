@@ -263,7 +263,8 @@ public class ProductCatalogController extends HttpServlet {
             if (message.length() > 0) {
                 request.setAttribute("message", message);
             }
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("type", type);
             request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("pageTitle", pageTitle.toString());
@@ -277,8 +278,8 @@ public class ProductCatalogController extends HttpServlet {
 
         } catch (Exception e) {
             System.out.println(e.toString());
-            request.setAttribute("errorMessage", e.toString());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+            request.setAttribute("message", "Search is not available at the moment!");
+            request.getRequestDispatcher("home").forward(request, response);
         }
 
     }
@@ -396,7 +397,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", selectedCategory.getGeneralCategory());
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -500,7 +502,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "book");
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -603,7 +606,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "book");
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -701,7 +705,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", selectedCreator.getGeneralCategory());
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -806,7 +811,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "merch");
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -910,7 +916,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "merch");
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -1014,7 +1021,8 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("message", message);
             }
             request.setAttribute("type", "merch");
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
             request.setAttribute("pageSize", PAGE_SIZE);
@@ -1109,7 +1117,8 @@ public class ProductCatalogController extends HttpServlet {
             if (message.length() > 0) {
                 request.setAttribute("message", message);
             }
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("type", type);
 
             request.setAttribute("currentPage", page);
@@ -1209,7 +1218,8 @@ public class ProductCatalogController extends HttpServlet {
             if (message.length() > 0) {
                 request.setAttribute("message", message);
             }
-            request.setAttribute("currentURL", formatURL(currentURL));
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("type", type);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
@@ -1267,6 +1277,7 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("product", requestedProduct);
                 request.setAttribute("type", type);
                 request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
 
             }
                 request.getRequestDispatcher("productDetails.jsp").forward(request, response);
@@ -1393,6 +1404,7 @@ public class ProductCatalogController extends HttpServlet {
             }
 
             request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
             request.setAttribute("type", type);
             request.setAttribute("breadCrumb", breadCrumb);
             request.setAttribute("pageTitle", "Leaderboard - " + getDisplayTextBasedOnType(type));

@@ -19,7 +19,7 @@
                     <label class="!block !text-left !w-full" for="product-selector">Product:</label>
                     <select class="!w-full" id="product-selector" name="product" required>
                         <c:forEach var="pro" items="${productList}">
-                            <option value="${pro.productID}">${pro.productName} (In stock: ${pro.stockCount} - Release: ${pro.releaseDate})</option>
+                            <option value="${pro.productID}">${pro.productName} (In stock: ${pro.stockCount} - Price: ${pro.price} - Release: ${pro.releaseDate})</option>
                         </c:forEach>
                     </select>
                 </span>

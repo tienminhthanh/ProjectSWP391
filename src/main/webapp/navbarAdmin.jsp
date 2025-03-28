@@ -57,6 +57,10 @@
         </a>
     </c:if>
     <c:if test="${not empty sessionScope.account and (sessionScope.account.getRole() == 'admin' or sessionScope.account.getRole() == 'staff')}">
+         <a class="flex items-center p-2 hover:bg-orange-800 ${pageContext.request.requestURI.contains('readAccount') ? 'active' : ''}" href="readAccount">
+            <i class="fas fa-user-circle mr-2"></i> 
+            My information
+        </a>
         <a class="flex items-center p-2 hover:bg-orange-800 ${pageContext.request.requestURI.contains('manageProductList') ? 'active' : ''}" href="manageProductList">
             <i class="fas fa-cogs mr-2"></i>
             Product List

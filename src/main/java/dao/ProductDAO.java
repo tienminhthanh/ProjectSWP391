@@ -2039,6 +2039,7 @@ public class ProductDAO {
                 + "       p.productName, \n"
                 + "       p.specialFilter, \n"
                 + "       p.releaseDate, \n"
+                + "       p.price, \n"
                 + "       s.supplierName\n"
                 + "FROM ImportItem AS ii\n"
                 + "INNER JOIN Product AS p ON ii.productID = p.productID\n"
@@ -2056,7 +2057,7 @@ public class ProductDAO {
                 ImportItem item = new ImportItem()
                         .setImportItemID(rs.getInt("importItemID"))
                         .setProduct(new Product().setProductID(rs.getInt("productID")).setProductName(rs.getString("productName"))
-                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate))
+                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate).setPrice(rs.getDouble("price")))
                         .setSupplier(supplier)
                         .setImportDate(importDate)
                         .setImportPrice(rs.getDouble("importPrice"))
@@ -2122,6 +2123,7 @@ public class ProductDAO {
         String sql = "SELECT productID, \n"
                 + "       productName, \n"
                 + "       stockCount, \n"
+                + "       price, \n"
                 + "       releaseDate\n"
                 + "FROM Product\n"
                 + "WHERE releaseDate <= DATEADD(DAY, 30, GETDATE())\n"
@@ -2133,6 +2135,7 @@ public class ProductDAO {
                 productList.add(new Product().setProductID(rs.getInt("productID"))
                         .setProductName(rs.getString("productName"))
                         .setStockCount(rs.getInt("stockCount"))
+                        .setPrice(rs.getDouble("price"))
                         .setReleaseDate(rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX));
             }
             return productList;
