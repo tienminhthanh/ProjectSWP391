@@ -32,6 +32,7 @@ public class ForgotPasswordController extends HttpServlet {
         Account account = new Account();
         try {
             account = accountDAO.getAccountByEmail(email);
+            
         } catch (SQLException ex) {
             Logger.getLogger(ForgotPasswordController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -42,8 +43,9 @@ public class ForgotPasswordController extends HttpServlet {
             return;
         } else {
             HttpSession session = request.getSession();
-            session.setAttribute("tempEmail", email); 
-            request.getRequestDispatcher("emailForgot").forward(request, response);
+            session.setAttribute("tempEmail", email);
+            session.setAttribute("account", account);
+            response.sendRedirect("emailForgot");
         }
 
     }

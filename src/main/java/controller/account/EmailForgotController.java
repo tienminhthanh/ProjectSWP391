@@ -34,7 +34,7 @@ public class EmailForgotController extends HttpServlet {
             request.setAttribute("message", "A verification code has been sent to your email.");
         } catch (MessagingException e) {
             e.printStackTrace();
-            request.setAttribute("message", "Failed to send email. Please try again.");
+            request.setAttribute("errorMessage", "Failed to send email. Please try again.");
         }
         // Forward to the page where user will enter OTP to reset the password
         request.getRequestDispatcher("verifyForgot.jsp").forward(request, response);
@@ -48,7 +48,7 @@ public class EmailForgotController extends HttpServlet {
         String email = (String) request.getSession().getAttribute("tempEmail");
 
         if (generatedOTP == null || enteredOTP == null || !enteredOTP.equals(generatedOTP)) {
-            request.setAttribute("message", "Invalid OTP. Please try again.");
+            request.setAttribute("errorMessage", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("verifyForgot.jsp").forward(request, response);
             return;
         }

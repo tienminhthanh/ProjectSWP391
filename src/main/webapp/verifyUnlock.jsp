@@ -56,6 +56,12 @@
                         </button>
                     </div>
                 </form>
+                <c:if test="${not empty message}">
+                    <p class="text-green-600 text-center mt-4">${message}</p>
+                </c:if>
+                <c:if test="${not empty errorMessage}">
+                    <p class="text-red-600 text-center mt-4">${errorMessage}</p>
+                </c:if>
 
                 <!-- Resend OTP -->
                 <div class="text-center mb-4">
