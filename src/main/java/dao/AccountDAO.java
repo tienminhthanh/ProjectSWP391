@@ -48,8 +48,12 @@ public class AccountDAO {
         int accountID = account.getAccountID();
         String sql = "INSERT INTO Customer (customerID, defaultDeliveryAddress, totalPurchasePoints) VALUES (?, ?, 0)";
         Object[] params = {accountID, defaultAddress};
-        insertNewAddress(accountID, defaultAddress);
-        return context.exeNonQuery(sql, params) > 0;
+        boolean success = false;
+        success = context.exeNonQuery(sql, params) > 0;
+        if(success){
+            success = insertNewAddress(accountID, defaultAddress);
+        }
+        return success;
     }
 
     public Account getAccountByEmail(String email) throws SQLException {
