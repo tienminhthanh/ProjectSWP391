@@ -4,12 +4,9 @@
  */
 package dao;
 
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -839,6 +836,7 @@ public class ProductDAO {
                     + "	JOIN Product Pr ON Pr.productID = SH.productID\n"
                     + "    WHERE saleDate >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)\n"
                     + "    AND saleDate < DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)\n"
+                    + "    AND Pr.productIsActive = 1\n"
                     + "    GROUP BY SH.productID,Pr.averageRating,Pr.numberOfRating \n"
                     + "),\n");
         }
@@ -1565,6 +1563,26 @@ public class ProductDAO {
                 }
 
                 break;
+            case "importitem":
+                if (newObjects[0] instanceof ImportItem) {
+                    sql.append("INSERT INTO ImportItem (productID, supplierID, importPrice, "
+                            + "importQuantity, importDate, isImported) "
+                            + "VALUES (?, ?, ?, ?, ?, ?)");
+
+                    ImportItem item = (ImportItem) newObjects[0];
+                    Product product = item.getProduct();
+                    Supplier supplier = item.getSupplier();
+                    
+                    paramList.add(product.getProductID());
+                    paramList.add(supplier.getSupplierID());
+                    paramList.add(item.getImportPrice());
+                    paramList.add(item.getImportQuantity());
+                    paramList.add(item.getImportDate());
+                    paramList.add(item.isIsImported());
+
+                }
+                
+                break;
             default:
                 throw new IllegalArgumentException("Unexpected entity name: " + classNames);
         }
@@ -1695,6 +1713,16 @@ public class ProductDAO {
                 sql.append("WHERE productID = ?\n");
                 paramList.add(productID);
 
+                break;
+            case "queuedimportproduct":
+                if (updatedObjs[0] instanceof ImportItem) {
+                    sql.append("UPDATE Product SET lastModifiedTime = GETDATE() WHERE productID = ?\n");
+                    
+                    ImportItem item = (ImportItem) updatedObjs[0];
+                    Product product = item.getProduct();
+                    paramList.add(product != null ? product.getProductID() : 0);
+                }
+                
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected entity name: " + classNames);
@@ -2124,20 +2152,51 @@ public class ProductDAO {
     }
 
     public boolean queueImport(ImportItem queuedItem) throws SQLException {
-        String sql = "INSERT INTO ImportItem (productID, supplierID, importPrice, "
-                + "importQuantity, importDate, isImported) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        if (queuedItem == null) {
+            throw new IllegalArgumentException("Cannot queue null import!");
+        }
 
-        Object[] params = {
-            queuedItem.getProduct().getProductID(),
-            queuedItem.getSupplier().getSupplierID(),
-            queuedItem.getImportPrice(),
-            queuedItem.getImportQuantity(),
-            queuedItem.getImportDate(),
-            queuedItem.isIsImported()
-        };
+        Connection connection = null;
+        try {
+            connection = context.getConnection();
+            connection.setAutoCommit(false);
+            SimpleEntry<String, Object[]> stmtEntry;
+            ImportItem[] itemArr = new ImportItem[]{queuedItem};
 
-        return context.exeNonQuery(sql, params) > 0;
+            stmtEntry = generateInsertStatement(itemArr, "ImportItem");
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                throw new SQLException("Failed to add new import to queue!");
+            }
+            stmtEntry = generateUpdateStatement(itemArr, "QueuedImportProduct");
+            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
+                throw new SQLException("Failed to update product info after queueing!");
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (Exception e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    e.addSuppressed(ex);
+                }
+
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true); // Restore auto-commit
+                    connection.close();
+                } catch (SQLException e) {
+                    throw e;
+                }
+            }
+
+        }
+
     }
 
     public static void main(String[] args) {
@@ -2149,8 +2208,8 @@ public class ProductDAO {
                 System.out.print("Enter keywords: ");
                 String i = sc.nextLine();
                 System.out.println(i);
-                System.out.println(productDAO.formatQueryBroad(i)); // Output: {1=[Item A, Item B]}
-                System.out.println(productDAO.formatQueryTight(i, "AND")); // Output: {1=[Item A, Item B]}
+                System.out.println(productDAO.formatQueryBroad(i)); 
+                System.out.println(productDAO.formatQueryTight(i, "AND")); 
                 if (i.equalsIgnoreCase("break")) {
                     break;
                 }

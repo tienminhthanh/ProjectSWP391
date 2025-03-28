@@ -36,7 +36,7 @@ import model.Event;
 public class EventUpdateController extends HttpServlet {
 
     private final String EVENT_UPDATE_PAGE = "eventUpdate.jsp";
-    private final String EVENT_LIST_PAGE = "eventList";
+    private final String EVENT_DETAILS_PAGE = "eventDetails";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -89,16 +89,16 @@ public class EventUpdateController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = EVENT_LIST_PAGE;
+        String url = EVENT_DETAILS_PAGE;
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         EventDAO eDao = new EventDAO();
 //        Event e = new Event();
+        int id = 0;
 
         try {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");
 
-            int id = 0;
             String name = "";
             String description = "";
             String dateCreated = "";
@@ -207,7 +207,7 @@ public class EventUpdateController extends HttpServlet {
             session.setAttribute("message", "Error: " + ex.getMessage());
             session.setAttribute("messageType", "error");
         }
-
+        url += "?eventId=" + id;
         response.sendRedirect(url);
     }
 

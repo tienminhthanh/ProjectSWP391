@@ -47,14 +47,13 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //String currentURL = request.getParameter("currentURL");
         String currentURL = request.getParameter("currentURL") != null && !request.getParameter("currentURL").isBlank() ? request.getParameter("currentURL") : "home";
         AccountLib lib = new AccountLib(); // Utility class for password hashing
 
         // Retrieve login details from the request
-        String username = request.getParameter("username");
+        String username = request.getParameter("username").toLowerCase();
         String password = request.getParameter("password"); // Hash the password using MD5
-        password=lib.hashMD5(password);
+        password = lib.hashMD5(password);
         HttpSession session = request.getSession();
 
         // Retrieve previous attempted username from session
@@ -69,7 +68,6 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         try {
             Account account = accountDAO.getAccountByUsername(username);
 
-
             if (account != null) { // If account exists
                 if (account.getAccountIsActive()) { // Check if the account is active
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
@@ -78,7 +76,9 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                     }
 
                     // Lock the account if login fails 5 times (only for non-admin users)
-                    if (!"admin".equals(account.getRole()) && failedAttempts >= 5) {
+                    if (failedAttempts >= 5) {
+                        // Lock the account in the database
+                        accountDAO.updateAccountStatus(username, false);  // Method to deactivate the account in the database
                         response.sendRedirect("deleteAccount?username=" + username);
                         return;
                     }
@@ -106,7 +106,6 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 }
                                 break;
                             case "staff":
-
                                 session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
@@ -128,18 +127,18 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                         failedAttempts++;
                         session.setAttribute("failedAttempts", failedAttempts);
 
-                        // Lock the account if login fails 5 times (only for non-admin users)
-                        if (!"admin".equals(account.getRole()) && failedAttempts >= 5) {
-                            response.sendRedirect("deleteAccount?username=" + username);
-                            return;
-                        }
-
-                        // Display remaining attempts
                         if (!"admin".equals(account.getRole())) {
                             request.setAttribute("errorMessage", "Wrong password! You have " + (5 - failedAttempts) + " attempts left.");
+                            if (failedAttempts >= 5) {
+                                // Lock the account in the database when failed attempts reach 5
+                                accountDAO.updateAccountStatus(username, false);
+                                response.sendRedirect("deleteAccount?username=" + username);
+                                return;
+                            }
                         } else {
                             request.setAttribute("errorMessage", "Wrong password!");
                         }
+
                         forwardToLoginPage(request, response, username);
                     }
                 } else { // Account is locked or deactivated
@@ -163,14 +162,4 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         request.setAttribute("username", username);
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
-
-    public static void main(String[] args) {
-        // Simulate the servlet process manually
-        
-        
-       
-     
-       
-    }
-
 }

@@ -10,7 +10,6 @@ import jakarta.mail.*;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Random;
 import model.Account;
 
 @WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
@@ -20,9 +19,11 @@ public class EmailAuthenticationController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         AccountLib lib = new AccountLib();
-        String email = (String) request.getSession().getAttribute("tempEmail");
+        HttpSession session = request.getSession();
+
+        String email = (String) session.getAttribute("tempEmail");
         String otp = lib.generateOTP();
-        request.getSession().setAttribute("otp", otp);
+        session.setAttribute("otp", otp);
 
         try {
             lib.sendEmail(email, "Email Verification", "Your verification code is: " + otp);
@@ -37,33 +38,53 @@ public class EmailAuthenticationController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.sendRedirect("register.jsp?error=sessionNotFound");
+            return;
+        }
+
         String enteredOTP = request.getParameter("otp");
-        String generatedOTP = (String) request.getSession().getAttribute("otp");
-        String username = (String) request.getSession().getAttribute("tempUsername");
-        String email = (String) request.getSession().getAttribute("tempEmail");
+        String generatedOTP = (String) session.getAttribute("otp");
+
         if (generatedOTP == null || enteredOTP == null || !enteredOTP.equals(generatedOTP)) {
             request.setAttribute("message", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("verifyEmail.jsp").forward(request, response);
             return;
         }
+
         try {
+            Account account = (Account) session.getAttribute("account");
+            String address = (String) session.getAttribute("address");
+
+            if (account == null) {
+                response.sendRedirect("register.jsp?error=sessionExpired");
+                return;
+            }
+
             AccountDAO accountDAO = new AccountDAO();
-            boolean updateSuccess = accountDAO.updateAccount(username, null, null, email, null, null, null);
-            if (updateSuccess) {
-                request.getSession().invalidate();
-                request.setAttribute("message", "Email verified successfully! You can now log in.");
+            boolean success = accountDAO.register(
+                    account.getUsername(),
+                    account.getPassword(),
+                    account.getFirstName(),
+                    account.getLastName(),
+                    account.getEmail(),
+                    account.getPhoneNumber(),
+                    account.getBirthDate(),
+                    address
+            );
+
+            if (success) {
+                Account newAccount = accountDAO.getAccountByUsername(account.getUsername());
+                session.invalidate(); // Xóa session cũ
+
+                // Tạo session mới cho auto-login
+                session = request.getSession();
+                session.setAttribute("account", newAccount);
+                session.setMaxInactiveInterval(3600);
+
+                request.setAttribute("message", "Email verified successfully! You are now logged in.");
                 request.getRequestDispatcher("completeAccount.jsp").forward(request, response);
-                if (updateSuccess) {
-                    // Get the newly registered account
-                    Account newAccount = accountDAO.getAccountByUsername(username);
-
-                    // Auto login
-                    HttpSession session = request.getSession();
-                    session.setAttribute("account", newAccount);
-                    session.setMaxInactiveInterval(60 * 60); // 60 minutes session timeout
-
-                }
-
             } else {
                 request.setAttribute("message", "Failed to verify email.");
                 request.getRequestDispatcher("verifyEmail.jsp").forward(request, response);
@@ -74,5 +95,4 @@ public class EmailAuthenticationController extends HttpServlet {
             request.getRequestDispatcher("verifyEmail.jsp").forward(request, response);
         }
     }
-
 }

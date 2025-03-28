@@ -198,8 +198,3 @@
     });
 </script>
 
-<style>
-    .relative {
-        position: relative;
-    }
-</style>

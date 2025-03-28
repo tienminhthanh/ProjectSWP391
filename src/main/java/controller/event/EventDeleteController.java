@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "EventDeleteServlet", urlPatterns = {"/eventDelete"})
 public class EventDeleteController extends HttpServlet {
 
-    private final String EVENT_LIST_PAGE = "eventList";
+    private final String EVENT_DETAILS_PAGE = "eventDetails";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,11 +34,11 @@ public class EventDeleteController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = EVENT_LIST_PAGE;
+        String url = EVENT_DETAILS_PAGE;
         HttpSession session = request.getSession();
-
+        int id = 0;
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            id = Integer.parseInt(request.getParameter("id"));
             String action = request.getParameter("action");
             EventDAO eDao = new EventDAO();
             EventProductDAO epDao = new EventProductDAO();
@@ -67,7 +67,7 @@ public class EventDeleteController extends HttpServlet {
             session.setAttribute("message", "Error: " + e.getMessage());
             session.setAttribute("messageType", "error");
         }
-
+        url += "?eventId=" + id;
         response.sendRedirect(url);
     }
 

@@ -24,7 +24,7 @@ import model.Voucher;
 public class VoucherUpdateController extends HttpServlet {
 
     private final String VOUCHER_UPDATE_PAGE = "voucherUpdate.jsp";
-    private final String VOUCHER_LIST_PAGE = "voucherList";
+    private final String VOUCHER_DETAILS_PAGE = "voucherDetails";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -77,13 +77,13 @@ public class VoucherUpdateController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = VOUCHER_LIST_PAGE;
+        String url = VOUCHER_DETAILS_PAGE;
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         VoucherDAO vDao = new VoucherDAO();
-
+        int id = 0;
         try {
-            int id = Integer.parseInt(request.getParameter("voucherID"));
+            id = Integer.parseInt(request.getParameter("voucherID"));
             String name = request.getParameter("voucherName");
             String type = request.getParameter("voucherType");
             double value = Double.parseDouble(request.getParameter("voucherValue"));
@@ -104,8 +104,17 @@ public class VoucherUpdateController extends HttpServlet {
             String dateStarted_raw = request.getParameter("dateStarted");
             LocalDate dateStarted = LocalDate.parse(dateStarted_raw, formatter);
 
+            LocalDate today = LocalDate.now();
+            LocalDate expiryDate = dateStarted.plusDays(duration);
+
+            boolean isActive = false;
+            //ngày hết hạn >= hôm nay               ngày bắt đầu <= hôm nay
+            if (!expiryDate.isBefore(today) && (dateStarted.isBefore(today) || dateStarted.isEqual(today))) {
+                isActive = true;
+            }
+
             Voucher voucher = new Voucher(id, name, value, quantity, minimum, dateCreated, duration, adminID,
-                    vDao.getVoucherByID(id).isIsActive(), vDao.getVoucherByID(id).isExpiry(), type, maxDiscountAmount, dateStarted.toString());
+                    isActive, vDao.getVoucherByID(id).isExpiry(), type, maxDiscountAmount, dateStarted.toString());
 
             if (vDao.updateVoucher(voucher)) {
                 session.setAttribute("message", "Voucher updated successfully!");
@@ -114,11 +123,12 @@ public class VoucherUpdateController extends HttpServlet {
                 session.setAttribute("message", "Failed to update voucher.");
                 session.setAttribute("messageType", "error");
             }
+            System.out.println(vDao.getVoucherByID(id));
         } catch (Exception e) {
             session.setAttribute("message", "Error: " + e.getMessage());
             session.setAttribute("messageType", "error");
         }
-
+        url += "?voucherId=" + id;
         response.sendRedirect(url);
     }
 

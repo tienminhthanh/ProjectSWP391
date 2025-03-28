@@ -234,7 +234,7 @@
 
                 <!--Trending-->
                 <div class="bg-white mb-8">
-                    <c:if test="${not empty sessionScope.animeBookHome}">
+                    <c:if test="${not empty animeBookHome}">
                         <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
                             Anime Adaptation
                         </h2>
@@ -242,7 +242,7 @@
                         <div class="w-full mt-4">
                             <div class="gap-4 w-full overflow-x-auto">
                                 <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                    <c:forEach var="currentProduct" items="${sessionScope.animeBookHome}">
+                                    <c:forEach var="currentProduct" items="${animeBookHome}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
                                     </c:forEach>
@@ -256,7 +256,7 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${not empty sessionScope.holoMerchHome}">
+                    <c:if test="${not empty holoMerchHome}">
                         <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
                             Hololive
                         </h2>
@@ -264,7 +264,7 @@
                         <div class="w-full mt-4">
                             <div class="gap-4 w-full overflow-x-auto">
                                 <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                    <c:forEach var="currentProduct" items="${sessionScope.holoMerchHome}">
+                                    <c:forEach var="currentProduct" items="${holoMerchHome}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
                                     </c:forEach>
@@ -278,7 +278,7 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${empty sessionScope.animeBookHome && empty sessionScope.holoMerchHome}">
+                    <c:if test="${empty animeBookHome && empty holoMerchHome}">
                         <h2 class="text-xl font-bold relative py-3 text-center bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 text-white ">
                             Trending
                         </h2>
@@ -296,11 +296,11 @@
                     </h2>
 
                     <!--Loop through product list-->
-                    <c:if test="${not empty sessionScope.newBookHome}">
+                    <c:if test="${not empty newBookHome}">
                         <div class="w-full mt-4">
                             <div class="gap-4 w-full overflow-x-auto">
                                 <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                    <c:forEach var="currentProduct" items="${sessionScope.newBookHome}">
+                                    <c:forEach var="currentProduct" items="${newBookHome}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
                                     </c:forEach>
@@ -314,16 +314,16 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${not empty sessionScope.newMerchHome && not empty sessionScope.newBookHome}">
+                    <c:if test="${not empty newMerchHome && not empty newBookHome}">
                         <div class="h-1 w-full mb-8 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500"></div>
                     </c:if>
 
                     <!--Loop through product list-->
-                    <c:if test="${not empty sessionScope.newMerchHome}">
+                    <c:if test="${not empty newMerchHome}">
                         <div class="w-full">
                             <div class="gap-4 w-full overflow-x-auto">
                                 <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                    <c:forEach var="currentProduct" items="${sessionScope.newMerchHome}">
+                                    <c:forEach var="currentProduct" items="${newMerchHome}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
                                     </c:forEach>
@@ -337,7 +337,7 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${empty sessionScope.newMerchHome && empty sessionScope.newBookHome}">
+                    <c:if test="${empty newMerchHome && empty newBookHome}">
                         <div class="flex justify-center items-center h-40 w-full">
                             <p class="text-gray-500 italic">No new releases available right now. More exciting products coming soon!</p>
                         </div>
@@ -351,11 +351,11 @@
                         On Sale
                     </h2>
                     <!--Loop through product list-->
-                    <c:if test="${not empty sessionScope.saleBookHome}">
+                    <c:if test="${not empty saleBookHome}">
                         <div class="w-full mt-4">
                             <div class="gap-4 w-full overflow-x-auto">
                                 <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                    <c:forEach var="currentProduct" items="${sessionScope.saleBookHome}">
+                                    <c:forEach var="currentProduct" items="${saleBookHome}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
                                     </c:forEach>
@@ -369,16 +369,16 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${not empty sessionScope.saleMerchHome && not empty sessionScope.saleBookHome}">
+                    <c:if test="${not empty saleMerchHome && not empty saleBookHome}">
                         <div class="h-1 w-full mb-8 bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500"></div>
                     </c:if>
 
                     <!--Loop through product list-->
-                    <c:if test="${not empty sessionScope.saleMerchHome}">
+                    <c:if test="${not empty saleMerchHome}">
                         <div class="w-full">
                             <div class="gap-4 w-full overflow-x-auto">
                                 <div class="grid grid-flow-col auto-cols-max gap-4 min-w-max">
-                                    <c:forEach var="currentProduct" items="${sessionScope.saleMerchHome}">
+                                    <c:forEach var="currentProduct" items="${saleMerchHome}">
                                         <c:set var="currentProduct" value="${currentProduct}" scope="request"/>
                                         <jsp:include page="productCard.jsp"/>
                                     </c:forEach>
@@ -392,7 +392,7 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${empty sessionScope.saleMerchHome && empty sessionScope.saleBookHome}">
+                    <c:if test="${empty saleMerchHome && empty saleBookHome}">
                         <div class="flex justify-center items-center h-40 w-full">
                             <p class="text-gray-500 italic">All discounted items are sold out! Stay tuned for the next sale.</p>
                         </div>

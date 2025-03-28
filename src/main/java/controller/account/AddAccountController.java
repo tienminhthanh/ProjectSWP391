@@ -36,42 +36,54 @@ public class AddAccountController extends HttpServlet {
         AccountLib lib = new AccountLib();
 
         String username = request.getParameter("username");
-        String password = lib.hashMD5(request.getParameter("password"));
+        String rawPassword = request.getParameter("password");
+        String password = lib.hashMD5(rawPassword);
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         String birthDate = request.getParameter("birthDate");
         String role = request.getParameter("role");
+
+        // Gán lại các giá trị để giữ trên form nếu lỗi
+        request.setAttribute("username", username);
+        request.setAttribute("firstName", firstName);
+        request.setAttribute("lastName", lastName);
+        request.setAttribute("email", email);
+        request.setAttribute("phoneNumber", phoneNumber);
+        request.setAttribute("birthDate", birthDate);
+        request.setAttribute("role", role);
+
         AccountDAO accountDAO = new AccountDAO();
 
         try {
-            if (!lib.isValidPassword(password)) {
-                request.setAttribute("erorrMessage", "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.");
+            if (!lib.isValidPassword(rawPassword)) {
+                request.setAttribute("errorMessage", "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
-               
             }
             if (accountDAO.isEmailExist(email, null)) {
-                request.setAttribute("erorrMessage", "The email address is already in use.");
+                request.setAttribute("errorMessage", "The email address is already in use.");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
             if (accountDAO.getAccountByUsername(username) != null) {
-                request.setAttribute("erorrMessage", "Username already exists!");
+                request.setAttribute("errorMessage", "Username already exists!");
                 request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
                 return;
             }
+
             boolean success = accountDAO.createAccount(username, password, firstName, lastName, email, phoneNumber, birthDate, role);
             if (success) {
                 request.setAttribute("message", "Account successfully created!");
+             
             } else {
                 request.setAttribute("message", "There was an issue creating the account. Please try again.");
             }
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("erorrMessage", "An error occurred while processing your request. Please try again later.");
+            request.setAttribute("errorMessage", "An error occurred while processing your request. Please try again later.");
             request.getRequestDispatcher("accountAddNew.jsp").forward(request, response);
         }
     }
