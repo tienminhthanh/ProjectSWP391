@@ -329,8 +329,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form action="OrderDetailController" method="POST" >
-                                        <input type="hidden" name="orderID" id="popupOrderID">
+                                    <p id="error-message" class="text-red-500 text-sm mt-2 hidden">Please select at least one star.</p>
+                                    <form action="OrderDetailController" method="POST" onsubmit="return validateRating()">
+                                        <input type="hidden" name="orderID" id="popupOrderID" >
                                         <input type="hidden" name="productID" id="popupProductID">
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                                         <input type="hidden" name="productID" value="${item.product.productID}">
@@ -443,6 +444,14 @@
                     });
                 });
             });
+            function validateRating() {
+                let rating = document.getElementById("rating").value;
+                if (rating == "0") {
+                    document.getElementById("error-message").classList.remove("hidden"); // Hiện thông báo lỗi nếu chưa chọn sao
+                    return false; // Ngăn không cho gửi form
+                }
+                return true;
+            }
         </script>
     </body>
 </html>
