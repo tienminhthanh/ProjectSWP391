@@ -97,6 +97,7 @@ public class OrderController extends HttpServlet {
             }
 
             for (CartItem item : cartItems) {
+     
                 Product product = null;
                 ProductDAO productDAO = new ProductDAO();
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
