@@ -54,7 +54,7 @@
         <!--Description-->
         <div class="form-group">
             <label for="descriptionBook">Description:</label>
-            <textarea id="descriptionBook" name="description">${product.description}</textarea>
+            <textarea id="descriptionBook" name="description" required>${product.description}</textarea>
         </div>
 
         <!--ReleaseDate - Status-->
@@ -74,13 +74,13 @@
         <!--Keywords-->
         <div class="form-group">
             <label for="keywordsBook">Keywords:</label>
-            <textarea id="keywordsBook" name="keywords">${product.keywords}</textarea>
+            <textarea id="keywordsBook" name="keywords" required>${product.keywords}</textarea>
         </div>
 
         <!--Image URL-->
         <div class="form-group">
             <label for="imageURLBook">Image URL:</label>
-            <textarea id="imageURLBook" name="imageURL" maxlength="512">${product.imageURL}</textarea>
+            <textarea id="imageURLBook" name="imageURL" maxlength="512" required>${product.imageURL}</textarea>
         </div>
 
         <!--Creators-->
@@ -95,7 +95,7 @@
                             <label for="creatorNameBook0">Creator Name:</label>
                             <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100" required>
                             <label for="creatorRoleBook0">Creator Role:</label>
-                            <select id="creatorRoleBook0" name="creatorRole">
+                            <select id="creatorRoleBook0" name="creatorRole" required>
                                 <option class="hidden" value="author">Author</option>
                                 <option class="hidden" value="sculptor">Sculptor</option>
                                 <option value="artist">Artist</option>
@@ -163,13 +163,13 @@
                 <div class="form-group">
                     <label for="publisherNameBook">Publisher:</label>
                     <input type="hidden" name="associatedPublisherID" value="${product.publisher.publisherID}">
-                    <input type="text" id="publisherNameBook" name="publisherName" maxlength="50" value="${product.publisher.publisherName}">
+                    <input type="text" id="publisherNameBook" name="publisherName" maxlength="50" value="${product.publisher.publisherName}" required>
                 </div>
 
                 <!--Duration-->
                 <div class="form-group">
                     <label for="durationBook">Duration:</label>
-                    <input type="text" id="durationBook" name="duration" maxlength="40" value="${product.duration}">
+                    <input type="text" id="durationBook" name="duration" maxlength="40" value="${product.duration}" required>
                 </div>
 
             </c:when>
@@ -179,37 +179,37 @@
                     <label>Specs:</label>
                     <div class="pair-group">
                         <label for="scaleLevelMerch">Scale Level:</label>
-                        <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10" value="${product.scaleLevel}">
+                        <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10" value="${product.scaleLevel}" required>
                         <label for="materialMerch">Material:</label>
-                        <input type="text" id="materialMerch" name="material" maxlength="60" value="${product.material}">
+                        <input type="text" id="materialMerch" name="material" maxlength="60" value="${product.material}" required>
                     </div>
                 </div>
 
                 <!--Size-->
                 <div class="form-group">
                     <label for="sizeMerch">Size:</label>
-                    <input type="text" id="sizeMerch" name="size" maxlength="60" value="${product.size}">
+                    <input type="text" id="sizeMerch" name="size" maxlength="60" value="${product.size}" required>
                 </div>
 
                 <!--Series-->
                 <div class="form-group">
                     <label for="seriesNameMerch">Series:</label>
                     <input type="hidden" name="associatedSeriesID" value="${product.series.seriesID}">
-                    <input type="text" id="seriesNameMerch" name="seriesName"  value="${product.series.seriesName}">
+                    <input type="text" id="seriesNameMerch" name="seriesName"  value="${product.series.seriesName}" required>
                 </div>
 
                 <!--Character-->
                 <div class="form-group">
                     <label for="characterNameMerch">Character:</label>
                     <input type="hidden" name="associatedCharacterID" value="${product.character.characterID}">
-                    <input type="text" id="characterNameMerch" name="characterName" value="${product.character.characterName}">
+                    <input type="text" id="characterNameMerch" name="characterName" value="${product.character.characterName}" required>
                 </div>
 
                 <!--Brand-->
                 <div class="form-group">
                     <label for="brandNameMerch">Brand:</label>
                     <input type="hidden" name="associatedBrandID" value="${product.brand.brandID}">
-                    <input type="text" id="brandNameMerch" name="brandName" value="${product.brand.brandName}">
+                    <input type="text" id="brandNameMerch" name="brandName" value="${product.brand.brandName}" required>
                 </div>
             </c:when>
         </c:choose>

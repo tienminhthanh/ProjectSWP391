@@ -101,8 +101,9 @@ public class ImportItem {
 
     @Override
     public String toString() {
-        return "ImportItem{" + "importItemID=" + importItemID + ", importPrice=" + importPrice + ", importQuantity=" + importQuantity + ", importDate=" + importDate + ", isImported=" + isImported + '}';
+        return "{" + "importDate=" + importDate + ", importItemID=" + importItemID + ", supplierID=" + supplier.toString() + ", product=" + product.toString() + ", importPrice=" + importPrice + ", importQuantity=" + importQuantity + ", isImported=" + isImported + '}';
     }
-    
+
+   
     
 }

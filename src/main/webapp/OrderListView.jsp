@@ -126,27 +126,18 @@
 
                 <p class="text-gray-600 mt-2">Total ${fn:length(requestScope.list)} orders found</p>
             </div>
-            <c:if test="${not empty refundMessage}">
+         
+
+           
+
+            <c:if test="${not empty sessionScope.refundMessage}">
                 <div id="refundMessage" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 relative">
-                    <strong>Notification:</strong> ${refundMessage}
+                    <strong>Notification:</strong> ${sessionScope.refundMessage}
                     <button onclick="closeAlert('refundMessage')" class="absolute top-0 right-0 m-2 px-2 bg-yellow-300 rounded">OK</button>
                 </div>
+                <c:remove var="refundMessage" scope="session"/>
             </c:if>
 
-            <c:if test="${not empty sessionScope.successMessage}">
-                <div id="successMessage" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 relative">
-                    <strong>Success:</strong> ${sessionScope.successMessage}
-                    <button onclick="closeAlert('successMessage')" class="absolute top-0 right-0 m-2 px-2 bg-green-300 rounded">OK</button>
-                </div>
-                <c:remove var="successMessage" scope="session"/>
-            </c:if>
-
-            <c:if test="${not empty errorMessage}">
-                <div id="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 relative">
-                    <strong>Error:</strong> ${errorMessage}
-                    <button onclick="closeAlert('errorMessage')" class="absolute top-0 right-0 m-2 px-2 bg-red-300 rounded">OK</button>
-                </div>
-            </c:if>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 <c:forEach items="${requestScope.list}" var="c">
                     <c:set var="id" value="${c.orderID}"/>
@@ -308,6 +299,7 @@
                 function closeAlert(id) {
                     document.getElementById(id).style.display = 'none';
                 }
+
             </script>
         </body>
         <div>

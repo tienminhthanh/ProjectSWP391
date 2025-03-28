@@ -68,7 +68,14 @@ public class ProductManagementController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String path = request.getServletPath();
+        String action = request.getParameter("action");
 
+        // Nếu action=clearMessage, xóa session và trả về response
+        if ("clearMessage".equals(action)) {
+            HttpSession session = request.getSession();
+            session.removeAttribute("message");
+            session.removeAttribute("messageType");
+        }
         switch (path) {
             case "/manageProductList":
                 manageList(request, response);
@@ -99,6 +106,18 @@ public class ProductManagementController extends HttpServlet {
 
     private void manageList(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        //Prevent unauthorized access - STAFF, AD
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        boolean isManagement = currentAccount != null
+                ? currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff")
+                : false;
+        if (!isManagement) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
         //Five items per page
         int pageSize = 5;
         String pageStr = request.getParameter("page");
@@ -106,15 +125,6 @@ public class ProductManagementController extends HttpServlet {
         String type = request.getParameter("type");
         //Default page is 1
         int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
-
-        //Prevent unauthorized access
-        HttpSession session = request.getSession();
-        Account currentAccount = (Account) (session.getAttribute("account"));
-        boolean isManagement = currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff");
-        if (currentAccount == null || !isManagement) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
 
         try {
             // Get all products
@@ -151,18 +161,21 @@ public class ProductManagementController extends HttpServlet {
 
     private void manageDetails(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String productID = request.getParameter("id");
-        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
-        String type = request.getParameter("type");
 
-        //Prevent unauthorized access
+        //Prevent unauthorized access - STAFF, AD
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
-        boolean isManagement = currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff");
-        if (currentAccount == null || !isManagement) {
+        boolean isManagement = currentAccount != null
+                ? currentAccount.getRole().equals("admin") || currentAccount.getRole().equals("staff")
+                : false;
+        if (!isManagement) {
             response.sendRedirect("login.jsp");
             return;
         }
+
+        String productID = request.getParameter("id");
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+        String type = request.getParameter("type");
 
         try {
             int id = Integer.parseInt(productID);
@@ -222,7 +235,7 @@ public class ProductManagementController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        //Prevent unauthorized access
+        //Prevent unauthorized access  - ADMIN
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
         if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
@@ -371,7 +384,7 @@ public class ProductManagementController extends HttpServlet {
                         Series series = new Series().setSeriesName(paramMap.get("seriesName")[0]);
                         int id = productDAO.getSeriesIDByName(paramMap.get("seriesName")[0]);
 
-                        if (id > 0 ) {
+                        if (id > 0) {
                             series.setSeriesID(id);
                         }
 
@@ -384,7 +397,7 @@ public class ProductManagementController extends HttpServlet {
                         OGCharacter character = new OGCharacter().setCharacterName(paramMap.get("characterName")[0]);
                         int id = productDAO.getCharacterIDByName(paramMap.get("characterName")[0]);
 
-                        if (id > 0 ) {
+                        if (id > 0) {
                             character.setCharacterID(id);
                         }
 
@@ -397,7 +410,7 @@ public class ProductManagementController extends HttpServlet {
                         Brand brand = new Brand().setBrandName(paramMap.get("brandName")[0]);
                         int id = productDAO.getBrandIDByName(paramMap.get("brandName")[0]);
 
-                        if (id > 0 ) {
+                        if (id > 0) {
                             brand.setBrandID(id);
                         }
                         dataList.add(brand);
@@ -481,7 +494,7 @@ public class ProductManagementController extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        //Prevent unauthorized access
+        //Prevent unauthorized access  - ADMIN
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
         if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
@@ -671,7 +684,7 @@ public class ProductManagementController extends HttpServlet {
     private void manageStatus(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        //Prevent unauthorized access
+        //Prevent unauthorized access - ADMIN
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
         if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
@@ -701,7 +714,7 @@ public class ProductManagementController extends HttpServlet {
             String message = transactionState ? "The product has been " + action + "d" + " successfully"
                     : "Failed to " + action + " the product!";
             request.setAttribute(transactionState ? "successfulMessage" : "failedMessage", message);
-            
+
             request.getRequestDispatcher("manageProductList").forward(request, response);
 
         } catch (Exception e) {
@@ -714,7 +727,7 @@ public class ProductManagementController extends HttpServlet {
     private void manageImport(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        //Prevent unauthorized access
+        //Prevent unauthorized access - ADMIN
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
         if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
@@ -725,11 +738,12 @@ public class ProductManagementController extends HttpServlet {
         if (action == null) {
             retrieveProductsForImport(request, response);
         } else {
+
             try {
+
                 // Get the encoded JSON string from request parameters
                 String[] encodedJsons = request.getParameterValues("importItem");
                 int productID = Integer.parseInt(request.getParameter("productID"));
-
                 if (encodedJsons == null) {
                     throw new Exception("Cannot retrieve import data from form submission!");
                 }
@@ -746,6 +760,18 @@ public class ProductManagementController extends HttpServlet {
                         items.add(importItem);
                     }
                 }
+
+                LocalDate rlsDate = items.get(0).getProduct().getReleaseDate();
+                rlsDate = rlsDate != null ? rlsDate : LocalDate.parse("1970-01-01");
+                if (rlsDate.toString().equals("1970-01-01")) {
+                    Product product = productDAO.getProductById(productID);
+                    rlsDate = product != null ? product.getReleaseDate() : rlsDate;
+                }
+                
+                for (ImportItem item : items) {
+                    item.getProduct().setReleaseDate(rlsDate);
+                }
+
                 if (productDAO.importProducts(items)) {
                     LOGGER.log(Level.INFO, "Products has been imported to inventory successfully! (ID:{0})", productID);
                     request.setAttribute("message", "The product has been imported to inventory successfully! (ID:" + productID + ")");
@@ -801,7 +827,7 @@ public class ProductManagementController extends HttpServlet {
     private void manageQueue(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        //Prevent unauthorized access
+        //Prevent unauthorized access - ADMIN
         HttpSession session = request.getSession();
         Account currentAccount = (Account) (session.getAttribute("account"));
         if (currentAccount == null || !currentAccount.getRole().equals("admin")) {

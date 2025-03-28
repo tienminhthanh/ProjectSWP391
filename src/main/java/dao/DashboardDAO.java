@@ -2,8 +2,12 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import model.*;
 
 public class DashboardDAO {
 
@@ -11,6 +15,128 @@ public class DashboardDAO {
 
     public DashboardDAO() {
         context = new utils.DBContext();
+    }
+
+    public Map<String, List<Product>> getTopProductsByCategory(String year, String quarter, String month, boolean isFilterApplied, Map<Integer, Integer> quantitySoldMap, Map<Integer, Double> revenueMap) {
+        Map<String, List<Product>> categoryTopProducts = new HashMap<>();
+
+        // Bước 1: Lấy danh sách tất cả các categoryName từ bảng Category
+        String categorySql = "SELECT DISTINCT c.categoryName "
+                + "FROM [WIBOOKS].[dbo].[Category] c;";
+
+        try {
+            ResultSet categoryRs = context.exeQuery(categorySql, null);
+            if (!categoryRs.isBeforeFirst()) {
+                System.out.println("No categories found in Category table.");
+                return categoryTopProducts; // Trả về Map rỗng nếu không có thể loại
+            }
+
+            while (categoryRs.next()) {
+                String categoryName = categoryRs.getString("categoryName");
+                if (categoryName == null || categoryName.trim().isEmpty()) {
+                    System.out.println("Found a null or empty category name, skipping...");
+                    continue;
+                }
+
+                // Bước 2: Lấy top 5 sản phẩm bán chạy nhất cho từng categoryName
+                String sql = "SELECT TOP 5 "
+                        + "    op.productID, "
+                        + "    p.productName, "
+                        + "    SUM(op.orderProductQuantity) AS totalQuantitySold, "
+                        + "    SUM(op.orderProductPrice * op.orderProductQuantity) AS totalRevenue "
+                        + "FROM [WIBOOKS].[dbo].[OrderInfo] oi "
+                        + "JOIN [WIBOOKS].[dbo].[Order_Product] op ON oi.orderID = op.orderID "
+                        + "JOIN [WIBOOKS].[dbo].[Product] p ON op.productID = p.productID "
+                        + "JOIN [WIBOOKS].[dbo].[Category] c ON p.categoryID = c.categoryID "
+                        + "WHERE oi.orderStatus IN ('delivered', 'completed') "
+                        + "    AND p.productIsActive = 1 "
+                        + "    AND c.categoryName = ? ";
+
+                // Áp dụng bộ lọc thời gian
+                String filterCondition = buildFilterCondition(year, quarter, month, isFilterApplied);
+                sql += filterCondition;
+
+                // Nhóm theo sản phẩm và sắp xếp theo tổng số lượng bán ra
+                sql += " GROUP BY op.productID, p.productName "
+                        + "ORDER BY SUM(op.orderProductQuantity) DESC;";
+
+                // In truy vấn để debug
+                System.out.println("Executing query for category: " + categoryName);
+                System.out.println("SQL: " + sql);
+
+                // Sử dụng PreparedStatement để truyền tham số categoryName
+                Object[] params = {categoryName};
+                ResultSet rs = context.exeQuery(sql, params);
+
+                List<Product> topProducts = new ArrayList<>();
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No products found for category: " + categoryName);
+                } else {
+                    while (rs.next()) {
+                        int productID = rs.getInt("productID");
+                        Product product = new Product();
+                        product.setProductID(productID);
+                        product.setProductName(rs.getString("productName"));
+
+                        // Lưu totalQuantitySold và totalRevenue vào Map
+                        quantitySoldMap.put(productID, rs.getInt("totalQuantitySold"));
+                        revenueMap.put(productID, rs.getDouble("totalRevenue"));
+
+                        topProducts.add(product);
+                    }
+                }
+
+                // Thêm danh mục vào Map, ngay cả khi không có sản phẩm
+                categoryTopProducts.put(categoryName, topProducts);
+                System.out.println("Added " + topProducts.size() + " products for category: " + categoryName);
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getTopProductsByCategory: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        if (categoryTopProducts.isEmpty()) {
+            System.out.println("No categories found.");
+        } else {
+            System.out.println("Total categories: " + categoryTopProducts.size());
+        }
+
+        return categoryTopProducts;
+    }
+
+    public List<Customer> getTopBuyers() {
+        List<Customer> topBuyers = new ArrayList<>();
+        String sql = "SELECT TOP 5 "
+                + "    a.accountID, "
+                + "    a.username, "
+                + "    a.firstName, "
+                + "    a.lastName, "
+                + "    c.totalPurchasePoints, "
+                + "    a.email "
+                + "FROM [WIBOOKS].[dbo].[Account] a "
+                + "JOIN [WIBOOKS].[dbo].[Customer] c ON a.accountID = c.customerID "
+                + "WHERE a.role = 'customer' "
+                + "    AND a.accountIsActive = 1 "
+                + "    AND c.totalPurchasePoints > 0 "
+                + // Chỉ lấy khách hàng có điểm > 0
+                "ORDER BY c.totalPurchasePoints DESC;";
+
+        try {
+            ResultSet rs = context.exeQuery(sql, null);
+            while (rs.next()) {
+                Customer customer = new Customer();
+                customer.setAccountID(rs.getInt("accountID"));
+                customer.setUsername(rs.getString("username"));
+                customer.setFirstName(rs.getString("firstName"));
+                customer.setLastName(rs.getString("lastName"));
+                customer.setTotalPurchasePoints(rs.getDouble("totalPurchasePoints"));
+                customer.setEmail(rs.getString("email"));
+                topBuyers.add(customer);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return topBuyers;
     }
 
     public String buildFilterCondition(String year, String quarter, String month, boolean isFilterApplied) {
@@ -258,6 +384,7 @@ public class DashboardDAO {
                 + "    END AS ageGroup, COUNT(*) AS userCount "
                 + "FROM Account "
                 + "WHERE accountIsActive = 1 "
+                + "AND role = 'customer' "
                 + "GROUP BY "
                 + "    CASE "
                 + "        WHEN DATEDIFF(YEAR, birthDate, GETDATE()) < 18 THEN '<18' "
@@ -281,6 +408,39 @@ public class DashboardDAO {
     }
 
     public static void main(String[] args) {
-        DashboardDAO dDao = new DashboardDAO();
+        DashboardDAO dao = new DashboardDAO();
+
+        // Tham số test
+        String year = "2025"; // Năm test
+        String quarter = null; // Quý test (null nếu không lọc theo quý)
+        String month = null;     // Tháng test (null nếu không lọc theo tháng)
+        boolean isFilterApplied = (year != null && !year.isEmpty())
+                || (quarter != null && !quarter.isEmpty())
+                || (month != null && !month.isEmpty());
+
+        // Tạo Map để lưu totalQuantitySold và totalRevenue
+        Map<Integer, Integer> quantitySoldMap = new HashMap<>();
+        Map<Integer, Double> revenueMap = new HashMap<>();
+
+        // Gọi hàm getTopProductsByCategory
+        Map<String, List<Product>> topProductsByCategory = dao.getTopProductsByCategory(year, quarter, month, isFilterApplied, quantitySoldMap, revenueMap);
+
+        // In kết quả
+        if (topProductsByCategory.isEmpty()) {
+            System.out.println("No top products found for any category.");
+        } else {
+            for (Map.Entry<String, List<Product>> entry : topProductsByCategory.entrySet()) {
+                String category = entry.getKey();
+                List<Product> products = entry.getValue();
+                System.out.println("Category: " + category);
+                for (Product product : products) {
+                    int productID = product.getProductID();
+                    System.out.println("  Product ID: " + productID
+                            + ", Name: " + product.getProductName()
+                            + ", Total Quantity Sold: " + quantitySoldMap.get(productID)
+                            + ", Total Revenue: " + revenueMap.get(productID));
+                }
+            }
+        }
     }
 }

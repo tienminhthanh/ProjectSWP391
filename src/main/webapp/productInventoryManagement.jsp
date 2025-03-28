@@ -98,7 +98,7 @@
             });
 
 
-            //            Pop-up message
+            //            Pop-up message on load or reload
             document.addEventListener('DOMContentLoaded', function () {
                 const reqMessage = `${requestScope.message}`;
                 const errMessage = `${requestScope.errorMessage}`;
@@ -132,6 +132,7 @@
                     return;
                 }
 
+
                 //Get json data
                 const jsonMap = document.getElementById("data-container").getAttribute("data-map");
                 const jsonObject = JSON.parse(jsonMap);
@@ -148,6 +149,19 @@
                     return;
                 }
 
+                function formatDate(dateObj) {
+                    if (!dateObj || typeof dateObj !== 'object' || 
+                        !Number.isInteger(dateObj.year) || 
+                        !Number.isInteger(dateObj.month) || 
+                        !Number.isInteger(dateObj.day)) {
+                        return "1970-01-01"; // Default date
+                    }
+                    let year = dateObj.year;
+                    let month = String(dateObj.month).padStart(2, '0');
+                    let date = String(dateObj.day).padStart(2, '0');
+                    return year + '-' + month + '-' + date;
+                }
+
 
                 function handleItems() {
                     const selected = supplierSelector.value;
@@ -156,22 +170,24 @@
                         return;
                     }
                     const selectedItems = jsonObject[selected];
+                    console.log(selectedItems);
                     details.innerHTML = '';
                     selectedItems.forEach((item, index) => {
 
                         //Format importDate
                         let impDate = item['importDate'];
-                        let year = impDate['year'];
-                        let month = String(impDate['month']).padStart(2, '0');
-                        let date = String(impDate['day']).padStart(2, '0');
-                        item['importDate'] = year + "-" + month + "-" + date;
+                        console.log("Import Date Pre-process", impDate);
+                        let importDateStr = formatDate(impDate);
+                        console.log("Import Date", importDateStr);
+                        item['importDate'] = importDateStr;
 
                         //Format releaseDate
                         let rlsDate = item['product']['releaseDate'];
-                        year = rlsDate['year'];
-                        month = String(rlsDate['month']).padStart(2, '0');
-                        date = String(rlsDate['day']).padStart(2, '0');
-                        item['product']['releaseDate'] = year + "-" + month + "-" + date;
+                        console.log("rlsDate Pre-process", rlsDate);
+                        let releaseDateStr = formatDate(rlsDate);
+                        console.log("Release Date", releaseDateStr);
+                        item['product']['releaseDate'] = releaseDateStr;
+
 
 
                         //Create checkbox and assign JSON data to its value
@@ -192,6 +208,7 @@
                         labelEl.htmlFor = "checkbox-item" + index;
                         labelEl.textContent = "Price: " + price + " -  Quantity: " + item['importQuantity'];
 
+
                         //Append to container
                         detailEl.append(inputEl, labelEl);
                         details.appendChild(detailEl);
@@ -204,8 +221,46 @@
                 //Onchange of select tag
                 supplierSelector.addEventListener("change", handleItems);
 
-
             });
+            
+            
+//            Validate checkboxes
+            document.addEventListener('DOMContentLoaded', function () {
+                const formAction = `${requestScope.formAction}`;
+                const formEl = document.getElementById("mergedForm");
+                if (!formEl) {
+                    console.log("Form with id mergedForm not found!");
+                    return;
+                }
+
+                formEl.addEventListener("submit", function (event) {
+                    if(formAction === 'queue'){
+                        return;
+                    }
+                    
+                    let checkboxes;
+                    let message;
+
+                    if (formAction === 'import') {
+                        checkboxes = document.querySelectorAll('input[name="importItem"]:checked');
+                        message = 'Please select at least 1 import!';
+                    } else if (formAction === 'add' || formAction === 'update') {
+                        checkboxes = document.querySelectorAll('input[name="genre"]:checked');
+                        message = 'Please select at least 1 genre!';
+                    }
+
+                    // If no checkboxes are selected, show alert and prevent submission
+                    if (!checkboxes || checkboxes.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            text: message
+                        });
+                        event.preventDefault();
+                    }
+
+                });
+            });
+
         </script>
 
     </body>

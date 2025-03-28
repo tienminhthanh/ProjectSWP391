@@ -290,7 +290,20 @@ public class Product {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "{productID=" + productID + ", productName=" + productName + ", price=" + price + ", stockCount=" + stockCount + ", specificCategory=" + specificCategory + ", description=" + description + ", releaseDate=" + releaseDate + ", lastModifiedTime=" + lastModifiedTime + ", averageRating=" + averageRating + ", numberOfRating=" + numberOfRating + ", specialFilter=" + specialFilter + ", adminID=" + adminID + ", keywords=" + keywords + ", generalCategory=" + generalCategory + ", isActive=" + isActive + ", imageURL=" + imageURL + ", discountPercentage=" + discountPercentage + ", eventEndDate=" + eventEndDate + ", salesRank=" + salesRank + '}';
+    }
+
     
+    
+    public double getCurrentPrice() {
+        LocalDate now = LocalDate.now();
+        if (eventEndDate != null && now.isBefore(eventEndDate.plusDays(1)) && discountPercentage > 0) {
+            return price * (1 - discountPercentage / 100.0); // Giá sau giảm
+        }
+        return price; // Giá gốc nếu không có sự kiện hoặc sự kiện hết hạn
+    }
     
 }
     

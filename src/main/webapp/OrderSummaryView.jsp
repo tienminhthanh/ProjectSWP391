@@ -159,10 +159,14 @@
                               onsubmit="updateOrderTotal(); updatePaymentAction();">
                             <input type="hidden" name="orderTotal" id="hiddenOrderTotal">
                             <input type="hidden" id="selectedAddress" name="selectedAddress" value="">
+                            <input type="hidden" id="userName" name="userName" value="">
                             <div class="input-custom">
                                 <label for="name">Full Name</label><br>
-                                <input type="text" name="name" id="name" value="${sessionScope.account.firstName}" required/>
+                                <input type="text" name="name" id="name" 
+                                       value="${sessionScope.account.lastName} ${sessionScope.account.firstName}" 
+                                       readonly required/>
                             </div>
+
                             <label for="name">Address</label><br>
                             <div class="relative">
                                 <div class="flex">
@@ -186,8 +190,9 @@
 
                             <div class="input-custom">
                                 <label for="phone">Phone</label><br>
-                                <input type="tel" name="phone" id="phone" value="${phone}" required />
+                                <input type="tel" name="phone" id="phone" value="${phone}" readonly required />
                             </div>
+
                             <div class="input-custom">
                                 <label for="email">Email</label><br>
                                 <input type="text" name="email" id="email" value="${email}" readonly/>
@@ -246,9 +251,9 @@
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
-                                    <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
+                                    <span class="product-price"> <fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0 đ"/> </span>
                                 </div>
-                                <span class="product-quantity">Quantity: ${item.cartItemQuantity}</span>
+                                <span class="product-quantity">Quantity: ${item.quantity}</span>
                                 <hr>
                             </c:forEach>
                         </div>
