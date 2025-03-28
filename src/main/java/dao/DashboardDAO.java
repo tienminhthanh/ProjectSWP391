@@ -384,6 +384,7 @@ public class DashboardDAO {
                 + "    END AS ageGroup, COUNT(*) AS userCount "
                 + "FROM Account "
                 + "WHERE accountIsActive = 1 "
+                + "AND role = 'Customer' "
                 + "GROUP BY "
                 + "    CASE "
                 + "        WHEN DATEDIFF(YEAR, birthDate, GETDATE()) < 18 THEN '<18' "
