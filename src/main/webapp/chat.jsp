@@ -8,6 +8,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Chat</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <style>
             .chat-container {
@@ -174,7 +175,11 @@
             function sendMessage() {
                 const messageContent = document.getElementById('messageContent').value.trim();
                 if (!messageContent) {
-                    alert('Please enter a message!');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Please enter a message!'
+                    });
                     return;
                 }
 
@@ -186,8 +191,14 @@
                         .then(response => {
                             if (response.redirected && response.url.includes('login')) {
                                 // Nếu server chuyển hướng về login, có nghĩa là chưa đăng nhập
-                                alert('Please login to send messages!');
-                                window.location.href = `${contextPath}/login.jsp`;
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Login Required',
+                                    text: 'Please login to send messages!',
+                                    confirmButtonText: 'Go to Login'
+                                }).then(() => {
+                                    window.location.href = `${contextPath}/login.jsp`;
+                                });
                                 return Promise.reject('Not logged in'); // Ngắt chuỗi promise
                             }
                             return response; // Tiếp tục nếu đã đăng nhập
@@ -216,7 +227,12 @@
                                 document.getElementById('messageContent').value = '';
                                 loadMessages();
                             } else {
-                                alert(data.message || 'Unable to send message!');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Message Failed',
+                                    text: data.message || 'Unable to send message!'
+                                });
+
                             }
                         })
                         .catch(error => {

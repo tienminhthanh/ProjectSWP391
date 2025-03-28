@@ -277,8 +277,8 @@ public class ProductCatalogController extends HttpServlet {
 
         } catch (Exception e) {
             System.out.println(e.toString());
-            request.setAttribute("errorMessage", e.toString());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+            request.setAttribute("message", "Search is not available at the moment!");
+            request.getRequestDispatcher("home").forward(request, response);
         }
 
     }
