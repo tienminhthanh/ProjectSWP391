@@ -117,11 +117,8 @@ public class UpdateAccountController extends HttpServlet {
                 }
 
                 // Điều hướng dựa trên vai trò
-                if ("admin".equals(loggedInAccount.getRole())) {
-                    response.sendRedirect("listAccount?message=Account updated successfully!");
-                } else {
-                    response.sendRedirect("readAccount?message=Account updated successfully!");
-                }
+                response.sendRedirect("readAccount?message=Account updated successfully!");
+
             } else {
                 session.setAttribute("message", "Account update failed! Please try again.");
                 request.getRequestDispatcher("accountUpdate.jsp").forward(request, response);

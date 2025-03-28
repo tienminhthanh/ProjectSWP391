@@ -73,9 +73,7 @@
                         <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-full w-full hover:bg-blue-700 transition duration-200">
                             Verify
                         </button>
-                        <a href="login.jsp" type="submit" class="bg-gray-600 text-white py-2 px-4 rounded-full w-full hover:bg-gray-700 transition duration-200">
-                            Verify account later
-                        </a>
+                       
                     </div>
 
                 </form>

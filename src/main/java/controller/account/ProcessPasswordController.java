@@ -27,16 +27,21 @@ public class ProcessPasswordController extends HttpServlet {
             response.sendRedirect("login.jsp");
             return;
         }
-
+        AccountLib lib = new AccountLib();
         Account account = (Account) session.getAttribute("account");
 
         if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "New passwords do not match.");
             request.getRequestDispatcher("processPassword.jsp").forward(request, response);
             return;
+        } else {
+            if (account.getPassword().equals(lib.hashMD5(newPassword))) {
+               request.setAttribute("errorMessage", "The new password matches the old password.");
+            request.getRequestDispatcher("processPassword.jsp").forward(request, response);
+            return; 
+            }
         }
 
-        AccountLib lib = new AccountLib();
         if (!lib.isValidPassword(newPassword)) {
             request.setAttribute("errorMessage", "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.");
             request.getRequestDispatcher("processPassword.jsp").forward(request, response);
