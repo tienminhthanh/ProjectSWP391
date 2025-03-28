@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Account;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class RegisterController extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
+        // Lấy dữ liệu từ form
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -35,11 +37,13 @@ public class RegisterController extends HttpServlet {
         String birthDate = request.getParameter("birthDate");
         String address = request.getParameter("address");
 
+        String message = null;
+
         try {
             AccountDAO accountDAO = new AccountDAO();
             AccountLib lib = new AccountLib();
-            String message = null;
 
+            // Kiểm tra email có bị trùng không
             Account accountByEmail = accountDAO.getAccountByEmail(email);
             if (accountByEmail != null && !"admin".equals(accountByEmail.getRole())) {
                 if (accountByEmail.getAccountIsActive()) {
@@ -53,6 +57,7 @@ public class RegisterController extends HttpServlet {
                 }
             }
 
+            // Kiểm tra username đã tồn tại chưa
             if (accountDAO.getAccountByUsername(username) != null) {
                 message = "Username is already taken!";
             } else if (!password.equals(confirmPassword)) {
@@ -60,40 +65,55 @@ public class RegisterController extends HttpServlet {
             } else if (!lib.isValidPassword(password)) {
                 message = "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.";
             } else {
+                // Mã hóa mật khẩu
                 String hashedPassword = lib.hashMD5(confirmPassword);
-                boolean success = accountDAO.register(username, hashedPassword, firstName, lastName, null, phoneNumber, birthDate, address);
-                if (success) {
-                    request.getSession().setAttribute("tempEmail", email);
-                    request.getSession().setAttribute("tempUsername", username);
-                    response.sendRedirect("emailAuthentication");
-                    return;
-                } else {
-                    message = "Registration failed. Please try again.";
-                }
-            }
 
-            if (message != null) {
-                request.setAttribute("message", message);
-                forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate);
-            }
+                String role = "customer"; // Giả sử mặc định là customer
+                int id = (int) ((Math.random() * 100000) + 1);
+                // Tạo đối tượng Account không cần accountID
+                Account account = new Account(id, username, hashedPassword, role, firstName, lastName, email, phoneNumber, birthDate, true);
 
+                // Lưu thông tin vào session
+                HttpSession session = request.getSession();
+                session.setAttribute("account", account);
+                session.setAttribute("address", address);
+                session.setAttribute("tempEmail", email);
+                session.setAttribute("tempUsername", username);
+
+                // Chuyển hướng đến trang xác thực email
+                response.sendRedirect("emailAuthentication");
+                return;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("message", "Database error: " + e.getMessage());
-            forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate);
+            message = "Database error: " + e.getMessage();
+        }
+
+        // Nếu có lỗi, giữ lại thông tin và chuyển hướng lại trang đăng ký
+        if (message != null) {
+            request.setAttribute("message", message);
+            forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate,password,address);
         }
     }
 
     private void forwardToRegisterPage(HttpServletRequest request, HttpServletResponse response,
             String username, String firstName, String lastName,
-            String email, String phoneNumber, String birthDate)
+            String email, String phoneNumber, String birthDate,
+            String password, String address) // Thêm các tham số mật khẩu và địa chỉ
             throws ServletException, IOException {
+
+        // Thiết lập các thuộc tính cho request để gửi dữ liệu vào JSP
         request.setAttribute("username", username);
         request.setAttribute("firstName", firstName);
         request.setAttribute("lastName", lastName);
         request.setAttribute("email", email);
         request.setAttribute("phoneNumber", phoneNumber);
         request.setAttribute("birthDate", birthDate);
+        request.setAttribute("password", password);  // Thêm mật khẩu vào request
+        request.setAttribute("address", address);  // Thêm địa chỉ vào request
+
+        // Chuyển tiếp tới trang đăng ký
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
+
 }
