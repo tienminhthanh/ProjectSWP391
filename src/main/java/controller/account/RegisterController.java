@@ -64,6 +64,8 @@ public class RegisterController extends HttpServlet {
                 message = "Passwords do not match!";
             } else if (!lib.isValidPassword(password)) {
                 message = "Password must be at least 8 characters long and contain uppercase letters, lowercase letters, digits, and special characters.";
+            } else if (!lib.isValidPhoneNumber(phoneNumber)) {
+                message = "The phone number must has 10 number and phone number Viet Nam";
             } else {
                 // Mã hóa mật khẩu
                 String hashedPassword = lib.hashMD5(confirmPassword);
@@ -92,7 +94,7 @@ public class RegisterController extends HttpServlet {
         // Nếu có lỗi, giữ lại thông tin và chuyển hướng lại trang đăng ký
         if (message != null) {
             request.setAttribute("message", message);
-            forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate,password,address);
+            forwardToRegisterPage(request, response, username, firstName, lastName, email, phoneNumber, birthDate, password, address);
         }
     }
 
