@@ -145,9 +145,9 @@
                                 <ul class="flex flex-wrap justify-center max-w-full flex-row">
                                     <c:if test="${currentPage > 1}">
                                         <!-- First (hidden on small screens, shown on md+) -->
-                                        <li class=""><a href="${currentURL}&page=1" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">First</a></li>
+                                        <li class=""><a href="${formattedURL}&page=1" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">First</a></li>
                                         <!-- Previous (always shown) -->
-                                        <li><a href="${currentURL}&page=${currentPage - 1}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Prev</a></li>
+                                        <li><a href="${formattedURL}&page=${currentPage - 1}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Prev</a></li>
                                         </c:if>
 
                                     <!-- Page Numbers (hidden on small screens, shown on md+) -->
@@ -155,16 +155,16 @@
                                                end="${currentPage + 2 < totalPages ? currentPage + 2 : totalPages}" 
                                                var="i">
                                         <c:if test="${i > 0 && i <= totalPages}">
-                                            <li class="hidden md:block"><a href="${currentURL}&page=${i}" 
+                                            <li class="hidden md:block"><a href="${formattedURL}&page=${i}" 
                                                                            class="${i == currentPage ? 'bg-yellow-500 font-bold p-3 hover:bg-yellow-600' : 'bg-orange-500 p-2 hover:bg-orange-600'} text-white rounded">${i}</a></li>
                                             </c:if>
                                         </c:forEach>
 
                                     <c:if test="${currentPage < totalPages}">
                                         <!-- Next (always shown) -->
-                                        <li><a href="${currentURL}&page=${currentPage + 1}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Next</a></li>
+                                        <li><a href="${formattedURL}&page=${currentPage + 1}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Next</a></li>
                                         <!-- Last (hidden on small screens, shown on md+) -->
-                                        <li class=""><a href="${currentURL}&page=${totalPages}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Last</a></li>
+                                        <li class=""><a href="${formattedURL}&page=${totalPages}" class="px-2 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Last</a></li>
                                         </c:if>
                                 </ul>
                             </nav>
