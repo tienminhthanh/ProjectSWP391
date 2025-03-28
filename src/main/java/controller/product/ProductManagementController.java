@@ -68,7 +68,14 @@ public class ProductManagementController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String path = request.getServletPath();
+        String action = request.getParameter("action");
 
+        // Nếu action=clearMessage, xóa session và trả về response
+        if ("clearMessage".equals(action)) {
+            HttpSession session = request.getSession();
+            session.removeAttribute("message");
+            session.removeAttribute("messageType");
+        }
         switch (path) {
             case "/manageProductList":
                 manageList(request, response);
@@ -371,7 +378,7 @@ public class ProductManagementController extends HttpServlet {
                         Series series = new Series().setSeriesName(paramMap.get("seriesName")[0]);
                         int id = productDAO.getSeriesIDByName(paramMap.get("seriesName")[0]);
 
-                        if (id > 0 ) {
+                        if (id > 0) {
                             series.setSeriesID(id);
                         }
 
@@ -384,7 +391,7 @@ public class ProductManagementController extends HttpServlet {
                         OGCharacter character = new OGCharacter().setCharacterName(paramMap.get("characterName")[0]);
                         int id = productDAO.getCharacterIDByName(paramMap.get("characterName")[0]);
 
-                        if (id > 0 ) {
+                        if (id > 0) {
                             character.setCharacterID(id);
                         }
 
@@ -397,7 +404,7 @@ public class ProductManagementController extends HttpServlet {
                         Brand brand = new Brand().setBrandName(paramMap.get("brandName")[0]);
                         int id = productDAO.getBrandIDByName(paramMap.get("brandName")[0]);
 
-                        if (id > 0 ) {
+                        if (id > 0) {
                             brand.setBrandID(id);
                         }
                         dataList.add(brand);
@@ -701,7 +708,7 @@ public class ProductManagementController extends HttpServlet {
             String message = transactionState ? "The product has been " + action + "d" + " successfully"
                     : "Failed to " + action + " the product!";
             request.setAttribute(transactionState ? "successfulMessage" : "failedMessage", message);
-            
+
             request.getRequestDispatcher("manageProductList").forward(request, response);
 
         } catch (Exception e) {

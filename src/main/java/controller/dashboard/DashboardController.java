@@ -7,11 +7,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate; // Thêm import để lấy năm hiện tại
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.temporal.IsoFields;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +25,7 @@ public class DashboardController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -49,25 +51,36 @@ public class DashboardController extends HttpServlet {
                 || (quarter != null && !quarter.isEmpty())
                 || (month != null && !month.isEmpty());
 
-        // Nếu year không được chọn, mặc định là năm 2024
+        // Lấy năm hiện tại làm năm mặc định
+        String defaultYear = String.valueOf(LocalDate.now().getYear()); // Ví dụ: 2025 nếu hôm nay là 27/03/2025
+
+        // Nếu year không được chọn, sử dụng năm hiện tại
         if (year == null || year.isEmpty()) {
-            year = "2025"; // Đặt mặc định là 2024
+            year = defaultYear;
         }
 
-        // Nếu revenueTrendYear không được chọn (mới vào dashboard), mặc định là năm 2024
+        // Nếu revenueTrendYear không được chọn (mới vào dashboard), sử dụng năm hiện tại
         if (revenueTrendYear == null || revenueTrendYear.isEmpty()) {
-            revenueTrendYear = "2025"; // Đặt mặc định là 2024
+            revenueTrendYear = defaultYear;
         }
 
         DashboardDAO dao = new DashboardDAO();
         double totalRevenue = dao.getTotalRevenue(year, quarter, month, isFilterApplied);
         int totalQuantitySold = dao.getTotalQuantitySold(year, quarter, month, isFilterApplied);
-        int totalQuantitySoldFromOrder = dao.getTotalQuantitySoldFromOrder(year, quarter, month, isFilterApplied); // Thêm để so sánh
+        int totalQuantitySoldFromOrder = dao.getTotalQuantitySoldFromOrder(year, quarter, month, isFilterApplied);
         double grossProfit = dao.getGrossProfit(year, quarter, month, isFilterApplied);
         double profitMargin = dao.getProfitMargin(year, quarter, month, isFilterApplied);
         double orderConversionRate = dao.getOrderConversionRate(year, quarter, month, isFilterApplied);
         int totalOrders = dao.getTotalOrders(year, quarter, month, isFilterApplied);
         int successfulOrders = dao.getSuccessfulOrders(year, quarter, month, isFilterApplied);
+        List<Customer> topBuyers = dao.getTopBuyers(); // Không áp dụng bộ lọc thời gian
+
+        // Tạo Map để lưu totalQuantitySold và totalRevenue
+        Map<Integer, Integer> quantitySoldMap = new HashMap<>();
+        Map<Integer, Double> revenueMap = new HashMap<>();
+
+        // Lấy top 5 sản phẩm theo thể loại
+        Map<String, List<Product>> topProductsByCategory = dao.getTopProductsByCategory(year, quarter, month, isFilterApplied, quantitySoldMap, revenueMap);
 
         // Luôn lấy Revenue Trend theo tháng cho năm được chọn
         Map<String, Double> revenueTrend = dao.getRevenueTrend("month", revenueTrendYear, null, null, true);
@@ -75,7 +88,7 @@ public class DashboardController extends HttpServlet {
         // Đưa dữ liệu vào request
         request.setAttribute("totalRevenue", totalRevenue);
         request.setAttribute("totalQuantitySold", totalQuantitySold);
-        request.setAttribute("totalQuantitySoldFromOrder", totalQuantitySoldFromOrder); // Thêm để so sánh
+        request.setAttribute("totalQuantitySoldFromOrder", totalQuantitySoldFromOrder);
         request.setAttribute("grossProfit", grossProfit);
         request.setAttribute("profitMargin", profitMargin);
         request.setAttribute("orderConversionRate", orderConversionRate);
@@ -83,6 +96,11 @@ public class DashboardController extends HttpServlet {
         request.setAttribute("successfulOrders", successfulOrders);
         request.setAttribute("revenueTrend", revenueTrend);
         request.setAttribute("selectedRevenueTrendYear", revenueTrendYear);
+        request.setAttribute("topBuyers", topBuyers);
+        request.setAttribute("topProductsByCategory", topProductsByCategory);
+        request.setAttribute("quantitySoldMap", quantitySoldMap);
+        request.setAttribute("revenueMap", revenueMap);
+
         Map<String, Integer> ageStats = dao.getAgeStatistics();
         request.setAttribute("ageStatistics", ageStats);
 
