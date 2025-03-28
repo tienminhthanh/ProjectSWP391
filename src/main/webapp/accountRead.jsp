@@ -73,6 +73,9 @@
                             <c:when test="${account.role eq 'customer'}">
                                 <img src="https://leapcontent.vn/wp-content/uploads/2021/05/khach-hang-feature.png" alt="Customer" class="w-150 rounded-full">
                             </c:when>
+                            <c:when test="${account.role eq 'staff'}">
+                                <img src="https://png.pngtree.com/png-vector/20190429/ourlarge/pngtree-employee-icon-vector-illustration-in-glyph-style-for-any-purpose-png-image_998315.jpg" alt="Customer" class="w-150 rounded-full">
+                            </c:when>
                             <c:otherwise>
                                 <img src="https://i.pinimg.com/736x/65/ac/dc/65acdc3f5eed2875b4beb827d05611aa.jpg" alt="Unknown" class="w-150 rounded-full">
                             </c:otherwise>
