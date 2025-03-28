@@ -82,26 +82,24 @@ public class ProductDAO {
                 + "       C.categoryName, \n"
                 + "       PD.discountPercentage, \n"
                 + "       PD.eventDateStarted,\n"
-                + "	   PD.eventDuration\n"
+                + "       PD.eventDuration\n"
                 + "FROM Product AS P\n"
                 + "LEFT JOIN ProductDiscount PD \n"
                 + "    ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
-                + "WHERE P.productIsActive = 1 AND P.productID = ?\n");
+                + "WHERE P.productIsActive = 1 AND P.productID = ?");
         System.out.println(sql);
-        try {
-            Object[] params = {productID};
-            ResultSet rs = context.exeQuery(sql.toString(), params);
 
+        Object[] params = {productID};
+        try ( ResultSet rs = context.exeQuery(sql.toString(), params)) {
             if (rs.next()) {
                 return mapResultSetToProduct(rs, null);
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw e; // Ném lại ngoại lệ để xử lý ở tầng trên
         }
-
         return null;
     }
 

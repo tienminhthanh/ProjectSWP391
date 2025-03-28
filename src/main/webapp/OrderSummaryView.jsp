@@ -246,9 +246,9 @@
                                         <img src="${item.product.imageURL}" alt="${item.product.productName}" width="80px" height="80px"/>
                                     </span>
                                     <span class="product-infor">${item.product.productName}</span>
-                                    <span class="product-price"> <fmt:formatNumber value="${item.product.price}" pattern="#,##0 đ"/> </span>
+                                    <span class="product-price"> <fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0 đ"/> </span>
                                 </div>
-                                <span class="product-quantity">Quantity: ${item.cartItemQuantity}</span>
+                                <span class="product-quantity">Quantity: ${item.quantity}</span>
                                 <hr>
                             </c:forEach>
                         </div>
