@@ -53,7 +53,7 @@
 
                 <!-- Buttons -->
                 <div class="flex justify-center space-x-4">
-                    <a href="home.jsp" class="bg-gray-500 text-white py-2 px-4 rounded-full flex items-center hover:bg-gray-600 transition duration-200">
+                    <a href="home" class="bg-gray-500 text-white py-2 px-4 rounded-full flex items-center hover:bg-gray-600 transition duration-200">
                         <i class="fas fa-home mr-2"></i> Back to Home
                     </a>
                     <a href="logout" class="bg-blue-600 text-white py-2 px-4 rounded-full flex items-center hover:bg-blue-700 transition duration-200">
