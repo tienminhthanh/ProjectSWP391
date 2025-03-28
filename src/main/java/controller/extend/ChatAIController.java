@@ -128,7 +128,9 @@ public class ChatAIController extends HttpServlet {
                 }
                 return "No response from Gemini.";
             } else {
-                return "Error: " + responseCode;
+                return "Chào bạn, tôi là Wibooks AI, sẵn sàng đồng hành cùng bạn trong việc khám phá thế giới truyện tranh. "
+                        + "Tuy nhiên, hiện tại bạn đã sử dụng dịch vụ quá nhiều lần, xin vui lòng thử lại sau một chút. "
+                        + "Cảm ơn bạn đã thông cảm!";
             }
         } catch (Exception e) {
             return "Exception: " + e.getMessage();
