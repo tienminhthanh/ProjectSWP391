@@ -295,7 +295,7 @@ public class Product {
         if (eventEndDate != null && now.isBefore(eventEndDate.plusDays(1)) && discountPercentage > 0) {
             return price * (1 - discountPercentage / 100.0); // Giá sau giảm
         }
-        return price; // Giá gốc nếu không có sự kiện hoặc sự kiện hết hạn
+        return price;
     }
     
 }

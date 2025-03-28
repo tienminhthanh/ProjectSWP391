@@ -62,15 +62,15 @@
                 <c:choose>
                     <c:when test="${currentProduct.discountPercentage != 0}">
                         <span class="discount-price">
-                            <fmt:formatNumber value="${currentProduct.price * (100-currentProduct.discountPercentage)/100}" type="number" groupingUsed="true" /> đ
+                            <fmt:formatNumber value="${currentProduct.price * (100-currentProduct.discountPercentage)/100}" type="number" groupingUsed="true" /> Ä
                         </span>
                         <span class="original-price">
-                            <fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ
+                            <fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> Ä
                         </span>
                     </c:when>
                     <c:otherwise>
                         <span class="discount-price">
-                            <fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ
+                            <fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> Ä
                         </span>
                     </c:otherwise>
                 </c:choose>
@@ -80,7 +80,7 @@
 
             <!-- Price Section -->
             <p class="product-price">
-                <span class="discount-price text-blue-600"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> đ</span>
+                <span class="discount-price text-blue-600"><fmt:formatNumber value="${currentProduct.price}" type="number" groupingUsed="true" /> Ä</span>
             </p>
         </c:otherwise>
     </c:choose>
@@ -99,7 +99,7 @@
     <c:set var="cartQuantity" value="0" />
     <c:forEach var="cartItem" items="${sessionScope.cartItems}">
         <c:if test="${cartItem.productID == currentProduct.productID}">
-            <c:set var="cartQuantity" value="${cartItem.cartItemQuantity}" />
+            <c:set var="cartQuantity" value="${cartItem.quantity}" />
         </c:if>
     </c:forEach>
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
