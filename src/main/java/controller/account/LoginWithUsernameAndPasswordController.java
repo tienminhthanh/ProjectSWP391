@@ -51,7 +51,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
         AccountLib lib = new AccountLib(); // Utility class for password hashing
 
         // Retrieve login details from the request
-        String username = request.getParameter("username");
+        String username = request.getParameter("username").toLowerCase();
         String password = request.getParameter("password"); // Hash the password using MD5
         password = lib.hashMD5(password);
         HttpSession session = request.getSession();

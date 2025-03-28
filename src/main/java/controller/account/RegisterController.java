@@ -27,7 +27,7 @@ public class RegisterController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         // Lấy dữ liệu từ form
-        String username = request.getParameter("username");
+        String username = request.getParameter("username").toLowerCase();
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         String firstName = request.getParameter("firstName");
