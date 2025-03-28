@@ -141,27 +141,44 @@
                 </div>
             </div>
         </div>
+        <c:if test="${not empty sessionScope.message}">
+            <div id="popupMessage"
+                 class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500">
+                <strong>${sessionScope.message}</strong>
+            </div>
+            <c:remove var="message" scope="session"/>
+            <c:remove var="messageType" scope="session"/>
 
+            <script>
+                setTimeout(() => {
+                    let popup = document.getElementById("popupMessage");
+                    if (popup) {
+                        popup.style.opacity = "0";
+                        setTimeout(() => popup.remove(), 500); // Xóa khỏi DOM sau khi animation kết thúc
+                    }
+                }, 3000);
+            </script>
+        </c:if>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.9/dist/sweetalert2.all.min.js"></script>
         <script>
-            function confirmAction(message, url) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: message,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, do it!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = url;
-                    }
-                });
-            }
-            function navigateToUpdate(voucherId) {
-                window.location = 'listAccount?voucherId=' + voucherId;
-            }
+                function confirmAction(message, url) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, do it!',
+                        cancelButtonText: 'Cancel',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url;
+                        }
+                    });
+                }
+                function navigateToUpdate(voucherId) {
+                    window.location = 'listAccount?voucherId=' + voucherId;
+                }
         </script>
     </body>
 </html>

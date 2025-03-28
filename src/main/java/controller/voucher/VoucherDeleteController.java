@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "VoucherDeleteServlet", urlPatterns = {"/voucherDelete"})
 public class VoucherDeleteController extends HttpServlet {
 
-    private final String VOUCHER_LIST_PAGE = "voucherList";
+    private final String VOUCHER_DETAILS_PAGE = "voucherDetails";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,11 +34,11 @@ public class VoucherDeleteController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = VOUCHER_LIST_PAGE;
+        String url = VOUCHER_DETAILS_PAGE;
         HttpSession session = request.getSession();
-
+        int id = 0;
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
+            id = Integer.parseInt(request.getParameter("id"));
             VoucherDAO vDao = new VoucherDAO();
 
 //            if (vDao.deleteVoucher(id)) {
@@ -72,6 +72,7 @@ public class VoucherDeleteController extends HttpServlet {
             session.setAttribute("message", "Error: " + e.getMessage());
             session.setAttribute("messageType", "error");
         }
+        url += "?voucherId=" + id;
         response.sendRedirect(url);
     }
 

@@ -241,7 +241,8 @@ public class VoucherDAO {
         List<Voucher> listVoucher = new ArrayList<>();
         String sql = "SELECT * FROM Voucher \n"
                 + "WHERE voucherDateStarted <= ? \n"
-                + "AND DATEADD(DAY, voucherDuration, voucherDateStarted) >= ?";
+                + "AND DATEADD(DAY, voucherDuration, voucherDateStarted) >= ? "
+                + "AND voucherIsActive = 1";
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -387,11 +388,6 @@ public class VoucherDAO {
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
         Voucher v = new Voucher(3, "ss", 100, 12,12, "2025-02-24", 122, 1, false, true, "PERCENTAGE", 0.0, "2025-03-31");
-        vd.updateVoucher(v);
-//        for (Voucher voucher : vd.getListVoucher()) {
-//            System.out.println(voucher.toString());
-//        }
-        
-        System.out.println(vd.getVoucherByID(3));
+        System.out.println(vd.getListVoucherAvailableNow().size());
     }
 }
