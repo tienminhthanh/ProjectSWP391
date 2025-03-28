@@ -18,7 +18,8 @@
         <!--Footer css-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-        <link href="css/styleFooter.css" rel="stylesheet">
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><link href="css/styleFooter.css" rel="stylesheet">
         <style>
             .logo {
                 display: flex;
@@ -120,7 +121,7 @@
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
-                                    <input type="number" name="quantity" value="${item.quantity}"  min="1" max="${item.product.stockCount}" class="quantity-input" required/>
+                                    <input type="number" name="quantity" value="${item.quantity}" class="quantity-input" data-stock="${item.product.stockCount}" required/>
                                     <input type="hidden" name="priceWithQuantity" value="${item.priceWithQuantity}" />
                                     <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                     <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">
@@ -165,6 +166,62 @@
         </main>
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const quantityInputs = document.querySelectorAll(".quantity-input");
+
+                if (!quantityInputs.length) {
+                    console.log("No quantity inputs found!");
+                    return;
+                }
+
+                quantityInputs.forEach(function (quantityInput) {
+                    const stockCount = parseInt(quantityInput.getAttribute("data-stock"), 10) || 0;
+                    const hiddenInputs = quantityInput.closest("form").querySelectorAll(".quantity");
+
+                    hiddenInputs.forEach(function (hiddenInput) {
+                        hiddenInput.value = quantityInput.value;
+                    });
+
+                    quantityInput.addEventListener("input", function (event) {
+                        let numberValue = parseInt(event.target.value, 10);
+
+                        if (numberValue === "" || numberValue.null) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid purchase quantity",
+                                text: "Quantity cannot be empty!"
+                            });
+                            quantityInput.value = 1;
+                            return;
+                        }
+                        if (numberValue < 1) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid purchase quantity",
+                                text: "Purchase quantity must be greater than 0!"
+                            });
+                            quantityInput.value = 1;
+                            inputElement.value = numberValue = 1;
+                        }
+                        else if (numberValue > stockCount) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid purchase quantity",
+                                text: `Purchase quantity cannot greater than stock!`
+                            });
+                            quantityInput.value = stockCount;
+                        }
+
+                        hiddenInputs.forEach(function (hiddenInput) {
+                            hiddenInput.value = quantityInput.value;
+                        });
+                    });
+                });
+            });
+        </script>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
                 integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>

@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import dao.AccountDAO;
 import dao.NotificationDAO;
+import jakarta.mail.Session;
+import jakarta.servlet.http.HttpSession;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
@@ -57,20 +59,23 @@ public class CreateNotificationController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         try {
             String senderStr = request.getParameter("senderID");
             String[] receiverIDs = request.getParameterValues("receiverID");
             String notificationTitle = request.getParameter("notificationTitle");
             String notificationDetails = request.getParameter("notificationDetails");
-
+            int senderID = Integer.parseInt(senderStr);
+            
+            if (session == null) {
+                response.sendRedirect("login");
+                return;
+            }
+            
             if (notificationTitle == null || notificationTitle.trim().isEmpty()
                     || notificationDetails == null || notificationDetails.trim().isEmpty()) {
-                throw new IllegalArgumentException("Title and details are required");
-            }
-
-            int senderID = Integer.parseInt(senderStr);
-
-            if (receiverIDs != null && receiverIDs.length > 0) {
+                request.setAttribute("error", "Please enter all information fields.");
+            }else if (receiverIDs != null && receiverIDs.length > 0) {
                 for (String receiverIDStr : receiverIDs) {
                     int receiverID = Integer.parseInt(receiverIDStr);
                     Notification notification = new Notification(senderID, receiverID, notificationDetails.trim(), new Date(System.currentTimeMillis()), false, notificationTitle.trim(), false);

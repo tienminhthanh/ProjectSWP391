@@ -96,7 +96,6 @@ public class CartController extends HttpServlet {
                     throw new Exception("Product not found!");
                 }
                 product.setPrice(price);
-                double a = product.getPrice();
                 addToCart(request, customerID, productID, quantity, priceWithQuantity, product);
 
                 if (currentURL == null || currentURL.trim().isEmpty()) {
