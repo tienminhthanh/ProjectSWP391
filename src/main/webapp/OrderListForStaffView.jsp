@@ -150,6 +150,7 @@
                             <div class="flex justify-between items-center mb-6">
                                 <div class="flex space-x-4">                              
                                     <a href="OrderListForStaffController?status=pending" class="px-4 py-2 rounded-lg text-white ${currentStatus == 'pending' ? 'bg-blue-600' : 'bg-gray-400'}">Pending</a>
+                                    <a href="OrderListForStaffController?status=paid" class="px-4 py-2 rounded-lg text-white ${currentStatus == 'paid' ? 'bg-blue-600' : 'bg-gray-400'}">Paid</a>
                                     <a href="OrderListForStaffController?status=shipped" class="px-4 py-2 rounded-lg text-white ${currentStatus == 'shipped' ? 'bg-blue-600' : 'bg-gray-400'}">Shipped</a>
                                     <a href="OrderListForStaffController?status=completed" class="px-4 py-2 rounded-lg text-white ${currentStatus == 'completed' ? 'bg-blue-600' : 'bg-gray-400'}">Completed</a>
                                     <a href="OrderListForStaffController?status=canceled" class="px-4 py-2 rounded-lg text-white ${currentStatus == 'canceled' ? 'bg-blue-600' : 'bg-gray-400'}">Canceled</a>
@@ -166,7 +167,7 @@
                                             <th class="px-4 py-3 border border-b w-[100px]">Status</th>
                                             <th class="px-4 py-3 border border-b w-[120px]">Order Date</th>
                                             <th class="px-4 py-3 border border-b w-[120px]">Total</th>
-                                                <c:if test="${currentStatus eq 'pending'}">
+                                                <c:if test="${currentStatus eq 'pending' or currentStatus eq 'paid'}">
                                                 <th class="px-4 py-3 border border-b w-[150px]">Actions</th>
                                                 </c:if>
                                         </tr>
@@ -187,7 +188,7 @@
                                                 </td>
 
                                                 <%-- Chỉ hiển thị Action khi orderStatus là "pending" --%>
-                                                <c:if test="${order.orderStatus eq 'pending'}">
+                                                <c:if test="${order.orderStatus eq 'pending' or order.orderStatus eq 'paid' }">
                                                     <td class="px-4 py-3 border border-b text-center" onclick="event.stopPropagation();">
                                                         <form action="OrderListForStaffController" method="POST" class="inline" onsubmit="return confirmUpdate()" onclick="event.stopPropagation();">
                                                             <input type="hidden" name="orderID" value="${order.orderID}"/>
