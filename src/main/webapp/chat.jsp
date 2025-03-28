@@ -70,20 +70,56 @@
                         <p class="text-center text-gray-500">No messages yet.</p>
                     </c:when>
                     <c:otherwise>
+                        <c:set var="today" value="<%= new java.util.Date()%>" />
+                        <fmt:formatDate value="${today}" pattern="yyyy-MM-dd" var="todayDate" />
+                        <c:set var="previousDate" value="" />
                         <c:forEach var="chat" items="${chats}">
-                            <div class="mb-4 ${chat.senderID == sessionScope.account.accountID ? 'text-right' : 'text-left'}">
-                                <div class="inline-block p-3 rounded-lg ${chat.senderID == sessionScope.account.accountID ? 'bg-orange-500 text-white text-left' : 'bg-white'}">
-                                    <p>${chat.messageContent}</p>
-                                    <span class="text-xs">
-                                        <fmt:formatDate value="${chat.sentAt}" pattern="HH:mm"/>
-                                    </span>
+                            <fmt:formatDate value="${chat.sentAt}" pattern="yyyy-MM-dd" var="currentDate" />
+                            <c:if test="${currentDate != todayDate && currentDate != previousDate}">
+                                <div class="text-center text-gray-500 my-2">
+                                    <fmt:formatDate value="${chat.sentAt}" pattern="dd/MM/yyyy" />
                                 </div>
+                                <c:set var="previousDate" value="${currentDate}" />
+                            </c:if>
+                            <c:if test="${currentDate == todayDate && currentDate != previousDate}">
+                                <div class="text-center text-gray-500 my-2">
+                                    Today
+                                </div>
+                                <c:set var="previousDate" value="${currentDate}" />
+                            </c:if>
+                            <div class="mb-4 ${chat.senderID == sessionScope.account.accountID ? 'text-right' : 'text-left'}">
+                                <c:choose>
+                                    <c:when test="${chat.senderID == sessionScope.account.accountID}">
+                                        <div class="inline-block p-3 rounded-lg ${chat.senderID == sessionScope.account.accountID ? 'bg-orange-400 text-white text-left' : 'bg-white'}">
+                                            <p>${chat.messageContent}</p>
+                                            <span class="text-xs">
+                                                <fmt:formatDate value="${chat.sentAt}" pattern="HH:mm"/>
+                                                <c:choose>
+                                                    <c:when test="${chat.isSeen}">
+                                                        <span class="ml-2">✓✓</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="ml-2">✓</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </span>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="inline-block p-3 rounded-lg ${chat.senderID == sessionScope.account.accountID ? 'bg-orange-500 text-white text-left' : 'bg-white'}">
+                                            <p>${chat.messageContent}</p>
+                                            <span class="text-xs">
+                                                <fmt:formatDate value="${chat.sentAt}" pattern="HH:mm"/>
+                                            </span>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
+
                         </c:forEach>
                     </c:otherwise>
                 </c:choose>
             </div>
-
             <div class="chat-input">
                 <div class="flex">
                     <input type="text" id="messageContent" class="flex-1 p-2 border rounded-l-lg" 
@@ -190,7 +226,7 @@
                             }
                         });
             }
-            
+
 
             // Function to scroll to the last message
             function scrollToBottom() {

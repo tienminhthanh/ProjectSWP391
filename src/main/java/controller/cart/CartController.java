@@ -52,8 +52,8 @@ public class CartController extends HttpServlet {
         for (CartItem item : cartItems) {
             Product product = productDAO.getProductById(item.getProductID());
             item.setProduct(product);
-            item.updateCartItemPrice(); // Cập nhật giá dựa trên sự kiện
-            cartItemDAO.updateCartItem(item); // Đồng bộ với cơ sở dữ liệu
+            item.updateCartItemPrice(); 
+            cartItemDAO.updateCartItem(item);
         }
             session.setAttribute("cartItems", cartItems);
             RequestDispatcher dispatcher = request.getRequestDispatcher("cart.jsp");
