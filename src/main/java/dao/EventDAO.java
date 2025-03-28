@@ -293,7 +293,9 @@ public class EventDAO {
 
     public Event getEventByBanner(String currentBanner) {
         try {
-            String sql = "SELECT * FROM [dbo].[Event] WHERE [banner] = ?";
+            String sql = "SELECT * FROM [dbo].[Event] e WHERE [banner] = ?\n"
+                    + "AND EXISTS (SELECT 1 FROM [dbo].[Event_Product] ep WHERE ep.[eventID] = e.[eventID])\n"
+                    + "AND eventIsActive = 1";
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             Object[] params = {currentBanner};
             ResultSet rs = context.exeQuery(sql, params);

@@ -51,8 +51,9 @@
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
                 <h1 class="text-lg font-semibold">Deliver</h1>
             </div>
+
             <div class="flex items-center space-x-6">
-    <!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
+<!--                <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}"><i class="fas fa-bell text-2xl"></i></a>-->
                 <a href="notificationshipper?action=list&receiverID=${sessionScope.account.accountID}" class="relative">
                     <i class="fas fa-bell text-2xl"></i>
                     <c:set var="unreadCount" value="0" />
@@ -129,36 +130,36 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-    const notifications = document.querySelectorAll(".notification");
-    notifications.forEach(notification => {
-        // Lấy nội dung text và loại bỏ khoảng trắng thừa
-        const text = notification.textContent.trim();
-        console.log("content text:", `"${text}"`); // In chính xác nội dung của text
+                const notifications = document.querySelectorAll(".notification");
+                notifications.forEach(notification => {
+                    // Lấy nội dung text và loại bỏ khoảng trắng thừa
+                    const text = notification.textContent.trim();
+                    console.log("content text:", `"${text}"`); // In chính xác nội dung của text
 
-        // Kiểm tra và tách Order ID
-        if (text.includes("Order ID:")) {
-            const parts = text.split("Order ID:");
-            console.log("Mảng sau split:", parts); // In mảng để kiểm tra
+                    // Kiểm tra và tách Order ID
+                    if (text.includes("Order ID:")) {
+                    const parts = text.split("Order ID:");
+                            console.log("Mảng sau split:", parts); // In mảng để kiểm tra
 
-            // Lấy phần sau "Order ID:" (nếu có)
-            const result = parts[1]?.trim() || "";
-            console.log("Order ID:", `"${result}"`); // In result để kiểm tra
+                            // Lấy phần sau "Order ID:" (nếu có)
+                            const result = parts[1]?.trim() || "";
+                    console.log("Order ID:", `"${result}"`); // In result để kiểm tra
 
-            // Tiếp tục xử lý với link
-            const div = notification.closest("div");
-            const link = div?.querySelector("a");
-            if (link && result) { // Chỉ cập nhật nếu result không rỗng
-                link.href = "OrderDetailForShipperController?id=" + result;
-                console.log("Đã cập nhật href:", link.href);
-            } else {
-                console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
-            }
-        }
-        else {
-            console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
-        }
-    });
-});
+                    // Tiếp tục xử lý với link
+                    const div = notification.closest("div");
+                            const link = div?.querySelector("a");
+                    if (link && result) { // Chỉ cập nhật nếu result không rỗng
+                        link.href = "OrderDetailForShipperController?id=" + result;
+                        console.log("Đã cập nhật href:", link.href);
+                    } else {
+                        console.log("Không cập nhật href: link không tồn tại hoặc Order ID rỗng");
+                    }
+                    }
+                    else {
+                    console.log("Không tìm thấy 'Order ID:' trong:", `"${text}"`);
+                    }
+                });
+            });
         </script>
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous"></script>
 
