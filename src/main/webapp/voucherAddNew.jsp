@@ -63,14 +63,14 @@
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Date Started</label>
-                            <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" placeholder="Enter Date Started" required type="date"/>
+                            <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" id="dateStarted" placeholder="Enter Date Started" required type="date"/>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
                             <input class="w-full p-3 border border-gray-300 rounded" name="duration" placeholder="Enter duration" required type="number"/>
                         </div>
                     </div>
-                    <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Add Voucher</button>
+                    <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-orange-600 mt-4" type="submit">Add Voucher</button>
                 </form>
                 <div class="mt-6">
                     <a class="text-orange-400 hover:underline" href="voucherList">
@@ -80,17 +80,26 @@
             </div>
         </main>
         <script>
-            function toggleMaxDiscount() {
-                let type = document.getElementById("voucherType").value;
-                document.getElementById("maxDiscountDiv").style.display = (type === "PERCENTAGE") ? "block" : "none";
-            }
-            toggleMaxDiscount();
-        </script>
-        <script>
+            // ??t giá tr? min cho Date Started là ngày hôm nay
+            document.addEventListener("DOMContentLoaded", function () {
+                const today = new Date().toISOString().split("T")[0]; // L?y ngày hi?n t?i d?ng YYYY-MM-DD
+                document.getElementById("dateStarted").setAttribute("min", today);
+            });
+
             function validateForm(event) {
                 let voucherType = document.getElementById("voucherType").value;
                 let voucherValue = document.querySelector("[name='voucherValue']").value;
+                let dateStarted = document.getElementById("dateStarted").value;
+                let today = new Date().toISOString().split("T")[0];
 
+                // Ki?m tra Date Started không nh? h?n ngày hôm nay
+                if (dateStarted < today) {
+                    alert("Date Started cannot be earlier than today!");
+                    event.preventDefault();
+                    return false;
+                }
+
+                // Ki?m tra giá tr? ph?n tr?m
                 if (voucherType === "PERCENTAGE") {
                     let value = parseFloat(voucherValue);
                     if (value <= 0 || value > 100) {
@@ -108,12 +117,6 @@
                 maxDiscountDiv.style.display = voucherType === "PERCENTAGE" ? "block" : "none";
             }
 
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelector("form").addEventListener("submit", validateForm);
-                toggleMaxDiscount();
-            });
-        </script>
-        <script>
             function updateUnit() {
                 let voucherType = document.getElementById("voucherType").value;
                 let unitSpan = document.getElementById("unit");
@@ -121,7 +124,9 @@
             }
 
             document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector("form").addEventListener("submit", validateForm);
                 document.getElementById("voucherType").addEventListener("change", updateUnit);
+                toggleMaxDiscount();
                 updateUnit();
             });
         </script>

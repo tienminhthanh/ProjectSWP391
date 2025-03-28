@@ -65,26 +65,20 @@ public class ChatController extends HttpServlet {
                     List<Chat> chats = chatDAO.getChatsBetweenUsers(ADMIN_ID, customerID);
                     chat.setSenderID(ADMIN_ID);
                     chat.setReceiverID(customerID);
-
+ chatDAO.updateStatusSeen(customerID, chat);
                     request.setAttribute("chats", chats);
                     request.setAttribute("selectedCustomerID", customerID);
                 }
-                if (chatDAO.updateStatusSeen(ADMIN_ID, chat)) {
-                    request.getRequestDispatcher("/chatList.jsp").forward(request, response);
-                } else {
-                    request.getRequestDispatcher("/chatList.jsp").forward(request, response);
-                }
+               
+                request.getRequestDispatcher("/chatList.jsp").forward(request, response);
 
             } else {
                 List<Chat> chats = chatDAO.getChatsBetweenUsers(userID, ADMIN_ID);
                 chat.setReceiverID(ADMIN_ID);
                 chat.setSenderID(userID);
                 request.setAttribute("chats", chats);
-                if (chatDAO.updateStatusSeen(ADMIN_ID, chat)) {
-                    request.getRequestDispatcher("/chat.jsp").forward(request, response);
-                } else {
-                    request.getRequestDispatcher("/chat.jsp").forward(request, response);
-                }
+                chatDAO.updateStatusSeen(ADMIN_ID, chat);
+                request.getRequestDispatcher("/chat.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             throw new ServletException("Failed to retrieve chat data", e);
@@ -97,7 +91,7 @@ public class ChatController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        
+
         Account account = (Account) request.getSession().getAttribute("account");
         if (account.getRole() == null || account.getRole().trim().isEmpty()) {
             response.sendRedirect("login");

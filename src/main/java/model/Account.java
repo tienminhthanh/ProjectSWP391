@@ -12,9 +12,7 @@ public class Account {
     private String phoneNumber;
     private String birthDate;
     private boolean isActive;
-    private String dateCreated; 
-
-    
+    private String dateCreated;
 
     public Account() {
     }
@@ -31,6 +29,8 @@ public class Account {
         this.birthDate = birthDate;
         this.isActive = isActive;
     }
+
+    
 
     public int getAccountID() {
         return accountID;

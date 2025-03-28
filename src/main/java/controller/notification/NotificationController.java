@@ -29,6 +29,10 @@ public class NotificationController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        if (session == null) {
+            response.sendRedirect("login");
+            return;
+        }
         try {
             String receiverIDParam = request.getParameter("receiverID");
             int receiverID = Integer.parseInt(receiverIDParam);

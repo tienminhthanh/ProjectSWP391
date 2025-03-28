@@ -156,7 +156,17 @@
                                 <!-- Add to Event form with availability check - Admin only -->
                                 <c:if test="${not empty sessionScope.account and sessionScope.account.getRole() eq 'admin'}">
                                     <c:choose>
-                                        <c:when test="${not isSoldOrPreOrder and product.isActive eq true}">
+                                        <c:when test ="${product.isActive ne true}">
+                                             <p class="text-center text-xl text-red-400 py-8 md:px-2 bg-red-100 my-16 max-w-full">
+                                                    DEACTIVATED
+                                                </p>
+                                        </c:when>
+                                         <c:when test="${product.stockCount eq 0}">
+                                                <p class="text-center text-xl text-gray-400 py-8 md:px-2 bg-gray-100 my-16 max-w-full">
+                                                    OUT OF STOCK
+                                                </p>
+                                        </c:when>        
+                                        <c:when test="${not isSoldOrPreOrder}">
                                             <c:set var="p_e_status" value="${productEventStatus}"/>
                                             <form class="flex flex-col items-stretch px-2 space-y-2" 
                                                   action="eventProductAddNew" 
@@ -198,11 +208,7 @@
                                                 </c:choose>
                                             </form>
                                         </c:when>
-                                        <c:otherwise>
-                                             <p class="text-center text-xl text-red-400 py-8 md:px-2 bg-red-100 my-16 max-w-full">
-                                                    DEACTIVATED
-                                                </p>
-                                        </c:otherwise>
+                                        
                                     </c:choose>
                                 </c:if>
                             </div>
@@ -539,7 +545,6 @@
     }
 });
 
-
             function validateForm() {
                 let discountInput = document.getElementById('discountInput');
                 let discountValue = discountInput.value.trim();
@@ -553,7 +558,6 @@
                 }
                 return true; // Cho phép submit nếu hợp lệ
             }
-
             function prepareDiscountData() {
                 const discountInput = document.getElementById("discountInput");
                 const discountDataField = document.getElementById("discountData");
@@ -574,56 +578,6 @@
 
 
 
-                                                  document.addEventListener('DOMContentLoaded', function () {
-                                                      const creators = document.querySelectorAll('.cre-details-gr');
-                                                      if (creators) {
-                                                          creators.forEach(cre => {
-                                                              let content = cre.querySelector('td:nth-child(2)');
-                                                              if (content) {
-                                                                  let text = content.innerText.trim();
-                                                                  text = text !== '' ? text : 'Unknown';
-                                                                  content.innerText = text;
-                                                              }
-                                                          });
-                                                      }
-                                                  });
-
-
-        </script>
-        <script>
-            function validateForm() {
-                let discountInput = document.getElementById('discountInput');
-                let discountValue = discountInput.value.trim();
-                if (discountValue === "" || isNaN(discountValue) || discountValue < 1 || discountValue > 99) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Validation Error',
-                        html: 'Product have invalid discounts.<br>Please enter a discount between 1% and 99%.'
-                    });
-                    return false; // Ngăn form submit nếu giá trị không hợp lệ
-                }
-                return true; // Cho phép submit nếu hợp lệ
-            }
-
-        </script>
-        <script>
-            function prepareDiscountData() {
-                const discountInput = document.getElementById("discountInput");
-                const discountDataField = document.getElementById("discountData");
-                const productId = document.querySelector("input[name='selectedProducts']").value;
-                if (!discountInput.value) {
-                    alert("Please enter a valid discount.");
-                    return false;
-                }
-
-                // Tạo JSON: { "productID": discount }
-                const discountData = {}
-                ;
-                discountData[productId] = parseInt(discountInput.value);
-                // Gán vào input ẩn
-                discountDataField.value = JSON.stringify(discountData);
-                return true; // Cho phép gửi form
-            }
 
         </script>
 

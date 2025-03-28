@@ -23,7 +23,6 @@
                 <form action="eventUpdate" method="post" enctype="multipart/form-data">
                     <div class="grid grid-cols-1 gap-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Event ID</label>
                                 <input type="text" name="eventID" value="${EVENT_DETAILS.eventID}" class="w-full p-3 border border-gray-300 rounded bg-gray-100" readonly>
@@ -36,7 +35,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Date Started</label>
-                                <input type="date" name="dateStarted" value="${EVENT_DETAILS.dateStarted}" class="w-full p-3 border border-gray-300 rounded" required>
+                                <input type="date" name="dateStarted" id="dateStarted" value="${EVENT_DETAILS.dateStarted}" class="w-full p-3 border border-gray-300 rounded" required>
                             </div>
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
@@ -49,8 +48,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Banner</label>
-                            <input type="file" id="bannerFile" name="bannerFile" accept="image/*"
-                                   class="w-full p-3 border border-gray-300 rounded">
+                            <input type="file" id="bannerFile" name="bannerFile" accept="image/*" class="w-full p-3 border border-gray-300 rounded">
                             <!-- Hi?n th? ???ng d?n ?nh hi?n t?i -->
                             <p class="text-sm text-gray-500 mt-1">Current Banner: ${EVENT_DETAILS.banner}</p>
                             <!-- Hi?n th? ?nh hi?n t?i -->
@@ -60,6 +58,8 @@
                                      class="max-w-xs md:max-w-sm lg:max-w-md rounded-md border border-gray-300 shadow-md">
                             </div>
                         </div>
+                        <!-- Hidden input ?? l?u dateCreated -->
+                        <input type="hidden" id="dateCreated" value="${EVENT_DETAILS.dateCreated}">
                     </div>
                     <button class="w-full bg-orange-400 text-white p-3 rounded hover:bg-orange-500 mt-4" type="submit">Update Event</button>
                 </form>
@@ -71,6 +71,7 @@
             </div>
         </main>
         <script>
+            // X? lý preview ?nh
             document.getElementById("bannerFile").addEventListener("change", function (event) {
                 let file = event.target.files[0];
                 let previewImage = document.getElementById("previewImage");
@@ -81,6 +82,25 @@
                     };
                     reader.readAsDataURL(file);
                 }
+            });
+
+            // ??t giá tr? min và ki?m tra Date Started
+            document.addEventListener("DOMContentLoaded", function () {
+                const dateStartedInput = document.getElementById("dateStarted");
+                const dateCreated = document.getElementById("dateCreated").value;
+
+                // ??t thu?c tính min là dateCreated
+                dateStartedInput.setAttribute("min", dateCreated);
+
+                // Ki?m tra khi submit form
+                document.querySelector("form").addEventListener("submit", function (event) {
+                    const dateStarted = dateStartedInput.value;
+
+                    if (dateStarted < dateCreated) {
+                        alert("Date Started cannot be earlier than Date Created (" + dateCreated + ")!");
+                        event.preventDefault(); // Ng?n submit form
+                    }
+                });
             });
         </script>
     </body>

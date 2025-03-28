@@ -48,6 +48,13 @@ public class CartController extends HttpServlet {
 
         try {
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
+            ProductDAO productDAO = new ProductDAO();
+        for (CartItem item : cartItems) {
+            Product product = productDAO.getProductById(item.getProductID());
+            item.setProduct(product);
+            item.updateCartItemPrice(); 
+            cartItemDAO.updateCartItem(item);
+        }
             session.setAttribute("cartItems", cartItems);
             RequestDispatcher dispatcher = request.getRequestDispatcher("cart.jsp");
             dispatcher.forward(request, response);

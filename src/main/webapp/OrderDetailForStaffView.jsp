@@ -192,54 +192,55 @@
 
                                     </c:if>   
                                     <c:if test="${orderInfo.orderStatus eq 'canceled' and fn:length(handlerList) > 1 and (handler.role eq 'staff' or handler.role eq 'admin' )}">
-                                        <p class="text-lg">Order Processor (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
+                                        <p class="text-lg">Order Processor  (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
                                         <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>                           
-                                    <c:if test="${handler.role eq 'shipper'}">
+
+                                    </c:if>
+                                    <c:if test="${orderInfo.orderStatus eq 'canceled' and handler.role eq 'shipper'}">
                                         <p class="text-lg">Order refunded by (${handler.role}): <span>${handler.lastName} ${handler.firstName}</span></p>
                                         <p class="text-lg">${handler.role} ID: <span>${handler.accountID}</span></p>
                                     </c:if>
+                                </c:forEach>
+
                             </c:if>
-                        </c:forEach>
 
-                    </c:if>
-
+                        </div>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr>
+                                <th>Product Image</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Price </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="item" items="${orderInfo.orderProductList}">
+                                <tr>
+                                    <td class="text-center">
+                                        <img src="${item.product.imageURL}" alt="${item.product.productName}">
+                                    </td>
+                                    <td>${item.product.productName}</td>
+                                    <td>${item.quantity}</td>
+                                    <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <table class="w-full text-left">
-                <thead>
-                    <tr>
-                        <th>Product Image</th>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
-                        <th>Price </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="item" items="${orderInfo.orderProductList}">
-                        <tr>
-                            <td class="text-center">
-                                <img src="${item.product.imageURL}" alt="${item.product.productName}">
-                            </td>
-                            <td>${item.product.productName}</td>
-                            <td>${item.quantity}</td>
-                            <td><fmt:formatNumber value="${item.priceWithQuantity}" pattern="#,##0"/> đ</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
         </div>
-    </div>
-</div>
-<script>
-    function confirmCancel(event) {
-        if (confirm("Are you sure you want to cancel this order?")) {
-            alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
-            return true; // Tiếp tục submit form
-        } else {
-            event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
-            return false;
-        }
-    }
-</script>
-</body>
+        <script>
+            function confirmCancel(event) {
+                if (confirm("Are you sure you want to cancel this order?")) {
+                    alert("Order has been successfully canceled!"); // Hiển thị thông báo sau khi bấm OK
+                    return true; // Tiếp tục submit form
+                } else {
+                    event.preventDefault(); // Ngăn không gửi form nếu chọn Cancel
+                    return false;
+                }
+            }
+        </script>
+    </body>
 </html>

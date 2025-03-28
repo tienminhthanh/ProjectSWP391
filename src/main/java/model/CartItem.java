@@ -8,7 +8,6 @@ public class CartItem {
     private int customerID;
     private int productID;
     private int quantity;
-
     private BigDecimal priceWithQuantity;
     private Product product;
 
@@ -92,5 +91,10 @@ public class CartItem {
     public void setProduct(Product product) {
         this.product = product;
     }
-
+public void updateCartItemPrice() {
+        if (product != null) {
+            double currentPrice = product.getCurrentPrice();
+            this.priceWithQuantity = BigDecimal.valueOf(currentPrice);
+        }
+    }
 }

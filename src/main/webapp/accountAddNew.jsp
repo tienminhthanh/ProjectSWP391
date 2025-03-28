@@ -69,9 +69,13 @@
                     <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Add Account</button>
                 </form>
                 <div class="mt-6">
-                    <a class="text-blue-600 hover:underline" href="listAccount">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to Account List
-                    </a>
+                    <c:if test="${sessionScope.account.role == 'admin'}">
+                        <a class="text-blue-600 hover:underline" href="listAccount">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Account List
+                        </a>
+                    </c:if>
+
+
                 </div>
             </div>
         </main>

@@ -8,8 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
         let duration = parseInt(voucher.dataset.duration);
         let dateEnd = new Date(startDate);
         dateEnd.setDate(startDate.getDate() + duration);
-
-        voucher.querySelector(".date-end").textContent = dateEnd.toISOString().split("T")[0];
+        let endDate = voucher.querySelector(".date-end");
+        if(endDate){
+            endDate.textContent = dateEnd.toISOString().split("T")[0];
+        }
     });
 });
 

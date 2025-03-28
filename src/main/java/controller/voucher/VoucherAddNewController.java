@@ -98,6 +98,14 @@ public class VoucherAddNewController extends HttpServlet {
             LocalDate dateCreated = LocalDate.now();
             String dateStarted = request.getParameter("dateStarted");
 
+            LocalDate today = LocalDate.now();
+            LocalDate expiryDate = LocalDate.parse(dateStarted).plusDays(duration);
+
+            boolean isActive = false;
+            //ngày hết hạn >= hôm nay               ngày bắt đầu <= hôm nay
+            if (!expiryDate.isBefore(today) && (LocalDate.parse(dateStarted).isBefore(today) || LocalDate.parse(dateStarted).isEqual(today))) {
+                isActive = true;
+            }
             Account account = (Account) session.getAttribute("account");
             if (account == null) {
                 response.sendRedirect("login.jsp");
@@ -106,7 +114,7 @@ public class VoucherAddNewController extends HttpServlet {
             int adminID = account.getAccountID();
 
             VoucherDAO vDao = new VoucherDAO();
-            Voucher voucher = new Voucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID, true, true, type, maxDiscountAmount, dateStarted);
+            Voucher voucher = new Voucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID, isActive, true, type, maxDiscountAmount, dateStarted);
             boolean add = vDao.addVoucher(voucher);
             if (add) {
                 session.setAttribute("message", "Voucher created successfully!");

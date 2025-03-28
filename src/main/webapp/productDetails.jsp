@@ -199,16 +199,7 @@
 
                                                 <c:choose>
                                                     <c:when test="${product.specialFilter == 'upcoming'}">
-
-<!--                                                        Quantity = 1 for pre-order
-                                                        <form action="preorder" method="post">
-                                                            <input type="hidden" name="customerID" value="">  Assuming account has customerID 
-                                                            <input type="hidden" name="productID" value=""/>
-                                                            <input type="hidden" name="priceWithQuantity"/>
-                                                            <input type="hidden" name="currentURL" class="currentURL" value=""/>
-                                                            <input type="hidden" name="quantity" value="1"/>
-                                                            <button name="action" value="preOrder" onclick="openLoginPopup()" class="pre-order">Pre-Order</button>
-                                                        </form>-->
+                                                        <!--Removed pre-order logic-->
                                                     </c:when>
                                                     <c:otherwise>
                                                         <!-- Calculate cart quantity from session -->
@@ -445,10 +436,11 @@
             });
 
 
-
+        <c:if test="${not empty requestScope.product}">
+                
+            
             //Map input quant to purchase quant in forms
             document.addEventListener("DOMContentLoaded", function () {
-
                 // Stockcount = 0 => Do nothing
                 if (`${product.stockCount}` === '0' && `${product.specialFilter}` !== 'upcoming') {
                     return;
@@ -514,6 +506,7 @@
 
             //Format price display
             document.addEventListener("DOMContentLoaded", function () {
+                
                 // Select all elements with prices
                 let priceElements = document.querySelectorAll(".price-area p");
 
@@ -532,6 +525,7 @@
 
             //Map final price to forms
             document.addEventListener("DOMContentLoaded", function () {
+                
                 const finalPriceElement = document.querySelector(".final-price");
                 const purchaseForms = document.querySelectorAll(".purchase-form form");
                 let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
@@ -579,6 +573,7 @@
 
             //Format date display
             document.addEventListener('DOMContentLoaded', function () {
+                
                 const releaseDates = document.querySelectorAll('.release-date');
                 const fomoDate = document.querySelector('.fomo-info>span');
 
@@ -618,6 +613,7 @@
 
             //Format tags-link
             document.addEventListener('DOMContentLoaded', function () {
+                
                 const tagsLink = document.querySelectorAll('.tags-link');
                 if (tagsLink) {
                     const type = `${requestScope.type}`;
@@ -657,6 +653,7 @@
 
             //Format creators display
             document.addEventListener('DOMContentLoaded', function () {
+            
                 const creators = document.querySelectorAll('.cre-details-gr');
                 const creStrs = [
             <c:forEach var="c" items="${requestScope.creatorList}">
@@ -690,6 +687,7 @@
 
             //Format genres display
             document.addEventListener('DOMContentLoaded', function () {
+            
                 const cat_gens = document.querySelector('.gen-details-gr');
                 if (!cat_gens) {
                     return;
@@ -709,6 +707,22 @@
                     content.innerText = text ? text : 'Uncategorized';
                 }
 
+            });
+      </c:if>      
+            //            Pop-up message
+            document.addEventListener('DOMContentLoaded', function () {
+                const reqMessage = `${requestScope.message}`;
+                if (reqMessage) {
+                    Swal.fire({
+                        icon: 'error',
+                        html: reqMessage,
+                        confirmButtonText: 'Back to Home'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'home';
+                        }
+                    });
+                }
             });
 
         </script>

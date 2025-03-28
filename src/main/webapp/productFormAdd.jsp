@@ -63,7 +63,7 @@
         <!--Description-->
         <div class="form-group">
             <label for="descriptionBook">Description:</label>
-            <textarea id="descriptionBook" name="description"></textarea>
+            <textarea id="descriptionBook" name="description" required></textarea>
         </div>
 
         <!--ReleaseDate - Status-->
@@ -83,13 +83,13 @@
         <!--Keywords-->
         <div class="form-group">
             <label for="keywordsBook">Keywords:</label>
-            <textarea id="keywordsBook" name="keywords"></textarea>
+            <textarea id="keywordsBook" name="keywords" required></textarea>
         </div>
 
         <!--Image URL-->
         <div class="form-group">
             <label for="imageURLBook">Image URL:</label>
-            <textarea id="imageURLBook" name="imageURL" maxlength="512"></textarea>
+            <textarea id="imageURLBook" name="imageURL" maxlength="512" required></textarea>
         </div>
 
         <!--Creators-->
@@ -139,13 +139,13 @@
         <!--Publisher-->
         <div class="form-group book-gr">
             <label for="publisherNameBook">Publisher:</label>
-            <input type="text" id="publisherNameBook" name="publisherName" maxlength="50">
+            <input type="text" id="publisherNameBook" name="publisherName" maxlength="50" required>
         </div>
 
         <!--Duration-->
         <div class="form-group book-gr">
             <label for="durationBook">Duration:</label>
-            <input type="text" id="durationBook" name="duration" maxlength="40">
+            <input type="text" id="durationBook" name="duration" maxlength="40" required>
         </div>
         
          <!--Scale - Mat-->
@@ -153,34 +153,34 @@
             <label>Specs:</label>
             <div class="pair-group">
                 <label for="scaleLevelMerch">Scale Level:</label>
-                <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10">
+                <input type="text" id="scaleLevelMerch" name="scaleLevel" maxlength="10" required>
                 <label for="materialMerch">Material:</label>
-                <input type="text" id="materialMerch" name="material" maxlength="60">
+                <input type="text" id="materialMerch" name="material" maxlength="60" required>
             </div>
         </div>
 
         <!--Size-->
         <div class="form-group merch-gr">
             <label for="sizeMerch">Size:</label>
-            <input type="text" id="sizeMerch" name="size" maxlength="60">
+            <input type="text" id="sizeMerch" name="size" maxlength="60" required>
         </div>
 
         <!--Series-->
         <div class="form-group merch-gr">
             <label for="seriesNameMerch">Series:</label>
-            <input type="text" id="seriesNameMerch" name="seriesName">
+            <input type="text" id="seriesNameMerch" name="seriesName" required>
         </div>
 
         <!--Character-->
         <div class="form-group merch-gr">
             <label for="characterNameMerch">Character:</label>
-            <input type="text" id="characterNameMerch" name="characterName">
+            <input type="text" id="characterNameMerch" name="characterName" required>
         </div>
 
         <!--Brand-->
         <div class="form-group merch-gr">
             <label for="brandNameMerch">Brand:</label>
-            <input type="text" id="brandNameMerch" name="brandName">
+            <input type="text" id="brandNameMerch" name="brandName" required>
         </div>
 
         <!--Submit-->
