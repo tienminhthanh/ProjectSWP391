@@ -8,6 +8,7 @@
         <title>Update Account</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
     </head>
     <body class="bg-gray-100 min-h-screen flex flex-col">
         <header class="bg-white shadow w-full">
@@ -46,7 +47,7 @@
                             <input class="w-full p-3 border border-gray-300 rounded" id="lastName" name="lastName"
                                    placeholder="Last Name" required type="text" value="${account.lastName}"/>
                         </div>
-                            
+
                         <div class="mb-4">
                             <label class="sr-only" for="phoneNumber">Phone Number</label>
                             <input class="w-full p-3 border border-gray-300 rounded" id="phoneNumber" name="phoneNumber"
@@ -104,7 +105,7 @@
                         <c:if test="${sessionScope.account.role eq 'admin'}">
                             <div class="mb-4">
                                 <label class="sr-only" for="role">Role</label>
-                                <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role">
+                                <select class="w-full p-3 border border-gray-300 rounded" id="role" name="role" onchange="confirmAdminRole(this)">
                                     <option value="customer" ${account.role eq 'customer' ? 'selected' : ''}>Customer</option>
                                     <option value="staff" ${account.role eq 'staff' ? 'selected' : ''}>Staff</option>
                                     <option value="shipper" ${account.role eq 'shipper' ? 'selected' : ''}>Shipper</option>
@@ -112,18 +113,39 @@
                                 </select>
                             </div>
                         </c:if>
+                        <script>
+                            function confirmAdminRole(selectElement) {
+                                const selectedRole = selectElement.value;
+                                const previousValue = selectElement.getAttribute("data-prev-value");
+
+                                if (selectedRole === "admin") {
+                                    const confirmed = confirm("Bạn có chắc muốn cấp quyền admin cho tài khoản này không?");
+                                    if (!confirmed) {
+                                        // Quay lại giá trị trước đó nếu người dùng không xác nhận
+                                        selectElement.value = previousValue;
+                                    }
+                                }
+
+                                // Cập nhật giá trị đã chọn trước đó
+                                selectElement.setAttribute("data-prev-value", selectElement.value);
+                            }
+
+                            // Đặt giá trị mặc định ban đầu khi trang load
+                            document.addEventListener("DOMContentLoaded", function () {
+                                const select = document.getElementById("role");
+                                select.setAttribute("data-prev-value", select.value);
+                            });
+                        </script>
                     </div>
 
                     <button class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 mt-4" type="submit">Update</button>
                 </form>
 
+                <a href="readAccount?username=${sessionScope.account.username}" class="text-blue-600 hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
+               
 
-                <div class="mt-6">
-                    <a href="${sessionScope.account.role == 'admin' ? 'listAccount' : 'readAccount?username='}${sessionScope.account.username}"  
-                       class="text-blue-600 hover:underline">
-                        <i class="fas fa-arrow-left mr-2"></i> Back
-                    </a>
-                </div>
 
 
             </div>
