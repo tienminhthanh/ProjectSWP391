@@ -256,13 +256,14 @@ public class DashboardDAO {
                 + "    (SUM(CASE WHEN orderStatus IN ('delivered', 'completed') THEN 1 ELSE 0 END) * 100.0) / "
                 + "    NULLIF(COUNT(*), 0) AS orderConversionRate "
                 + "FROM OrderInfo "
-                + "WHERE orderStatus IN ('delivered', 'completed') "; // Chỉ tính đơn hàng thành công
+                + "WHERE 1=1 "; // Bỏ điều kiện chỉ lọc đơn hàng thành công ở đây
         sql += buildFilterCondition(year, quarter, month, isFilterApplied);
+        System.out.println(sql);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
             if (rs.next()) {
-                return rs.getDouble(1);
+                return rs.getDouble("orderConversionRate");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -273,13 +274,12 @@ public class DashboardDAO {
     public int getTotalOrders(String year, String quarter, String month, boolean isFilterApplied) {
         String sql = "SELECT COUNT(*) AS totalOrders "
                 + "FROM OrderInfo "
-                + "WHERE orderStatus IN ('delivered', 'completed') "; // Chỉ đếm đơn hàng thành công
+                + "WHERE 1=1 "; // Đếm tất cả đơn hàng
         sql += buildFilterCondition(year, quarter, month, isFilterApplied);
-
         try {
             ResultSet rs = context.exeQuery(sql, null);
             if (rs.next()) {
-                return rs.getInt(1);
+                return rs.getInt("totalOrders");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -290,13 +290,13 @@ public class DashboardDAO {
     public int getSuccessfulOrders(String year, String quarter, String month, boolean isFilterApplied) {
         String sql = "SELECT SUM(CASE WHEN orderStatus IN ('delivered', 'completed') THEN 1 ELSE 0 END) AS successfulOrders "
                 + "FROM OrderInfo "
-                + "WHERE orderStatus IN ('delivered', 'completed') "; // Chỉ đếm đơn hàng thành công
+                + "WHERE 1=1 "; // Chỉ đếm đơn hàng thành công, nhưng điều kiện lọc thời gian vẫn áp dụng
         sql += buildFilterCondition(year, quarter, month, isFilterApplied);
 
         try {
             ResultSet rs = context.exeQuery(sql, null);
             if (rs.next()) {
-                return rs.getInt(1);
+                return rs.getInt("successfulOrders");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -410,37 +410,10 @@ public class DashboardDAO {
     public static void main(String[] args) {
         DashboardDAO dao = new DashboardDAO();
 
-        // Tham số test
-        String year = "2025"; // Năm test
-        String quarter = null; // Quý test (null nếu không lọc theo quý)
-        String month = null;     // Tháng test (null nếu không lọc theo tháng)
-        boolean isFilterApplied = (year != null && !year.isEmpty())
-                || (quarter != null && !quarter.isEmpty())
-                || (month != null && !month.isEmpty());
-
-        // Tạo Map để lưu totalQuantitySold và totalRevenue
-        Map<Integer, Integer> quantitySoldMap = new HashMap<>();
-        Map<Integer, Double> revenueMap = new HashMap<>();
-
-        // Gọi hàm getTopProductsByCategory
-        Map<String, List<Product>> topProductsByCategory = dao.getTopProductsByCategory(year, quarter, month, isFilterApplied, quantitySoldMap, revenueMap);
-
-        // In kết quả
-        if (topProductsByCategory.isEmpty()) {
-            System.out.println("No top products found for any category.");
-        } else {
-            for (Map.Entry<String, List<Product>> entry : topProductsByCategory.entrySet()) {
-                String category = entry.getKey();
-                List<Product> products = entry.getValue();
-                System.out.println("Category: " + category);
-                for (Product product : products) {
-                    int productID = product.getProductID();
-                    System.out.println("  Product ID: " + productID
-                            + ", Name: " + product.getProductName()
-                            + ", Total Quantity Sold: " + quantitySoldMap.get(productID)
-                            + ", Total Revenue: " + revenueMap.get(productID));
-                }
-            }
-        }
+        Map<String, Double> trend = dao.getRevenueTrend("year", "2025", null, null, true);
+        double total = dao.getTotalRevenue("2025", null, null, true);
+        double trendSum = trend.values().stream().mapToDouble(Double::doubleValue).sum();
+        System.out.println("Trend sum: " + trendSum);
+        System.out.println("Total: " + total);
     }
 }

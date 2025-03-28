@@ -136,11 +136,14 @@ public class EventAddNewController extends HttpServlet {
                 dateStarted = LocalDate.parse(dateStarted_raw, formatter);
                 duration = Integer.parseInt(request.getParameter("duration"));
             }
-
             dateCreated = LocalDate.now();
-            boolean isActive = true;
-            if (dateStarted.isAfter(dateCreated)) {
-                isActive = false;
+
+            LocalDate today = LocalDate.now();
+            LocalDate expiryDate = dateStarted.plusDays(duration);
+            boolean isActive = false;
+            //ngày hết hạn >= hôm nay               ngày bắt đầu <= hôm nay
+            if (!expiryDate.isBefore(today) && (dateStarted.isBefore(today) || dateStarted.isEqual(today))) {
+                isActive = true;
             }
 
             Account account = (Account) session.getAttribute("account");

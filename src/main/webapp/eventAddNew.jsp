@@ -35,7 +35,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Date Started</label>
-                                <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" placeholder="Enter Date Started" required type="date"/>
+                                <input class="w-full p-3 border border-gray-300 rounded" name="dateStarted" id="dateStarted" placeholder="Enter Date Started" required type="date"/>
                             </div>
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Duration (days)</label>
@@ -69,21 +69,41 @@
         </main>
 
         <script>
+            // X? lý preview ?nh
             document.getElementById("bannerFile").addEventListener("change", function (event) {
-                let file = event.target.files[0]; // L?y file v?a ch?n
+                let file = event.target.files[0];
                 let previewImage = document.getElementById("previewImage");
 
                 if (file) {
                     let reader = new FileReader();
                     reader.onload = function (e) {
-                        previewImage.src = e.target.result; // Hi?n th? ?nh m?i
-                        previewImage.classList.remove("hidden"); // Hi?n ?nh xem tr??c
+                        previewImage.src = e.target.result;
+                        previewImage.classList.remove("hidden");
                     };
-                    reader.readAsDataURL(file); // ??c file ?? hi?n th?
+                    reader.readAsDataURL(file);
                 } else {
                     previewImage.src = "";
-                    previewImage.classList.add("hidden"); // ?n ?nh n?u không có file
+                    previewImage.classList.add("hidden");
                 }
+            });
+
+            // ??t giá tr? min cho Date Started và ki?m tra form
+            document.addEventListener("DOMContentLoaded", function () {
+                const today = new Date().toISOString().split("T")[0]; // L?y ngày hi?n t?i d?ng YYYY-MM-DD
+                const dateStartedInput = document.getElementById("dateStarted");
+
+                // ??t thu?c tính min là ngày hôm nay
+                dateStartedInput.setAttribute("min", today);
+
+                // Ki?m tra khi submit form
+                document.querySelector("form").addEventListener("submit", function (event) {
+                    const dateStarted = dateStartedInput.value;
+
+                    if (dateStarted < today) {
+                        alert("Date Started cannot be earlier than today!");
+                        event.preventDefault(); // Ng?n submit form
+                    }
+                });
             });
         </script>
     </body>

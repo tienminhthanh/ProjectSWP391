@@ -78,7 +78,6 @@
                         </div>
                     </div>
 
-
                     <!-- Quantity -->
                     <div class="mb-4">
                         <label class="block text-lg font-semibold text-gray-700">Quantity</label>
@@ -89,7 +88,7 @@
                     <!-- Date Started -->    
                     <div class="mb-4">
                         <label class="block text-lg font-semibold text-gray-700">Date Started</label>
-                        <input type="date" name="dateStarted" value="${VOUCHER_DETAILS.dateStarted}" 
+                        <input type="date" name="dateStarted" id="dateStarted" value="${VOUCHER_DETAILS.dateStarted}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
 
@@ -99,6 +98,9 @@
                         <input type="number" name="duration" value="${VOUCHER_DETAILS.duration}" 
                                class="w-full p-3 border border-gray-300 rounded" required>
                     </div>
+
+                    <!-- Hidden Created Date (for validation) -->
+                    <input type="hidden" id="createdDate" value="${VOUCHER_DETAILS.dateCreated}">
 
                     <!-- Submit Button -->
                     <div class="col-span-3 text-center">
@@ -116,24 +118,37 @@
         </main>
 
         <script>
-// Show/Hide Max Discount Amount based on Voucher Type
+            // Show/Hide Max Discount Amount based on Voucher Type
             document.getElementById('voucherType').addEventListener('change', function () {
                 document.getElementById('maxDiscountDiv').style.display =
                         this.value === 'PERCENTAGE' ? 'block' : 'none';
             });
 
-// Initialize visibility on page load
-            window.onload = function () {
-                if (document.getElementById('voucherType').value === 'PERCENTAGE') {
-                    document.getElementById('maxDiscountDiv').style.display = 'block';
-                }
-            };
-        </script>
-        <script>
+            // Initialize visibility and unit on page load
+            document.addEventListener("DOMContentLoaded", function () {
+                toggleMaxDiscount();
+                updateUnit();
+
+                // Set min attribute for dateStarted based on createdDate
+                const createdDate = document.getElementById("createdDate").value;
+                document.getElementById("dateStarted").setAttribute("min", createdDate);
+            });
+
+            // Validate form before submission
             function validateForm(event) {
                 let voucherType = document.getElementById("voucherType").value;
                 let voucherValue = document.querySelector("[name='voucherValue']").value;
+                let dateStarted = document.getElementById("dateStarted").value;
+                let createdDate = document.getElementById("createdDate").value;
 
+                // Check if dateStarted is earlier than createdDate
+                if (dateStarted < createdDate) {
+                    alert("Date Started cannot be earlier than Created Date (" + createdDate + ")!");
+                    event.preventDefault();
+                    return false;
+                }
+
+                // Check percentage value
                 if (voucherType === "PERCENTAGE") {
                     let value = parseFloat(voucherValue);
                     if (value <= 0 || value > 100) {
@@ -145,29 +160,25 @@
                 return true;
             }
 
+            // Toggle Max Discount visibility
             function toggleMaxDiscount() {
                 let voucherType = document.getElementById("voucherType").value;
                 let maxDiscountDiv = document.getElementById("maxDiscountDiv");
                 maxDiscountDiv.style.display = voucherType === "PERCENTAGE" ? "block" : "none";
             }
 
-            document.addEventListener("DOMContentLoaded", function () {
-                document.querySelector("form").addEventListener("submit", validateForm);
-                toggleMaxDiscount();
-            });
-        </script>
-        <script>
+            // Update unit based on voucher type
             function updateUnit() {
                 let voucherType = document.getElementById("voucherType").value;
                 let unitSpan = document.getElementById("unit");
                 unitSpan.textContent = (voucherType === "PERCENTAGE") ? "%" : "VND";
             }
 
+            // Add event listeners
             document.addEventListener("DOMContentLoaded", function () {
+                document.querySelector("form").addEventListener("submit", validateForm);
                 document.getElementById("voucherType").addEventListener("change", updateUnit);
-                updateUnit(); // Cập nhật ngay khi trang tải xong
             });
         </script>
-
     </body>
 </html>
