@@ -19,7 +19,7 @@
     </head>
 
     <body class="bg-gray-100">
-         <div class="bg-orange-500 text-white p-4 flex justify-between items-center">
+        <div class="bg-orange-500 text-white p-4 flex justify-between items-center">
             <div class="flex items-center space-x-4">
                 <img src="./img/logo.png" alt="Logo Wibooks" class="h-10">
                 <h1 class="text-lg font-semibold">Deliver</h1>
@@ -54,10 +54,12 @@
                             <input type="hidden" name="orderID" value="${orderInfo.orderID}">
                             <input type="hidden" id="actionType" name="actionType" value="">
 
-                            <c:if test="${ orderInfo.deliveryStatus eq 'shipped'}">      
-                                <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
-                                        onclick="submitForm('cancel')">Cancel</button>
+                            <c:if test="${ orderInfo.deliveryStatus eq 'shipped'}">  
 
+                                <c:if test="${ orderInfo.paymentStatus ne 'paid'}">     
+                                    <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
+                                            onclick="submitForm('cancel')">Cancel</button>
+                                </c:if>
                                 <button type="button" class="bg-orange-500 text-white px-4 py-2 rounded"
                                         onclick="submitForm('update')">Update Status</button>
                             </c:if>

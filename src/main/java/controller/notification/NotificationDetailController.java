@@ -63,6 +63,10 @@ public class NotificationDetailController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        String role = account.getRole();
+
         if ("delete".equals(action)) {
             try {
                 int notificationID = Integer.parseInt(request.getParameter("notificationID"));
@@ -70,7 +74,11 @@ public class NotificationDetailController extends HttpServlet {
 
                 boolean success = notificationDAO.deleteNotification(notificationID);
                 if (success) {
-                    response.sendRedirect("listnotification" + (receiverID != null ? "?receiverID=" + receiverID : ""));
+                    if (role.equals("customer")) {
+                        response.sendRedirect("notification" + (receiverID != null ? "?receiverID=" + receiverID : ""));
+                    } else {
+                        response.sendRedirect("notificationshipper" + (receiverID != null ? "?receiverID=" + receiverID : ""));
+                    }
                 } else {
                     request.setAttribute("error", "Delete fail!");
                     doGet(request, response);

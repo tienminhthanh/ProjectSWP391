@@ -329,7 +329,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <form action="OrderDetailController" method="POST" >
+                                    <p id="error-message" class="text-red-500 text-sm mt-2 hidden">Please select at least one star.</p>
+                                    <form action="OrderDetailController" method="POST" onsubmit="return validateRating()">
                                         <input type="hidden" name="orderID" id="popupOrderID">
                                         <input type="hidden" name="productID" id="popupProductID">
                                         <input type="hidden" name="orderID" value="${orderInfo.orderID}">
@@ -416,7 +417,6 @@
                 const toggleDropdown = document.getElementById("toggleDropdown");
                 const defaultAddressInput = document.getElementById("defaultDeliveryAddress");
                 const selectedAddress = document.getElementById("selectedAddress");
-
                 toggleDropdown.addEventListener("click", function () {
                     addressList.classList.toggle("hidden");
                 });
@@ -424,7 +424,6 @@
                     const dropdown = document.getElementById("addressList");
                     dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
                 });
-
                 // Đóng dropdown nếu click bên ngoài
                 document.addEventListener("click", function (event) {
                     const dropdown = document.getElementById("addressList");
@@ -433,7 +432,6 @@
                         dropdown.style.display = "none";
                     }
                 });
-
                 document.querySelectorAll(".address-item span").forEach(item => {
                     item.addEventListener("click", function () {
                         defaultAddressInput.value = this.getAttribute("data-value");
@@ -443,6 +441,17 @@
                     });
                 });
             });
+            function validateRating() {
+                let rating = document.getElementById("rating").value;
+                if (rating == "0") {
+                    document.getElementById("error-message").classList.remove("hidden"); // Hiện thông báo lỗi nếu chưa chọn sao
+                    return false; // Ngăn không cho gửi form
+                }
+                return true;
+            }
+            ;
+
+
         </script>
     </body>
 </html>

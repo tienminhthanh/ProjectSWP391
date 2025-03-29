@@ -29,9 +29,11 @@ public class ListAccountController extends HttpServlet {
         String pageStr = request.getParameter("page");
         int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
 
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect("login.jsp");
+          //Prevent unauthorized access  - ADMIN
+        HttpSession session = request.getSession();
+        Account currentAccount = (Account) (session.getAttribute("account"));
+        if (currentAccount == null || !currentAccount.getRole().equals("admin")) {
+            response.sendRedirect("home");
             return;
         }
 

@@ -120,11 +120,16 @@ public class UpdateAccountController extends HttpServlet {
 
                 // Chỉ cập nhật session nếu user đang cập nhật chính tài khoản của mình
                 if (loggedInAccount.getUsername().equals(username)) {
+                    loggedInAccount = updatedAccount;
                     session.setAttribute("account", updatedAccount); // Cập nhật lại session
                 }
 
                 // Điều hướng dựa trên vai trò
-                response.sendRedirect("readAccount?message=Account updated successfully!");
+                if (loggedInAccount.getRole().equals("admin")) {
+                    response.sendRedirect("listAccount");
+                } else {
+                    response.sendRedirect("readAccount?message=Account updated successfully!");
+                }
 
             } else {
                 session.setAttribute("message", "Account update failed! Please try again.");

@@ -150,10 +150,10 @@
                 }
 
                 function formatDate(dateObj) {
-                    if (!dateObj || typeof dateObj !== 'object' || 
-                        !Number.isInteger(dateObj.year) || 
-                        !Number.isInteger(dateObj.month) || 
-                        !Number.isInteger(dateObj.day)) {
+                    if (!dateObj || typeof dateObj !== 'object' ||
+                            !Number.isInteger(dateObj.year) ||
+                            !Number.isInteger(dateObj.month) ||
+                            !Number.isInteger(dateObj.day)) {
                         return "1970-01-01"; // Default date
                     }
                     let year = dateObj.year;
@@ -222,8 +222,8 @@
                 supplierSelector.addEventListener("change", handleItems);
 
             });
-            
-            
+
+
 //            Validate checkboxes
             document.addEventListener('DOMContentLoaded', function () {
                 const formAction = `${requestScope.formAction}`;
@@ -234,29 +234,50 @@
                 }
 
                 formEl.addEventListener("submit", function (event) {
-                    if(formAction === 'queue'){
+                    if (formAction === 'queue') {
                         return;
                     }
-                    
+
                     let checkboxes;
                     let message;
 
                     if (formAction === 'import') {
                         checkboxes = document.querySelectorAll('input[name="importItem"]:checked');
                         message = 'Please select at least 1 import!';
+                        checkboxes = checkboxes ? checkboxes : [];
+                        if (checkboxes.length === 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                text: message
+                            });
+                            event.preventDefault();
+
+                        }
+
                     } else if (formAction === 'add' || formAction === 'update') {
-                        checkboxes = document.querySelectorAll('input[name="genre"]:checked');
-                        message = 'Please select at least 1 genre!';
+                        const typeSelector = document.querySelector('.type-selector');
+                        let type;
+                        if (typeSelector) {
+                            type = typeSelector.value;
+                        } else {
+                            type = `${requestScope.type}`;
+                        }
+                        console.log(type);
+                        if (type && type === 'book') {
+                            checkboxes = document.querySelectorAll('input[name="genre"]:checked');
+                            message = 'Please select at least 1 genre!';
+                            checkboxes = checkboxes ? checkboxes : [];
+                            if (checkboxes.length === 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    text: message
+                                });
+                                event.preventDefault();
+
+                            }
+                        }
                     }
 
-                    // If no checkboxes are selected, show alert and prevent submission
-                    if (!checkboxes || checkboxes.length === 0) {
-                        Swal.fire({
-                            icon: 'warning',
-                            text: message
-                        });
-                        event.preventDefault();
-                    }
 
                 });
             });

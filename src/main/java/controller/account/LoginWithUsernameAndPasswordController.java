@@ -94,13 +94,13 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                         // Redirect based on user role
                         switch (account.getRole()) {
                             case "admin":
-                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.setMaxInactiveInterval(90 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
                                 response.sendRedirect("listAccount");
                                 break;
                             case "customer":
-                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.setMaxInactiveInterval(90 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
                                 if (currentURL == null || currentURL.isEmpty()) {
@@ -110,13 +110,13 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
                                 }
                                 break;
                             case "staff":
-                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.setMaxInactiveInterval(90 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
                                 response.sendRedirect("OrderListForStaffController");
                                 break;
                             case "shipper":
-                                session.setMaxInactiveInterval(30 * 60); // 30-minute session timeout
+                                session.setMaxInactiveInterval(90 * 60); // 30-minute session timeout
                                 session.removeAttribute("failedAttempts"); // Reset failed attempts counter
                                 session.removeAttribute("previousUsername"); // Reset username tracking
                                 response.sendRedirect("OrderListForShipperController");

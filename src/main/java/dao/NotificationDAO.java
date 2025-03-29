@@ -69,7 +69,7 @@ public class NotificationDAO {
     }
 
     public List<Notification> getNotificationsByReceiver(int receiverID) throws SQLException {
-        String sql = "SELECT * FROM Notification WHERE receiverID = ? AND isDeleted = 0 ORDER BY notificationDateCreated DESC, isRead ASC";
+        String sql = "SELECT * FROM Notification WHERE receiverID = ? AND isDeleted = 0 ORDER BY isRead ASC, notificationID DESC";
         Object[] params = {receiverID};
         ResultSet rs = context.exeQuery(sql, params);
         List<Notification> notifications = new ArrayList<>();

@@ -80,17 +80,13 @@ public class LoginWithGoogleController extends HttpServlet {
                 case "customer":
                     response.sendRedirect("home"); // Redirect to the home page for customers
                     break;
-                case "staff":
-                    response.sendRedirect("dashboard.jsp"); // Redirect to the staff dashboard
-                    break;
-                case "shipper":
-                    response.sendRedirect("shipperDashboard.jsp"); // Redirect to the shipper dashboard
-                    break;
+               
+                 
                 default:
                     // Invalid role - log out and show error
                     session.invalidate();
                     request.setAttribute("errorMessage", "Invalid role!");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    request.getRequestDispatcher("login").forward(request, response);
                     break;
             }
         } else {

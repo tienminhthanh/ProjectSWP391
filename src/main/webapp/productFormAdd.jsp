@@ -4,7 +4,7 @@
     <label for="generalCategory">
         <span class="text-2xl font-bold text-white">Add New</span>
     </label>
-    <select class=" rounded-md p-4 bg-orange-600 text-white" id="generalCategory" name="generalCategory" onchange="toggleForm()">
+    <select class="type-selector rounded-md p-4 bg-orange-600 text-white" id="generalCategory" name="generalCategory" onchange="toggleForm()">
         <option value="book">Books</option>
         <option value="merch">Merch</option>
     </select>

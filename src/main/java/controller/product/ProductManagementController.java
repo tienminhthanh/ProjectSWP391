@@ -155,7 +155,7 @@ public class ProductManagementController extends HttpServlet {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error: " + e.getMessage(), e);
             request.setAttribute("errorMessage", "An error occurred while fetching products: " + e.getMessage());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+            request.getRequestDispatcher("productCatalogManagement.jsp").forward(request, response);
         }
     }
 
@@ -226,8 +226,8 @@ public class ProductManagementController extends HttpServlet {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error: " + e.getMessage(), e);
-            request.setAttribute("errorMessage", "An error occurred while fetching the product: " + e.getMessage());
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+            request.setAttribute("message", "An error occurred while fetching the product: " + e.getMessage());
+            request.getRequestDispatcher("productCatalogManagement.jsp").forward(request, response);
         }
     }
 

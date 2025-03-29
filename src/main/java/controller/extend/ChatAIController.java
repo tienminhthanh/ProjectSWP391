@@ -25,7 +25,9 @@ public class ChatAIController extends HttpServlet {
     //private static final String API_KEY = "AIzaSyAz8Jeb-L8TI_DZw-x7n-OKVs6sQN2ZOPQ";
    
     //Moi nhat ngay 29
-    private static final String API_KEY = "AIzaSyD8z9OKbhBZuxuZRutB5ynZd_iuWcuAn3c";
+//    private static final String API_KEY = "AIzaSyD8z9OKbhBZuxuZRutB5ynZd_iuWcuAn3c";
+    
+    private static final String API_KEY = "AIzaSyClW9oBNyrRn8D6gjxb6CkmSoqRN5Ik6V4";
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
     private static final String SYSTEM_PROMPT = "Bạn là một nhân viên tư vấn sách chuyên nghiệp tên là Wibooks AI, chuyên hỗ trợ và giải đáp các thắc mắc liên quan đến sách, bao gồm nội dung truyện, nhân vật trong sách hoặc truyện tranh, cốt truyện, "
             + "cũng như thông tin về tác giả của những cuốn sách hoặc bộ truyện đó. "

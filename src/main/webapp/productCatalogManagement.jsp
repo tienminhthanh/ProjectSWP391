@@ -295,22 +295,34 @@
                 const reqMessage = `${requestScope.message}`;
                 const successfulMessage = `${requestScope.successfulMessage}`;
                 const failedMessage = `${requestScope.failedMessage}`;
+                const searchError = `${requestScope.errorMessage}`;
                 if (reqMessage) {
                     Swal.fire({
                         icon: 'error',
                         text: reqMessage
                     });
                 }
-                if (successfulMessage) {
+                else if (successfulMessage) {
                     Swal.fire({
                         icon: 'success',
                         text: successfulMessage
                     });
                 }
-                if (failedMessage) {
+                else if (failedMessage) {
                     Swal.fire({
                         icon: 'warning',
                         text: failedMessage
+                    });
+                }
+                else if(searchError){
+                    Swal.fire({
+                        icon: 'error',
+                        text: searchError,
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = 'manageProductList';
+                        }
                     });
                 }
             });

@@ -7,7 +7,7 @@
     <body class="bg-gray-100">
 
         <div id="chatContainer1" class="w-full max-w-4xl mx-auto">
-            <div id="chatBox1" class="w-full h-96 overflow-y-auto border border-gray-300 p-4 bg-gray-50 text-left">
+            <div id="chatBox1" class="w-full h-96 overflow-y-auto border border-gray-300 p-4 bg-gray-50 text-left ">
             </div>
             <div id="inputContainer1" class="mt-4 flex justify-center">
                 <input type="text" id="userMessage" class="w-3/4 p-3 text-lg border border-gray-300 rounded-md" placeholder="Enter the message..." onkeypress="if (event.keyCode == 13) sendMessage1()">
