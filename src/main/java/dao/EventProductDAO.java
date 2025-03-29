@@ -279,6 +279,6 @@ public class EventProductDAO {
 
     public static void main(String[] args) {
         EventProductDAO ep = new EventProductDAO();
-        System.out.println(ep.getListProductInEvent(4).size());
+        System.out.println(ep.getListProductInEvent(7).size());
     }
 }

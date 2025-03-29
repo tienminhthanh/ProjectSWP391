@@ -223,32 +223,42 @@ public class DashboardDAO {
     }
 
     public double getProfitMargin(String year, String quarter, String month, boolean isFilterApplied) {
-        String sql = "WITH WeightedImportPrice AS ("
-                + "    SELECT productID, "
-                + "           SUM(importPrice * importQuantity) / NULLIF(SUM(importQuantity), 0) AS weightedImportPrice "
-                + "    FROM ImportItem "
-                + "    WHERE isImported = 1 "
-                + "    GROUP BY productID "
-                + ")"
-                + "SELECT "
-                + "    (SUM(oi.finalAmount) - "
-                + "     SUM(op.orderProductQuantity * wip.weightedImportPrice)) / "
-                + "    NULLIF(SUM(oi.finalAmount), 0) * 100 AS profitMargin "
-                + "FROM Order_Product op "
-                + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
-                + "JOIN WeightedImportPrice wip ON op.productID = wip.productID "
-                + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
-        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
-
+//        String sql = "WITH WeightedImportPrice AS ("
+//                + "    SELECT productID, "
+//                + "           SUM(importPrice * importQuantity) / NULLIF(SUM(importQuantity), 0) AS weightedImportPrice "
+//                + "    FROM ImportItem "
+//                + "    WHERE isImported = 1 "
+//                + "    GROUP BY productID "
+//                + ")"
+//                + "SELECT "
+//                + "    (SUM(oi.finalAmount) - "
+//                + "     SUM(op.orderProductQuantity * wip.weightedImportPrice)) / "
+//                + "    NULLIF(SUM(oi.finalAmount), 0) * 100 AS profitMargin "
+//                + "FROM Order_Product op "
+//                + "JOIN OrderInfo oi ON op.orderID = oi.orderID "
+//                + "JOIN WeightedImportPrice wip ON op.productID = wip.productID "
+//                + "WHERE oi.orderStatus IN ('delivered', 'completed') ";
+//        sql += buildFilterCondition(year, quarter, month, isFilterApplied);
+//
+//        try {
+//            ResultSet rs = context.exeQuery(sql, null);
+//            if (rs.next()) {
+//                return rs.getDouble(1);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return 0;
         try {
-            ResultSet rs = context.exeQuery(sql, null);
-            if (rs.next()) {
-                return rs.getDouble(1);
+            double profit = getGrossProfit(year, quarter, month, isFilterApplied);
+            double revenue = getTotalRevenue(year, quarter, month, isFilterApplied);
+            if (revenue == 0) {
+                return 0;
             }
+            return (profit / revenue) * 100;
         } catch (Exception e) {
-            e.printStackTrace();
+            return 0;
         }
-        return 0;
     }
 
     public double getOrderConversionRate(String year, String quarter, String month, boolean isFilterApplied) {
@@ -410,10 +420,12 @@ public class DashboardDAO {
     public static void main(String[] args) {
         DashboardDAO dao = new DashboardDAO();
 
-        Map<String, Double> trend = dao.getRevenueTrend("year", "2025", null, null, true);
-        double total = dao.getTotalRevenue("2025", null, null, true);
-        double trendSum = trend.values().stream().mapToDouble(Double::doubleValue).sum();
-        System.out.println("Trend sum: " + trendSum);
-        System.out.println("Total: " + total);
+        double gross = dao.getGrossProfit("2025", "", "2", true);
+        double profit = dao.getProfitMargin("2025", "", "2", true);
+        double revenue = dao.getTotalRevenue("2025", "", "2", true);
+        System.out.println(gross);
+        System.out.println(profit);
+        System.out.println(revenue);
+        System.out.println(gross / revenue);
     }
 }

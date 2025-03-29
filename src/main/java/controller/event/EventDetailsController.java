@@ -94,7 +94,7 @@ public class EventDetailsController extends HttpServlet {
 //                    epDAO.deleteListProductInEvent(event.getEventID());
 //                } else {
                 List<EventProduct> listEventProduct = epDao.getListEventProduct(event.getEventID());
-//                }
+                System.out.println(event.getEventID());
                 List<Product> updatedProductList = new ArrayList<>();
                 for (EventProduct ep : listEventProduct) {
                     Product product = productDAO.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID
