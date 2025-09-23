@@ -45,5 +45,6 @@ public class Genre {
     @Override
     public int hashCode() {
         return Objects.hash(genreID);
+        //asdasdasdasdas
     }
 }
