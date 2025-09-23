@@ -2208,7 +2208,7 @@ public class ProductDAO {
             // Checking the final map
             while (true) {
                 Scanner sc = new Scanner(System.in);
-                System.out.print("Enter keywords please: ");
+                System.out.print("Enter keywords: ");
                 String i = sc.nextLine();
                 System.out.println(i);
                 System.out.println(productDAO.formatQueryBroad(i)); 
