@@ -57,6 +57,21 @@ public class DBContext {
         }
         return preparedStatement.executeQuery();
     }
+    
+     // Overload exeQuery with provided Connection
+    public ResultSet exeQuery(PreparedStatement preparedStatement, Object[] params) throws SQLException {
+        try {
+            if (params != null && params.length > 0) {
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setObject(i + 1, params[i]);
+                }
+            }
+            return preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Query execution failed: {0}", e);
+            throw e;
+        }
+    }
 
     // Execute INSERT, UPDATE, DELETE
     public int exeNonQuery(String query, Object[] params) throws SQLException {
@@ -114,18 +129,5 @@ public class DBContext {
         }
     }
 
-    // Overload exeQuery with provided Connection
-    public ResultSet exeQuery(PreparedStatement preparedStatement, Object[] params) throws SQLException {
-        try {
-            if (params != null && params.length > 0) {
-                for (int i = 0; i < params.length; i++) {
-                    preparedStatement.setObject(i + 1, params[i]);
-                }
-            }
-            return preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Query execution failed: {0}", e);
-            throw e;
-        }
-    }
+   
 }
