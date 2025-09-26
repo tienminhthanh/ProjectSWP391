@@ -5,6 +5,7 @@
 package controller.product;
 
 import dao.*;
+import jakarta.servlet.ServletContext;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.HashMap;
@@ -91,25 +93,13 @@ public class ProductCatalogController extends HttpServlet {
                 handleSearch(request, response);
                 break;
             case "/category":
-                handleCategory(request, response);
-                break;
-            case "/genre":
-                handleGenre(request, response);
-                break;
-            case "/publisher":
-                handlePublisher(request, response);
-                break;
             case "/creator":
-                handleCreator(request, response);
-                break;
+            case "/genre":
+            case "/publisher":
             case "/series":
-                handleSeries(request, response);
-                break;
             case "/brand":
-                handleBrand(request, response);
-                break;
             case "/character":
-                handleCharacter(request, response);
+                handleList(request, response,path);
                 break;
             case "/new":
                 handleNewRelease(request, response);
@@ -126,6 +116,46 @@ public class ProductCatalogController extends HttpServlet {
             case "/home":
             default:
                 handleHomepage(request, response);
+//        switch (path) {
+//            case "/search":
+//                handleSearch(request, response);
+//                break;
+//            case "/category":
+//                handleCategory(request, response);
+//                break;
+//            case "/genre":
+//                handleGenre(request, response);
+//                break;
+//            case "/publisher":
+//                handlePublisher(request, response);
+//                break;
+//            case "/creator":
+//                handleCreator(request, response);
+//                break;
+//            case "/series":
+//                handleSeries(request, response);
+//                break;
+//            case "/brand":
+//                handleBrand(request, response);
+//                break;
+//            case "/character":
+//                handleCharacter(request, response);
+//                break;
+//            case "/new":
+//                handleNewRelease(request, response);
+//                break;
+//            case "/sale":
+//                handleOnSale(request, response);
+//                break;
+//            case "/productDetails":
+//                handleDetails(request, response);
+//                break;
+//            case "/ranking":
+//                handleRanking(request, response);
+//                break;
+//            case "/home":
+//            default:
+//                handleHomepage(request, response);
         }
     }
 
@@ -312,6 +342,201 @@ public class ProductCatalogController extends HttpServlet {
             message = "No result found! Try entering series title, name of sculptor/artist/character/brand or category.\n";
         }
         return message;
+    }
+
+    private void handleList(HttpServletRequest request, HttpServletResponse response, String path)
+            throws ServletException, IOException {
+        String pageStr = request.getParameter("page");
+        String classificationId = request.getParameter("id");
+        String sortCriteria = request.getParameter("sortCriteria");
+        Map<String, String[]> paramMap = request.getParameterMap();
+        //For redirect back to original page after logging in or adding items to cart
+        String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+
+        StringBuilder message = new StringBuilder();
+
+        //Handling filters
+        Map<String, String> filterMap = new HashMap<>();
+        if (paramMap != null) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+
+            }
+        }
+
+        // Get initial sort order on first page load
+        if (sortCriteria == null) {
+            sortCriteria = getDefaultSortCriteria(null);
+        }
+
+        try {
+            //Default page is 1
+            int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
+
+            //Parse id string to integer
+            int id = Integer.parseInt(classificationId);
+            String pathName = path.substring(1);
+            Map<String,String> classficationCodes = Map.of(
+            "category", "ctg",
+            "creator", "crt",
+            "genre", "gnr",
+            "publisher", "pbl",
+            "series", "srs",
+            "brand", "brn",
+            "character", "chr"
+            );
+            
+            String clsfCode = classficationCodes.get(pathName);
+            
+            Map<String,String> classficationAttributes = getClassficationAttributes(getServletContext(), clsfCode, id);
+            
+            String clsfName = classficationAttributes.get("name");
+            String clsfType = classficationAttributes.get("type");
+            
+            //            Set up breadCrumb and page title
+            String breadCrumb = "<a href='home'>Home</a>";
+            breadCrumb += String.format(" > <a href='%s?id=%s'>%s</a>", pathName,id, clsfName);
+            request.setAttribute("pageTitle", clsfName);
+            request.setAttribute("breadCrumb", breadCrumb);
+
+            //Get product list
+            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, clsfCode, clsfType, "", page, PAGE_SIZE);
+
+            // Calculate total pages
+            //Default value is 1
+            int totalProducts = productDAO.getProductsCount(id, filterMap, clsfCode, clsfType);
+            int totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;
+
+            if (productList.isEmpty()) {
+                //No result found
+                message.setLength(0);
+                message.append("No result found! Please deselect some filter if any.");
+            } else {
+                request.setAttribute("productList", productList);
+                //For displaying current sort criteria
+                request.setAttribute("sortCriteria", sortCriteria);
+            }
+
+            //Set up remaining attributes and forward the request
+            if (message.length() > 0) {
+                request.setAttribute("message", message);
+            }
+            request.setAttribute("type", clsfType);
+            request.setAttribute("currentURL", currentURL);
+            request.setAttribute("formattedURL", formatURL(currentURL));
+            request.setAttribute("currentPage", page);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+            request.setAttribute("totalProducts", totalProducts);
+            request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            request.setAttribute("errorMessage", e.toString());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+
+    }
+
+    private Map<String, String> getClassficationAttributes(ServletContext context, String typeCode, int id) {
+        String attrName;
+        String generalCategory = null;
+        switch (typeCode) {
+            case "ctg":
+                attrName = "categories";
+                break;
+            case "crt":
+                attrName = "creators";
+                break;
+            case "gnr":
+                attrName = "genres";
+                generalCategory = "book";
+                break;
+            case "pbl":
+                attrName = "publishers";
+                generalCategory = "book";
+                break;
+            case "srs":
+                attrName = "series";
+                generalCategory = "merch";
+                break;
+            case "brn":
+                attrName = "brands";
+                generalCategory = "merch";
+                break;
+            case "chr":
+                attrName = "characters";
+                generalCategory = "merch";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid typeCode: " + typeCode);
+        }
+
+        Map<Object, Integer> entityMap = (Map<Object, Integer>) context.getAttribute(attrName);
+        if (entityMap == null) {
+            throw new IllegalStateException("No map found in context for " + attrName);
+        }
+
+        Map<String, String> classificationAttributes = new HashMap<>();
+
+        try {
+            for (Object entity : entityMap.keySet()) {
+                String entityName = formatAttrName(attrName);
+                Method getIdMethod = entity.getClass().getMethod("get" + entityName + "ID");
+
+                int entityId = (Integer) getIdMethod.invoke(entity);
+                if (entityId == id) {
+                    classificationAttributes.put("id", entityId + "");
+
+                    if (entityName.equals("Creator")) {
+                        Method getCreatorRoleMethod = entity.getClass().getMethod("getCreatorRole");
+                        classificationAttributes.put("creatorRole", (String) getCreatorRoleMethod.invoke(entity));
+                    }
+                    
+                    if ((entityName.equals("Creator") || entityName.equals("Category")) && generalCategory == null) {
+                        Method getGeneralCategoryMethod = entity.getClass().getMethod("getGeneralCategory");
+                        generalCategory = (String) getGeneralCategoryMethod.invoke(entity);
+                    }
+                    classificationAttributes.put("type", generalCategory);
+                    
+                    Method getNameMethod = entity.getClass().getMethod("get" + entityName + "Name");
+                    classificationAttributes.put("name", (String) getNameMethod.invoke(entity));
+
+                    return classificationAttributes;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Reflection error", e);
+        }
+        return null;
+    }
+
+    private String formatAttrName(String attrName) {
+        return attrName.equals("categories")
+                ? "Category"
+                : attrName.equals("series")
+                ? "Series"
+                : attrName.substring(0,1).toUpperCase() + attrName.substring(1, attrName.length() - 1);
     }
 
     private void handleCategory(HttpServletRequest request, HttpServletResponse response)
@@ -1277,10 +1502,10 @@ public class ProductCatalogController extends HttpServlet {
                 request.setAttribute("product", requestedProduct);
                 request.setAttribute("type", type);
                 request.setAttribute("currentURL", currentURL);
-            request.setAttribute("formattedURL", formatURL(currentURL));
+                request.setAttribute("formattedURL", formatURL(currentURL));
 
             }
-                request.getRequestDispatcher("productDetails.jsp").forward(request, response);
+            request.getRequestDispatcher("productDetails.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
