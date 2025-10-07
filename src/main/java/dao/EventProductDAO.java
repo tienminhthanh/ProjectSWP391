@@ -4,6 +4,8 @@
  */
 package dao;
 
+import model.product_related.Product;
+import model.product_related.Category;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

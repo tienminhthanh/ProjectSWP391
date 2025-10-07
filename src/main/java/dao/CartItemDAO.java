@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
-import model.Product;
+import model.product_related.Product;
 import utils.DBContext;
 
 public class CartItemDAO {

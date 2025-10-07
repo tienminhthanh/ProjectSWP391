@@ -4,6 +4,7 @@
  */
 package controller.event;
 
+import model.product_related.Product;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.*;

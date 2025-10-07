@@ -17,7 +17,7 @@ import model.Customer;
 import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
-import model.Product;
+import model.product_related.Product;
 import model.Shipper;
 import model.Staff;
 

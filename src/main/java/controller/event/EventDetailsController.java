@@ -4,6 +4,7 @@
  */
 package controller.event;
 
+import model.product_related.Product;
 import dao.*;
 import java.io.IOException;
 import jakarta.servlet.ServletException;

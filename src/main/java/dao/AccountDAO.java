@@ -29,7 +29,6 @@ public class AccountDAO {
     public boolean updateAccountStatus(String username, boolean accountIsActive) throws SQLException {
         String sql = "UPDATE Account SET accountIsActive = ? WHERE username = ?";
         Object[] params = {accountIsActive, username};
-
         return context.exeNonQuery(sql, params) > 0;
     }
 
@@ -62,6 +61,7 @@ public class AccountDAO {
         ResultSet rs = context.exeQuery(sql, params);
         return rs.next() ? mapResultSetToAccount(rs) : null;
     }
+    
 
     /**
      * Tạo tài khoản với quyền chỉ định (dành cho admin tạo staff hoặc shipper)
@@ -322,7 +322,7 @@ public class AccountDAO {
      * Chuyển đổi ResultSet thành đối tượng Account
      */
     private Account mapResultSetToAccount(ResultSet rs) throws SQLException {
-        String role = rs.getString("role");
+        String role = rs.getString("role") ;
         switch (role) {
             case "admin":
                 return new Admin(

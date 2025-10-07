@@ -1,5 +1,6 @@
 package controller.dashboard;
 
+import model.product_related.Product;
 import dao.*;
 import model.*;
 import jakarta.servlet.ServletException;

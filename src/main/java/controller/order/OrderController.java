@@ -27,7 +27,7 @@ import model.DeliveryAddress;
 import model.DeliveryOption;
 import model.OrderInfo;
 import model.OrderProduct;
-import model.Product;
+import model.product_related.Product;
 import model.Voucher;
 
 /**

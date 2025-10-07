@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import model.Account;
+import model.Customer;
 
 @WebServlet(name = "DeleteAccountServlet", urlPatterns = {"/deleteAccount"})
 public class DeleteAccountController extends HttpServlet {
@@ -25,10 +26,10 @@ public class DeleteAccountController extends HttpServlet {
             response.sendRedirect("login.jsp"); // redirect to login if session is invalid
             return;
         }
-
+        
         Account account = (Account) session.getAttribute("account");
         String username = request.getParameter("username");
-
+        
         if (username == null || username.isEmpty()) {
             request.setAttribute("errorMessage", "Username is required.");
             request.getRequestDispatcher("listAccount").forward(request, response);

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import model.Customer;
 
 /**
  * Servlet responsible for handling user login.
@@ -36,7 +37,7 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false); // Lấy session hiện tại, không tạo mới
         if (session != null) {
-            session.invalidate(); 
+            session.invalidate();
         }
         String currentURL = request.getParameter("currentURL");
         if (currentURL != null && !currentURL.trim().isEmpty()) {
@@ -71,7 +72,6 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
         try {
             Account account = accountDAO.getAccountByUsername(username);
-
             if (account != null) { // If account exists
                 if (account.getAccountIsActive()) { // Check if the account is active
                     Integer failedAttempts = (Integer) session.getAttribute("failedAttempts");
@@ -165,5 +165,9 @@ public class LoginWithUsernameAndPasswordController extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("username", username);
         request.getRequestDispatcher("login.jsp").forward(request, response);
+    }
+
+    public static void main(String[] args) {
+
     }
 }

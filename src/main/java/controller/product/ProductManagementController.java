@@ -4,6 +4,18 @@
  */
 package controller.product;
 
+import model.product_related.Creator;
+import model.product_related.Product;
+import model.product_related.OGCharacter;
+import model.product_related.Publisher;
+import model.product_related.Category;
+import model.product_related.Series;
+import model.product_related.Supplier;
+import model.product_related.ImportItem;
+import model.product_related.Book;
+import model.product_related.Genre;
+import model.product_related.Brand;
+import model.product_related.Merchandise;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;

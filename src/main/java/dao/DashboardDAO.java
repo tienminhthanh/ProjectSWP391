@@ -1,5 +1,6 @@
 package dao;
 
+import model.product_related.Product;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
