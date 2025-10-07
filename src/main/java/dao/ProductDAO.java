@@ -4,6 +4,18 @@
  */
 package dao;
 
+import model.product_related.Creator;
+import model.product_related.Product;
+import model.product_related.OGCharacter;
+import model.product_related.Publisher;
+import model.product_related.Category;
+import model.product_related.Series;
+import model.product_related.Supplier;
+import model.product_related.ImportItem;
+import model.product_related.Book;
+import model.product_related.Genre;
+import model.product_related.Merchandise;
+import model.product_related.Brand;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,13 +43,13 @@ import utils.*;
  */
 public class ProductDAO {
 
-    private final DBContext context;
-    private final Utility tool;
+    protected final DBContext context;
+    protected final Utility tool;
 
     //Normal run
     public ProductDAO() {
-        context = new DBContext();
-        tool = new Utility();
+        this.context = new DBContext();
+        this.tool = new Utility();
     }
 
     //Test run
@@ -45,6 +57,8 @@ public class ProductDAO {
         this.context = context;
         this.tool = tool;
     }
+
+    
 
     /**
      * For add, update cart
@@ -666,7 +680,7 @@ public class ProductDAO {
                 }
             }
         }
-
+        
         //Append order
         sql.append("ORDER BY ");
         sql.append(processSort(sortCriteria));
@@ -699,30 +713,30 @@ public class ProductDAO {
         StringBuilder joinClause = new StringBuilder();
         generalCategory = generalCategory != null ? generalCategory.toLowerCase() : "";
         switch (condition != null ? condition.toLowerCase() : "") {
-            case "ctg":
+            case "category":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
                 joinClause.append("JOIN Category AS C \n"
                         + "    ON C.categoryID = P.categoryID\n");
                 break;
-            case "crt":
+            case "creator":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
                 joinClause.append("JOIN Product_Creator PC ON PC.productID = P.productID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
-            case "gnr":
+            case "genre":
                 joinClause.append("JOIN Book AS B ON P.productID = B.bookID\n"
                         + "JOIN Book_Genre as BG ON BG.bookID = B.bookID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
-            case "pbl":
+            case "publisher":
                 joinClause.append("JOIN Book AS B ON P.productID = B.bookID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
-            case "srs":
-            case "chr":
-            case "brn":
+            case "series":
+            case "character":
+            case "brand":
                 joinClause.append("JOIN Merchandise AS M ON P.productID = M.merchandiseID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
@@ -739,19 +753,19 @@ public class ProductDAO {
 
     private String getInitialWhereClause(String condition, int conditionID, String location) {
         switch (condition) {
-            case "ctg":
+            case "category":
                 return "AND P.categoryID = ?\n";
-            case "crt":
+            case "creator":
                 return "AND PC.creatorID = ?\n";
-            case "gnr":
+            case "genre":
                 return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n" : "AND BG.genreID = ?\n";
-            case "pbl":
+            case "publisher":
                 return "AND B.publisherID = ?\n";
-            case "srs":
+            case "series":
                 return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n" : "AND M.seriesID = ?\n";
-            case "chr":
+            case "character":
                 return "AND M.characterID = ?\n";
-            case "brn":
+            case "brand":
                 return "AND M.brandID = ?\n";
             case "new":
                 return "AND P.specialFilter = 'new'\n";
@@ -826,7 +840,7 @@ public class ProductDAO {
         }
     }
 
-    private StringBuilder getCTETables(String condition) {
+    protected StringBuilder getCTETables(String condition) {
         StringBuilder cte = new StringBuilder("WITH ");
         if (condition != null && condition.equals("rank")) {
             cte.append("TopSale AS (\n"
@@ -936,6 +950,41 @@ public class ProductDAO {
                         discountPercentage,
                         eventEndDate);
         }
+
+    }
+    
+    protected Product mapResultSetToProduct(ResultSet rs) throws SQLException {
+        Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
+
+        LocalDate eventEndDate = tool.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
+        int discountPercentage = 0;
+        if (eventEndDate != null) {
+            discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
+        }
+
+        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"), 0);
+
+        LocalDateTime lastMdfTime = tool.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
+        
+        return new Product(rs.getInt("productID"),
+                        rs.getString("productName"),
+                        rs.getDouble("price"),
+                        rs.getInt("stockCount"),
+                        category,
+                        rs.getString("description"),
+                        rlsDate,
+                        lastMdfTime,
+                        rs.getDouble("averageRating"),
+                        rs.getInt("numberOfRating"),
+                        rs.getString("specialFilter"),
+                        rs.getInt("adminID"),
+                        rs.getString("keywords"),
+                        rs.getString("generalCategory"),
+                        rs.getBoolean("productIsActive"),
+                        rs.getString("imageURL"),
+                        discountPercentage,
+                        eventEndDate);
+
 
     }
 
@@ -1272,6 +1321,8 @@ public class ProductDAO {
             sql.append("\nJOIN Merchandise M");
             sql.append("\n    ON M.merchandiseID = P.productID");
         }
+        
+        System.out.println("-------------------------------");
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -2217,6 +2268,7 @@ public class ProductDAO {
                     break;
                 }
             }
+            
         } catch (Exception ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
