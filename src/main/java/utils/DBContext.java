@@ -45,7 +45,8 @@ public class DBContext {
             throw e;
         }
     }
-
+    
+    //Based method with new connection ebstablished for each every query execution
     public ResultSet exeQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -58,7 +59,8 @@ public class DBContext {
         return preparedStatement.executeQuery();
     }
     
-     // Overload exeQuery with provided Connection
+     // Overload exeQuery with provided Connection.prepareStatement()
+     // For the purpose of 1 connection -> multiple query execution
     public ResultSet exeQuery(PreparedStatement preparedStatement, Object[] params) throws SQLException {
         try {
             if (params != null && params.length > 0) {
@@ -73,7 +75,8 @@ public class DBContext {
         }
     }
 
-    // Execute INSERT, UPDATE, DELETE
+    // Base method for INSERT, UPDATE, DELETE execution
+    // with new connection estabslished every query execution
     public int exeNonQuery(String query, Object[] params) throws SQLException {
         try ( Connection connection = getConnection();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             if (params != null && params.length > 0) {
@@ -96,7 +99,9 @@ public class DBContext {
         }
     }
 
-    //Overload
+    //Overload with provided Connection 
+    //and option for returning generated primary key upon INSERT
+    // For handling transaction
     public int exeNonQuery(Connection connection, String sql, Object[] params, boolean returnGeneratedKeys) throws SQLException {
         try ( PreparedStatement preparedStatement = returnGeneratedKeys 
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
