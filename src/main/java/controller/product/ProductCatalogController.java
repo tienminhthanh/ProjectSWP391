@@ -24,11 +24,13 @@ import java.util.Map;
 import model.*;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 import model.interfaces.ProductClassification;
 import model.product_related.NonEntityClassification;
+import model.product_related.Series;
 
 /**
  *
@@ -42,8 +44,10 @@ import model.product_related.NonEntityClassification;
 
 public class ProductCatalogController extends HttpServlet {
 
-    private static final Set<String> MERCH_FILTERS = Set.of("ftSrs", "ftBrn", "ftChr");
-    private static final Set<String> BOOK_FITLERS = Set.of("ftGnr", "ftPbl");
+    private static final Map<String, Set<String>> APPLICABLE_FILTERS = Map.of(
+            "merch", Set.of("ftSrs", "ftBrn", "ftChr"),
+            "book", Set.of("ftGnr", "ftPbl")
+    );
     private static final Set<String> SINGLE_FILTERS = Set.of("ftCtg", "ftPbl", "ftSrs", "ftBrn", "ftChr");
     private static final int PAGE_SIZE = 12;
 
@@ -105,7 +109,7 @@ public class ProductCatalogController extends HttpServlet {
             case "/character":
             case "/new":
             case "/sale":
-                handleList(request, response,path);
+                handleList(request, response, path);
                 break;
             case "/productDetails":
                 handleDetails(request, response);
@@ -130,7 +134,7 @@ public class ProductCatalogController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException { 
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
@@ -274,6 +278,45 @@ public class ProductCatalogController extends HttpServlet {
 
     }
 
+    private SimpleEntry<StringBuilder, Map<String, String>> getFilterMapAndMessage(Map<String, String[]> paramMap, String clsfType) {
+        Map<String, String> filterMap = new HashMap<>();
+        StringBuilder message = new StringBuilder();
+        if (paramMap != null) {
+            Set<String> applicableFilterSet = APPLICABLE_FILTERS.get(clsfType);
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+                String name = entry.getKey();
+                String[] values = entry.getValue();
+
+                //Skip non-filter params
+                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
+                    continue;
+                }
+
+                if (!applicableFilterSet.contains(name)) {
+                    message.append("Cannot apply this filter to")
+                            .append(getDisplayTextBasedOnType(clsfType))
+                            .append("!");
+                    continue;
+                }
+
+                //Prevent SINGLE_FILTERS from being selected multiple times
+                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
+                    message.append("Only genres and creators can be selected multiple times!\n");
+                    continue;
+                }
+
+                //Special case for price range filter
+                if (name.equals("ftPrc")) {
+                    filterMap.put(name, values[0] + "-" + values[1]);
+                } else {
+                    //Normal case
+                    filterMap.put(name, values[0]);
+                }
+            }
+        }
+        return new SimpleEntry<>(message, filterMap);
+    }
+
     private String getDisplayTextBasedOnType(String type) {
         switch (type) {
             case "book":
@@ -311,44 +354,9 @@ public class ProductCatalogController extends HttpServlet {
         String clsfType = request.getParameter("type");
         String sortCriteria = request.getParameter("sortCriteria");
         Map<String, String[]> paramMap = request.getParameterMap();
+        
         //For redirect back to original page after logging in or adding items to cart
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
-
-        StringBuilder message = new StringBuilder();
-
-        //Handling filters
-        Map<String, String> filterMap = new HashMap<>();
-        if (paramMap != null) {
-            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
-                String name = entry.getKey();
-                String[] values = entry.getValue();
-
-                //Skip non-filter params
-                if (!name.startsWith("ft") || filterMap.containsKey(name)) {
-                    continue;
-                }
-
-                //Prevent SINGLE_FILTERS from being selected multiple times
-                if (SINGLE_FILTERS.contains(name) && values[0].split(",").length > 1) {
-                    message.append("Only genres and creators can be selected multiple times!\n");
-                    continue;
-                }
-
-                //Special case for price range filter
-                if (name.equals("ftPrc")) {
-                    filterMap.put(name, values[0] + "-" + values[1]);
-                } else {
-                    //Normal case
-                    filterMap.put(name, values[0]);
-                }
-
-            }
-        }
-
-        // Get initial sort order on first page load
-        if (sortCriteria == null) {
-            sortCriteria = getDefaultSortCriteria(null);
-        }
 
         try {
             //Default page is 1
@@ -356,24 +364,34 @@ public class ProductCatalogController extends HttpServlet {
 
             //Parse id string to integer if path is neither /new nor /sale
             int id = classificationId != null ? Integer.parseInt(classificationId) : 0;
-            
+
             //Extract pathname as clsfCode
             String clsfCode = path.substring(1);
-            
+
             //Get the correct classification instance
             ProductClassification classification = getClassficationAttributes(getServletContext(), clsfCode, clsfType, id);
-            
+
             //Get type if null
-            if(clsfType == null){
-                clsfType =  classification.getType();
+            if (clsfType == null) {
+                clsfType = classification.getType();
             }
             
             //Get breadCrumb and pageTitle
-            String breadCrumb = buildBreadCrumb(classification,clsfCode);
+            String breadCrumb = buildBreadCrumb(classification, clsfCode);
             String pageTitle = buildPageTitle(classification);
 
+            //Handling filters
+            SimpleEntry<StringBuilder, Map<String, String>> filterMapEntry = getFilterMapAndMessage(paramMap, clsfType);
+            StringBuilder message = filterMapEntry.getKey();
+            Map<String, String> filterMap = filterMapEntry.getValue();
+
+            // Get initial sort order on first page load
+            if (sortCriteria == null) {
+                sortCriteria = getDefaultSortCriteria(null);
+            }
+
             //Get product list
-            List<Product> productList = productDAO.getProductsByCondition(id, sortCriteria, filterMap, clsfCode, clsfType, "", page, PAGE_SIZE);
+            List<Product> productList = productDAO.getClassifiedProductList(classification, sortCriteria, filterMap, page, PAGE_SIZE, false);
 
             // Calculate total pages
             //Default value is 1
@@ -405,7 +423,7 @@ public class ProductCatalogController extends HttpServlet {
             request.setAttribute("totalProducts", totalProducts);
             request.setAttribute("pageTitle", pageTitle);
             request.setAttribute("breadCrumb", breadCrumb);
-            
+
             request.getRequestDispatcher("productCatalog.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -417,99 +435,104 @@ public class ProductCatalogController extends HttpServlet {
     }
 
     private ProductClassification getClassficationAttributes(ServletContext context, String clsfCode, String clsfType, int clsfID) {
-        
+
         //For Non-EntityClassification like Sale, New
-        if (clsfID == 0 && clsfType != null){
+        if (clsfID == 0 && clsfType != null) {
             return getNonEntityClassification(clsfCode, clsfType);
         }
-        
+
         //Resolve attribute name in servlet context
         String attrName = resolveServletContextAtributeName(clsfCode);
-        
+
         //Get the attribute from servlet context and cast to its original form
         Map<ProductClassification, Integer> entityMap = (Map<ProductClassification, Integer>) context.getAttribute(attrName);
         if (entityMap == null) {
             throw new IllegalStateException("No map found in context for " + attrName);
         }
-        
+
         // Get the correct classification based on id
         for (ProductClassification entity : entityMap.keySet()) {
-                if (entity.getId() == clsfID) return entity;
+            if (entity.getId() == clsfID) {
+                return entity;
+            }
         }
         return null;
     }
-    
-    private NonEntityClassification getNonEntityClassification(String clsfCode, String clsfType){
+
+    private NonEntityClassification getNonEntityClassification(String clsfCode, String clsfType) {
         String name;
-        switch((clsfCode != null ? clsfCode : "")){
-            case "new": name = "New Release"; break;
-            case "sale": name = "On Sale"; break;
-            default: name = "";
+        switch ((clsfCode != null ? clsfCode : "")) {
+            case "new":
+                name = "New Release";
+                break;
+            case "sale":
+                name = "On Sale";
+                break;
+            default:
+                name = "";
         }
-        return new NonEntityClassification(name, clsfType);
-        
+        return new NonEntityClassification(name, clsfType,clsfCode);
+
     }
-    
-    private String resolveServletContextAtributeName(String clsfCode){
+
+    private String resolveServletContextAtributeName(String clsfCode) {
         String attrName;
-        switch(clsfCode != null ? clsfCode : ""){
-            case "category": attrName = "categories"; break;
-            case "series": attrName = clsfCode; break;
+        switch (clsfCode != null ? clsfCode : "") {
+            case "category":
+                attrName = "categories";
+                break;
+            case "series":
+                attrName = clsfCode;
+                break;
             case "creator":
             case "brand":
             case "character":
             case "publisher":
-            case "genre": attrName = clsfCode + "s"; break;
-            default: attrName = "";
+            case "genre":
+                attrName = clsfCode + "s";
+                break;
+            default:
+                attrName = "";
         }
         return attrName;
     }
-    
-    private String buildBreadCrumb(ProductClassification clsf, String clsfCode){
+
+    private String buildBreadCrumb(ProductClassification clsf, String clsfCode) {
         int clsfId = clsf.getId();
         String clsfName = clsf.getName();
         String clsfType = clsf.getType();
-        Map<String,Object> extraAttrs = clsf.getExtraAttributes();
-        
-        
+        Map<String, Object> extraAttrs = clsf.getExtraAttributes();
+
         StringBuilder breadCrumb = new StringBuilder("<a href='home'>Home</a>");
-        if(extraAttrs.containsKey("isNonEntity")){
+        if (extraAttrs.containsKey("isNonEntity")) {
             breadCrumb.append(String.format(" > <a href='search?type=%s'>%s</a>", clsfType, getDisplayTextBasedOnType(clsfType)));
-            breadCrumb.append(String.format(" > <a href='%s?type=%s'>%s</a>", clsfCode,clsfType,clsfName));
-        }
-        else{
+            breadCrumb.append(String.format(" > <a href='%s?type=%s'>%s</a>", clsfCode, clsfType, clsfName));
+        } else {
             StringBuilder displayText = new StringBuilder(clsfName);
             displayText = extraAttrs.containsKey("creatorRole")
                     ? displayText.append(" - ").append(extraAttrs.get("creatorRole"))
                     : displayText;
-            breadCrumb.append( String.format(" > <a href='%s?id=%s'>%s</a>", clsfCode,clsfId, displayText));
+            breadCrumb.append(String.format(" > <a href='%s?id=%s'>%s</a>", clsfCode, clsfId, displayText));
         }
         return breadCrumb.toString();
     }
-    
-    private String buildPageTitle(ProductClassification clsf){
+
+    private String buildPageTitle(ProductClassification clsf) {
         String clsfName = clsf.getName();
         String clsfType = clsf.getType();
-        Map<String,Object> extraAttrs = clsf.getExtraAttributes();
-        
-        
+        Map<String, Object> extraAttrs = clsf.getExtraAttributes();
+
         StringBuilder pageTitle = new StringBuilder(clsfName);
-        if(extraAttrs.containsKey("isNonEntity")){
+        if (extraAttrs.containsKey("isNonEntity")) {
             pageTitle.append(" - ").append(getDisplayTextBasedOnType(clsfType));
-        }
-        else{
+        } else {
             pageTitle = extraAttrs.containsKey("creatorRole")
                     ? pageTitle.append(" - ").append(extraAttrs.get("creatorRole"))
                     : pageTitle;
         }
-        
+
         return pageTitle.toString();
     }
-    
-
-
-
-
 
     private void handleDetails(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -590,13 +613,19 @@ public class ProductCatalogController extends HttpServlet {
     }
 
     private void showProductsInHomepage(HttpServletRequest request) throws Exception {
-
-        List<Product> newBookHome = productDAO.getProductsByCondition(0, "releaseDate", null, "new", "book", "home", 0, 0);
-        List<Product> newMerchHome = productDAO.getProductsByCondition(0, "releaseDate", null, "new", "merch", "home", 0, 0);
-        List<Product> saleBookHome = productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "book", "home", 0, 0);
-        List<Product> saleMerchHome = productDAO.getProductsByCondition(0, "hotDeal", null, "sale", "merch", "home", 0, 0);
-        List<Product> animeBookHome = productDAO.getProductsByCondition(18, "releaseDate", null, "genre", "book", "home", 0, 0);
-        List<Product> holoMerchHome = productDAO.getProductsByCondition(1, "releaseDate", null, "series", "merch", "home", 0, 0);
+        ProductClassification newBookClsf = new NonEntityClassification("book", "new");
+        ProductClassification newMerchClsf = new NonEntityClassification("merch", "new");
+        ProductClassification saleBookClsf = new NonEntityClassification("book", "sale");
+        ProductClassification saleMerchClsf = new NonEntityClassification("merch", "sale");
+        ProductClassification animeBookClsf = new Genre().setGenreID(18);
+        ProductClassification holoMerchClsf = new Series().setSeriesID(1);
+        
+        List<Product> newBookHome = productDAO.getClassifiedProductList(newBookClsf, "releaseDate", null, 1, 7, true);
+        List<Product> newMerchHome = productDAO.getClassifiedProductList(newMerchClsf, "releaseDate", null, 1, 7, true);
+        List<Product> saleBookHome = productDAO.getClassifiedProductList(saleBookClsf, "hotDeal", null, 1, 7, true);
+        List<Product> saleMerchHome = productDAO.getClassifiedProductList(saleMerchClsf, "hotDeal", null, 1, 7, true);
+        List<Product> animeBookHome = productDAO.getClassifiedProductList(animeBookClsf, "releaseDate", null, 1, 7, true);
+        List<Product> holoMerchHome = productDAO.getClassifiedProductList(holoMerchClsf, "releaseDate", null, 1, 7, true);
 
         request.setAttribute("newBookHome", newBookHome);
         request.setAttribute("newMerchHome", newMerchHome);
