@@ -35,6 +35,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Stream;
 import model.*;
+import model.interfaces.ProductClassification;
 import utils.*;
 
 /**
@@ -590,7 +591,7 @@ public class ProductDAO {
         );
 
         //Initialize where clause
-        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, null));
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, false));
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -632,14 +633,23 @@ public class ProductDAO {
 
     }
 
-    public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location, int page, int pageSize) throws SQLException {
+    public List<Product> getClassifiedProductList(ProductClassification clsf, 
+            String sortCriteria, Map<String, String> filterMap, 
+            int page, int pageSize, boolean isHomepage) 
+            throws SQLException {
+        
+        int clsfID = clsf.getId();
+        String clsfType = clsf.getType();
+        String clsfCode = clsf.getCode();
+        
         StringBuilder sql = getCTETables(null);
-        sql.append(location.equals("home") ? "SELECT TOP 7\n" : "SELECT\n");
+        
+        sql.append("SELECT\n");
         sql.append("P.*, C.categoryName, PD.discountPercentage, PD.eventDateStarted, PD.eventDuration\n"
                 + "FROM Product AS P\n");
 
         //Conditional joins
-        sql.append(getSpecificJoin(condition, generalCategory));
+        sql.append(getSpecificJoin(clsfCode, clsfType));
 
         //Discount join
         sql.append("LEFT JOIN ProductDiscount PD \n"
@@ -647,12 +657,12 @@ public class ProductDAO {
         );
 
         //Initialize where clause
-        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, location));
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(clsfCode, clsfID, isHomepage));
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        if (conditionID > 0) {
-            paramList.add(conditionID);
+        if (clsfID > 0) {
+            paramList.add(clsfID);
         }
 
         //Append filter
@@ -751,18 +761,22 @@ public class ProductDAO {
         return joinClause;
     }
 
-    private String getInitialWhereClause(String condition, int conditionID, String location) {
+    private String getInitialWhereClause(String condition, int conditionID, boolean isHomepage) {
         switch (condition) {
             case "category":
                 return "AND P.categoryID = ?\n";
             case "creator":
                 return "AND PC.creatorID = ?\n";
             case "genre":
-                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n" : "AND BG.genreID = ?\n";
+                return conditionID == 18 && isHomepage  
+                        ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n" 
+                        : "AND BG.genreID = ?\n";
             case "publisher":
                 return "AND B.publisherID = ?\n";
             case "series":
-                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n" : "AND M.seriesID = ?\n";
+                return conditionID == 1 && isHomepage
+                        ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n" 
+                        : "AND M.seriesID = ?\n";
             case "character":
                 return "AND M.characterID = ?\n";
             case "brand":
