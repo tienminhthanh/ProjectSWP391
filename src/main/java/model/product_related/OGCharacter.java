@@ -47,4 +47,9 @@ public class OGCharacter implements ProductClassification{
     public String getType() {
         return "merch";
     }
+
+    @Override
+    public String getCode() {
+        return "character";
+    }
 }

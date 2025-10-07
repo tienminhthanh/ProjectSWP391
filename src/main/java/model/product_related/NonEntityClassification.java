@@ -14,12 +14,20 @@ public class NonEntityClassification implements ProductClassification{
     private final int id;
     private final String name;
     private final String type;
+    private final String code;
 
-    public NonEntityClassification(String name, String type) {
+    public NonEntityClassification(String name, String type, String code) {
         this.id = 0;
         this.name = name;
         this.type = type;
+        this.code = code;
     }
+
+    public NonEntityClassification(String type, String code) {
+       this("",type,code);
+       
+    }
+    
     
 
     @Override
@@ -40,6 +48,11 @@ public class NonEntityClassification implements ProductClassification{
     @Override
     public Map<String, Object> getExtraAttributes() {
         return Map.of("isNonEntity",true);
+    }
+
+    @Override
+    public String getCode() {
+        return code;
     }
     
     

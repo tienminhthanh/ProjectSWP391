@@ -63,4 +63,9 @@ public class Genre implements ProductClassification{
     public String getType() {
         return "book";
     }
+
+    @Override
+    public String getCode() {
+        return "genre";
+    }
 }

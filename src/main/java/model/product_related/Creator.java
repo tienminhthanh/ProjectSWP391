@@ -89,6 +89,11 @@ public class Creator implements ProductClassification{
     public Map<String, Object> getExtraAttributes() {
         return Map.of("creatorRole",getCreatorRole());
     }
+
+    @Override
+    public String getCode() {
+        return "creator";
+    }
     
     
 }

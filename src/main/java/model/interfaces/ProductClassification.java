@@ -15,6 +15,7 @@ public interface ProductClassification {
     int getId();
     String getName();
     String getType();
+    String getCode();
     default Map<String,Object> getExtraAttributes(){
         return Collections.emptyMap();
     }

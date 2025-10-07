@@ -60,4 +60,9 @@ public class Category implements ProductClassification{
     public String getType() {
         return getGeneralCategory();
     }
+
+    @Override
+    public String getCode() {
+        return "category";
+    }
 }

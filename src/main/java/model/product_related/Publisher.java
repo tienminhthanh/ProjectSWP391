@@ -46,4 +46,9 @@ public class Publisher implements ProductClassification{
     public String getType() {
         return "book";
     }
+
+    @Override
+    public String getCode() {
+        return "publisher";
+    }
 }

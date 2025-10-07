@@ -47,4 +47,9 @@ public class Series implements ProductClassification{
     public String getType() {
         return "merch";
     }
+
+    @Override
+    public String getCode() {
+        return "series";
+    }
 }
