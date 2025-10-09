@@ -137,6 +137,7 @@ public class OrderDAO {
         Object[] params = {customerID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
+            
             while (rs.next()) {
                 OrderInfo orderInfo = mapResultSetToOrderInfo(rs);
 
