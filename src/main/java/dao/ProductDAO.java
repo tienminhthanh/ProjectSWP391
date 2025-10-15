@@ -571,19 +571,24 @@ public class ProductDAO {
     /**
      * Overload for filtered list
      *
-     * @param conditionID
-     * @param condition
-     * @param type
+     * @param clsfID
+     * @param clsfCode
+     * @param clsfType
      * @param filterMap
      * @return
      * @throws SQLException
      */
-    public int getProductsCount(int conditionID, Map<String, String> filterMap, String condition, String type) throws SQLException {
+    public int countClassifiedProductList(ProductClassification clsf, Map<String, String> filterMap) throws SQLException {
+        int clsfID = clsf.getId();
+        String clsfCode = clsf.getCode();
+        String clsfType = clsf.getType();
+                
+        
         StringBuilder sql = getCTETables(null);
         sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //Conditional joins
-        sql.append(getSpecificJoin(condition, type));
+        sql.append(getSpecificJoin(clsfCode, clsfType));
 
         //Discount join
         sql.append("LEFT JOIN ProductDiscount PD \n"
@@ -591,12 +596,12 @@ public class ProductDAO {
         );
 
         //Initialize where clause
-        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, false));
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(clsfCode, clsfID, false));
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        if (conditionID > 0) {
-            paramList.add(conditionID);
+        if (clsfID > 0) {
+            paramList.add(clsfID);
         }
 
         //Append filter

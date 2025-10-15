@@ -403,7 +403,7 @@ public class ProductCatalogController extends HttpServlet {
                 message.setLength(0);
                 message.append("No result found! Please deselect some filter if any.");
             } else {
-                totalProducts = productDAO.getProductsCount(id, filterMap, clsfCode, clsfType);
+                totalProducts = productDAO.countClassifiedProductList(classification, filterMap);
                 totalPages = totalProducts > 0 ? (int) Math.ceil((double) totalProducts / PAGE_SIZE) : 1;
                 request.setAttribute("productList", productList);
                 //For displaying current sort criteria
