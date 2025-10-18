@@ -21,17 +21,9 @@ import java.util.Set;
 public class ChatController extends HttpServlet {
 
     private static final int ADMIN_ID = 1;
-    private ChatDAO chatDAO;
+    private final ChatDAO chatDAO = ChatDAO.getInstance();
 //    private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
 
-    @Override
-    public void init() throws ServletException {
-        try {
-            chatDAO = new ChatDAO();
-        } catch (Exception e) {
-            throw new ServletException("Failed to initialize ChatController", e);
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

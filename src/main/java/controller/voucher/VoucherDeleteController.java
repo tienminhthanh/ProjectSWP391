@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpSession;
 public class VoucherDeleteController extends HttpServlet {
 
     private final String VOUCHER_DETAILS_PAGE = "voucherDetails";
+    private final VoucherDAO vDao = VoucherDAO.getInstance(); 
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,7 +40,6 @@ public class VoucherDeleteController extends HttpServlet {
         int id = 0;
         try {
             id = Integer.parseInt(request.getParameter("id"));
-            VoucherDAO vDao = new VoucherDAO();
 
 //            if (vDao.deleteVoucher(id)) {
 //                session.setAttribute("message", "Voucher deleted successfully!");

@@ -24,8 +24,12 @@ public class DBContext {
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-
-    public DBContext() {
+    
+    //Eager init
+    private static final DBContext instance = new DBContext(); 
+    
+    //Prevent external instantiation
+    private DBContext() {
         try {
             Class.forName(DRIVER);
             LOGGER.info("SQL Server driver loaded successfully");
@@ -34,6 +38,9 @@ public class DBContext {
             throw new RuntimeException("Database initialization failed", e);
         }
     }
+    
+    //Public access to DBContext
+    public static DBContext getInstance(){ return instance;}
 
     public Connection getConnection() throws SQLException {
         try {

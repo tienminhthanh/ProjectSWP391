@@ -21,7 +21,8 @@ import jakarta.servlet.http.HttpSession;
 public class EventDeleteController extends HttpServlet {
 
     private final String EVENT_DETAILS_PAGE = "eventDetails";
-
+private final EventDAO eDao = EventDAO.getInstance();
+private final EventProductDAO epDao = EventProductDAO.getInstance();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,8 +41,6 @@ public class EventDeleteController extends HttpServlet {
         try {
             id = Integer.parseInt(request.getParameter("id"));
             String action = request.getParameter("action");
-            EventDAO eDao = new EventDAO();
-            EventProductDAO epDao = new EventProductDAO();
             if (action.equals("delete")) {
                 if (epDao.deleteListProductInEvent(id) && eDao.deleteEvent(id)) {
                     session.setAttribute("message", "Event and Products deleted successfully!");

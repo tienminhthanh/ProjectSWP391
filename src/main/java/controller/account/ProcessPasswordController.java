@@ -14,7 +14,7 @@ import model.Account;
 
 @WebServlet(name = "ProcessPasswordServlet", urlPatterns = {"/processPassword"})
 public class ProcessPasswordController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -47,7 +47,6 @@ public class ProcessPasswordController extends HttpServlet {
 
         try {
 
-            AccountDAO accountDAO = new AccountDAO();
             boolean success = accountDAO.updatePassword(account.getUsername(), lib.hashMD5(newPassword));
             if (success) {
 

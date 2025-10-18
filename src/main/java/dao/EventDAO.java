@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.DBContext;
 
 /**
  *
@@ -20,10 +21,13 @@ import java.util.logging.Logger;
  */
 public class EventDAO {
 
-    private utils.DBContext context;
+    private static final EventDAO instance = new EventDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    public EventDAO() {
-        context = new utils.DBContext();
+    private EventDAO() { }
+
+    public static EventDAO getInstance() {
+        return instance;
     }
 
 //    public List<Event>

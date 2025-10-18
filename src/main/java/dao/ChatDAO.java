@@ -12,13 +12,15 @@ import java.util.Set;
 
 public class ChatDAO {
 
-    private DBContext context;
     private static final int ADMIN_ID = 1;
+    private static final ChatDAO instance = new ChatDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    public ChatDAO() {
-        context = new DBContext();
+    private ChatDAO() { }
+
+    public static ChatDAO getInstance() {
+        return instance;
     }
-
    
     public String getCustomerName(int customerID) throws SQLException {
         String sql = "SELECT firstName FROM [dbo].[Account] WHERE accountID = ?";

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "UpdateOrderController", urlPatterns = {"/UpdateOrderController"})
 public class UpdateOrderController extends HttpServlet {
-
+    private final OrderDAO orderDAO = OrderDAO.getInstance();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -78,7 +78,6 @@ public class UpdateOrderController extends HttpServlet {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         String selectedAddress = request.getParameter("selectedAddress");
         String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
-        OrderDAO orderDAO = new OrderDAO();
         boolean updated = false;
 
         try {

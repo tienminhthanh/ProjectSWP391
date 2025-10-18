@@ -25,7 +25,7 @@ import model.OrderInfo;
  */
 @WebServlet(name = "DeleteOrderContronller", urlPatterns = {"/DeleteOrderController"})
 public class DeleteOrderController extends HttpServlet {
-
+private final OrderDAO orderDAO = OrderDAO.getInstance();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -78,7 +78,6 @@ public class DeleteOrderController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
         String orderID = request.getParameter("id");
         OrderInfo orderInfo = new OrderInfo();
         int id = Integer.parseInt(orderID);

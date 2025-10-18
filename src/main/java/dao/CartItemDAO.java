@@ -9,10 +9,13 @@ import model.product_related.Product;
 import utils.DBContext;
 
 public class CartItemDAO {
-    private DBContext context;
+    private static final CartItemDAO instance = new CartItemDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    public CartItemDAO() {
-        context = new DBContext();
+    private CartItemDAO() { }
+
+    public static CartItemDAO getInstance() {
+        return instance;
     }
 
     public boolean addCartItem(CartItem cartItem) throws SQLException {

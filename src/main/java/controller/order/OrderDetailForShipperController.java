@@ -27,7 +27,7 @@ import model.OrderInfo;
  */
 @WebServlet(name = "OrderDetailForShipperController", urlPatterns = {"/OrderDetailForShipperController"})
 public class OrderDetailForShipperController extends HttpServlet {
-
+private final OrderDAO orderDAO = OrderDAO.getInstance();
     
 
     /**
@@ -68,7 +68,6 @@ public class OrderDetailForShipperController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
         Account customer = new Account();

@@ -31,6 +31,9 @@ public class EventDetailsController extends HttpServlet {
 
     private final String EVENT_DETAILS_ADMIN_PAGE = "eventDetailsAdmin.jsp";
     private final String EVENT_DETAILS_CUS_PAGE = "eventDetailsCus.jsp";
+private final EventDAO eDao = EventDAO.getInstance();
+private final EventProductDAO epDao = EventProductDAO.getInstance();
+private final ProductDAO pDao = ProductDAO.getInstance();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -48,8 +51,6 @@ public class EventDetailsController extends HttpServlet {
 
         String url = EVENT_DETAILS_ADMIN_PAGE;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        EventDAO eDao = new EventDAO();
-        EventProductDAO epDao = new EventProductDAO();
 
         //For redirect back to original page
         String currentURL = request.getRequestURL().toString() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
@@ -63,7 +64,6 @@ public class EventDetailsController extends HttpServlet {
                 List<EventProduct> listEventProduct = epDao.getListEventProduct(id);
 
                 List<Product> updatedProductList = new ArrayList<>();
-                ProductDAO pDao = new ProductDAO();
                 for (EventProduct ep : listEventProduct) {
                     Product product = pDao.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID
                     if (product != null) {
@@ -79,7 +79,6 @@ public class EventDetailsController extends HttpServlet {
                 request.setAttribute("dateEnd", dateEnd);
 
             } else if (path.equals("/eventDetailsCus")) {
-                ProductDAO productDAO = new ProductDAO();
 
                 String banner = request.getParameter("banner");
                 if (banner != null) {
@@ -89,7 +88,6 @@ public class EventDetailsController extends HttpServlet {
 
                 Event event = eDao.getEventByBanner(banner);
                 request.setAttribute("eventDetails", event);
-                EventProductDAO epDAO = new EventProductDAO();
 //                List<EventProduct> listEventProduct = null;
 //                if (!event.isExpiry()) {
 //                    epDAO.deleteListProductInEvent(event.getEventID());
@@ -98,7 +96,7 @@ public class EventDetailsController extends HttpServlet {
 //                }
                 List<Product> updatedProductList = new ArrayList<>();
                 for (EventProduct ep : listEventProduct) {
-                    Product product = productDAO.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID
+                    Product product = pDao.getProductById(ep.getProductID()); // Lấy thông tin sản phẩm từ productID
                     if (product != null) {
                         product.setDiscountPercentage(ep.getDiscountPercentage()); // Gán discount từ event
                         updatedProductList.add(product);

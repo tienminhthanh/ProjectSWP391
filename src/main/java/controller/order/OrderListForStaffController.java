@@ -36,7 +36,8 @@ import model.Shipper;
  */
 @WebServlet(name = "OrderListForStaffController", urlPatterns = {"/OrderListForStaffController"})
 public class OrderListForStaffController extends HttpServlet {
-
+    private final OrderDAO orderDAO = OrderDAO.getInstance();
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -81,7 +82,6 @@ public class OrderListForStaffController extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
-        OrderDAO orderDAO = new OrderDAO();
 
         List<OrderInfo> orderList = null;
         OrderInfo orderInfo = new OrderInfo();
@@ -147,9 +147,7 @@ public class OrderListForStaffController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         int shipperID = Integer.parseInt(request.getParameter("shipperID"));
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        NotificationDAO notificationDAO = new NotificationDAO();
         
-        OrderDAO orderDAO = new OrderDAO();
         if (account == null) {
             response.sendRedirect("login");
             return;

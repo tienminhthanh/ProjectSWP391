@@ -30,14 +30,9 @@ import model.product_related.Product;
 public class CartController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private CartItemDAO cartItemDAO;
-    private ProductDAO productDAO;
+    private final CartItemDAO cartItemDAO = CartItemDAO.getInstance();
+    private final ProductDAO productDAO = ProductDAO.getInstance();
 
-    @Override
-    public void init() throws ServletException {
-        cartItemDAO = new CartItemDAO();
-        productDAO = new ProductDAO();
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -48,7 +43,6 @@ public class CartController extends HttpServlet {
 
         try {
             List<CartItem> cartItems = cartItemDAO.getCartItemsByCustomer(customerID);
-            ProductDAO productDAO = new ProductDAO();
         for (CartItem item : cartItems) {
             Product product = productDAO.getProductById(item.getProductID());
             item.setProduct(product);

@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "LoginWithGoogleServlet", urlPatterns = {"/loginGoogle"})
 public class LoginWithGoogleController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     /**
      * Handles GET requests for Google authentication.
      * This method retrieves the authorization code, exchanges it for an access token,
@@ -57,7 +57,6 @@ public class LoginWithGoogleController extends HttpServlet {
         }
 
         // Check if the Google account is already registered in the database
-        AccountDAO accountDAO = new AccountDAO();
         Account existingAccount = null;
 
         try {

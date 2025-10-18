@@ -14,12 +14,7 @@ import model.Account;
 
 @WebServlet(name = "NotificationDetailController", urlPatterns = {"/notificationdetail"})
 public class NotificationDetailController extends HttpServlet {
-    private NotificationDAO notificationDAO;
-
-    @Override
-    public void init() throws ServletException {
-        notificationDAO = new NotificationDAO();
-    }
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

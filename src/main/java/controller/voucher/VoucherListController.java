@@ -22,7 +22,7 @@ import model.Voucher;
 public class VoucherListController extends HttpServlet {
 
     private final String VOUCHER_LIST_PAGE = "voucherList.jsp";
-
+private final VoucherDAO vDao = VoucherDAO.getInstance(); 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -52,7 +52,6 @@ public class VoucherListController extends HttpServlet {
         String isActiveParam = request.getParameter("isActive");
 
         try {
-            VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getVoucherByPage(searchKeyword, voucherType, isActiveParam, page, pageSize);
             int totalVouchers = vDao.getTotalVoucher(searchKeyword, voucherType, isActiveParam);
             int totalPages = (int) Math.ceil((double) totalVouchers / pageSize);

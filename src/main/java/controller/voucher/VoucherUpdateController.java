@@ -25,7 +25,7 @@ public class VoucherUpdateController extends HttpServlet {
 
     private final String VOUCHER_UPDATE_PAGE = "voucherUpdate.jsp";
     private final String VOUCHER_DETAILS_PAGE = "voucherDetails";
-
+private final VoucherDAO vDao = VoucherDAO.getInstance(); 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,7 +41,6 @@ public class VoucherUpdateController extends HttpServlet {
         String url = VOUCHER_UPDATE_PAGE;
         try {
             int id = Integer.parseInt(request.getParameter("voucherID"));
-            VoucherDAO vDao = new VoucherDAO();
             Voucher voucherDetails = vDao.getVoucherByID(id);
             request.setAttribute("VOUCHER_DETAILS", voucherDetails);
         } catch (Exception ex) {
@@ -80,7 +79,6 @@ public class VoucherUpdateController extends HttpServlet {
         String url = VOUCHER_DETAILS_PAGE;
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        VoucherDAO vDao = new VoucherDAO();
         int id = 0;
         try {
             id = Integer.parseInt(request.getParameter("voucherID"));

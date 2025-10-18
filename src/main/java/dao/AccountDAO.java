@@ -16,13 +16,14 @@ import model.Staff;
 import utils.*;
 
 public class AccountDAO {
+    private static final AccountDAO instance = new AccountDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    private DBContext context;
-
-    public AccountDAO() {
-        context = new DBContext();
+    private AccountDAO() {
+        
     }
-
+    
+    public static AccountDAO getInstance(){return instance;}
     /**
      * Cập nhật trạng thái tài khoản (kích hoạt hoặc vô hiệu hóa)
      */

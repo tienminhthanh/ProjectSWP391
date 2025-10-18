@@ -26,6 +26,7 @@ public class VoucherAddNewController extends HttpServlet {
 
     private final String VOUCHER_ADDNEW_PAGE = "voucherAddNew.jsp";
     private final String VOUCHER_LIST_PAGE = "voucherList";
+    private final VoucherDAO vDao = VoucherDAO.getInstance(); 
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -113,7 +114,6 @@ public class VoucherAddNewController extends HttpServlet {
             }
             int adminID = account.getAccountID();
 
-            VoucherDAO vDao = new VoucherDAO();
             Voucher voucher = new Voucher(name, value, quantity, minimum, dateCreated.toString(), duration, adminID, isActive, true, type, maxDiscountAmount, dateStarted);
             boolean add = vDao.addVoucher(voucher);
             if (add) {

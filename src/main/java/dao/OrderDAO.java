@@ -20,6 +20,7 @@ import model.OrderProduct;
 import model.product_related.Product;
 import model.Shipper;
 import model.Staff;
+import utils.DBContext;
 
 /**
  *
@@ -27,10 +28,13 @@ import model.Staff;
  */
 public class OrderDAO {
 
-    private utils.DBContext context;
+    private static final OrderDAO instance = new OrderDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    public OrderDAO() {
-        context = new utils.DBContext();
+    private OrderDAO() { }
+
+    public static OrderDAO getInstance() {
+        return instance;
     }
 
     public boolean insertOrderInfo(OrderInfo orderInfo) throws SQLException {
@@ -743,20 +747,22 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
         return rowsAffected > 0;
     }
 
-    public Map<String, String[]> getRatingsAndCommentsByProduct(int productID) throws SQLException {
-        String sql = "SELECT Account.firstName, Account.lastName, Order_Product.rating, Order_Product.comment\n"
-                + "FROM     Order_Product INNER JOIN\n"
-                + "                  OrderInfo ON Order_Product.orderID = OrderInfo.orderID INNER JOIN\n"
-                + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
-                + "                  Account ON Customer.customerID = Account.accountID\n"
-                + "				  where productID = ? AND (rating is not null OR comment is not null)";
-        Object[] params = {productID};
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            Map<String, String[]> reviewMap = new HashMap<>();
-            while (rs.next()) {
-                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "", rs.getString("comment")});
-            }
-            return reviewMap;
-        }
-    }
+//    public Map<String, String[]> getRatingsAndCommentsByProduct(int productID) throws SQLException {
+//        String sql = "SELECT Order_Product.productID, Order_Product.orderID, Account.firstName, Account.lastName, Order_Product.rating, Order_Product.comment\n"
+//                + "FROM     Order_Product INNER JOIN\n"
+//                + "                  OrderInfo ON Order_Product.orderID = OrderInfo.orderID INNER JOIN\n"
+//                + "                  Customer ON OrderInfo.customerID = Customer.customerID INNER JOIN\n"
+//                + "                  Account ON Customer.customerID = Account.accountID\n"
+//                + "				  where productID = ? AND (rating is not null OR comment is not null)";
+//        Object[] params = {productID};
+//        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+//            Map<String, String[]> reviewMap = new HashMap<>();
+//            while (rs.next()) {
+//                reviewMap.put(rs.getString("lastName") + " " + rs.getString("firstName"), new String[]{rs.getInt("rating") + "", rs.getString("comment")});
+//            }
+//            return reviewMap;
+//        }
+//    }
+//    
+    
 }

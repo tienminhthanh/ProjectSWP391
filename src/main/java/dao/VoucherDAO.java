@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.DBContext;
 
 /**
  *
@@ -20,10 +21,13 @@ import java.util.logging.Logger;
  */
 public class VoucherDAO {
 
-    private utils.DBContext context;
+    private static final VoucherDAO instance = new VoucherDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    public VoucherDAO() {
-        context = new utils.DBContext();
+    private VoucherDAO() { }
+
+    public static VoucherDAO getInstance() {
+        return instance;
     }
 
     public List<Voucher> getVoucherByPage(String searchKeyword, String searchType, String filtered, int page, int pageSize) {

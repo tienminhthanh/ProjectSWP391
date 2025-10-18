@@ -21,7 +21,7 @@ import model.DeliveryAddress;
 
 @WebServlet(name = "ReadAccountServlet", urlPatterns = {"/readAccount"})
 public class ReadAccountController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -32,7 +32,6 @@ public class ReadAccountController extends HttpServlet {
 
         if (account != null) {
             // Retrieve additional information based on the role
-            AccountDAO accountDAO = new AccountDAO();
             try {
 
                 account = accountDAO.getAdditionalInfo(account);
@@ -51,7 +50,7 @@ public class ReadAccountController extends HttpServlet {
     }
 
     public static void main(String[] args) {
-        AccountDAO accountDAO = new AccountDAO();
+        AccountDAO accountDAO = AccountDAO.getInstance();
 
         try {
             // Retrieve the account by username

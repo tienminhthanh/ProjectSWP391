@@ -14,7 +14,7 @@ import model.Account;
 
 @WebServlet(name = "EmailAuthenticationServlet", urlPatterns = {"/emailAuthentication"})
 public class EmailAuthenticationController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -62,7 +62,6 @@ public class EmailAuthenticationController extends HttpServlet {
                 return;
             }
 
-            AccountDAO accountDAO = new AccountDAO();
             boolean success = accountDAO.register(
                     account.getUsername(),
                     account.getPassword(),

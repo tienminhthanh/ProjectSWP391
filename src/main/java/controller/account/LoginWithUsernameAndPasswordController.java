@@ -19,15 +19,7 @@ import model.Customer;
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginWithUsernameAndPasswordController extends HttpServlet {
 
-    private AccountDAO accountDAO;
-
-    /**
-     * Initializes the servlet and creates an instance of AccountDAO.
-     */
-    @Override
-    public void init() {
-        accountDAO = new AccountDAO();
-    }
+private final AccountDAO accountDAO = AccountDAO.getInstance();
 
     /**
      * Handles GET requests by forwarding users to the login page.

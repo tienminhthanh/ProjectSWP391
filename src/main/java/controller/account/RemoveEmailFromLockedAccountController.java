@@ -17,12 +17,11 @@ import model.Account;
 
 @WebServlet(name = "RemoveEmailFromLockedAccountServlet", urlPatterns = {"/removeEmailFromLockedAccount"})
 public class RemoveEmailFromLockedAccountController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = (String) request.getSession().getAttribute("tempEmail");
-        AccountDAO accountDAO = new AccountDAO();
         try {
             Account account = accountDAO.getAccountByEmail(email);
             if (account == null) {
@@ -82,7 +81,6 @@ public class RemoveEmailFromLockedAccountController extends HttpServlet {
         }
 
         try {
-            AccountDAO accountDAO = new AccountDAO();
             Account account = accountDAO.getAccountByEmail(email);
 
             if (account != null && !account.getAccountIsActive()) {

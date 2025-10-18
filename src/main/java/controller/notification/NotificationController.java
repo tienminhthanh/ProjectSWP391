@@ -18,13 +18,7 @@ import model.Notification;
 @WebServlet(name = "NotificationController", urlPatterns = {"/notification"})
 public class NotificationController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private NotificationDAO notificationDAO;
-
-    @Override
-    public void init() {
-        notificationDAO = new NotificationDAO();
-    }
-
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

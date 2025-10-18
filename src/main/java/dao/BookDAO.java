@@ -4,48 +4,49 @@
  */
 package dao;
 
+import dao.interfaces.ISpecificProductDAO;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import model.product_related.Book;
-import model.product_related.Brand;
 import model.product_related.Category;
-import model.product_related.Merchandise;
-import model.product_related.OGCharacter;
 import model.product_related.Product;
 import model.product_related.Publisher;
-import model.product_related.Series;
 import utils.Utility;
 
 /**
  *
  * @author anhkc
  */
-public class BookDAO extends ProductDAO {
+public class BookDAO extends ProductDAO implements ISpecificProductDAO {
 
-    public BookDAO() {
-        super();
+    private static final BookDAO instance = new BookDAO();
 
+    private BookDAO() {
+    }
+
+    public static BookDAO getInstance() {
+        return instance;
     }
 
     @Override
     protected Book mapResultSetToProduct(ResultSet rs) throws SQLException {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
-        
-        LocalDate eventEndDate = tool.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
+
+        LocalDate eventEndDate = Utility.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
         int discountPercentage = 0;
         if (eventEndDate != null) {
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
 
-        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"), 0);
+        LocalDate rlsDate = Utility.getLocalDate(rs.getDate("releaseDate"), 0);
 
-        LocalDateTime lastMdfTime = tool.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
+        LocalDateTime lastMdfTime = Utility.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
 
         Publisher publisher = new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
-        return new  Book(publisher, rs.getString("bookDuration"),
+        return new Book(publisher, rs.getString("bookDuration"),
                 rs.getInt("productID"),
                 rs.getString("productName"),
                 rs.getDouble("price"),
@@ -66,8 +67,9 @@ public class BookDAO extends ProductDAO {
                 eventEndDate,
                 rs.getInt("salesRank"));
     }
-    
-    public Book getBookById(int productID, boolean isManagement) throws SQLException {
+
+    @Override
+    public Book getProductById(int productID, boolean isManagement) throws SQLException {
 
         StringBuilder sql = getCTETables("rank").append("SELECT\n"
                 + "P.*, C.categoryName, B.publisherID, B.bookDuration,\n"
@@ -95,6 +97,24 @@ public class BookDAO extends ProductDAO {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean updateProduct(Product product) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addNewProduct(Product product) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+    public static void main(String[] args) {
+        try {
+            System.out.println(BookDAO.getInstance().getProductById(5, true));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
 }

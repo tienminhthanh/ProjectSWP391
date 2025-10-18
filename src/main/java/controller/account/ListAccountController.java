@@ -20,7 +20,7 @@ import model.Account;
 public class ListAccountController extends HttpServlet {
 
     private static final int PAGE_SIZE = 5; // Hiển thị 5 tài khoản mỗi trang
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -37,7 +37,6 @@ public class ListAccountController extends HttpServlet {
             return;
         }
 
-        AccountDAO accountDAO = new AccountDAO();
         try {
             // Lấy danh sách tài khoản phân trang
             List<Account> accounts = accountDAO.getAccountsPaginated(roleFilter, page, PAGE_SIZE);

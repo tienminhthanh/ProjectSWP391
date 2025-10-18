@@ -15,7 +15,7 @@ import model.Customer;
 
 @WebServlet(name = "DeleteAccountServlet", urlPatterns = {"/deleteAccount"})
 public class DeleteAccountController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -36,7 +36,6 @@ public class DeleteAccountController extends HttpServlet {
             return;
         }
 
-        AccountDAO accountDAO = new AccountDAO();
         try {
             Account account2 = accountDAO.getAccountByUsername(username);
 

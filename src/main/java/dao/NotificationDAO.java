@@ -10,10 +10,13 @@ import model.Notification;
 import utils.DBContext;
 
 public class NotificationDAO {
-    private DBContext context;
+    private static final NotificationDAO instance = new NotificationDAO();
+    private final DBContext context = DBContext.getInstance();
 
-    public NotificationDAO() {
-        context = new DBContext();
+    private NotificationDAO() { }
+
+    public static NotificationDAO getInstance() {
+        return instance;
     }
 
     public Notification getNotificationById(int notificationID) throws SQLException {

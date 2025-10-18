@@ -13,7 +13,7 @@
 
     @WebServlet(name = "UnlockAccountServlet", urlPatterns = {"/unlockAccount"})
     public class UnlockAccountController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
         @Override
         protected void doGet(HttpServletRequest request, HttpServletResponse response)
                 throws ServletException, IOException {
@@ -22,7 +22,6 @@
             String username = request.getParameter("username");
 
             try {
-                AccountDAO accountDAO = new AccountDAO();
                 Account accountToUnlock = accountDAO.getAccountByUsername(username);
 
                 if (accountToUnlock == null) {
