@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 @WebServlet(name = "AccountStaticController", urlPatterns = {"/accountStatic"})
 public class AccountStaticController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -29,7 +29,6 @@ public class AccountStaticController extends HttpServlet {
             return;
         }
 
-        AccountDAO accountDAO = new AccountDAO();
         try {
             // Tổng số tài khoản
             int totalAccounts = accountDAO.getTotalAccounts(null);
