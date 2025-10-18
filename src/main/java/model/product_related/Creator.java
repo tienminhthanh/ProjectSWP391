@@ -1,5 +1,6 @@
 package model.product_related;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import model.interfaces.ProductClassification;
@@ -13,28 +14,45 @@ public class Creator implements ProductClassification{
     private String creatorName; // Maps to NVARCHAR(200)
     private String creatorRole; // Maps to VARCHAR(20)
     private String generalCategory;
+     private List<Product> productList;
 
     // Constructor
     public Creator() {}
 
-    public Creator(int creatorID, String creatorName, String creatorRole) {
+    public Creator(int creatorID, String creatorName, String creatorRole, String generalCategory, List<Product> productList) {
         this.creatorID = creatorID;
         this.creatorName = creatorName;
         this.creatorRole = creatorRole;
+        this.generalCategory = generalCategory;
+        this.productList = productList;
     }
-
+    
+    
+    
     public Creator(int creatorID, String creatorName, String creatorRole, String generalCategory) {
         this.creatorID = creatorID;
         this.creatorName = creatorName;
         this.creatorRole = creatorRole;
         this.generalCategory = generalCategory;
     }
+    
+    public Creator(int creatorID, String creatorName, String creatorRole) {
+        this.creatorID = creatorID;
+        this.creatorName = creatorName;
+        this.creatorRole = creatorRole;
+    }
+
 
     // Getters
     public int getCreatorID() { return creatorID; }
     public String getCreatorName() { return creatorName; }
     public String getCreatorRole() { return creatorRole; }
     public String getGeneralCategory() { return generalCategory; }
+
+    public List<Product> getProductList() {
+        return productList;
+    }
+    
 
     // Fluent Setters
     public Creator setCreatorID(int creatorID) { 
@@ -56,6 +74,12 @@ public class Creator implements ProductClassification{
         this.generalCategory = generalCategory; 
         return this; 
     }
+
+    public Creator setProductList(List<Product> productList) {
+        this.productList = productList;
+        return this; 
+    }
+    
     
     @Override
     public boolean equals(Object obj) {

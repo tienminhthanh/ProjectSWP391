@@ -1,22 +1,28 @@
 package model.product_related;
 
+import java.util.List;
 import model.interfaces.ProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Category implements ProductClassification{
+public class Category implements ProductClassification {
+
     private int categoryID; // Maps to INT
     private String categoryName; // Maps to NVARCHAR(100)
     private String generalCategory;
+    private List<Product> productList;
 
     // Constructors
-    public Category() {}
+    public Category() {
+    }
 
-    public Category(int categoryID, String categoryName) {
+    public Category(int categoryID, String categoryName, String generalCategory, List<Product> productList) {
         this.categoryID = categoryID;
         this.categoryName = categoryName;
+        this.generalCategory = generalCategory;
+        this.productList = productList;
     }
 
     public Category(int categoryID, String categoryName, String generalCategory) {
@@ -25,10 +31,27 @@ public class Category implements ProductClassification{
         this.generalCategory = generalCategory;
     }
 
+    public Category(int categoryID, String categoryName) {
+        this.categoryID = categoryID;
+        this.categoryName = categoryName;
+    }
+
     // Getters
-    public int getCategoryID() { return categoryID; }
-    public String getCategoryName() { return categoryName; }
-    public String getGeneralCategory() { return generalCategory; }
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public String getGeneralCategory() {
+        return generalCategory;
+    }
+
+    public List<Product> getProductList() {
+        return productList;
+    }
 
     // Fluent Setters
     public Category setCategoryID(int categoryID) {
@@ -45,6 +68,12 @@ public class Category implements ProductClassification{
         this.generalCategory = generalCategory;
         return this;
     }
+
+    public Category setProductList(List<Product> productList) {
+        this.productList = productList;
+        return this;
+    }
+    
 
     @Override
     public int getId() {

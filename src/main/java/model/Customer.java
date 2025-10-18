@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author Admin
@@ -12,6 +14,7 @@ public class Customer extends Account {
 
     private double totalPurchasePoints;
     private String defaultDeliveryAddress;
+    private List<OrderInfo> orderList;
     
 
     public Customer() {
@@ -42,4 +45,13 @@ public class Customer extends Account {
     public void setDefaultDeliveryAddress(String defaultDeliveryAddress) {
         this.defaultDeliveryAddress = defaultDeliveryAddress;
     }
+
+    public List<OrderInfo> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<OrderInfo> orderList) {
+        this.orderList = orderList;
+    }
+    
 }

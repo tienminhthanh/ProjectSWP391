@@ -1,5 +1,6 @@
 package model.product_related;
 
+import java.util.List;
 import java.util.Objects;
 
 import model.interfaces.ProductClassification;
@@ -8,21 +9,42 @@ import model.interfaces.ProductClassification;
  *
  * @author anhkc
  */
-public class Genre implements ProductClassification{
+public class Genre implements ProductClassification {
+
     private int genreID;
     private String genreName;
+    private List<Book> bookList;
 
     // Constructors
-    public Genre() {}
+    public Genre() {
+    }
 
+    public Genre(int genreID, String genreName, List<Book> bookList) {
+        this.genreID = genreID;
+        this.genreName = genreName;
+        this.bookList = bookList;
+    }
+    
+    
+    
     public Genre(int genreID, String genreName) {
         this.genreID = genreID;
         this.genreName = genreName;
     }
 
     // Getters
-    public int getGenreID() { return genreID; }
-    public String getGenreName() { return genreName; }
+    public int getGenreID() {
+        return genreID;
+    }
+
+    public String getGenreName() {
+        return genreName;
+    }
+
+    public List<Book> getBookList() {
+        return bookList;
+    }
+    
 
     // Fluent Setters
     public Genre setGenreID(int genreID) {
@@ -34,12 +56,21 @@ public class Genre implements ProductClassification{
         this.genreName = genreName;
         return this;
     }
+
+    public Genre setBookList(List<Book> bookList) {
+        this.bookList = bookList;
+        return this;
+    }
     
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Genre)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Genre)) {
+            return false;
+        }
         Genre other = (Genre) obj;
         return this.genreID == other.genreID; // Compare by genreID
     }

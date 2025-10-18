@@ -2,6 +2,8 @@ package model.product_related;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import model.OrderProduct;
 
 /**
  *
@@ -18,15 +20,10 @@ public class Merchandise extends Product {
 
     // Constructors
     public Merchandise() {}
-
-    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, 
-                       int productID, String productName, double price, int stockCount, Category specificCategory, 
-                       String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, 
-                       int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, 
-                       boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, 
-              averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, 
-              discountPercentage, eventEndDate);
+    
+    //For view details
+    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate, int salesRank) {    
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, discountPercentage, eventEndDate, salesRank);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -35,13 +32,9 @@ public class Merchandise extends Product {
         this.material = material;
     }
 
-    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, 
-                       int productID, String productName, double price, int stockCount, Category specificCategory, 
-                       String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, 
-                       int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, 
-                       boolean isActive, String imageURL) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, 
-              averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
+    //For management
+    public Merchandise(Series series, OGCharacter character, Brand brand, String size, String scaleLevel, String material, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, List<Creator> creatorList) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, creatorList);
         this.series = series;
         this.character = character;
         this.brand = brand;
@@ -50,6 +43,7 @@ public class Merchandise extends Product {
         this.material = material;
     }
 
+    
     // Getters
     public Series getSeries() { return series; }
     public OGCharacter getCharacter() { return character; }

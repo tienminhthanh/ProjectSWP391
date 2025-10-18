@@ -4,8 +4,12 @@
  */
 package model.product_related;
 
+import dao.BookDAO;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import model.OrderProduct;
 
 
 /**
@@ -16,34 +20,33 @@ public class Book extends Product {
 
     private Publisher publisher;
     private String duration;
+    private List<Genre> genreList;
+    
 
     public Book() {
     }
     
-    //Details, Ranking
+    // For view details
     public Book(Publisher publisher, String duration, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate, int salesRank) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, discountPercentage, eventEndDate,salesRank);
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, discountPercentage, eventEndDate, salesRank);
         this.publisher = publisher;
         this.duration = duration;
     }
     
-    //List,Search,Filter,Sort
-    public Book(Publisher publisher, String duration, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, discountPercentage, eventEndDate);
-        this.publisher = publisher;
-        this.duration = duration;
-    }
     
-    //Management
-    public Book(Publisher publisher, String duration, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
-        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL);
+    
+    //For management
+    public Book(Publisher publisher, String duration, List<Genre> genreList, int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, List<Creator> creatorList) {
+        super(productID, productName, price, stockCount, specificCategory, description, releaseDate, lastModifiedTime, averageRating, numberOfRating, specialFilter, adminID, keywords, generalCategory, isActive, imageURL, creatorList);
         this.publisher = publisher;
         this.duration = duration;
+        this.genreList = genreList;
     }
 
-   
     
-
+    
+    
+    //Getters
     public Publisher getPublisher() {
         return publisher;
     }
@@ -51,6 +54,12 @@ public class Book extends Product {
     public String getDuration() {
         return duration;
     }
+
+    public List<Genre> getGenreList() {
+        return genreList;
+    }
+    
+    
         
   // Fluent Setters
     public Book setPublisher(Publisher publisher) {
@@ -62,5 +71,12 @@ public class Book extends Product {
         this.duration = duration;
         return this;
     }
+
+    public Book setGenreList(List<Genre> genreList) {
+        this.genreList = genreList;
+        return this;
+    }
+    
+    
 
 }
