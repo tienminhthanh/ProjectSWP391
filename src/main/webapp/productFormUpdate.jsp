@@ -84,13 +84,13 @@
         </div>
 
         <!--Creators-->
-        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+        <c:forEach var="cre" items="${product.creatorList}" varStatus="loopStatus">
             <input type="hidden" name="associatedCreatorID" value="${cre.creatorID}">
         </c:forEach>
         <div class="creator-wrapper">
             <div class="creator-section">
                 <c:choose>
-                    <c:when test="${empty creatorList}">
+                    <c:when test="${empty product.creatorList}">
                         <div class="creator-group" id="cre-gr-0">
                             <label for="creatorNameBook0">Creator Name:</label>
                             <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100" required>
@@ -104,7 +104,7 @@
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <c:forEach var="cre" items="${creatorList}" varStatus="loopStatus">
+                        <c:forEach var="cre" items="${product.creatorList}" varStatus="loopStatus">
                             <div class="creator-group" id="cre-gr-${loopStatus.index}">
                                 <label for="creatorNameBook${loopStatus.index}">Creator Name:</label>
                                 <input type="text" id="creatorNameBook${loopStatus.index}" name="creatorName" maxlength="100" required value="${cre.creatorName}">
@@ -137,7 +137,7 @@
 
                     <div class="pair-group checkbox-group" id="genreContainer">
                         <c:forEach var="genEntry" items="${applicationScope.genres}" varStatus="loopStatus">
-                            <c:set var="isChecked" value="${not empty genreList and genreList.contains(genEntry.key)}" />
+                            <c:set var="isChecked" value="${not empty product.genreList and product.genreList.contains(genEntry.key)}" />
                             <c:choose>
                                 <c:when test="${isChecked}">
                                     <input type="hidden" name="associatedGenreID" value="${genEntry.key.genreID}">
