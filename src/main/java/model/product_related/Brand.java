@@ -1,12 +1,12 @@
 package model.product_related;
 
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Brand implements ProductClassification{
+public class Brand implements IProductClassification{
     private int brandID;
     private String brandName;
 

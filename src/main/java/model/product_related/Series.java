@@ -1,12 +1,12 @@
 package model.product_related;
 
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Series implements ProductClassification{
+public class Series implements IProductClassification{
     private int seriesID;
     private String seriesName;
 

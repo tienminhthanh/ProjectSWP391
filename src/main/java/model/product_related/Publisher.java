@@ -1,12 +1,12 @@
 package model.product_related;
 
 import java.util.List;
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 /**
  *
  * @author anhkc
  */
-public class Publisher implements ProductClassification{
+public class Publisher implements IProductClassification{
     private int publisherID;
     private String publisherName;
     private List<Book> bookList;

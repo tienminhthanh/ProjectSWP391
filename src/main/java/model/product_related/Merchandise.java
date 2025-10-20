@@ -1,9 +1,18 @@
 package model.product_related;
 
+import service.factory.ProductDetailsFactory;
+import service.MerchDetailsService;
+import dao.MerchDAO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import model.OrderProduct;
+import model.product_related.Brand;
+import model.product_related.Category;
+import model.product_related.Creator;
+import model.product_related.OGCharacter;
+import model.product_related.Product;
+import model.product_related.Series;
 
 /**
  *
@@ -17,7 +26,7 @@ public class Merchandise extends Product {
     private String size;
     private String scaleLevel;
     private String material;
-
+    
     // Constructors
     public Merchandise() {}
     
@@ -81,5 +90,10 @@ public class Merchandise extends Product {
     public Merchandise setMaterial(String material) {
         this.material = material;
         return this;
+    }
+    
+    public static void main(String[] args) {
+//        ProductDetailsFactory.register("merch", (id,isManagement) -> MerchDAO.getInstance().getProductById(id, isManagement));
+//        ProductDetailsFactory.registerExtraAttributes("merch", (product,id) -> MerchDetailsService.getInstance().loadExtraAttributes(product,id));
     }
 }

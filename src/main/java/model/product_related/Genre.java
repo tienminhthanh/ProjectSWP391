@@ -3,13 +3,13 @@ package model.product_related;
 import java.util.List;
 import java.util.Objects;
 
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Genre implements ProductClassification {
+public class Genre implements IProductClassification {
 
     private int genreID;
     private String genreName;
@@ -99,4 +99,11 @@ public class Genre implements ProductClassification {
     public String getCode() {
         return "genre";
     }
+
+    @Override
+    public String toString() {
+        return "Genre{" + "genreID=" + genreID + ", genreName=" + genreName + ", bookList=" + bookList + '}';
+    }
+    
+    
 }

@@ -5,11 +5,18 @@
 package model.product_related;
 
 import dao.BookDAO;
+import service.BookDetailsService;
+import service.factory.ProductDetailsFactory;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import model.OrderProduct;
+import model.product_related.Category;
+import model.product_related.Creator;
+import model.product_related.Genre;
+import model.product_related.Product;
+import model.product_related.Publisher;
 
 
 /**
@@ -78,5 +85,8 @@ public class Book extends Product {
     }
     
     
-
+    public static void main(String[] args) {
+//        ProductDetailsFactory.register("book", (id,isMangement) -> BookDAO.getInstance().getProductById(id, isMangement));
+//        ProductDetailsFactory.registerExtraAttributes("book", (product,id) -> BookDetailsService.getInstance().loadExtraAttributes(product, id));
+    }
 }

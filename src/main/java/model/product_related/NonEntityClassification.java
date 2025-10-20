@@ -5,12 +5,12 @@
 package model.product_related;
 
 import java.util.Map;
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 /**
  *
  * @author anhkc
  */
-public class NonEntityClassification implements ProductClassification{
+public class NonEntityClassification implements IProductClassification{
     private final int id;
     private final String name;
     private final String type;

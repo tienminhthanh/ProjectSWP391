@@ -1,12 +1,12 @@
 package model.product_related;
 
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class OGCharacter implements ProductClassification{
+public class OGCharacter implements IProductClassification{
     private int characterID;
     private String characterName;
 

@@ -3,13 +3,13 @@ package model.product_related;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Creator implements ProductClassification{
+public class Creator implements IProductClassification{
     private int creatorID; // Maps to INT
     private String creatorName; // Maps to NVARCHAR(200)
     private String creatorRole; // Maps to VARCHAR(20)
@@ -118,6 +118,13 @@ public class Creator implements ProductClassification{
     public String getCode() {
         return "creator";
     }
+
+    @Override
+    public String toString() {
+        return "Creator{" + "creatorID=" + creatorID + ", creatorName=" + creatorName + ", creatorRole=" + creatorRole + ", generalCategory=" + generalCategory + ", productList=" + productList + '}';
+    }
+    
+    
     
     
 }

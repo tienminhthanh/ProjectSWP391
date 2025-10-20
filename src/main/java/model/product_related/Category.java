@@ -1,13 +1,13 @@
 package model.product_related;
 
 import java.util.List;
-import model.interfaces.ProductClassification;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Category implements ProductClassification {
+public class Category implements IProductClassification {
 
     private int categoryID; // Maps to INT
     private String categoryName; // Maps to NVARCHAR(100)
