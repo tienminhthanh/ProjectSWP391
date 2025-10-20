@@ -3,8 +3,10 @@ package listener;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import java.util.logging.Level;
 import utils.LoggingConfig;
 import java.util.logging.Logger;
+import utils.ProductSubTypeInitializer;
 
 @WebListener
 public class AppStartupListener implements ServletContextListener {
@@ -13,6 +15,11 @@ public class AppStartupListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         LOGGER.info("Application started. Logging initialized.");
+        try {
+            ProductSubTypeInitializer.init();
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "An error occured during product type initilization: {0}", e.toString());
+        }
     }
 
     @Override
