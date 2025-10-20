@@ -10,10 +10,13 @@ import model.Notification;
 import utils.DBContext;
 
 public class NotificationDAO {
-    private static final NotificationDAO instance = new NotificationDAO();
-    private final DBContext context = DBContext.getInstance();
 
-    private NotificationDAO() { }
+    private static final NotificationDAO instance = new NotificationDAO();
+    private final DBContext context;
+
+    private NotificationDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static NotificationDAO getInstance() {
         return instance;

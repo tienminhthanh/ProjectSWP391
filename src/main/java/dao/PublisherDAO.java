@@ -10,9 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Publisher;
 import utils.DBContext;
+import model.interfaces.IProductClassification;
 
 /**
  *
@@ -21,16 +21,18 @@ import utils.DBContext;
 public class PublisherDAO implements IClassificationEntityDAO {
 
     private static final PublisherDAO instance = new PublisherDAO();
-    private final DBContext context = DBContext.getInstance();
+    private final DBContext context;
 
-    private PublisherDAO() { }
+    private PublisherDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static PublisherDAO getInstance() {
         return instance;
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT \n"
                 + "    p.publisherID, \n"
                 + "    p.publisherName, \n"
@@ -41,7 +43,7 @@ public class PublisherDAO implements IClassificationEntityDAO {
                 + "GROUP BY p.publisherID, p.publisherName;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> publisherMap = new HashMap<>();
+            Map<IProductClassification, Integer> publisherMap = new HashMap<>();
             while (rs.next()) {
                 publisherMap.put(new Publisher(rs.getInt("publisherID"), rs.getString("publisherName")), rs.getInt("productCount"));
             }

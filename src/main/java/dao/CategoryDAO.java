@@ -9,10 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Category;
 import utils.DBContext;
 import dao.interfaces.IClassificationEntityDAO;
+import model.interfaces.IProductClassification;
 
 /**
  *
@@ -20,17 +20,19 @@ import dao.interfaces.IClassificationEntityDAO;
  */
 public class CategoryDAO implements IClassificationEntityDAO {
 
-     private static final CategoryDAO instance = new CategoryDAO();
-    private final DBContext context = DBContext.getInstance();
+    private static final CategoryDAO instance = new CategoryDAO();
+    private final DBContext context;
 
-    private CategoryDAO() { }
+    private CategoryDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static CategoryDAO getInstance() {
         return instance;
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT c.*, COUNT(p.productID) AS productCount  \n"
                 + "FROM Category AS c  \n"
                 + "LEFT JOIN Product AS p  \n"
@@ -38,14 +40,13 @@ public class CategoryDAO implements IClassificationEntityDAO {
                 + "GROUP BY c.categoryID, c.categoryName, c.generalCategory;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> categoryMap = new HashMap<>();
+            Map<IProductClassification, Integer> categoryMap = new HashMap<>();
             while (rs.next()) {
                 categoryMap.put(new Category(rs.getInt("categoryID"), rs.getString("categoryName"), rs.getString("generalCategory")), rs.getInt("productCount"));
             }
             return categoryMap;
         }
     }
-
 
     @Override
     public Category getById(int id) throws SQLException {

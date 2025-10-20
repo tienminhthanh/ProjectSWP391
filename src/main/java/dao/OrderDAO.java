@@ -29,9 +29,11 @@ import utils.DBContext;
 public class OrderDAO {
 
     private static final OrderDAO instance = new OrderDAO();
-    private final DBContext context = DBContext.getInstance();
+    private final DBContext context;
 
-    private OrderDAO() { }
+    private OrderDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static OrderDAO getInstance() {
         return instance;
@@ -67,8 +69,6 @@ public class OrderDAO {
         for (OrderProduct orderProduct : orderInfo.getOrderProductList()) {
             updateProductStock(orderProduct.getProductID(), orderProduct.getQuantity());
         }
-
-    
 
         deleteCartItemsByCustomerID(orderInfo.getCustomerID());
         return rowsAffected > 0;
@@ -141,7 +141,7 @@ public class OrderDAO {
         Object[] params = {customerID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
-            
+
             while (rs.next()) {
                 OrderInfo orderInfo = mapResultSetToOrderInfo(rs);
 
@@ -206,8 +206,7 @@ public class OrderDAO {
         }
     }
 
-
-public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
+    public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
         String sql = "SELECT oi.*, a.*, ad.*, s.*, sp.*, c.*\n"
                 + "FROM OrderInfo oi\n"
                 + "LEFT JOIN Account a ON a.accountID IN (oi.adminID, oi.staffID, oi.shipperID, oi.customerID)\n"
@@ -261,7 +260,6 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
         }
     }
 
-
     public Account getShipperByOrderID(int orderID) throws SQLException {
         String sql = "SELECT a.*, s.* "
                 + "FROM Account a "
@@ -276,8 +274,6 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
         }
     }
 
-
-
     //choose maybe fix lai
     public Account getAccountByShipperIDAndOrderID(int orderID, int shipperID) throws SQLException {
         String sql = "SELECT "
@@ -289,7 +285,7 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
                 + "JOIN OrderInfo o ON c.customerID = o.customerID "
                 + "WHERE o.shipperID = ? AND o.orderID = ?;";
 
-    Object[] params = {shipperID, orderID};
+        Object[] params = {shipperID, orderID};
 
         try ( ResultSet rs = context.exeQuery(sql, params)) {
             if (rs.next()) {
@@ -306,10 +302,9 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
                 return acc;
             }
         }
-    
-    return null;
-}
 
+        return null;
+    }
 
     //lay gia tri vocher de dua vao orderdeatil
     //choose
@@ -697,7 +692,7 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
     public boolean updateRatingForProduct(int orderID, int productID, int rate) throws SQLException {
         String sql = "UPDATE Order_Product SET rating =  ? WHERE productID = ? and orderID = ?";
         Object[] params = {rate, productID, orderID};
-        int rowsAffected = context.exeNonQuery(sql, params);    
+        int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
 // review
@@ -764,5 +759,4 @@ public List<Account> getOrderHandlerByOrderID(int orderID) throws SQLException {
 //        }
 //    }
 //    
-    
 }

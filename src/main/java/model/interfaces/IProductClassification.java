@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author anhkc
  */
-public interface ProductClassification {
+public interface IProductClassification {
     int getId();
     String getName();
     String getType();

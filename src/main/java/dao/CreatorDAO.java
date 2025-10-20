@@ -4,7 +4,7 @@
  */
 package dao;
 
-import dao.interfaces.ICreatorDAO;
+import dao.interfaces.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,34 +12,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Creator;
 import utils.DBContext;
 import utils.Utility;
-import dao.interfaces.IClassificationEntityDAO;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class CreatorDAO implements ICreatorDAO, IClassificationEntityDAO {
+public class CreatorDAO implements IProductExtraAttributesDAO<Creator, Integer>, IClassificationEntityDAO {
 
-  private static final CreatorDAO instance = new CreatorDAO();
-    private final DBContext context = DBContext.getInstance();
+    private static final CreatorDAO instance = new CreatorDAO();
+    private final DBContext context;
 
-    private CreatorDAO() { }
+    private CreatorDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static CreatorDAO getInstance() {
         return instance;
     }
 
     @Override
-    public List<Creator> getCreatorsByProductID(int productID) throws SQLException {
+    public List<Creator> getExtraAttributesByProductID(Integer productID) throws SQLException {
         String sql = "SELECT PC.creatorID, C.creatorName, C.creatorRole\n"
                 + "FROM Creator AS C\n"
                 + "JOIN Product_Creator AS PC ON C.creatorID = PC.creatorID\n"
                 + "WHERE PC.productID = ?";
-        Object[] params = {productID};
+        int id = productID;
+
+        Object[] params = {id};
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             List<Creator> creatorList = new ArrayList<>();
             while (rs.next()) {
@@ -50,7 +53,7 @@ public class CreatorDAO implements ICreatorDAO, IClassificationEntityDAO {
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT \n"
                 + "    c.creatorID, \n"
                 + "    c.creatorName, \n"
@@ -66,7 +69,7 @@ public class CreatorDAO implements ICreatorDAO, IClassificationEntityDAO {
                 + "GROUP BY c.creatorID, c.creatorName, c.creatorRole, p.generalCategory";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> creatorMap = new HashMap<>();
+            Map<IProductClassification, Integer> creatorMap = new HashMap<>();
             while (rs.next()) {
 
                 creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
@@ -77,7 +80,6 @@ public class CreatorDAO implements ICreatorDAO, IClassificationEntityDAO {
         }
 
     }
-
 
     @Override
     public Creator getById(int id) throws SQLException {

@@ -17,10 +17,10 @@ import utils.*;
 
 public class AccountDAO {
     private static final AccountDAO instance = new AccountDAO();
-    private final DBContext context = DBContext.getInstance();
+    private final DBContext context;
 
     private AccountDAO() {
-        
+        context = DBContext.getInstance();
     }
     
     public static AccountDAO getInstance(){return instance;}

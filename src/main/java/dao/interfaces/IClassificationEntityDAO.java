@@ -6,8 +6,8 @@ package dao.interfaces;
 
 import java.sql.SQLException;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Brand;
+import model.interfaces.IProductClassification;
 
 /**
  *
@@ -15,8 +15,8 @@ import model.product_related.Brand;
  */
 public interface IClassificationEntityDAO {
 
-    Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException;
-    ProductClassification getById(int id) throws SQLException;
+    Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException;
+    IProductClassification getById(int id) throws SQLException;
 
     
 }

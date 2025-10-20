@@ -9,17 +9,20 @@ import model.product_related.Product;
 import utils.DBContext;
 
 public class CartItemDAO {
-    private static final CartItemDAO instance = new CartItemDAO();
-    private final DBContext context = DBContext.getInstance();
 
-    private CartItemDAO() { }
+    private static final CartItemDAO instance = new CartItemDAO();
+    private final DBContext context;
+
+    private CartItemDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static CartItemDAO getInstance() {
         return instance;
     }
 
     public boolean addCartItem(CartItem cartItem) throws SQLException {
-      
+
         String sql = "INSERT INTO CartItem (customerID, productID, cartItemQuantity, cartItemPrice) VALUES (?, ?, ?, ?)";
         Object[] params = {cartItem.getCustomerID(), cartItem.getProductID(), cartItem.getQuantity(), cartItem.getPriceWithQuantity()};
         int rowsAffected = context.exeNonQuery(sql, params);
@@ -64,7 +67,7 @@ public class CartItemDAO {
     public CartItem getCartItemByCustomerAndProduct(int customerID, int productID) throws SQLException {
         String sql = "SELECT * FROM CartItem JOIN Product ON CartItem.productID = Product.productID WHERE customerID = ? AND CartItem.productID = ?";
         Object[] params = {customerID, productID};
-        try (ResultSet rs = context.exeQuery(sql, params)) {
+        try ( ResultSet rs = context.exeQuery(sql, params)) {
             if (rs.next()) {
                 return mapResultSetToCartItem(rs);
             }

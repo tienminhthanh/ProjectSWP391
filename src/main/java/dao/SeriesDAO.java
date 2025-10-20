@@ -9,10 +9,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Series;
 import utils.DBContext;
 import dao.interfaces.IClassificationEntityDAO;
+import model.interfaces.IProductClassification;
 
 /**
  *
@@ -21,16 +21,18 @@ import dao.interfaces.IClassificationEntityDAO;
 public class SeriesDAO implements IClassificationEntityDAO {
 
     private static final SeriesDAO instance = new SeriesDAO();
-    private final DBContext context = DBContext.getInstance();
+    private final DBContext context;
 
-    private SeriesDAO() { }
+    private SeriesDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static SeriesDAO getInstance() {
         return instance;
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT \n"
                 + "    s.seriesID, \n"
                 + "    s.seriesName, \n"
@@ -41,7 +43,7 @@ public class SeriesDAO implements IClassificationEntityDAO {
                 + "GROUP BY s.seriesID, s.seriesName";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> seriesMap = new HashMap<>();
+            Map<IProductClassification, Integer> seriesMap = new HashMap<>();
             while (rs.next()) {
                 seriesMap.put(new Series(rs.getInt("seriesID"), rs.getString("seriesName")), rs.getInt("productCount"));
             }

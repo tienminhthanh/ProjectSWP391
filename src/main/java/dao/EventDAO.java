@@ -22,9 +22,11 @@ import utils.DBContext;
 public class EventDAO {
 
     private static final EventDAO instance = new EventDAO();
-    private final DBContext context = DBContext.getInstance();
+    private final DBContext context;
 
-    private EventDAO() { }
+    private EventDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static EventDAO getInstance() {
         return instance;
@@ -270,8 +272,6 @@ public class EventDAO {
         }
         return null;
     }
-
-   
 
     public List<String> getBannerEvent() {
         String sql = "SELECT e.[banner]\n"

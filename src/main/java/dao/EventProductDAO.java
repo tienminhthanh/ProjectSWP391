@@ -26,10 +26,12 @@ import utils.DBContext;
  */
 public class EventProductDAO {
 
-     private static final EventProductDAO instance = new EventProductDAO();
-    private final DBContext context = DBContext.getInstance();
+    private static final EventProductDAO instance = new EventProductDAO();
+    private final DBContext context;
 
-    private EventProductDAO() { }
+    private EventProductDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static EventProductDAO getInstance() {
         return instance;

@@ -14,9 +14,11 @@ import utils.DBContext;
 public class DashboardDAO {
 
     private static final DashboardDAO instance = new DashboardDAO();
-    private final DBContext context = DBContext.getInstance();
+    private final DBContext context;
 
-    private DashboardDAO() { }
+    private DashboardDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static DashboardDAO getInstance() {
         return instance;

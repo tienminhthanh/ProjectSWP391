@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Brand;
 import model.product_related.Genre;
 import model.product_related.OGCharacter;
@@ -17,6 +16,7 @@ import model.product_related.Publisher;
 import model.product_related.Series;
 import utils.DBContext;
 import dao.interfaces.IClassificationEntityDAO;
+import model.interfaces.IProductClassification;
 
 /**
  *
@@ -24,17 +24,19 @@ import dao.interfaces.IClassificationEntityDAO;
  */
 public class BrandDAO implements IClassificationEntityDAO {
 
-   private static final BrandDAO instance = new BrandDAO();
-    private final DBContext context = DBContext.getInstance();
+    private static final BrandDAO instance = new BrandDAO();
+    private final DBContext context;
 
-    private BrandDAO() { }
+    private BrandDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static BrandDAO getInstance() {
         return instance;
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT \n"
                 + "    br.brandID, \n"
                 + "    br.brandName, \n"
@@ -45,7 +47,7 @@ public class BrandDAO implements IClassificationEntityDAO {
                 + "GROUP BY br.brandID, br.brandName";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> brandMap = new HashMap<>();
+            Map<IProductClassification, Integer> brandMap = new HashMap<>();
             while (rs.next()) {
                 brandMap.put(new Brand(rs.getInt("brandID"), rs.getString("brandName")), rs.getInt("productCount"));
             }

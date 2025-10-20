@@ -4,8 +4,7 @@
  */
 package dao;
 
-import dao.interfaces.IClassificationEntityDAO;
-import dao.interfaces.IGenreDAO;
+import dao.interfaces.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,32 +12,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.Genre;
 import utils.DBContext;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class GenreDAO implements IGenreDAO, IClassificationEntityDAO {
+public class GenreDAO implements IProductExtraAttributesDAO<Genre, Integer>, IClassificationEntityDAO {
 
-   private static final GenreDAO instance = new GenreDAO();
-    private final DBContext context = DBContext.getInstance();
+    private static final GenreDAO instance = new GenreDAO();
+    private final DBContext context;
 
-    private GenreDAO() { }
+    private GenreDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static GenreDAO getInstance() {
         return instance;
     }
 
     @Override
-    public List<Genre> getGenresByBookID(int bookID) throws SQLException {
+    public List<Genre> getExtraAttributesByProductID(Integer bookID) throws SQLException {
         String sql = "SELECT BG.genreID, G.genreName\n"
                 + "FROM Book_Genre AS BG\n"
                 + "JOIN Genre AS G ON BG.genreID = G.genreID\n"
                 + "WHERE BG.bookID = ?";
-        Object[] params = {bookID};
+        int id = bookID;
+        Object[] params = {id};
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             List<Genre> genreList = new ArrayList<>();
@@ -50,7 +52,7 @@ public class GenreDAO implements IGenreDAO, IClassificationEntityDAO {
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT \n"
                 + "    g.genreID, \n"
                 + "    g.genreName, \n"
@@ -62,7 +64,7 @@ public class GenreDAO implements IGenreDAO, IClassificationEntityDAO {
                 + "GROUP BY g.genreID, g.genreName;";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> genreMap = new HashMap<>();
+            Map<IProductClassification, Integer> genreMap = new HashMap<>();
             while (rs.next()) {
                 genreMap.put(new Genre(rs.getInt("genreID"), rs.getString("genreName")), rs.getInt("productCount"));
             }
@@ -70,7 +72,6 @@ public class GenreDAO implements IGenreDAO, IClassificationEntityDAO {
         }
 
     }
-
 
     @Override
     public Genre getById(int id) throws SQLException {

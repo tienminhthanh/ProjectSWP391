@@ -10,9 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import model.interfaces.ProductClassification;
 import model.product_related.OGCharacter;
 import utils.DBContext;
+import model.interfaces.IProductClassification;
 
 /**
  *
@@ -20,17 +20,19 @@ import utils.DBContext;
  */
 public class CharacterDAO implements IClassificationEntityDAO {
 
-   private static final CharacterDAO instance = new CharacterDAO();
-    private final DBContext context = DBContext.getInstance();
+    private static final CharacterDAO instance = new CharacterDAO();
+    private final DBContext context;
 
-    private CharacterDAO() { }
+    private CharacterDAO() {
+        context = DBContext.getInstance();
+    }
 
     public static CharacterDAO getInstance() {
         return instance;
     }
 
     @Override
-    public Map<ProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
+    public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
         String sql = "SELECT \n"
                 + "    ch.characterID, \n"
                 + "    ch.characterName, \n"
@@ -41,7 +43,7 @@ public class CharacterDAO implements IClassificationEntityDAO {
                 + "GROUP BY ch.characterID, ch.characterName";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<ProductClassification, Integer> characterMap = new HashMap<>();
+            Map<IProductClassification, Integer> characterMap = new HashMap<>();
             while (rs.next()) {
                 characterMap.put(new OGCharacter(rs.getInt("characterID"), rs.getString("characterName")), rs.getInt("productCount"));
             }
