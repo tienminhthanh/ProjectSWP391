@@ -8,6 +8,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -25,11 +28,14 @@ import java.util.stream.Collectors;
  * @author anhkc
  */
 public final class Utility {
-    private Utility(){};
+
+    private Utility() {
+    }
+    ;
 
     private static final Map<String, Set<String>> APPLICABLE_FILTERS = Map.of(
-            "merch", Set.of("ftSrs", "ftBrn", "ftChr"),
-            "book", Set.of("ftGnr", "ftPbl")
+            "merch", Set.of("ftSrs", "ftBrn", "ftChr","ftCrt","ftCtg","ftPrc"),
+            "book", Set.of("ftGnr", "ftPbl","ftCrt","ftCtg","ftPrc")
     );
     private static final Set<String> SINGLE_FILTERS = Set.of("ftCtg", "ftPbl", "ftSrs", "ftBrn", "ftChr");
 
@@ -87,7 +93,7 @@ public final class Utility {
                 }
 
                 if (!applicableFilterSet.contains(name)) {
-                    message.append("Cannot apply this filter to")
+                    message.append("Cannot apply this filter to ")
                             .append(getDisplayTextBasedOnType(clsfType))
                             .append("!");
                     continue;
@@ -210,8 +216,81 @@ public final class Utility {
         return attrName;
     }
 
+    public static String generateSHA256Hash(String input) {
+        try {
+            // 1. Get the MessageDigest instance for SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // 2. Compute the hash
+            // The input string is first converted to bytes using UTF-8 encoding
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+
+            // 3. Convert the byte array to a hexadecimal string
+            StringBuilder hexString = new StringBuilder(2 * hash.length);
+            for (byte b : hash) {
+                // Convert byte to hex, ensuring it's two characters long
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            // This should not happen in a standard Java environment
+            throw new RuntimeException("SHA-256 algorithm not available.", e);
+        }
+    }
+
+    public static String maskName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "";
+        }
+
+        // 1. Split the name by one or more spaces ("\\s+")
+        // This handles names with single or multiple spaces between words.
+        String[] parts = fullName.trim().split("\\s+");
+
+        // Check for valid name structure (at least two parts for masking)
+        if (parts.length < 2) {
+            // If it's just "Tran" or "Teo", return the name as is or just the first initial
+            return parts[0];
+        }
+
+        // 2. Identify the parts:
+        // The last part is conventionally the First Name (Teo)
+        // The first part is the Last Name (Tran)
+        // Everything in between is Middle Name(s) (Van)
+        String lastName = parts[0];
+
+        // Use a StringBuilder for efficient string concatenation
+        StringBuilder maskedName = new StringBuilder();
+
+        // 3. Append the Last Name (First part)
+        // We assume the first word is the family/last name you want fully displayed
+        maskedName.append(lastName);
+
+        // 4. Iterate through the Middle and First Names (parts[1] to parts[length-1])
+        for (int i = 1; i < parts.length; i++) {
+            String namePart = parts[i];
+            if (!namePart.isEmpty()) {
+                // Append a space before the initial
+                maskedName.append(" ");
+
+                // Append the first character of the middle/first name, capitalized, and a period
+                // Example: 'V' for Van, 'T' for Teo
+                maskedName.append(Character.toUpperCase(namePart.charAt(0)));
+                maskedName.append(".");
+            }
+        }
+
+        return maskedName.toString();
+    }
+
     public static void main(String[] args) {
-//        Utility main = new Utility();
+        System.out.println(maskName("Tien Minh Thanh Thanh Minh Tien"));
 
     }
 }
