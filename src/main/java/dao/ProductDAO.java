@@ -33,23 +33,26 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 import model.*;
-import model.interfaces.ProductClassification;
 import utils.*;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
 public class ProductDAO implements IGeneralProductDAO {
-    
+
     private static final ProductDAO instance = new ProductDAO();
-    protected final DBContext context = DBContext.getInstance();
+    protected final DBContext context;
 
     //Normal run
     protected ProductDAO() {
+        context = DBContext.getInstance();
     }
 
-    public static ProductDAO getInstance(){return instance;}
+    public static ProductDAO getInstance() {
+        return instance;
+    }
 
     /**
      * For add, update cart
@@ -111,7 +114,6 @@ public class ProductDAO implements IGeneralProductDAO {
         }
         return null;
     }
-
 
 //    /**
 //     * Caller method for getBookById and getMerchById
@@ -328,118 +330,28 @@ public class ProductDAO implements IGeneralProductDAO {
 
     }
 
-    /**
-     * When user does not enter anything in the search bar
-     *
-     * @param type
-     * @param sortCriteria
-     * @param filterMap
-     * @param page
-     * @param pageSize
-     * @return
-     * @throws SQLException
-     */
-    public List<Product> getActiveProducts(String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
-//        Prepare the query with CTE first
-        StringBuilder sql = getCTETables(null);
-
-        //Append base query
-        sql.append("SELECT P.*, \n"
-                + "       C.categoryName, \n"
-                + "       PD.discountPercentage, \n"
-                + "       PD.eventDateStarted,\n"
-                + "	   PD.eventDuration\n"
-                + "FROM Product AS P\n");
-
-        //Type specific join
-        if (type.equals("book")) {
-            sql.append("JOIN Book B \n"
-                    + "    ON B.bookID = P.productID\n"
-            );
-        } else if (type.equals("merch")) {
-            sql.append("JOIN Merchandise M \n"
-                    + "    ON M.merchandiseID = P.productID\n"
-            );
-        }
-
-        //Common left join and where clause
-        sql.append("LEFT JOIN ProductDiscount PD \n"
-                + "    ON P.productID = PD.productID AND PD.rn = 1\n"
-                + "LEFT JOIN Category AS C \n"
-                + "    ON C.categoryID = P.categoryID\n"
-                + "WHERE P.productIsActive = 1\n");
-
-        //Initialize the param list
-        List<Object> paramList = new ArrayList<>();
-
-        //Append filter
-        if (filterMap != null && !filterMap.isEmpty()) {
-            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
-                String filterOption = entry.getKey();
-                String filterParam = entry.getValue();
-                filterParam = filterParam != null ? filterParam.trim() : "";
-
-                //Split the filter params if there are more than 1
-                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
-
-                //Append filter clause based on filterOption
-                sql.append(processFilter(filterOption, selectedFilters.length));
-
-                //Then add filter param to the param list to match with the appended clause
-                if (filterOption.equals("ftPrc")) {
-                    //Handle special case with price range
-                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
-                    paramList.add(valParts[0]);
-                    paramList.add(valParts[1]);
-                } else {
-                    //Normal case
-                    Collections.addAll(paramList, selectedFilters);
-                }
-            }
-        }
-
-        //Append order
-        sql.append("ORDER BY ");
-        sql.append(processSort(sortCriteria));
-
-        //Append paginated
-        sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        int offset = (page - 1) * pageSize;
-        paramList.add(offset);
-        paramList.add(pageSize);
-
-        //Print the final query to console
-        System.out.println(sql);
-        System.out.println("-------------------------------------------------------------------------------------");
-
-        //Execute query
-        Object[] params = paramList.toArray();
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
-            List<Product> productList = new ArrayList<>();
-            while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs));
-            }
-            return productList;
-        }
-
-    }
 
     @Override
     public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
-
+        boolean searchTermExist = query != null && !query.trim().isEmpty();
         //Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
 
         // Base SELECT clause
-        sql.append("SELECT P.*,");
-        sql.append("\n       C.categoryName,");
-        sql.append("\n       PD.discountPercentage,");
-        sql.append("\n       PD.eventDateStarted,");
-        sql.append("\n       PD.eventDuration,");
-        sql.append("\n       KEY_TBL.RANK AS relevance_score");
-        sql.append("\nFROM Product AS P");
-        sql.append("\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL");
-        sql.append("\n    ON P.productID = KEY_TBL.[KEY]");
+        sql.append("SELECT P.*");
+        sql.append("\n       ,C.categoryName");
+        sql.append("\n       ,PD.discountPercentage");
+        sql.append("\n       ,PD.eventDateStarted");
+        sql.append("\n       ,PD.eventDuration");
+
+        if (searchTermExist) {
+            sql.append("\n       ,KEY_TBL.RANK AS relevance_score");
+            sql.append("\nFROM Product AS P");
+            sql.append("\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL");
+            sql.append("\n    ON P.productID = KEY_TBL.[KEY]");
+        } else {
+            sql.append("\nFROM Product AS P");
+        }
 
         // Type-specific JOIN
         if (type.equals("book")) {
@@ -459,7 +371,9 @@ public class ProductDAO implements IGeneralProductDAO {
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        paramList.add(formatQueryBroad(query));
+        if (searchTermExist) {
+            paramList.add(formatQueryBroad(query));
+        }
 
         //Append filter
         if (filterMap != null && !filterMap.isEmpty()) {
@@ -574,7 +488,7 @@ public class ProductDAO implements IGeneralProductDAO {
      * @throws SQLException
      */
     @Override
-    public int countClassifiedProductList(ProductClassification clsf, Map<String, String> filterMap) throws SQLException {
+    public int countClassifiedProductList(IProductClassification clsf, Map<String, String> filterMap) throws SQLException {
         int clsfID = clsf.getId();
         String clsfCode = clsf.getCode();
         String clsfType = clsf.getType();
@@ -634,7 +548,7 @@ public class ProductDAO implements IGeneralProductDAO {
     }
 
     @Override
-    public List<Product> getClassifiedProductList(ProductClassification clsf,
+    public List<Product> getClassifiedProductList(IProductClassification clsf,
             String sortCriteria, Map<String, String> filterMap,
             int page, int pageSize, boolean isHomepage)
             throws SQLException {
@@ -2034,7 +1948,6 @@ public class ProductDAO implements IGeneralProductDAO {
 
     }
 
-
     public List<Product> fetchManyProducts(String sql, Object[] params) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -2042,10 +1955,11 @@ public class ProductDAO implements IGeneralProductDAO {
     public int count(String sql, Object[] params) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
     public static void main(String[] args) {
         try {
             System.out.println(ProductDAO.getInstance().getProductById(1));
-            
+
         } catch (Exception ex) {
             System.out.println(ex);
         }
