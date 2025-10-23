@@ -24,8 +24,8 @@ import model.Account;
 import model.Customer;
 import model.Event;
 import model.OrderProduct;
-import model.product_related.Product;
-import service.factory.ProductDetailsFactory;
+import model.Product;
+import dao.provider.product.ProductFactory;
 import utils.LoggingConfig;
 import utils.Utility;
 
@@ -85,7 +85,7 @@ public class ManageProductDetailsController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = ProductDetailsFactory.getProduct(type, id, IS_MANGEMENT);
+            Product requestedProduct = ProductFactory.getProduct(type, id, IS_MANGEMENT);
             if (requestedProduct == null) {
                 request.setAttribute("message", "The product is not available right now!");
             } else {

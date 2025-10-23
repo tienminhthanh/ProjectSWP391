@@ -4,7 +4,12 @@
  */
 package controller.event;
 
-import model.product_related.Product;
+import dao.EventProductDAO;
+import dao.EventDAO;
+import dao.ProductDAO;
+import model.Event;
+import model.EventProduct;
+import model.Product;
 import dao.*;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -18,7 +23,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import model.*;
 
 /**
  *

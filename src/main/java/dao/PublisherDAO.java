@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import model.product_related.Publisher;
+import model.Publisher;
 import utils.DBContext;
 import model.interfaces.IProductClassification;
 

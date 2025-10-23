@@ -5,18 +5,18 @@
 package dao;
 
 import dao.interfaces.IGeneralProductDAO;
-import model.product_related.Creator;
-import model.product_related.Product;
-import model.product_related.OGCharacter;
-import model.product_related.Publisher;
-import model.product_related.Category;
-import model.product_related.Series;
-import model.product_related.Supplier;
-import model.product_related.ImportItem;
-import model.product_related.Book;
-import model.product_related.Genre;
-import model.product_related.Merchandise;
-import model.product_related.Brand;
+import model.Creator;
+import model.Product;
+import model.OGCharacter;
+import model.Publisher;
+import model.Category;
+import model.Series;
+import model.Supplier;
+import model.ImportItem;
+import model.Book;
+import model.Genre;
+import model.Merchandise;
+import model.Brand;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Stream;
-import model.*;
 import utils.*;
 import model.interfaces.IProductClassification;
 
@@ -1424,7 +1423,6 @@ public class ProductDAO implements IGeneralProductDAO {
                 int quantity = 0;
                 int productID = 0;
                 String specialFilter = "";
-                LocalDate releaseDate = null;
                 for (Object updatedObj : updatedObjs) {
                     if (updatedObj instanceof ImportItem) {
                         ImportItem item = (ImportItem) updatedObj;
@@ -1437,19 +1435,12 @@ public class ProductDAO implements IGeneralProductDAO {
                             specialFilter = product.getSpecialFilter();
                         }
 
-                        if (releaseDate == null) {
-                            releaseDate = product.getReleaseDate();
-                        }
                     }
                 }
 
                 sql.append("UPDATE Product SET stockCount = stockCount + ?\n");
                 paramList.add(quantity);
 
-                if (releaseDate != null && releaseDate.isBefore(LocalDate.now())) {
-                    sql.append(", releaseDate = ?\n");
-                    paramList.add(LocalDate.now());
-                }
 
                 if (!specialFilter.equalsIgnoreCase("new")) {
                     sql.append(", specialFilter = ?\n");

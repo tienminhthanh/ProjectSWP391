@@ -1,4 +1,4 @@
-package model.product_related;
+package model;
 
 import model.interfaces.IProductClassification;
 

@@ -1,8 +1,8 @@
 package controller.dashboard;
 
-import model.product_related.Product;
+import model.Customer;
+import model.Product;
 import dao.*;
-import model.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

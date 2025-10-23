@@ -27,17 +27,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
-import model.product_related.Book;
-import model.product_related.Brand;
-import model.product_related.Category;
-import model.product_related.Creator;
-import model.product_related.Genre;
-import model.product_related.Merchandise;
-import model.product_related.OGCharacter;
-import model.product_related.Product;
-import model.product_related.Publisher;
-import model.product_related.Series;
-import service.factory.ProductDetailsFactory;
+import model.Book;
+import model.Brand;
+import model.Category;
+import model.Creator;
+import model.Genre;
+import model.Merchandise;
+import model.OGCharacter;
+import model.Product;
+import model.Publisher;
+import model.Series;
+import dao.provider.product.ProductFactory;
 import utils.LoggingConfig;
 
 /**
@@ -87,7 +87,7 @@ public class UpdateProductController extends HttpServlet {
         String type = request.getParameter("type");
         try {
             int id = Integer.parseInt(productID);
-            Product requestedProduct = ProductDetailsFactory.getProduct(type, id, IS_MANAGEMENT);
+            Product requestedProduct = ProductFactory.getProduct(type, id, IS_MANAGEMENT);
             if (requestedProduct == null) {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);

@@ -1,4 +1,4 @@
-package model.product_related;
+package model;
 
 import java.util.List;
 import model.interfaces.IProductClassification;

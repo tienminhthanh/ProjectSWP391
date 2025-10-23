@@ -1,6 +1,6 @@
 package model;
 
-import model.product_related.Product;
+import model.Product;
 
 /**
  *

@@ -4,6 +4,8 @@
  */
 package controller.event;
 
+import dao.EventProductDAO;
+import dao.EventDAO;
 import dao.*;
 import java.io.IOException;
 import jakarta.servlet.ServletException;

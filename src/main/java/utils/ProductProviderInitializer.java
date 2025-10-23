@@ -6,20 +6,20 @@ package utils;
 
 import org.reflections.Reflections;
 import java.util.Set;
-import service.interfaces.IProductDetailsService;
+import dao.interfaces.IProductProvider;
 
 /**
  *
  * @author anhkc
  */
 
-public final class ProductSubTypeInitializer {
+public final class ProductProviderInitializer {
 
     public static void init() throws ClassNotFoundException {
-        Reflections reflections = new Reflections("service");
-        Set<Class<? extends IProductDetailsService>> productSubTypeServices = reflections.getSubTypesOf(IProductDetailsService.class);
+        Reflections reflections = new Reflections("dao.provider.product");
+        Set<Class<? extends IProductProvider>> productDetailsProviders = reflections.getSubTypesOf(IProductProvider.class);
 
-        for (Class<?> cls : productSubTypeServices) {
+        for (Class<?> cls : productDetailsProviders) {
             Class.forName(cls.getName());
             System.out.println("Loaded service of product sub type: " + cls.getSimpleName());
         }

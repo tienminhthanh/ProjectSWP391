@@ -10,10 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import model.product_related.Book;
-import model.product_related.Category;
-import model.product_related.Product;
-import model.product_related.Publisher;
+import model.Book;
+import model.Category;
+import model.Product;
+import model.Publisher;
 import utils.Utility;
 
 /**

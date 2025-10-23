@@ -2,21 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package model.product_related;
+package model;
 
 import dao.BookDAO;
-import service.BookDetailsService;
-import service.factory.ProductDetailsFactory;
+import dao.provider.product.BookProvider;
+import dao.provider.product.ProductFactory;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import model.OrderProduct;
-import model.product_related.Category;
-import model.product_related.Creator;
-import model.product_related.Genre;
-import model.product_related.Product;
-import model.product_related.Publisher;
+import model.Category;
+import model.Creator;
+import model.Genre;
+import model.Product;
+import model.Publisher;
 
 
 /**
@@ -86,7 +86,7 @@ public class Book extends Product {
     
     
     public static void main(String[] args) {
-//        ProductDetailsFactory.register("book", (id,isMangement) -> BookDAO.getInstance().getProductById(id, isMangement));
-//        ProductDetailsFactory.registerExtraAttributes("book", (product,id) -> BookDetailsService.getInstance().loadExtraAttributes(product, id));
+//        ProductFactory.register("book", (id,isMangement) -> BookDAO.getInstance().getProductById(id, isMangement));
+//        ProductFactory.registerExtraAttributes("book", (product,id) -> BookProvider.getInstance().loadExtraAttributes(product, id));
     }
 }

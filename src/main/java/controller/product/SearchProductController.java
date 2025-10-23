@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.AbstractMap.SimpleEntry;
 import model.Account;
-import model.product_related.Product;
+import model.Product;
 import utils.Utility;
 
 /**

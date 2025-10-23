@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package service;
+package dao.provider.product;
 
 import dao.CreatorDAO;
 import dao.MerchDAO;
@@ -10,34 +10,34 @@ import dao.OrderProductDAO;
 import dao.interfaces.IProductExtraAttributesDAO;
 import dao.interfaces.ISpecificProductDAO;
 import java.sql.SQLException;
-import model.product_related.Product;
-import service.interfaces.*;
-import service.registration.ProductDetailsServiceRegistration;
+import model.Product;
+import dao.provider.product.ProductProviderRegistration;
+import dao.interfaces.IProductProvider;
 
 /**
  *
  * @author anhkc
  */
-public class MerchDetailsService implements IProductDetailsService {
+public class MerchProvider implements IProductProvider {
 
-    private static final MerchDetailsService instance = new MerchDetailsService();
+    private static final MerchProvider instance = new MerchProvider();
     private final IProductExtraAttributesDAO creatorDAO;
     private final IProductExtraAttributesDAO orderProductDAO;
     private final ISpecificProductDAO merchDAO;
     
     
     static{
-        ProductDetailsServiceRegistration.register("merch", MerchDetailsService.getInstance());
+        ProductProviderRegistration.register("merch", MerchProvider.getInstance());
     }
 
-    private MerchDetailsService() {
+    private MerchProvider() {
         creatorDAO = CreatorDAO.getInstance();
         orderProductDAO = OrderProductDAO.getInstance();
         merchDAO = MerchDAO.getInstance();
     }
     
 
-    public static MerchDetailsService getInstance() {
+    public static MerchProvider getInstance() {
         return instance;
     }
 

@@ -4,8 +4,10 @@
  */
 package dao;
 
-import model.product_related.Product;
-import model.product_related.Category;
+import dao.CategoryDAO;
+import model.EventProduct;
+import model.Product;
+import model.Category;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +16,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
-import model.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

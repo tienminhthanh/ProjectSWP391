@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package service;
+package dao.provider.product;
 
 import dao.BookDAO;
 import dao.CreatorDAO;
@@ -11,37 +11,37 @@ import dao.OrderProductDAO;
 import dao.interfaces.*;
 import java.sql.SQLException;
 import java.util.List;
-import model.product_related.Book;
-import model.product_related.Genre;
-import model.product_related.Product;
-import service.interfaces.*;
-import service.registration.ProductDetailsServiceRegistration;
+import model.Book;
+import model.Genre;
+import model.Product;
+import dao.provider.product.ProductProviderRegistration;
+import dao.interfaces.IProductProvider;
 
 /**
  *
  * @author anhkc
  */
-public class BookDetailsService implements IProductDetailsService {
+public class BookProvider implements IProductProvider {
 
-    private static final BookDetailsService instance = new BookDetailsService();
+    private static final BookProvider instance = new BookProvider();
     private final IProductExtraAttributesDAO genreDAO;
     private final IProductExtraAttributesDAO creatorDAO;
     private final IProductExtraAttributesDAO orderProductDAO;
     private final ISpecificProductDAO bookDAO;
     
     static{
-        ProductDetailsServiceRegistration.register("book", BookDetailsService.getInstance());
+        ProductProviderRegistration.register("book", BookProvider.getInstance());
     }
     
     //Normal run
-    private BookDetailsService() {
+    private BookProvider() {
         genreDAO = GenreDAO.getInstance();
         creatorDAO = CreatorDAO.getInstance();
         orderProductDAO = OrderProductDAO.getInstance();
         bookDAO = BookDAO.getInstance();
     }
 
-    public static BookDetailsService getInstance() {
+    public static BookProvider getInstance() {
         return instance;
     }
 

@@ -7,7 +7,7 @@ package dao.interfaces;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import model.product_related.Product;
+import model.Product;
 import model.interfaces.IProductClassification;
 
 /**

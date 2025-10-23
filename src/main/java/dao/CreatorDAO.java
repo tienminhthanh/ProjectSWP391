@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.product_related.Creator;
+import model.Creator;
 import utils.DBContext;
 import utils.Utility;
 import model.interfaces.IProductClassification;

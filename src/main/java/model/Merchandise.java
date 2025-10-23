@@ -1,18 +1,18 @@
-package model.product_related;
+package model;
 
-import service.factory.ProductDetailsFactory;
-import service.MerchDetailsService;
+import dao.provider.product.ProductFactory;
+import dao.provider.product.MerchProvider;
 import dao.MerchDAO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import model.OrderProduct;
-import model.product_related.Brand;
-import model.product_related.Category;
-import model.product_related.Creator;
-import model.product_related.OGCharacter;
-import model.product_related.Product;
-import model.product_related.Series;
+import model.Brand;
+import model.Category;
+import model.Creator;
+import model.OGCharacter;
+import model.Product;
+import model.Series;
 
 /**
  *
@@ -93,7 +93,7 @@ public class Merchandise extends Product {
     }
     
     public static void main(String[] args) {
-//        ProductDetailsFactory.register("merch", (id,isManagement) -> MerchDAO.getInstance().getProductById(id, isManagement));
-//        ProductDetailsFactory.registerExtraAttributes("merch", (product,id) -> MerchDetailsService.getInstance().loadExtraAttributes(product,id));
+//        ProductFactory.register("merch", (id,isManagement) -> MerchDAO.getInstance().getProductById(id, isManagement));
+//        ProductFactory.registerExtraAttributes("merch", (product,id) -> MerchProvider.getInstance().loadExtraAttributes(product,id));
     }
 }

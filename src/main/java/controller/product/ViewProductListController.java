@@ -18,8 +18,8 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
 import model.Account;
-import model.product_related.NonEntityClassification;
-import model.product_related.Product;
+import model.NonEntityClassification;
+import model.Product;
 import utils.Utility;
 import model.interfaces.IProductClassification;
 

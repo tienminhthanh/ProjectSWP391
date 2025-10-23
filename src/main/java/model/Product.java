@@ -2,14 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package model.product_related;
+package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import model.CartItem;
-import model.EventProduct;
-import model.OrderProduct;
 
 public class Product {
 //Maps from categoryID int
