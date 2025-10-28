@@ -33,11 +33,10 @@ public class CategoryDAO implements IClassificationEntityDAO {
 
     @Override
     public Map<IProductClassification, Integer> getAllClassficationEntitiesWithCount() throws SQLException {
-        String sql = "SELECT c.*, COUNT(p.productID) AS productCount  \n"
-                + "FROM Category AS c  \n"
-                + "LEFT JOIN Product AS p  \n"
-                + "    ON p.categoryID = c.categoryID AND p.productIsActive = 1  \n"
-                + "GROUP BY c.categoryID, c.categoryName, c.generalCategory;";
+        String sql = "SELECT c.categoryID, c.categoryName, p.generalCategory, count(p.productID) as productCount\n"
+                + "FROM Category c \n"
+                + "LEFT JOIN Product p ON c.categoryID = p.categoryID and p.productIsActive = 1\n"
+                + "group by c.categoryID, c.categoryName, p.generalCategory";
 
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             Map<IProductClassification, Integer> categoryMap = new HashMap<>();
@@ -50,7 +49,10 @@ public class CategoryDAO implements IClassificationEntityDAO {
 
     @Override
     public Category getById(int id) throws SQLException {
-        String sql = "SELECT *\n" + "FROM Category\n" + "WHERE categoryID = ?";
+        String sql = "SELECT TOP 1 c.categoryID, c.categoryName, p.generalCategory\n"
+                + "FROM Category c \n"
+                + "JOIN Product p ON c.categoryID = p.categoryID\n"
+                + "WHERE c.categoryID = ?";
         Object[] params = {id};
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
             if (rs.next()) {
