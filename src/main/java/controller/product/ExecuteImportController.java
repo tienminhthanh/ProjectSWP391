@@ -35,8 +35,8 @@ import utils.LoggingConfig;
  * @author anhkc
  */
 @WebServlet(name = "ImportProductController", urlPatterns = {"/importProduct"})
-public class ImportProductController extends HttpServlet {
-    private static final Logger LOGGER = LoggingConfig.getLogger(ImportProductController.class);
+public class ExecuteImportController extends HttpServlet {
+    private static final Logger LOGGER = LoggingConfig.getLogger(ExecuteImportController.class);
     private final ProductDAO productDAO = ProductDAO.getInstance();
 
     @Override
