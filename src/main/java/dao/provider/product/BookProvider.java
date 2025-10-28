@@ -14,8 +14,7 @@ import java.util.List;
 import model.Book;
 import model.Genre;
 import model.Product;
-import dao.provider.product.ProductProviderRegistration;
-import dao.interfaces.IProductProvider;
+import dao.provider.product.*;
 
 /**
  *
@@ -32,6 +31,7 @@ public class BookProvider implements IProductProvider {
     static{
         ProductProviderRegistration.register("book", BookProvider.getInstance());
     }
+    
     
     //Normal run
     private BookProvider() {
@@ -63,4 +63,6 @@ public class BookProvider implements IProductProvider {
         loadExtraAttributes(product, id);
         return product;
     }
+
+   
 }

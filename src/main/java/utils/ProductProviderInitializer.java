@@ -21,7 +21,7 @@ public final class ProductProviderInitializer {
 
         for (Class<?> cls : productDetailsProviders) {
             Class.forName(cls.getName());
-            System.out.println("Loaded service of product sub type: " + cls.getSimpleName());
+            System.out.println("Loaded provider of product sub type: " + cls.getSimpleName());
         }
     }
 }

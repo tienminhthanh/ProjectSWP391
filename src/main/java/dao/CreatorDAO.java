@@ -83,7 +83,7 @@ public class CreatorDAO implements IProductExtraAttributesDAO<Creator, Integer>,
 
     @Override
     public Creator getById(int id) throws SQLException {
-        String sql = "SELECT top 1 Creator.creatorID, Creator.creatorName, Creator.creatorRole, Product.generalCategory\n"
+        String sql = "SELECT TOP 1 Creator.creatorID, Creator.creatorName, Creator.creatorRole, Product.generalCategory\n"
                 + "FROM     Creator INNER JOIN\n"
                 + "                  Product_Creator ON Creator.creatorID = Product_Creator.creatorID INNER JOIN\n"
                 + "                  Product ON Product_Creator.productID = Product.productID\n"

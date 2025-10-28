@@ -7,9 +7,11 @@ import java.util.logging.Level;
 import utils.LoggingConfig;
 import java.util.logging.Logger;
 import utils.ProductProviderInitializer;
+import dao.provider.product.ProductProviderRegistration;
 
 @WebListener
 public class AppStartupListener implements ServletContextListener {
+
     private static final Logger LOGGER = LoggingConfig.getLogger(AppStartupListener.class);
 
     @Override
@@ -17,6 +19,7 @@ public class AppStartupListener implements ServletContextListener {
         LOGGER.info("Application started. Logging initialized.");
         try {
             ProductProviderInitializer.init();
+            
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "An error occured during product type initilization: {0}", e.toString());
         }

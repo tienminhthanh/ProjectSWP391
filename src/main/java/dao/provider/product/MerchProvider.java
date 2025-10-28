@@ -11,8 +11,8 @@ import dao.interfaces.IProductExtraAttributesDAO;
 import dao.interfaces.ISpecificProductDAO;
 import java.sql.SQLException;
 import model.Product;
-import dao.provider.product.ProductProviderRegistration;
-import dao.interfaces.IProductProvider;
+import dao.provider.product.*;
+import dao.interfaces.*;
 
 /**
  *
@@ -53,4 +53,5 @@ public class MerchProvider implements IProductProvider {
         loadExtraAttributes(product, id);
         return product;
     }
+    
 }

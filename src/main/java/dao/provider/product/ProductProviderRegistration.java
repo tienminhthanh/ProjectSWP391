@@ -6,6 +6,7 @@ package dao.provider.product;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 import dao.interfaces.IProductProvider;
 
 /**
@@ -16,9 +17,16 @@ public final class ProductProviderRegistration {
 
     private static final Map<String, IProductProvider> registry = new HashMap<>();
 
+
     public static void register(String type, IProductProvider service) {
         registry.put(type.toLowerCase(), service);
     }
+
+    public static IProductProvider getProductProvider(String type) {
+        return registry.get(type);
+    }
     
-    public static IProductProvider getProductProvider(String type){return registry.get(type);}
+    public static void main(String[] args) {
+    }
+
 }

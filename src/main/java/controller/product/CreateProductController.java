@@ -38,7 +38,7 @@ import utils.LoggingConfig;
  *
  * @author anhkc
  */
-@WebServlet(name = "AddProductController", urlPatterns = {"/addProduct"})
+@WebServlet({"/addProduct"})
 public class CreateProductController extends HttpServlet {
 
     private static final Logger LOGGER = LoggingConfig.getLogger(CreateProductController.class);
