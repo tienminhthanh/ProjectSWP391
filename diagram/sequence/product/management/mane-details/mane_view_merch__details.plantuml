@@ -1,0 +1,100 @@
+@startuml
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe View Merchandise Details (Apply to Admin as well)
+
+actor Staff as act
+
+participant "<u>:ProductDetailsManagementView" as view
+participant "<u>:ManageProductDetailsController" as controller
+participant "<u>:MerchDAO" as dao
+participant "<u>:Merchandise" as pro
+participant "<u>:EventDAO" as evdao
+participant "<u>:CreatorDAO" as credao
+participant "<u>:DBContext" as context
+
+database Database as db
+
+activate act
+act -> view++:1.Select a merchandise
+view -> controller++:2.doGet()
+controller ->controller++:3.processRequest()
+controller -> dao++:4.getMerchById()
+dao -> context++:5.exeQuery()
+context -> db++:6.SELECT a merchandise\nFROM Product\nJOIN Merchandise\nbased on merchID
+db -->context--: 7 Return ResultSet
+context-->dao--:8.Return ResultSet
+alt ResultSet is not empty
+    dao -> pro++:8.1.new Merchandise()
+    pro --> dao--:8.1.1.Return merchandise object
+    dao -> credao++:8.1.2.getCreatorsByProductID()
+    ref over credao, context, db
+        8.1.3.Get Creators By Product ID
+    end ref
+    credao-->dao--:8.1.4.Return List<Creator>
+
+    dao->dao++:8.1.5.getOrderProductsByProductID()
+    ref over dao, context, db
+        8.1.6.Get OrderProducts By Merchandise ID
+    end ref
+
+    skinparam sequence {
+    ArrowColor transparent
+    }
+    dao->dao--
+    skinparam sequence {
+    ArrowColor black
+    ArrowThickness 1
+    ArrowHeadColor black
+    }
+    
+    dao --> controller:8.1.7.Return merchandise object\nwith associated details
+    
+    controller->evdao++:8.1.8.getListActiveEvent()
+    ref over evdao,context,db
+        8.1.9.Get List Active Event
+    end ref
+    evdao-->controller--:8.1.10.Return List<Event>
+
+    controller->evdao++:8.1.11.getEventByProductID()
+    ref over evdao,context,db
+        8.1.12.Get Event By Product ID
+    end ref
+    evdao-->controller--:8.1.13.Return event object\n(or null)
+
+    controller --> view:8.1.14.Return merchandise object\nwith associated event\nand active List<Event>
+    view --> act:8.1.15.Display merchandise details\nand active events
+else ResultSet is empty
+    dao --> controller--: 8.2.Return null
+    controller --> view--: 8.2.1.Return failed message
+    controller--
+    view --> act--:8.2.2.Display the message
+end
+
+deactivate act
+@enduml

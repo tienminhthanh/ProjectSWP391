@@ -1,0 +1,113 @@
+@startuml 
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe Add New Merchandise
+
+actor Admin as act
+
+participant "<u>:ProductFormsView" as view
+participant "<u>:CreateProductController" as ctrl
+participant "<u>:Merchandise" as pro
+participant "<u>:Category" as ctg
+participant "<u>:Creator" as cre
+participant "<u>:Series" as srs
+participant "<u>:Brand" as brn
+participant "<u>:OGCharacter" as chr
+
+participant "<u>:MerchDAO" as dao
+participant "<u>:CreatorDAO" as credao
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+act++
+act->view++:1.Click the "Save" button
+view->view++:2.Validate input
+group opt [Invalid input]
+    view-->act:2.1.Display error message
+end
+view--
+view->ctrl++:3.doPost()
+ctrl->ctrl++:4.handleMerchCreation()
+ctrl--
+ctrl->pro++:5.new Merchandise()
+pro --> ctrl--:6.Return newMerch object
+ctrl->ctg++:7.new Category()
+ctg --> ctrl--:8.Return Category object,\ninstantiate List<Creator>
+loop For each element in creatorParameters
+    ctrl->cre++:9.new Creator()
+    cre --> ctrl--:10.Return Creator object,\nadd to List<Creator>
+end
+ctrl->srs++:11.new Series()
+srs --> ctrl--:12.Return Series object
+ctrl->brn++:13.new Brand()
+brn --> ctrl--:14.Return Brand object
+ctrl->chr++:15.new OGCharacter()
+chr --> ctrl--:16.Return OGCharacter object
+
+
+ctrl->dao++:17.addNewMerch()
+dao->ctx++:18.exeNonQuery()
+ctx -> db++:19.INSERT newMerch INTO Product\nwith generalCategory = 'merch'
+db -->ctx:20.Return numberOfRowsAffected
+ctx -->dao:21.Return numberOfRowsAffected
+alt numberOfRowsAffected > 0
+    dao->credao++:21.1.associateProductCreatorForInsert()
+    ref over credao,ctx,db
+        21.1.1.Associate Product-Creator For Insert Merchandise
+    end ref
+    credao-->dao--:21.1.2.Return creatorAssociationStatus
+    alt creatorAssociationStatus == true
+        dao->ctx:21.1.2.1.exeNonQuery()
+        ctx->db:21.1.2.1.1.UPDATE Merchandise\nSET remanining attributes of newMerch
+        db-->ctx--:21.1.2.1.2.Return numberOfRowsAffected
+        ctx-->dao--:21.1.2.1.3.Return numberOfRowsAffected
+        
+        alt numberOfRowsAffected > 0
+            dao-->ctrl:21.1.2.1.3.1.Return true
+            ctrl-->view:21.1.2.1.3.1.1.Return successful message
+            view-->act:21.1.2.1.3.1.2.Display the message
+        else numberOfRowsAffected == 0
+            dao-->ctrl:21.1.2.1.3.2.Return false
+            ctrl-->view:21.1.2.1.3.2.1.Return failed message
+            view-->act:21.1.2.1.3.2.2.Display the message
+        end
+
+    else creatorAssociationStatus == false
+        dao-->ctrl:21.1.2.2.Return error message
+        ctrl-->view:21.1.2.2.1.Return error message
+        view-->act:21.1.2.2.2.Display the message
+    end
+
+else numberOfRowsAffected == 0
+    dao-->ctrl--:21.2.Return error message
+    ctrl-->view--:21.2.1.Return error message
+    view-->act--:21.2.2.Display the message 
+end
+act--
+@enduml

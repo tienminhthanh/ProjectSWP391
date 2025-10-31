@@ -1,0 +1,49 @@
+@startuml 
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe Get List Active Event 
+
+
+participant "<u>:EventDAO" as dao
+participant "<u>:Event" as ev
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+dao++
+dao-> ctx++:1.exeQuery()
+ctx->db++:2.SELECT all active events\nFROM Event
+db-->ctx--:3.Return ResultSet
+ctx-->dao--:4.Return ResultSet,\ninstantiate List<Event>
+loop ResultSet.next() == true
+    dao->ev++:5.new Event()
+    ev-->dao--:6.Return event object,\n add to List<Event>
+end
+
+
+@enduml
