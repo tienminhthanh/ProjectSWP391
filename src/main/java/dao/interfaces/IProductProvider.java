@@ -13,5 +13,5 @@ import model.Product;
  */
 public interface IProductProvider {
     Product findProduct(int id, boolean isManagement) throws SQLException;
-    void loadExtraAttributes(Product product, int id) throws SQLException;
+    void loadExtraAttributes(Product product, int id, boolean isManagement) throws SQLException;
 }

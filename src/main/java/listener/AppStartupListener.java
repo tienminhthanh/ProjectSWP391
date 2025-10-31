@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import utils.LoggingConfig;
 import java.util.logging.Logger;
 import utils.ProductProviderInitializer;
-import dao.provider.product.ProductProviderRegistration;
+import dao.factory_product.ProductProviderRegistration;
 
 @WebListener
 public class AppStartupListener implements ServletContextListener {

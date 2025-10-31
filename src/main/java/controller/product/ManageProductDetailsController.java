@@ -25,7 +25,7 @@ import model.Customer;
 import model.Event;
 import model.OrderProduct;
 import model.Product;
-import dao.provider.product.ProductFactory;
+import dao.factory_product.ProductFactory;
 import utils.LoggingConfig;
 import utils.Utility;
 

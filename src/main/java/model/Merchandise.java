@@ -1,7 +1,7 @@
 package model;
 
-import dao.provider.product.ProductFactory;
-import dao.provider.product.MerchProvider;
+import dao.factory_product.ProductFactory;
+import dao.factory_product.MerchProvider;
 import dao.MerchDAO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

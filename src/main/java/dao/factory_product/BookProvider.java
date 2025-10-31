@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dao.provider.product;
+package dao.factory_product;
 
 import dao.BookDAO;
 import dao.CreatorDAO;
@@ -14,7 +14,6 @@ import java.util.List;
 import model.Book;
 import model.Genre;
 import model.Product;
-import dao.provider.product.*;
 
 /**
  *
@@ -27,12 +26,11 @@ public class BookProvider implements IProductProvider {
     private final IProductExtraAttributesDAO creatorDAO;
     private final IProductExtraAttributesDAO orderProductDAO;
     private final ISpecificProductDAO bookDAO;
-    
-    static{
+
+    static {
         ProductProviderRegistration.register("book", BookProvider.getInstance());
     }
-    
-    
+
     //Normal run
     private BookProvider() {
         genreDAO = GenreDAO.getInstance();
@@ -46,9 +44,11 @@ public class BookProvider implements IProductProvider {
     }
 
     @Override
-    public void loadExtraAttributes(Product product, int id) throws SQLException {
-        product.setCreatorList(creatorDAO.getExtraAttributesByProductID(id))
-                .setOrderProductList(orderProductDAO.getExtraAttributesByProductID(id));
+    public void loadExtraAttributes(Product product, int id, boolean isManagement) throws SQLException {
+        product.setCreatorList(creatorDAO.getExtraAttributesByProductID(id));
+        if (!isManagement) {
+            product.setOrderProductList(orderProductDAO.getExtraAttributesByProductID(id));
+        }
         // Only run if the product is actually a Book (optional safety check)
         if (product instanceof Book) {
             List<Genre> genreList = genreDAO.getExtraAttributesByProductID(id);
@@ -60,9 +60,8 @@ public class BookProvider implements IProductProvider {
     @Override
     public Product findProduct(int id, boolean isManagement) throws SQLException {
         Product product = bookDAO.getProductById(id, isManagement);
-        loadExtraAttributes(product, id);
+        loadExtraAttributes(product, id,isManagement);
         return product;
     }
 
-   
 }

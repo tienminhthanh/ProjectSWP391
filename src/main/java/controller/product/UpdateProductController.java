@@ -37,7 +37,7 @@ import model.OGCharacter;
 import model.Product;
 import model.Publisher;
 import model.Series;
-import dao.provider.product.ProductFactory;
+import dao.factory_product.ProductFactory;
 import utils.LoggingConfig;
 
 /**

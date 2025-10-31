@@ -4,7 +4,7 @@
  */
 package controller.product;
 
-import dao.provider.product.ProductFactory;
+import dao.factory_product.ProductFactory;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -2,11 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dao.provider.product;
+package dao.factory_product;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ServiceLoader;
 import dao.interfaces.IProductProvider;
 
 /**

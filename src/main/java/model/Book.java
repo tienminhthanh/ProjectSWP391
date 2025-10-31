@@ -5,8 +5,8 @@
 package model;
 
 import dao.BookDAO;
-import dao.provider.product.BookProvider;
-import dao.provider.product.ProductFactory;
+import dao.factory_product.BookProvider;
+import dao.factory_product.ProductFactory;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
