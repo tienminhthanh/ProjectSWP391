@@ -41,9 +41,7 @@ public class MerchProvider implements IProductProvider {
     @Override
     public void loadExtraAttributes(Product product, int id, boolean isManagement) throws SQLException {
         product.setCreatorList(creatorDAO.getExtraAttributesByProductID(id));
-        if (!isManagement) {
-            product.setOrderProductList(orderProductDAO.getExtraAttributesByProductID(id));
-        }
+        product.setOrderProductList(orderProductDAO.getExtraAttributesByProductID(id));
     }
 
     @Override

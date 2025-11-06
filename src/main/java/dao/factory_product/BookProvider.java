@@ -46,9 +46,7 @@ public class BookProvider implements IProductProvider {
     @Override
     public void loadExtraAttributes(Product product, int id, boolean isManagement) throws SQLException {
         product.setCreatorList(creatorDAO.getExtraAttributesByProductID(id));
-        if (!isManagement) {
-            product.setOrderProductList(orderProductDAO.getExtraAttributesByProductID(id));
-        }
+        product.setOrderProductList(orderProductDAO.getExtraAttributesByProductID(id));
         // Only run if the product is actually a Book (optional safety check)
         if (product instanceof Book) {
             List<Genre> genreList = genreDAO.getExtraAttributesByProductID(id);
@@ -60,7 +58,7 @@ public class BookProvider implements IProductProvider {
     @Override
     public Product findProduct(int id, boolean isManagement) throws SQLException {
         Product product = bookDAO.getProductById(id, isManagement);
-        loadExtraAttributes(product, id,isManagement);
+        loadExtraAttributes(product, id, isManagement);
         return product;
     }
 
