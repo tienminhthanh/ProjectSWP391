@@ -32,7 +32,7 @@ public class Product {
     private int salesRank;
     private List<Creator> creatorList;
     private List<OrderProduct> orderProductList;
-    private List<ImportItem> importItemList;
+    private List<ProductSupplier> productSupplyList;
     private List<CartItem> cartItemList;
     private List<EventProduct> eventProductList;
     
@@ -66,11 +66,11 @@ public class Product {
      * @param salesRank
      * @param creatorList
      * @param orderProductList
-     * @param importItemList
+     * @param productSupplyList
      * @param cartItemList
      * @param eventProductList 
      */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate, int salesRank, List<Creator> creatorList, List<OrderProduct> orderProductList, List<ImportItem> importItemList, List<CartItem> cartItemList, List<EventProduct> eventProductList) {
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate, int salesRank, List<Creator> creatorList, List<OrderProduct> orderProductList, List<ProductSupplier> productSupplyList, List<CartItem> cartItemList, List<EventProduct> eventProductList) {
         this.productID = productID;
         this.productName = productName;
         this.price = price;
@@ -92,7 +92,7 @@ public class Product {
         this.salesRank = salesRank;
         this.creatorList = creatorList;
         this.orderProductList = orderProductList;
-        this.importItemList = importItemList;
+        this.productSupplyList = productSupplyList;
         this.cartItemList = cartItemList;
         this.eventProductList = eventProductList;
     }
@@ -315,9 +315,11 @@ public class Product {
         return orderProductList;
     }
 
-    public List<ImportItem> getImportItemList() {
-        return importItemList;
+    public List<ProductSupplier> getProductSupplyList() {
+        return productSupplyList;
     }
+
+    
 
     public List<CartItem> getCartItemList() {
         return cartItemList;
@@ -437,10 +439,11 @@ public class Product {
         return this;
     }
 
-    public Product setImportItemList(List<ImportItem> importItemList) {
-        this.importItemList = importItemList;
+    public Product setProductSupplyList(List<ProductSupplier> productSupplyList) {
+        this.productSupplyList = productSupplyList;
         return this;
     }
+
 
     public Product setCartItemList(List<CartItem> cartItemList) {
         this.cartItemList = cartItemList;
@@ -451,14 +454,13 @@ public class Product {
         this.eventProductList = eventProductList;
         return this;
     }
-    
 
     @Override
     public String toString() {
-        return "{productID=" + productID + ", productName=" + productName + ", price=" + price + ", stockCount=" + stockCount + ", specificCategory=" + specificCategory + ", description=" + description + ", releaseDate=" + releaseDate + ", lastModifiedTime=" + lastModifiedTime + ", averageRating=" + averageRating + ", numberOfRating=" + numberOfRating + ", specialFilter=" + specialFilter + ", adminID=" + adminID + ", keywords=" + keywords + ", generalCategory=" + generalCategory + ", isActive=" + isActive + ", imageURL=" + imageURL + ", discountPercentage=" + discountPercentage + ", eventEndDate=" + eventEndDate + ", salesRank=" + salesRank + '}';
+        return "Product{" + "productID=" + productID + ", productName=" + productName + ", price=" + price + ", stockCount=" + stockCount + ", specificCategory=" + specificCategory + ", description=" + description + ", releaseDate=" + releaseDate + ", lastModifiedTime=" + lastModifiedTime + ", averageRating=" + averageRating + ", numberOfRating=" + numberOfRating + ", specialFilter=" + specialFilter + ", adminID=" + adminID + ", keywords=" + keywords + ", generalCategory=" + generalCategory + ", isActive=" + isActive + ", imageURL=" + imageURL + ", discountPercentage=" + discountPercentage + ", eventEndDate=" + eventEndDate + ", salesRank=" + salesRank + ", creatorList=" + creatorList + ", orderProductList=" + orderProductList + ", productSupplyList=" + productSupplyList + ", cartItemList=" + cartItemList + ", eventProductList=" + eventProductList + '}';
     }
-
     
+
     
     public double getCurrentPrice() {
         LocalDate now = LocalDate.now();
