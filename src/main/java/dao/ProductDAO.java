@@ -329,7 +329,6 @@ public class ProductDAO implements IGeneralProductDAO {
 
     }
 
-
     @Override
     public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
         boolean searchTermExist = query != null && !query.trim().isEmpty();
@@ -1441,7 +1440,6 @@ public class ProductDAO implements IGeneralProductDAO {
                 sql.append("UPDATE Product SET stockCount = stockCount + ?\n");
                 paramList.add(quantity);
 
-
                 if (!specialFilter.equalsIgnoreCase("new")) {
                     sql.append(", specialFilter = ?\n");
                     paramList.add("new");
@@ -1956,5 +1954,7 @@ public class ProductDAO implements IGeneralProductDAO {
         }
 
     }
+
+    
 
 }

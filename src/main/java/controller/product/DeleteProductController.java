@@ -5,6 +5,7 @@
 package controller.product;
 
 import dao.ProductDAO;
+import dao.interfaces.IGeneralProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -26,7 +27,7 @@ import utils.LoggingConfig;
 public class DeleteProductController extends HttpServlet {
 
     private static final Logger LOGGER = LoggingConfig.getLogger(DeleteProductController.class);
-    private final ProductDAO productDAO = ProductDAO.getInstance();
+    private final IGeneralProductDAO productDAO = ProductDAO.getInstance();
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
