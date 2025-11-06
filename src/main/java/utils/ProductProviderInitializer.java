@@ -16,7 +16,7 @@ import dao.interfaces.IProductProvider;
 public final class ProductProviderInitializer {
 
     public static void init() throws ClassNotFoundException {
-        Reflections reflections = new Reflections("dao.provider.product");
+        Reflections reflections = new Reflections("dao.factory_product");
         Set<Class<? extends IProductProvider>> productDetailsProviders = reflections.getSubTypesOf(IProductProvider.class);
 
         for (Class<?> cls : productDetailsProviders) {
