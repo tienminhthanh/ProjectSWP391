@@ -46,23 +46,27 @@ group opt [Invalid input]
 end
 view--
 view->ctrl++:3.doPost()
+ctrl->ctrl++:4.Instantiate List<ImportItem>
+ctrl--
 loop for each selected product supply
-ctrl->pro++:4.new ImportItem()
-pro --> ctrl--:5.Return ImportItem object,\nadd to List<ImportItem>
+    ctrl->pro++:5.new ImportItem()
+    pro-->ctrl--:6.Return importItem object
+    ctrl->ctrl++:7.Add importItem object to List<ImportItem>
+    ctrl--
 end
-ctrl->dao++:6.queueImports()
-dao->ctx++:7.exeNonQuery()
-ctx -> db++:8.INSERT a new row to ImportItem table
-db -->ctx--:9.Return numberOfRowsAffected
-ctx -->dao--:10.Return numberOfRowsAffected
+ctrl->dao++:8.queueImports()
+dao->ctx++:9.exeNonQuery()
+ctx -> db++:10.INSERT new pending imports
+db -->ctx--:11.Return numberOfRowsAffected
+ctx -->dao--:12.Return numberOfRowsAffected
 alt numberOfRowsAffected == 0
-    dao-->ctrl:10.1.Return false
-    ctrl-->view:10.1.1.Return failed message
-    view-->act:10.1.2.Display the message
+    dao-->ctrl:12.1.Return false
+    ctrl-->view:12.1.1.Return failed message
+    view-->act:12.1.2.Display the message
 else numberOfRowsAffected > 0
-    dao-->ctrl--:10.2.Return true
-    ctrl-->view--:10.2.1.Return successful message
-    view-->act--:10.2.2.Display the message
+    dao-->ctrl--:12.2.Return true
+    ctrl-->view--:12.2.1.Return successful message
+    view-->act--:12.2.2.Display the message
 end
 
 @enduml

@@ -46,33 +46,37 @@ group opt [Invalid input]
 end
 view--
 view->ctrl++:3.doPost()
+ctrl->ctrl++:4.Instantiate List<ImportItem>
+ctrl--
 loop for each selected pending import
-    ctrl->pro++:4.new ImportItem()
-    pro-->ctrl--:5.Return ImportItem object, add to List<ImportItem>
+    ctrl->pro++:5.new ImportItem()
+    pro-->ctrl--:6.Return importItem object
+    ctrl->ctrl++:7.Add importItem object to List<ImportItem>
+    ctrl--
 end
-ctrl->dao++:6.executeImports()
-dao->ctx++:7.exeNonQuery()
-ctx -> db++:8.UPDATE import status of selected pending imports
-db -->ctx:9.Return numberOfRowsAffected
-ctx -->dao:10.Return numberOfRowsAffected
+ctrl->dao++:8.executeImports()
+dao->ctx++:9.exeNonQuery()
+ctx -> db++:10.UPDATE import status of selected pending imports
+db -->ctx:11.Return numberOfRowsAffected
+ctx -->dao:12.Return numberOfRowsAffected
 alt numberOfRowsAffected > 0
-    dao->ctx:10.1.exeNonQuery()
-    ctx->db:10.1.1.UPDATE stockCount of the imported products,\nincreased by the total quantity of imports
-    db-->ctx--:10.1.2.Return numberOfRowsAffected
-    ctx -->dao--:10.1.3.Return numberOfRowsAffected
+    dao->ctx:12.1.exeNonQuery()
+    ctx->db:12.1.1.UPDATE stockCount of the the imported product,\nincreased by the total quantity of imports
+    db-->ctx--:12.1.2.Return numberOfRowsAffected
+    ctx -->dao--:12.1.3.Return numberOfRowsAffected
     alt numberOfRowsAffected > 0
-        dao-->ctrl:10.1.3.1.Return true
-        ctrl-->view:10.1.3.1.1.Return successful message
-        view-->act:10.1.3.1.2.Display the message
+        dao-->ctrl:12.1.3.1.Return true
+        ctrl-->view:12.1.3.1.1.Return successful message
+        view-->act:12.1.3.1.2.Display the message
     else numberOfRowsAffected == 0
-        dao-->ctrl:10.1.3.2.Return error message
-        ctrl-->view:10.1.3.2.1.Return error message
-        view-->act:10.1.3.2.2.Display the message
+        dao-->ctrl:12.1.3.2.Return error message
+        ctrl-->view:12.1.3.2.1.Return error message
+        view-->act:12.1.3.2.2.Display the message
     end
 else numberOfRowsAffected == 0
-    dao-->ctrl--:10.2.Return error message
-    ctrl-->view--:10.2.1.Return error message
-    view-->act--:10.2.2.Display the message
+    dao-->ctrl--:12.2.Return error message
+    ctrl-->view--:12.2.1.Return error message
+    view-->act--:12.2.2.Display the message
 end
 act--
 @enduml

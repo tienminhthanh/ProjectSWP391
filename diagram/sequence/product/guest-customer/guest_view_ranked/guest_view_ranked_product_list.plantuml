@@ -26,7 +26,7 @@ act->view++:1.Select a ranking option\n(Books or Merchandise)
 view->ctrl++:2.doGet()
 ctrl->dao++:3.getRankedProducts()
 dao->ctx++:4.exeQuery()
-ctx -> db++:5.SELECT rows\nfrom Product table\nsorted by their sales performance
+ctx -> db++:5.SELECT a product list\nsorted by their sales performance
 db -->ctx--:6. Return ResultSet
 ctx-->dao--:7.Return ResultSet
 dao->dao++:8.Instantiate List<Product>
@@ -43,7 +43,7 @@ alt ResultSet is not empty
     dao --> ctrl:8.1.3.Return List<Product>
     ctrl --> view:8.1.4.Return List<Product>
 
-    loop For each product in the List
+    loop For each product in List<Product>
         view --> act:8.1.5.Display product general information
     end
 else ResultSet is empty

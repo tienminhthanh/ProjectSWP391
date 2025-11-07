@@ -42,7 +42,7 @@ act->view++:1.Click the "Deactivate" link of a product
 view->ctrl++:2.doGet()
 ctrl->dao++:3.changeProductStatus()
 dao->ctx++:4.exeNonQuery()
-ctx -> db++:5.UPDATE Product\nSET isActive = false\nbased on productID
+ctx -> db++:5.UPDATE status of the selected product to 'inactive'
 db -->ctx--: 6. Return numberOfRowsAffected
 ctx-->dao--:7.Return numberOfRowsAffected
 

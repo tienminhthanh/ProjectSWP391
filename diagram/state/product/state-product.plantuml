@@ -1,0 +1,47 @@
+@startuml
+title State Machine Diagram - Product
+
+skinparam State {
+  BackgroundColor White
+}
+skinparam StateFontSize 12
+skinparam ArrowFontSize 10
+skinparam stateMessageAlignment left
+
+hide empty description
+
+[*] --> Idle
+
+state Idle as "Idle"
+state Creating as "Creating"
+state Active as "Active"
+state Inactive as "Inactive"
+state Updating as "Updating"
+state Error as "Error"
+
+Idle --> Creating : creationTriggered /\n processCreation
+Creating --> Active: creationSuccessful
+Creating --> Error : creationFailed /\n logError
+
+Active --> Updating : updateTriggered
+Inactive --> Updating : updateTriggered
+Updating: entry/ processUpdate
+Updating --> Active : updateSuccessful
+Updating --> Error : updateFailed /\n logError
+
+Active --> Importing : importTriggered
+Inactive --> Importing : importTriggered 
+Importing: entry/ processImport
+Importing --> Active : importSuccessful
+Importing --> Error : importFailed /\n logError
+
+Active --> Deactivating : deactivationTriggered /\n processDeactivation
+Deactivating --> Inactive : deactivationConfirmed /\n disableProduct
+
+Inactive --> Activating : activationTriggered /\n processActivation
+Activating --> Active : activationConfirmed /\n enableProduct
+
+Error --> Retrying : retryTriggred
+Retrying --> Active: retrySuccessful
+Retrying --> Error: retryFailed
+@enduml

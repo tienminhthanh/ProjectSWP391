@@ -29,7 +29,7 @@ ctrl->dao++:3.getSearchResult()
 dao->dao++:4.processSort()
 dao--
 dao->ctx++:5.exeQuery()
-ctx -> db++:6.SELECT rows\nfrom Product table\nbased on searchQuery,pageNumber\nsorted by sortCriteria
+ctx -> db++:6.SELECT a product list\nbased on searchQuery,pageNumber,\nsorted by sortCriteria
 db -->ctx:7. Return ResultSet
 ctx-->dao:8.Return ResultSet
 dao->dao++:9.Instantiate List<Product>
@@ -46,7 +46,7 @@ alt ResultSet is not empty
     dao --> ctrl:9.1.3.Return List<Product>
     ctrl ->dao:9.1.4.countSearchResult()
     dao -> ctx:9.1.5.exeQuery()
-    ctx -> db:9.1.6.SELECT COUNT(*)\nfrom Product table\nbased on searchQuery
+    ctx -> db:9.1.6.SELECT productCounts\nbased on searchQuery
     db-->ctx--:9.1.7.Return ResultSet
     ctx-->dao--:9.1.8.Return ResultSet
     dao --> ctrl:9.1.9.Return productCounts

@@ -34,7 +34,7 @@ ctrl->util++:4.getDefaultSortCriteria()
 util-->ctrl--:5.Return sortCriteria
 ctrl->dao++:6.getClassifiedProductList()
 dao->ctx++:7.exeQuery()
-ctx -> db++:8.SELECT rows from Product table\nbased on classification, pageNumber
+ctx -> db++:8.SELECT a product list\nbased on classification, pageNumber
 db -->ctx:9.Return ResultSet
 ctx-->dao:10.Return ResultSet
 dao->dao++:11.Instantiate List<Product>
@@ -50,7 +50,7 @@ alt ResultSet is not empty
     dao --> ctrl:11.1.3.Return List<Product>
     ctrl ->dao:11.1.4.countClassifiedProductList()
     dao -> ctx:11.1.5.exeQuery()
-    ctx -> db:11.1.6.SELECT COUNT(*) from Product table\nbased on classification
+    ctx -> db:11.1.6.SELECT productCounts\nbased on classification
     db-->ctx--:11.1.7.Return ResultSet
     ctx-->dao--:11.1.8.Return ResultSet
     dao --> ctrl:11.1.9.Return productCounts

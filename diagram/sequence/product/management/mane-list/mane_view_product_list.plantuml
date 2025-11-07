@@ -39,30 +39,34 @@ participant "<u>:DBContext" as ctx
 database Database as db
 
 act++
-act->view++:1.Select the "Product List" link on sidebar
+act->view++:1.Click the "Product List" link\nor the search button
 view->ctrl++:2.doGet()
-ctrl->dao++:4.getAllProducts()
-dao->ctx++:5.exeQuery()
-ctx -> db++:6.SELECT a subset\nFROM Product\nbased on pageNumber, searchQuery if any\nORDER BY lastModifiedTime
-db -->ctx: 7. Return ResultSet
-ctx-->dao:8.Return ResultSet,\nthen instantiate a List<Product>
+ctrl->dao++:3.getAllProducts()
+dao->ctx++:4.exeQuery()
+ctx -> db++:5.SELECT a product list based on\npageNumber, searchQuery if any,\nsorted by lastModifiedTime
+db -->ctx: 6. Return ResultSet
+ctx-->dao:7.Return ResultSet
+dao->dao++:8.Instantiate List<Product>
+dao--
 alt ResultSet is not empty
     loop ResultSet.next() == true
         dao -> product++:8.1.new Product()
-        product --> dao--:8.1.1.Return product object\n,add to List<Product>
+        product --> dao--:8.1.1.Return product object
+        dao->dao++:8.1.2.Add product object to List<Product>
+        dao--
     end
 
-    dao --> ctrl:8.1.2.Return List<Product>
-    ctrl->dao:8.1.3.countProductListForManagement()
-    dao->ctx:8.1.4.exeQuery()
-    ctx->db:8.1.5.SELECT COUNT(*)\nFROM Product\nbased on searchQuery if any
-    db-->ctx--:8.1.6.Return ResultSet
-    ctx-->dao--:8.1.7.Return ResultSet
-    dao-->ctrl:8.1.8.Return productCounts
-    ctrl --> view:8.1.9.Return List<Product>, productCounts
+    dao --> ctrl:8.1.3.Return List<Product>
+    ctrl->dao:8.1.4.countProductListForManagement()
+    dao->ctx:8.1.5.exeQuery()
+    ctx->db:8.1.6.SELECT productCounts\nbased on searchQuery if any
+    db-->ctx--:8.1.7.Return ResultSet
+    ctx-->dao--:8.1.8.Return ResultSet
+    dao-->ctrl:8.1.9.Return productCounts
+    ctrl --> view:8.1.10.Return List<Product>, productCounts
 
-    loop For each product in the List
-        view --> act:8.1.10.Display product general information
+    loop For each product in List<Product>
+        view --> act:8.1.11.Display product general information
     end
 else ResultSet is empty
     dao --> ctrl--: 8.2.Return an empty list
