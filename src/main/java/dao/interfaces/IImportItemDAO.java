@@ -6,8 +6,10 @@ package dao.interfaces;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import model.ImportItem;
 import model.ProductSupplier;
+import model.Supplier;
 
 /**
  *
@@ -18,7 +20,7 @@ public interface IImportItemDAO {
 
     boolean queueImports(List<ImportItem> importItemList) throws SQLException;
 
-    List<ImportItem> getPendingImportItem() throws SQLException;
+    Map<Supplier, List<ImportItem>> getPendingImports(int productID) throws SQLException;
 
     boolean executeImports(List<ImportItem> importItemList) throws SQLException;
 }

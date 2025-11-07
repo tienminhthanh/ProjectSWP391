@@ -8,11 +8,14 @@ import dao.interfaces.IImportItemDAO;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import model.ImportItem;
 import model.Product;
@@ -48,7 +51,16 @@ public class ImportItemDAO implements IImportItemDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
             List<ProductSupplier> productSupplyList = new ArrayList<>();
             while (rs.next()) {
-                productSupplyList.add(mapResultSetToProductSupplier(rs));
+                int productID = rs.getInt("productID");
+                int supplierID = rs.getInt("supplierID");
+                Supplier s = new Supplier(supplierID, rs.getString("supplierName"));
+                Product p = new Product()
+                        .setProductID(productID)
+                        .setProductName(rs.getString("productName"))
+                        .setImageURL(rs.getString("imageURL"))
+                        .setStockCount(rs.getInt("stockCount"))
+                        .setPrice(rs.getDouble("price"));
+                productSupplyList.add(new ProductSupplier(productID, supplierID, rs.getDouble("defaultImportPrice"), rs.getInt("minImportQuant"), rs.getInt("maxImportQuant"), s, p));
             }
             return productSupplyList;
         }
@@ -121,26 +133,116 @@ public class ImportItemDAO implements IImportItemDAO {
     }
 
     @Override
-    public List<ImportItem> getPendingImportItem() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Map<Supplier, List<ImportItem>> getPendingImports(int productID) throws SQLException {
+        String sql = "SELECT ii.*, \n"
+                + "       p.productName, \n"
+                + "       p.specialFilter, \n"
+                + "       p.releaseDate, \n"
+                + "       p.price, \n"
+                + "       s.supplierName\n"
+                + "FROM ImportItem AS ii\n"
+                + "INNER JOIN Product AS p ON ii.productID = p.productID\n"
+                + "INNER JOIN Supplier AS s ON ii.supplierID = s.supplierID\n"
+                + "WHERE ii.productID = ? AND ii.isImported = 0";
+
+        Object[] params = {productID};
+
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
+            Map<Supplier, List<ImportItem>> importMap = new HashMap<>();
+            while (rs.next()) {
+                LocalDate importDate = rs.getDate("importDate") != null ? rs.getDate("importDate").toLocalDate() : LocalDate.EPOCH;
+                LocalDate releaseDate = rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX;
+                Supplier supplier = new Supplier(rs.getInt("supplierID"), rs.getString("supplierName"));
+                ImportItem item = new ImportItem()
+                        .setImportItemID(rs.getInt("importItemID"))
+                        .setProduct(new Product().setProductID(rs.getInt("productID")).setProductName(rs.getString("productName"))
+                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate).setPrice(rs.getDouble("price")))
+                        .setSupplier(supplier)
+                        .setImportDate(importDate)
+                        .setImportPrice(rs.getDouble("importPrice"))
+                        .setImportQuantity(rs.getInt("importQuantity"))
+                        .setIsImported(rs.getBoolean("isImported"));
+
+                importMap.computeIfAbsent(supplier, key -> new ArrayList<>()).add(item);
+            }
+
+            return importMap;
+        }
     }
 
     @Override
     public boolean executeImports(List<ImportItem> importItemList) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection connection = null;
+        List<Object> paramList = new ArrayList<>();
+        int itemListSize = importItemList.size();
+        Product product = importItemList.get(0).getProduct();
+        int productID = product.getProductID();
+        String specialFilter = product.getSpecialFilter();
+        int quantity = 0;
+
+        try {
+            connection = context.getConnection();
+            connection.setAutoCommit(false);
+
+            StringBuilder sqlBuilder = new StringBuilder();
+
+            String placeHolder = String.join(",", Collections.nCopies(itemListSize, "?"));
+            sqlBuilder.append("UPDATE ImportItem SET isImported = ? WHERE importItemID IN")
+                    .append("(").append(placeHolder).append(")");
+
+            paramList.add(true);
+            for (ImportItem importItem : importItemList) {
+                paramList.add(importItem.getImportItemID());
+                quantity += importItem.getImportQuantity();
+            }
+
+            if (context.exeNonQuery(connection, sqlBuilder.toString(), paramList.toArray(), false) == 0) {
+                throw new SQLException("Failed to update import status!");
+            }
+
+            sqlBuilder.setLength(0);
+            paramList.clear();
+
+            sqlBuilder.append("UPDATE Product SET stockCount = stockCount + ?\n");
+            paramList.add(quantity);
+
+            if (!specialFilter.equalsIgnoreCase("new")) {
+                sqlBuilder.append(", specialFilter = ?\n");
+                paramList.add("new");
+            }
+
+            sqlBuilder.append("WHERE productID = ?\n");
+            paramList.add(productID);
+
+            if (context.exeNonQuery(connection, sqlBuilder.toString(), paramList.toArray(), false) == 0) {
+                throw new SQLException("Failed to update product info after import!");
+            }
+
+            connection.commit();
+            return true;
+
+        } catch (Exception e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    e.addSuppressed(ex);
+                }
+
+            }
+            throw e;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true); // Restore auto-commit
+                    connection.close();
+                } catch (SQLException e) {
+                    throw e;
+                }
+            }
+
+        }
     }
 
-    private ProductSupplier mapResultSetToProductSupplier(ResultSet rs) throws SQLException {
-        int productID = rs.getInt("productID");
-        int supplierID = rs.getInt("supplierID");
-        Supplier s = new Supplier(supplierID, rs.getString("supplierName"));
-        Product p = new Product()
-                .setProductID(productID)
-                .setProductName(rs.getString("productName"))
-                .setImageURL(rs.getString("imageURL"))
-                .setStockCount(rs.getInt("stockCount"))
-                .setPrice(rs.getDouble("price"));
-        return new ProductSupplier(productID, supplierID, rs.getDouble("defaultImportPrice"), rs.getInt("minImportQuant"), rs.getInt("maxImportQuant"), s, p);
-    }
 
 }

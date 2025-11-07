@@ -53,37 +53,7 @@ public class ProductDAO implements IGeneralProductDAO {
         return instance;
     }
 
-    /**
-     * For add, update cart
-     *
-     * @param productId
-     * @return
-     */
-    public boolean isSoldOutOrPreOrder(int productId) {
-        String sql = "SELECT p.stockCount, \n"
-                + "       p.specialFilter\n"
-                + "FROM WIBOOKS.dbo.Product p\n"
-                + "WHERE [productID] = ?";
-        int stock = 0;
-        String specialFilter = "";
-        try {
-            Object[] params = {productId};
-            ResultSet rs = context.exeQuery(sql, params);
-            if (rs.next()) {
-                stock = rs.getInt(1);
-                specialFilter = rs.getString(2);
-            }
-            if ("upcoming".equals(specialFilter) || stock == 0) {
-                return true;  // Sản phẩm là Pre-order hoặc hết hàng
-            }
-            return false;  // Sản phẩm còn hàng và không phải Pre-order
-
-        } catch (Exception e) {
-            System.out.println("loi");
-        }
-        return true;
-    }
-
+    
     @Override
     public Product getProductById(int productID) throws SQLException {
         StringBuilder sql = getCTETables(null).append("SELECT P.*, \n"
@@ -114,144 +84,8 @@ public class ProductDAO implements IGeneralProductDAO {
         return null;
     }
 
-//    /**
-//     * Caller method for getBookById and getMerchById
-//     *
-//     * @param type
-//     * @param productID
-//     * @param isManagement
-//     * @return
-//     * @throws SQLException
-//     */
-//    public Product callGetProductByTypeAndId(String type, int productID, boolean isManagement) throws SQLException {
-//        switch (type) {
-//            case "merch":
-//                return getMerchById(productID, isManagement);
-//            case "book":
-//                return getBookById(productID, isManagement);
-//            default:
-//                return null;
-//        }
-//    }
-//
-//    /**
-//     * For view merch details
-//     *
-//     * @param productID
-//     * @param isManagement
-//     * @return
-//     * @throws SQLException
-//     */
-//    public Product getMerchById(int productID, boolean isManagement) throws SQLException {
-//        StringBuilder sql = getCTETables("rank").append("SELECT\n"
-//                + "P.*,\n"
-//                + "C.categoryName,\n"
-//                + "M.seriesID,\n"
-//                + "M.characterID,\n"
-//                + "M.brandID,\n"
-//                + "M.size,\n"
-//                + "M.scaleLevel,\n"
-//                + "M.material,\n"
-//                + "S.seriesName,\n"
-//                + "Ch.characterName,\n"
-//                + "B.brandName,\n"
-//                + "PD.discountPercentage,\n"
-//                + "PD.eventDateStarted,\n"
-//                + "PD.eventDuration,\n"
-//                + "TS.salesRank\n"
-//                + "FROM Product AS P\n"
-//                + "JOIN Merchandise AS M ON P.productID = M.merchandiseID\n"
-//                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
-//                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
-//                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-//                + "LEFT JOIN Brand AS B ON M.brandID = B.brandID\n"
-//                + "LEFT JOIN Character AS Ch ON M.characterID = Ch.characterID\n"
-//                + "LEFT JOIN Series AS S ON M.seriesID = S.seriesID\n"
-//                + "WHERE P.productID = ?\n");
-//
-//        if (!isManagement) {
-//            sql.append(" AND P.productIsActive = 1\n");
-//        }
-//
-//        //Print the final query to console
-//        System.out.println(sql);
-//        System.out.println("-------------------------------------------------------------------------------------");
-//
-//        Object[] params = {productID};
-//        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
-//            if (rs.next()) {
-//                return mapResultSetToProduct(rs, rs.getString("generalCategory"));
-//            }
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * For view book details
-//     *
-//     * @param productID
-//     * @return
-//     * @throws SQLException
-//     */
-//    public Product getBookById(int productID, boolean isManagement) throws SQLException {
-//
-//        StringBuilder sql = getCTETables("rank").append("SELECT\n"
-//                + "P.*, C.categoryName, B.publisherID, B.bookDuration,\n"
-//                + "Pub.publisherName, PD.discountPercentage,PD.eventDateStarted,PD.eventDuration,TS.salesRank\n"
-//                + "FROM Product AS P\n"
-//                + "JOIN Book AS B ON P.productID = B.bookID\n"
-//                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
-//                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
-//                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-//                + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
-//                + "WHERE P.productID = ?\n");
-//
-//        if (!isManagement) {
-//            sql.append(" AND P.productIsActive = 1\n");
-//        }
-//
-//        //Print the final query to console
-//        System.out.println(sql);
-//        System.out.println("-------------------------------------------------------------------------------------");
-//
-//        Object[] params = {productID};
-//        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
-//            if (rs.next()) {
-//                return mapResultSetToProduct(rs, rs.getString("generalCategory"));
-//            }
-//        }
-//        return null;
-//    }
-//    public List<Creator> getCreatorsOfThisProduct(int productID) throws SQLException {
-//        String sql = "SELECT PC.creatorID, C.creatorName, C.creatorRole\n"
-//                + "FROM Creator AS C\n"
-//                + "JOIN Product_Creator AS PC ON C.creatorID = PC.creatorID\n"
-//                + "WHERE PC.productID = ?";
-//        Object[] params = {productID};
-//        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-//            List<Creator> creatorList = new ArrayList<>();
-//            while (rs.next()) {
-//                creatorList.add(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), rs.getString("creatorRole")));
-//            }
-//            return creatorList;
-//        }
-//    }
-//
-//    public List<Genre> getGenresOfThisBook(int productID) throws SQLException {
-//        String sql = "SELECT BG.genreID, G.genreName\n"
-//                + "FROM Book_Genre AS BG\n"
-//                + "JOIN Genre AS G ON BG.genreID = G.genreID\n"
-//                + "WHERE BG.bookID = ?";
-//        Object[] params = {productID};
-//
-//        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-//            List<Genre> genreList = new ArrayList<>();
-//            while (rs.next()) {
-//                genreList.add(new Genre(rs.getInt(1), rs.getString(2)));
-//            }
-//            return genreList;
-//        }
-//    }
+    
+    
     /**
      * Count search result
      *
@@ -925,6 +759,7 @@ public class ProductDAO implements IGeneralProductDAO {
      * @return
      * @throws SQLException
      */
+    @Override
     public List<Product> getAllProducts(String query, String type, String sortCriteria, int page, int pageSize) throws SQLException {
 
         StringBuilder sql = getCTETables(null);
@@ -998,6 +833,7 @@ public class ProductDAO implements IGeneralProductDAO {
      * @return
      * @throws SQLException
      */
+    @Override
     public int countProductListForManagement(String query, String type) throws SQLException {
         StringBuilder sql = getCTETables(null);
         sql.append("SELECT COUNT(*) FROM Product P\n");
@@ -1763,187 +1599,13 @@ public class ProductDAO implements IGeneralProductDAO {
         }
     }
 
+    @Override
     public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
         String sql = "UPDATE Product SET productIsActive = ? WHERE productID = ?";
         Object[] params = {newStatus, productID};
         return context.exeNonQuery(sql, params) > 0;
     }
 
-    public Map<Supplier, List<ImportItem>> getPendingImportMapByProductID(int productID) throws SQLException {
-        String sql = "SELECT ii.*, \n"
-                + "       p.productName, \n"
-                + "       p.specialFilter, \n"
-                + "       p.releaseDate, \n"
-                + "       p.price, \n"
-                + "       s.supplierName\n"
-                + "FROM ImportItem AS ii\n"
-                + "INNER JOIN Product AS p ON ii.productID = p.productID\n"
-                + "INNER JOIN Supplier AS s ON ii.supplierID = s.supplierID\n"
-                + "WHERE ii.productID = ? AND ii.isImported = 0";
-
-        Object[] params = {productID};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            Map<Supplier, List<ImportItem>> importMap = new HashMap<>();
-            while (rs.next()) {
-                LocalDate importDate = rs.getDate("importDate") != null ? rs.getDate("importDate").toLocalDate() : LocalDate.EPOCH;
-                LocalDate releaseDate = rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX;
-                Supplier supplier = new Supplier(rs.getInt("supplierID"), rs.getString("supplierName"));
-                ImportItem item = new ImportItem()
-                        .setImportItemID(rs.getInt("importItemID"))
-                        .setProduct(new Product().setProductID(rs.getInt("productID")).setProductName(rs.getString("productName"))
-                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate).setPrice(rs.getDouble("price")))
-                        .setSupplier(supplier)
-                        .setImportDate(importDate)
-                        .setImportPrice(rs.getDouble("importPrice"))
-                        .setImportQuantity(rs.getInt("importQuantity"))
-                        .setIsImported(rs.getBoolean("isImported"));
-
-                importMap.computeIfAbsent(supplier, key -> new ArrayList<>()).add(item);
-            }
-
-            return importMap;
-        }
-    }
-
-    public boolean importProducts(List<ImportItem> items) throws SQLException {
-        if (items == null) {
-            throw new IllegalArgumentException("Cannot import null items!");
-        }
-
-        Connection connection = null;
-        try {
-            connection = context.getConnection();
-            connection.setAutoCommit(false);
-            SimpleEntry<String, Object[]> stmtEntry;
-            ImportItem[] itemArr = items.toArray(ImportItem[]::new);
-
-            stmtEntry = generateUpdateStatement(itemArr, "ImportItem");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to update import status!");
-            }
-
-            stmtEntry = generateUpdateStatement(itemArr, "ImportedProduct");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to update product info after import!");
-            }
-
-            connection.commit();
-            return true;
-
-        } catch (Exception e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    e.addSuppressed(ex);
-                }
-
-            }
-            throw e;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true); // Restore auto-commit
-                    connection.close();
-                } catch (SQLException e) {
-                    throw e;
-                }
-            }
-
-        }
-    }
-
-    public List<Product> getAllProductsForQueueing() throws SQLException {
-        String sql = "SELECT productID, \n"
-                + "       productName, \n"
-                + "       stockCount, \n"
-                + "       price, \n"
-                + "       releaseDate\n"
-                + "FROM Product\n"
-                + "WHERE releaseDate <= DATEADD(DAY, 30, GETDATE())\n"
-                + "ORDER BY stockCount ASC, \n"
-                + "         DATEDIFF(DAY, releaseDate, GETDATE()) ASC";
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            List<Product> productList = new ArrayList<>();
-            while (rs.next()) {
-                productList.add(new Product().setProductID(rs.getInt("productID"))
-                        .setProductName(rs.getString("productName"))
-                        .setStockCount(rs.getInt("stockCount"))
-                        .setPrice(rs.getDouble("price"))
-                        .setReleaseDate(rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX));
-            }
-            return productList;
-        }
-
-    }
-
-    public List<Supplier> getAllSuppliers() throws SQLException {
-        String sql = "SELECT supplierID, supplierName FROM Supplier";
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            List<Supplier> supplierList = new ArrayList<>();
-            while (rs.next()) {
-                supplierList.add(new Supplier(rs.getInt("supplierID"), rs.getString("supplierName")));
-            }
-            return supplierList;
-        }
-    }
-
-    public boolean queueImport(ImportItem queuedItem) throws SQLException {
-        if (queuedItem == null) {
-            throw new IllegalArgumentException("Cannot queue null import!");
-        }
-
-        Connection connection = null;
-        try {
-            connection = context.getConnection();
-            connection.setAutoCommit(false);
-            SimpleEntry<String, Object[]> stmtEntry;
-            ImportItem[] itemArr = new ImportItem[]{queuedItem};
-
-            stmtEntry = generateInsertStatement(itemArr, "ImportItem");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to add new import to queue!");
-            }
-            stmtEntry = generateUpdateStatement(itemArr, "QueuedImportProduct");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to update product info after queueing!");
-            }
-
-            connection.commit();
-            return true;
-
-        } catch (Exception e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    e.addSuppressed(ex);
-                }
-
-            }
-            throw e;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true); // Restore auto-commit
-                    connection.close();
-                } catch (SQLException e) {
-                    throw e;
-                }
-            }
-
-        }
-
-    }
-
-    public List<Product> fetchManyProducts(String sql, Object[] params) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public int count(String sql, Object[] params) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     public static void main(String[] args) {
         try {
