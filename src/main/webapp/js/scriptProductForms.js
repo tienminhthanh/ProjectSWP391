@@ -24,25 +24,27 @@ function toggleForm() {
         
     }
     
-    //Creators
-    const creatorSection = document.querySelector(".creator-section");
-    if (creatorSection && creatorSection.children.length > 0) {
-        const options = [...creatorSection.children[0].querySelectorAll('select option')].filter(option => option.value !== 'artist');
-        if (options) {
-            options.forEach(option => {
-                option.classList?.toggle("hidden", (generalCategory.value === "book" && option.value === 'sculptor')
-                                                    ||(generalCategory.value === "merch" && option.value === 'author')
-                                                    );
-                option.selected = option.classList?.contains('hidden') ? false : true;
-            });
+    // === Filter Creators by Product Type ===
+    const isBook = generalCategory.value === "book";
+    const isMerch = generalCategory.value === "merch";
 
+    // Hide all first
+    document.querySelectorAll('.creator-checkbox').forEach(cb => {
+        const div = cb.closest('div');
+        if (div.classList.contains('hidden-book')) div.style.display = isBook ? 'none' : 'flex';
+        if (div.classList.contains('hidden-merch')) div.style.display = isMerch ? 'none' : 'flex';
+        if (!div.classList.contains('hidden-book') && !div.classList.contains('hidden-merch')) {
+            div.style.display = 'flex';
         }
+    });
 
-        //Remove added creators upon toggle the form
-        while (creatorSection.children.length > 1) {
-            creatorSection.removeChild(creatorSection.lastChild);
-        }
-    }
+    // Reset "Show All" state on toggle
+    document.querySelectorAll('.hidden-creator').forEach(el => {
+        el.style.display = 'none';
+    });
+    const showAllLink = document.getElementById('showAllCreators');
+    if (showAllLink) showAllLink.textContent = 'Show All';
+    
     
 //    Type-specific fields
     const bookFields = document.querySelectorAll('.form-group.book-gr');
@@ -55,7 +57,14 @@ function toggleForm() {
                 bookInputs.forEach(inp=>{
                     inp.disabled = field.classList?.contains('hidden') ? true : false;
                 });
-            }       
+            }
+            
+            const bookSelectors = field.querySelectorAll('select');
+            if(bookSelectors){
+                bookSelectors.forEach(inp=>{
+                    inp.disabled = field.classList?.contains('hidden') ? true : false;
+                });
+            }
         });
     }
     const merchFields = document.querySelectorAll('.form-group.merch-gr');
@@ -68,7 +77,16 @@ function toggleForm() {
                 merchInputs.forEach(inp=>{
                     inp.disabled = field.classList?.contains('hidden') ? true : false;
                 });
-            }    
+            }
+            
+            
+            const merchSelectors = field.querySelectorAll('select');
+            if(merchSelectors){
+                merchSelectors.forEach(inp=>{
+                    inp.disabled = field.classList?.contains('hidden') ? true : false;
+                });
+            }
+            
         });
             
     }
@@ -114,6 +132,109 @@ document.addEventListener('DOMContentLoaded',function(){
     priceInput.dispatchEvent(new Event('input'));
 });
 
+
+
+// Toggle Show All Creators (respects book/merch filtering)
+function toggleCreators(event,type = '') {
+    if (!event) return;
+    event.preventDefault();
+
+    const hiddenCreators   = document.querySelectorAll('.hidden-creator');
+    const showAllLink      = document.getElementById('showAllCreators');
+    const generalCategory  = document.getElementById('generalCategory');
+    if (!hiddenCreators.length || !showAllLink) return;
+    
+    const productType = generalCategory ? generalCategory.value : type;
+    
+    const isBook  = productType === 'book';
+    const isMerch = productType === 'merch';
+    
+    const hiddenCreatorsMerch = document.querySelectorAll('.hidden-creator.hidden-book');
+    const hiddenCreatorsBook = document.querySelectorAll('.hidden-creator.hidden-merch');
+
+    // Determine current visibility of the "extra" creators
+    const firstHidden = isBook 
+    ? hiddenCreatorsBook[0]
+    : isMerch
+    ? hiddenCreatorsMerch[0]
+    : hiddenCreators[0];
+    
+    const areHidden = firstHidden.style.display === 'none' || firstHidden.style.display === '';
+
+    hiddenCreators.forEach(div => {
+        // 1. Keep type-filtered items hidden
+        const isBookItem   = div.classList.contains('hidden-merch');
+        const isMerchItem  = div.classList.contains('hidden-book');
+
+        if ((isBook && isMerchItem) || (isMerch && isBookItem)) {
+            // This creator does NOT belong to the current product type → stay hidden
+            div.style.display = 'none';
+            return;
+        }
+
+        // 2. For creators that *do* belong to the current type, toggle visibility
+        div.style.display = areHidden ? 'flex' : 'none';
+    });
+
+    // Update button text
+    showAllLink.textContent = areHidden ? 'Hide' : 'Show All';
+}
+
+//Toggle Show All Genres
+function toggleGenres(event) {
+    if (!event) {
+        console.log("toggleGenres: event not found");
+        return;
+    }
+    event.preventDefault(); // Prevent link from jumping
+    
+    const hiddenGenres = document.querySelectorAll('.hidden-genre');
+    const showAllLink = document.getElementById('showAllGenres');
+    
+    if (!hiddenGenres.length || !showAllLink) {
+        console.log("toggleGenres: hiddenGenres or showAllGenres element not found");
+        return;
+    }
+    
+    const areHidden = hiddenGenres[0].style.display === 'none' || hiddenGenres[0].style.display === '';
+    hiddenGenres.forEach(genre => {
+        if (genre) genre.style.display = areHidden ? 'flex' : 'none';
+    });
+
+    showAllLink.textContent = areHidden ? 'Hide' : 'Show All';
+}
+
+
+//Validation on input
+document.addEventListener("input", function (event) {
+    if (!event || !event.target) {
+        console.log("input event: target not found");
+        return;
+    }
+    
+    let target = event.target;
+    
+    // Stock count validation (Whole numbers only)
+    if (target.matches("[name='stockCount'], [name='quantity']")) {
+        if (target.value.includes(".")) {
+            target.setCustomValidity("Stock count must be a whole number.");
+        } else {
+            target.setCustomValidity("");
+        }
+    }
+    
+    // Apply to all text inputs & textareas (no leading/trailing spaces)
+    if (target.matches("input[type='text'], textarea")) {
+        target.value = target.value.replace(/^\s+/g, ""); // Trim leading spaces
+        
+        // Prevent empty input
+        if (target.value.trim() === "") {
+            target.setCustomValidity("This field cannot be empty.");
+        } else {
+            target.setCustomValidity("");
+        }
+    }
+});
 
 
 // Append a new creator to the form
@@ -234,60 +355,3 @@ function removeCreator(button) {
         });
     }
 }
-
-//Toggle Show All Genres
-function toggleGenres(event) {
-    if (!event) {
-        console.log("toggleGenres: event not found");
-        return;
-    }
-    event.preventDefault(); // Prevent link from jumping
-    
-    const hiddenGenres = document.querySelectorAll('.hidden-genre');
-    const showAllLink = document.getElementById('showAllGenres');
-    
-    if (!hiddenGenres.length || !showAllLink) {
-        console.log("toggleGenres: hiddenGenres or showAllGenres element not found");
-        return;
-    }
-    
-    const areHidden = hiddenGenres[0].style.display === 'none' || hiddenGenres[0].style.display === '';
-    hiddenGenres.forEach(genre => {
-        if (genre) genre.style.display = areHidden ? 'flex' : 'none';
-    });
-
-    showAllLink.textContent = areHidden ? 'Hide' : 'Show All';
-}
-
-
-//Validation on input
-document.addEventListener("input", function (event) {
-    if (!event || !event.target) {
-        console.log("input event: target not found");
-        return;
-    }
-    
-    let target = event.target;
-    
-    // Stock count validation (Whole numbers only)
-    if (target.matches("[name='stockCount'], [name='quantity']")) {
-        if (target.value.includes(".")) {
-            target.setCustomValidity("Stock count must be a whole number.");
-        } else {
-            target.setCustomValidity("");
-        }
-    }
-    
-    // Apply to all text inputs & textareas (no leading/trailing spaces)
-    if (target.matches("input[type='text'], textarea")) {
-        target.value = target.value.replace(/^\s+/g, ""); // Trim leading spaces
-        
-        // Prevent empty input
-        if (target.value.trim() === "") {
-            target.setCustomValidity("This field cannot be empty.");
-        } else {
-            target.setCustomValidity("");
-        }
-    }
-});
-

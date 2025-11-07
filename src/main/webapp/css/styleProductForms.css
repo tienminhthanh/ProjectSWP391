@@ -183,7 +183,9 @@ body {
 .pair-group.checkbox-group .hidden-genre {
     display: none;
 }
-
+.pair-group.checkbox-group .hidden-creator {
+    display: none;
+}
 button.add-product-btn{
     background-color: rgb(48, 208, 136);
     border: none;
