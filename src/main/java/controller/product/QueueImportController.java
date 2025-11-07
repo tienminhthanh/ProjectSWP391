@@ -90,11 +90,12 @@ public class QueueImportController extends HttpServlet {
 
             }
 
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An error occurred while fetching products and suppliers for queueing imports", e);
             request.setAttribute("errorMessage", "An error occurred while fetching products and suppliers for queueing imports: " + e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
-        request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
     }
 
     /**
