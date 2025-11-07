@@ -7,9 +7,9 @@ package controller.product;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
-import dao.ProductDAO;
+import dao.*;
+import dao.interfaces.IImportItemDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -37,7 +37,8 @@ import utils.LoggingConfig;
 @WebServlet(name = "ImportProductController", urlPatterns = {"/importProduct"})
 public class ExecuteImportController extends HttpServlet {
     private static final Logger LOGGER = LoggingConfig.getLogger(ExecuteImportController.class);
-    private final ProductDAO productDAO = ProductDAO.getInstance();
+//    private final ProductDAO productDAO = ProductDAO.getInstance();
+    private final IImportItemDAO importItemDAO = ImportItemDAO.getInstance();
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -76,7 +77,7 @@ public class ExecuteImportController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Map<Supplier, List<ImportItem>> importMap = productDAO.getPendingImportMapByProductID(id);
+            Map<Supplier, List<ImportItem>> importMap = importItemDAO.getPendingImports(id);
             if (importMap.isEmpty()) {
                 request.setAttribute("errorMessage", "No pending import found for this product (ID:" + id + ").");
             } else {
@@ -129,18 +130,18 @@ public class ExecuteImportController extends HttpServlet {
                 }
             }
 
-            LocalDate rlsDate = items.get(0).getProduct().getReleaseDate();
-            rlsDate = rlsDate != null ? rlsDate : LocalDate.parse("1970-01-01");
-            if (rlsDate.toString().equals("1970-01-01")) {
-                Product product = productDAO.getProductById(productID);
-                rlsDate = product != null ? product.getReleaseDate() : rlsDate;
-            }
+//            LocalDate rlsDate = items.get(0).getProduct().getReleaseDate();
+//            rlsDate = rlsDate != null ? rlsDate : LocalDate.parse("1970-01-01");
+//            if (rlsDate.toString().equals("1970-01-01")) {
+//                Product product = productDAO.getProductById(productID);
+//                rlsDate = product != null ? product.getReleaseDate() : rlsDate;
+//            }
+//
+//            for (ImportItem item : items) {
+//                item.getProduct().setReleaseDate(rlsDate);
+//            }
 
-            for (ImportItem item : items) {
-                item.getProduct().setReleaseDate(rlsDate);
-            }
-
-            if (productDAO.importProducts(items)) {
+            if (importItemDAO.executeImports(items)) {
                 LOGGER.log(Level.INFO, "Products has been imported to inventory successfully! (ID:{0})", productID);
                 request.setAttribute("message", "The product has been imported to inventory successfully! (ID:" + productID + ")");
             } else {
