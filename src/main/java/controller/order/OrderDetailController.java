@@ -149,17 +149,17 @@ public class OrderDetailController extends HttpServlet {
                     case "confirm":
                         orderDao.updateOrderstatus(orderID, status);
                         break;
-                    case "rate": {
+                    case "rateAndReview": {
                         int productID = Integer.parseInt(request.getParameter("productID"));
                         int rate = Integer.parseInt(request.getParameter("rating"));
                         orderDao.updateRatingForProduct(orderID, productID, rate);
-                        break;
-                    }
-                    case "review": {
-                        int productID = Integer.parseInt(request.getParameter("productID"));
                         String reviewContent = request.getParameter("reviewContent");
                         orderDao.updateCommentForProduct(orderID, productID, reviewContent);
                         break;
+                      
+                    }
+                    case "review": {
+                        
                     }
                     default:
                         break;
