@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.DBContext;
 
 /**
  *
@@ -20,10 +21,15 @@ import java.util.logging.Logger;
  */
 public class VoucherDAO {
 
-    private utils.DBContext context;
+    private static final VoucherDAO instance = new VoucherDAO();
+    private final DBContext context;
 
-    public VoucherDAO() {
-        context = new utils.DBContext();
+    private VoucherDAO() {
+        context = DBContext.getInstance();
+    }
+
+    public static VoucherDAO getInstance() {
+        return instance;
     }
 
     public List<Voucher> getVoucherByPage(String searchKeyword, String searchType, String filtered, int page, int pageSize) {
@@ -333,7 +339,7 @@ public class VoucherDAO {
         }
         return false;
     }
-    
+
     public boolean unlockVoucher(int id) {
         try {
             Voucher voucher = getVoucherByID(id);
@@ -387,7 +393,7 @@ public class VoucherDAO {
 
     public static void main(String[] args) {
         VoucherDAO vd = new VoucherDAO();
-        Voucher v = new Voucher(3, "ss", 100, 12,12, "2025-02-24", 122, 1, false, true, "PERCENTAGE", 0.0, "2025-03-31");
+        Voucher v = new Voucher(3, "ss", 100, 12, 12, "2025-02-24", 122, 1, false, true, "PERCENTAGE", 0.0, "2025-03-31");
         System.out.println(vd.getListVoucherAvailableNow().size());
     }
 }

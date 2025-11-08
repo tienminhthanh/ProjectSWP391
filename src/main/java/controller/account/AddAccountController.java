@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 @WebServlet(name = "AddAccountServlet", urlPatterns = {"/addAccount"})
 public class AddAccountController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -54,7 +54,6 @@ public class AddAccountController extends HttpServlet {
         request.setAttribute("birthDate", birthDate);
         request.setAttribute("role", role);
 
-        AccountDAO accountDAO = new AccountDAO();
 
         try {
             if (!lib.isValidPassword(rawPassword)) {

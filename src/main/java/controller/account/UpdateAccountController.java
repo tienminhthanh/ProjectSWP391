@@ -18,7 +18,7 @@ import model.DeliveryAddress;
 
 @WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/updateAccount"})
 public class UpdateAccountController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -32,7 +32,6 @@ public class UpdateAccountController extends HttpServlet {
         Account acc = (Account) session.getAttribute("account");
 
         String username = request.getParameter("username");
-        AccountDAO accountDAO = new AccountDAO();
 
         try {
             Account account = accountDAO.getAccountByUsername(username);
@@ -80,7 +79,6 @@ public class UpdateAccountController extends HttpServlet {
         // Chỉ admin mới có quyền cập nhật vai trò
         String role = "admin".equals(loggedInAccount.getRole()) ? request.getParameter("role") : null;
 
-        AccountDAO accountDAO = new AccountDAO();
 
         try {
             if (accountDAO.isEmailExist(email, username)) {

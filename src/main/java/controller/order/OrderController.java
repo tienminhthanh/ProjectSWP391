@@ -36,6 +36,10 @@ import model.Voucher;
  */
 @WebServlet(name = "OrderController", urlPatterns = {"/OrderController"})
 public class OrderController extends HttpServlet {
+private final OrderDAO orderDAO = OrderDAO.getInstance();
+private final AccountDAO accountDAO = AccountDAO.getInstance();
+private final ProductDAO productDAO = ProductDAO.getInstance();
+private final VoucherDAO vDao = VoucherDAO.getInstance(); 
 
     /**
      *
@@ -74,7 +78,6 @@ public class OrderController extends HttpServlet {
         String action = request.getParameter("action");
         Map<Integer, Double> computedValues = new HashMap<>();
         List<Double> computedValuesList = new ArrayList<>();
-        AccountDAO accountDAO = new AccountDAO();
         List<DeliveryAddress> listAddress = new ArrayList<>();
         int bestVoucherID = 0;
         List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
@@ -90,8 +93,7 @@ public class OrderController extends HttpServlet {
             List<DeliveryOption> deliveryOptions = new ArrayList<>();
 
             try {
-                OrderDAO OrderDAO = new OrderDAO();
-                deliveryOptions = OrderDAO.getAllDeliveryOptions();
+                deliveryOptions = orderDAO.getAllDeliveryOptions();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -99,7 +101,6 @@ public class OrderController extends HttpServlet {
             for (CartItem item : cartItems) {
 
                 Product product = null;
-                ProductDAO productDAO = new ProductDAO();
                 BigDecimal priceWithQuantity = item.getPriceWithQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
                 subtotal += priceWithQuantity.doubleValue();
                 try {
@@ -112,7 +113,6 @@ public class OrderController extends HttpServlet {
 
             }
 
-            VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             List<Voucher> validVouchers = new ArrayList<>();
             double valueOfVoucher = 0;
@@ -188,7 +188,6 @@ public class OrderController extends HttpServlet {
                 request.setAttribute("phone", account.getPhoneNumber());
                 request.setAttribute("email", account.getEmail());
             }
-            ProductDAO productDAO = new ProductDAO();
             Product product = null;
             try {
                 account = accountDAO.getAdditionalInfo(account);
@@ -201,8 +200,7 @@ public class OrderController extends HttpServlet {
             List<DeliveryOption> deliveryOptions = new ArrayList<>();
 
             try {
-                OrderDAO OrderDAO = new OrderDAO();
-                deliveryOptions = OrderDAO.getAllDeliveryOptions();
+                deliveryOptions = orderDAO.getAllDeliveryOptions();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -215,7 +213,6 @@ public class OrderController extends HttpServlet {
 
             Double sum = product.getDiscountPercentage() > 0 ? (quantity * product.getPrice() * (100 - product.getDiscountPercentage()) / 100) : (product.getPrice() * quantity);
             BigDecimal subtotal = BigDecimal.valueOf(sum);
-            VoucherDAO vDao = new VoucherDAO();
             List<Voucher> listVoucher = vDao.getListVoucher();
             List<Voucher> validVouchers = new ArrayList<>();
             double valueOfVoucher = 0;
@@ -285,8 +282,6 @@ public class OrderController extends HttpServlet {
         String selectedAddress = request.getParameter("selectedAddress");
         String defaultDeliveryAddress = request.getParameter("defaultDeliveryAddress");
       
-        OrderDAO orderDAO = new OrderDAO();
-        VoucherDAO voucherDAO = new VoucherDAO();
         if (account == null) {
             response.sendRedirect("login");
             return;
@@ -294,7 +289,7 @@ public class OrderController extends HttpServlet {
         Integer voucherID = null; // Mặc định là null nếu không chọn voucher
         if (!voucherIDParam.trim().isEmpty()) {
             int tempVoucherID = Integer.parseInt(voucherIDParam);
-            Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
+            Voucher voucher = vDao.getVoucherByID(tempVoucherID);
             voucherID = voucher.getVoucherID();
         }
         try {

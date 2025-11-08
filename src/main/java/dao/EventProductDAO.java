@@ -4,6 +4,10 @@
  */
 package dao;
 
+import dao.CategoryDAO;
+import model.EventProduct;
+import model.Product;
+import model.Category;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,10 +16,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
-import model.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.DBContext;
 
 /**
  *
@@ -23,10 +27,15 @@ import java.util.logging.Logger;
  */
 public class EventProductDAO {
 
-    private utils.DBContext context;
+    private static final EventProductDAO instance = new EventProductDAO();
+    private final DBContext context;
 
-    public EventProductDAO() {
-        context = new utils.DBContext();
+    private EventProductDAO() {
+        context = DBContext.getInstance();
+    }
+
+    public static EventProductDAO getInstance() {
+        return instance;
     }
 
 //    public int getDiscountOfProductInEvent()
@@ -75,7 +84,7 @@ public class EventProductDAO {
 //    }
     public List<Product> getListProductToAddForEvent(int eventId, String searchKeyword, String filtered) {
         List<Product> listProduct = new ArrayList<>();
-        ProductDAO pDao = new ProductDAO();
+        CategoryDAO categoryDAO = CategoryDAO.getInstance();
         List<Object> paramsList = new ArrayList<>();
         paramsList.add(eventId);
 
@@ -139,7 +148,7 @@ public class EventProductDAO {
                 double price = rs.getDouble(3);
                 int stockCount = rs.getInt(4);
                 int categoryID = rs.getInt(5);
-                Category category = pDao.getCategoryById(categoryID);
+                Category category = categoryDAO.getById(categoryID);
                 String description = rs.getString(6);
                 String releaseDate_raw = rs.getString(7);
                 LocalDate releaseDate = LocalDate.parse(releaseDate_raw, formatter);
@@ -165,7 +174,7 @@ public class EventProductDAO {
 
     public List<Product> getListProductInEvent(int eventID) {
         List<Product> listProductInEvent = new ArrayList<>();
-        ProductDAO pDao = new ProductDAO();
+        CategoryDAO categoryDAO = CategoryDAO.getInstance();
         String sql = "SELECT p.[productID],\n"
                 + "       p.[productName],\n"
                 + "       p.[price],\n"
@@ -202,7 +211,7 @@ public class EventProductDAO {
                 double price = rs.getDouble(3);
                 int stockCount = rs.getInt(4);
                 int categoryID = rs.getInt(5);
-                Category category = pDao.getCategoryById(categoryID);
+                Category category = categoryDAO.getById(categoryID);
                 String description = rs.getString(6);
                 String releaseDate_raw = rs.getString(7);
                 LocalDate releaseDate = LocalDate.parse(releaseDate_raw, formatter);

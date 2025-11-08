@@ -1,5 +1,6 @@
 package model;
 
+import model.Customer;
 import java.sql.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class OrderInfo {
     private String vnp_TransactionNo;
     private String vnp_TransactionDate;
     private String vnp_TransactionStatus;
+    private Customer customer;
 
     public OrderInfo() {
         this.paymentStatus = "pending";
@@ -265,6 +267,16 @@ public class OrderInfo {
     public void setVnp_TransactionStatus(String vnp_TransactionStatus) {
         this.vnp_TransactionStatus = vnp_TransactionStatus;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+    
+    
 //fluent setter  ( tìm hiểu thêm ) 
     @Override
     public String toString() {

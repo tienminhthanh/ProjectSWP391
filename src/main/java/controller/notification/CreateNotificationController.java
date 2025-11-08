@@ -20,18 +20,9 @@ import model.Notification;
 
 @WebServlet(name = "CreateNotificationController", urlPatterns = {"/createnotification"})
 public class CreateNotificationController extends HttpServlet {
-    private NotificationDAO notificationDAO;
-    private AccountDAO accountDAO;
+    private final AccountDAO accountDAO = AccountDAO.getInstance();
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
 
-    @Override
-    public void init() throws ServletException {
-        try {
-            notificationDAO = new NotificationDAO();
-            accountDAO = new AccountDAO();
-        } catch (Exception e) {
-            throw new ServletException("Failed to initialize DAOs", e);
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

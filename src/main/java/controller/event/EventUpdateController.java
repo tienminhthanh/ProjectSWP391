@@ -37,6 +37,8 @@ public class EventUpdateController extends HttpServlet {
 
     private final String EVENT_UPDATE_PAGE = "eventUpdate.jsp";
     private final String EVENT_DETAILS_PAGE = "eventDetails";
+private final EventDAO eDao = EventDAO.getInstance();
+private final EventProductDAO epDao = EventProductDAO.getInstance();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -53,7 +55,6 @@ public class EventUpdateController extends HttpServlet {
         String url = EVENT_UPDATE_PAGE;
         try {
             int id = Integer.parseInt(request.getParameter("eventID"));
-            EventDAO eDao = new EventDAO();
             Event eventDetails = eDao.getEventByID(id);
             request.setAttribute("EVENT_DETAILS", eventDetails);
         } catch (Exception ex) {
@@ -92,7 +93,6 @@ public class EventUpdateController extends HttpServlet {
         String url = EVENT_DETAILS_PAGE;
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        EventDAO eDao = new EventDAO();
 //        Event e = new Event();
         int id = 0;
 
@@ -192,12 +192,11 @@ public class EventUpdateController extends HttpServlet {
             Event event = new Event(id, name, dateCreated, duration, fileName, description, adminID,
                     isActive, dateStarted.toString(), existingEvent.isExpiry());
 
-            EventProductDAO epDAO = new EventProductDAO();
             if (eDao.updateEvent(event)) {
                 session.setAttribute("message", "Event updated successfully!");
                 session.setAttribute("messageType", "success");
                 if (!event.isExpiry()) {
-                    epDAO.deleteListProductInEvent(event.getEventID());
+                    epDao.deleteListProductInEvent(event.getEventID());
                 }
             } else {
                 session.setAttribute("message", "Failed to update event.");

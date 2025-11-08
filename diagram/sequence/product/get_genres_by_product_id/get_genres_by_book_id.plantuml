@@ -1,0 +1,34 @@
+@startuml
+<style>
+     sequenceDiagram {
+        actor { BackgroundColor white; LineThickness 1.0 }
+        participant { BackgroundColor white; RoundCorner 0 }
+        database { BackgroundColor white }
+    }
+</style>
+
+hide footbox
+
+mainframe Get Genres by Book ID
+
+
+participant "<u>:GenreDAO" as dao
+participant "<u>:Genre" as genre
+participant "<u>:DBContext" as context
+
+database Database as db
+
+dao++
+dao -> context++:1.exeQuery()
+context -> db++:2.SELECT genres\nbased on bookID
+db -->context--:3.Return ResultSet
+context-->dao--:4.Return ResultSet
+dao->dao++:5.Instantiate List<Genre>
+dao--
+loop ResultSet.next() == true
+    dao -> genre++:6.new Genre()
+    genre --> dao--:7.Return genre object
+    dao->dao++:8.Add genre object to List<Genre>
+    dao--
+end
+@enduml

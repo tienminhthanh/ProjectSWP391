@@ -13,7 +13,7 @@ import model.Account;
 
 @WebServlet(name = "EmailUnlockServlet", urlPatterns = {"/emailUnlock"})
 public class EmailUnlockController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -44,7 +44,6 @@ public class EmailUnlockController extends HttpServlet {
 
         try {
             // Tạo đối tượng AccountDAO để thao tác với cơ sở dữ liệu
-            AccountDAO accountDAO = new AccountDAO();
             // Lấy tài khoản từ email
             Account account = accountDAO.getAccountByEmail(email);
 
@@ -113,7 +112,6 @@ public class EmailUnlockController extends HttpServlet {
         }
 
         try {
-            AccountDAO accountDAO = new AccountDAO();
             Account account = accountDAO.getAccountByEmail(email);
 
             if (account != null && !account.getAccountIsActive()) {

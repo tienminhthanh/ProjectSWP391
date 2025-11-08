@@ -1,5 +1,7 @@
 package dao;
 
+import model.Customer;
+import model.Product;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -7,14 +9,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import model.*;
+import utils.DBContext;
 
 public class DashboardDAO {
 
-    private utils.DBContext context;
+    private static final DashboardDAO instance = new DashboardDAO();
+    private final DBContext context;
 
-    public DashboardDAO() {
-        context = new utils.DBContext();
+    private DashboardDAO() {
+        context = DBContext.getInstance();
+    }
+
+    public static DashboardDAO getInstance() {
+        return instance;
     }
 
     public Map<String, List<Product>> getTopProductsByCategory(String year, String quarter, String month, boolean isFilterApplied, Map<Integer, Integer> quantitySoldMap, Map<Integer, Double> revenueMap) {

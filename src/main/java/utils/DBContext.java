@@ -24,8 +24,12 @@ public class DBContext {
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "123456";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-
-    public DBContext() {
+    
+    //Eager init
+    private static final DBContext instance = new DBContext(); 
+    
+    //Prevent external instantiation
+    private DBContext() {
         try {
             Class.forName(DRIVER);
             LOGGER.info("SQL Server driver loaded successfully");
@@ -34,6 +38,9 @@ public class DBContext {
             throw new RuntimeException("Database initialization failed", e);
         }
     }
+    
+    //Public access to DBContext
+    public static DBContext getInstance(){ return instance;}
 
     public Connection getConnection() throws SQLException {
         try {
@@ -45,7 +52,8 @@ public class DBContext {
             throw e;
         }
     }
-
+    
+    //Based method with new connection ebstablished for each every query execution
     public ResultSet exeQuery(String query, Object[] params) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -57,8 +65,25 @@ public class DBContext {
         }
         return preparedStatement.executeQuery();
     }
+    
+     // Overload exeQuery with provided Connection.prepareStatement()
+     // For the purpose of 1 connection -> multiple query execution
+    public ResultSet exeQuery(PreparedStatement preparedStatement, Object[] params) throws SQLException {
+        try {
+            if (params != null && params.length > 0) {
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setObject(i + 1, params[i]);
+                }
+            }
+            return preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Query execution failed: {0}", e);
+            throw e;
+        }
+    }
 
-    // Execute INSERT, UPDATE, DELETE
+    // Base method for INSERT, UPDATE, DELETE execution
+    // with new connection estabslished every query execution
     public int exeNonQuery(String query, Object[] params) throws SQLException {
         try ( Connection connection = getConnection();  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             if (params != null && params.length > 0) {
@@ -81,7 +106,9 @@ public class DBContext {
         }
     }
 
-    //Overload
+    //Overload with provided Connection 
+    //and option for returning generated primary key upon INSERT
+    // For handling transaction
     public int exeNonQuery(Connection connection, String sql, Object[] params, boolean returnGeneratedKeys) throws SQLException {
         try ( PreparedStatement preparedStatement = returnGeneratedKeys 
                 ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -114,18 +141,5 @@ public class DBContext {
         }
     }
 
-    // Overload exeQuery with provided Connection
-    public ResultSet exeQuery(PreparedStatement preparedStatement, Object[] params) throws SQLException {
-        try {
-            if (params != null && params.length > 0) {
-                for (int i = 0; i < params.length; i++) {
-                    preparedStatement.setObject(i + 1, params[i]);
-                }
-            }
-            return preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Query execution failed: {0}", e);
-            throw e;
-        }
-    }
+   
 }

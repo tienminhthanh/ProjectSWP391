@@ -38,8 +38,8 @@
 
         <!--Customer sidebar-->
         <link rel="stylesheet" href="css/styleCustomerSidebar.css">
-        
-         <!--Tailwind-->
+
+        <!--Tailwind-->
         <script src="https://cdn.tailwindcss.com"></script>
         <!--Header script-->
         <script src="js/scriptHeader.js" defer></script>
@@ -52,10 +52,10 @@
         <!--customer sidebar-->
         <script src="js/scriptCusSidebar.js" defer></script>
 
-         <!-- FontAwesome Kit (Optional, but defer it) -->
+        <!-- FontAwesome Kit (Optional, but defer it) -->
         <script src="https://kit.fontawesome.com/bfab6e6450.js" crossorigin="anonymous" defer></script>
 
-       
+
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     </head>
@@ -74,6 +74,7 @@
 
             <main class="w-full md:w-5/6 p-3">
                 <c:if test="${not empty requestScope.product}">
+
                     <div class="root-container bg-gray-100">
 
                         <div class="detail-container">
@@ -117,7 +118,7 @@
                                             <p class="category w-full">${product.specificCategory.categoryName}</p>
                                         </div>
                                         <div class="creator-top text-xs">
-                                            <c:forEach var="creator" items ="${creatorList}" varStatus="loopStatus">
+                                            <c:forEach var="creator" items ="${product.creatorList}" varStatus="loopStatus">
                                                 <c:out value="${creator.creatorName}"/>
                                                 <c:if test="${!loopStatus.last}"> - </c:if>
                                             </c:forEach>
@@ -192,7 +193,7 @@
                                                         </c:when>
                                                         <c:when test="${product.stockCount <= 10}">
                                                             <!--<p class="stock-count w-full pl-5 text-center text-xl md:text-sm lg:text-xl font-bold">Remaining slots: <span class="text-3xl text-blue-500 font-bold"></span></p>-->
-                                                            </c:when>
+                                                        </c:when>
 
                                                     </c:choose>
                                                 </div>
@@ -369,7 +370,7 @@
                                         <c:when test="${not empty requestScope.reviewMap}">
                                             <c:forEach var="review" items="${requestScope.reviewMap}">
                                                 <div class="customer-review p-2 m-2 border-b-4 rounded-lg flex flex-col items-start gap-2">
-                                                    <h4 class="customer-name text-md font-bold">${review.key}</h4>
+                                                    <h4 class="customer-name text-md font-bold">${review.value[2]}</h4>
                                                     <p class="avg-rating">
                                                         <c:forEach var="i" begin="1" end="${review.value[0]}">
                                                             <i class="fa-solid fa-star"></i>
@@ -397,13 +398,12 @@
                 </c:if>
             </main>
         </div>
+
         <!--Popup unauthorized users-->
         <c:if test="${empty sessionScope.account or sessionScope.account.getRole() != 'customer'}">
             <c:set var="currentURL" value="${currentURL}" scope="request"/>
             <jsp:include page="popuplogin.jsp"/>
         </c:if>
-
-
         <jsp:include page="footer.jsp"/>
         <jsp:include page="chat.jsp"/>
 
@@ -413,7 +413,6 @@
             </button>
         </div>
 
-        <!-- Chat Popup -->
         <div id="chatPopup" class="fixed bottom-16 left-4 bg-white rounded-lg shadow-xl border w-[400px] hidden z-50">
             <div class="flex justify-between items-center bg-orange-500 text-white px-4 py-2 rounded-t-lg">
                 <span>WIBOOKS AI</span>
@@ -423,6 +422,7 @@
                 <jsp:include page="chatAI.jsp"/>
             </div>
         </div>
+
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -436,279 +436,285 @@
             });
 
 
-        <c:if test="${not empty requestScope.product}">
-                
-            
-            //Map input quant to purchase quant in forms
-            document.addEventListener("DOMContentLoaded", function () {
-                // Stockcount = 0 => Do nothing
-                if (`${product.stockCount}` === '0' && `${product.specialFilter}` !== 'upcoming') {
-                    return;
-                }
-
-                let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
-                let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-
-                if (!hiddenInputs) {
-                    console.log("Hidden quantity not found!");
-                    return;
-                }
-
-                if (!numberValue) {
-                    console.log("Quantity input not found!");
-                    return;
-                }
+            <c:if test="${not empty requestScope.product}">
 
 
-                // Loop through all hidden inputs and update their values
-                hiddenInputs.forEach(function (hiddenInput) {
-                    hiddenInput.value = numberValue.value;
-                });
-
-
-                //                Map quant on input
-                document.getElementById("quantityInput").addEventListener("input", function (event) {
-                    const inputElement = document.getElementById("quantityInput");
-                    let numberValue = event.target.value; // Get the value from the number input
-                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
-
-                    if (!numberValue || !`${product.stockCount}`) {
+                //Map input quant to purchase quant in forms
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Stockcount = 0 => Do nothing
+                    if (`${product.stockCount}` === '0' && `${product.specialFilter}` !== 'upcoming') {
                         return;
                     }
-                    if (numberValue < 1) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Invalid purchase quantity',
-                            text: `Purchase quantity must be greater than 0!`
-                        });
-                        inputElement.value = numberValue = 1;
-                    } else if (numberValue > ${product.stockCount}) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Invalid purchase quantity',
-                            text: `Purchase quantity cannot exceed ${product.stockCount}!`
-                        });
-                        inputElement.value = numberValue = 1;
+
+                    let numberValue = document.getElementById("quantityInput"); // Get the value from the number input
+                    let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                    if (!hiddenInputs) {
+                        console.log("Hidden quantity not found!");
+                        return;
+                    }
+
+                    if (!numberValue) {
+                        console.log("Quantity input not found!");
+                        return;
                     }
 
 
                     // Loop through all hidden inputs and update their values
                     hiddenInputs.forEach(function (hiddenInput) {
-                        hiddenInput.value = numberValue;
+                        hiddenInput.value = numberValue.value;
                     });
+
+
+                    //                Map quant on input
+                    document.getElementById("quantityInput").addEventListener("input", function (event) {
+                        const inputElement = document.getElementById("quantityInput");
+                        let numberValue = event.target.value; // Get the value from the number input
+                        let hiddenInputs = document.querySelectorAll(".quantity"); // Select all inputs with class "quantity"
+
+                        if (!numberValue || !`${product.stockCount}`) {
+                            return;
+                        }
+                        if (numberValue < 1) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid purchase quantity',
+                                text: `Purchase quantity must be greater than 0!`
+                            });
+                            inputElement.value = numberValue = 1;
+                        } else if (numberValue > ${product.stockCount}) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid purchase quantity',
+                                text: `Purchase quantity cannot exceed ${product.stockCount}!`
+                            });
+                            inputElement.value = numberValue = 1;
+                        }
+
+
+                        // Loop through all hidden inputs and update their values
+                        hiddenInputs.forEach(function (hiddenInput) {
+                            hiddenInput.value = numberValue;
+                        });
+
+                    });
+
 
                 });
 
 
-            });
 
+                //Format price display
+                document.addEventListener("DOMContentLoaded", function () {
 
+                    // Select all elements with prices
+                    let priceElements = document.querySelectorAll(".price-area p");
 
-            //Format price display
-            document.addEventListener("DOMContentLoaded", function () {
-                
-                // Select all elements with prices
-                let priceElements = document.querySelectorAll(".price-area p");
+                    priceElements.forEach(priceEl => {
+                        let priceText = priceEl.innerText.trim(); // Get the text inside span
+                        let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
 
-                priceElements.forEach(priceEl => {
-                    let priceText = priceEl.innerText.trim(); // Get the text inside span
-                    let price = parseFloat(priceText.replaceAll(" VND", "").replaceAll(",", ""));
-
-                    if (!isNaN(price)) {
-                        price = Math.round(price);
-                        // Format price with commas (e.g., 4,400 VND)
-                        priceEl.innerText = price.toLocaleString() + " đ";
-                    }
-                });
-            });
-
-
-            //Map final price to forms
-            document.addEventListener("DOMContentLoaded", function () {
-                
-                const finalPriceElement = document.querySelector(".final-price");
-                const purchaseForms = document.querySelectorAll(".purchase-form form");
-                let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
-
-                if (!purchaseForms) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'An error occured: Purchase forms not found',
-                        text: `This product is not ready for purchase right now! Feel free to check the others.`
-                    });
-                    document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
-                    const stockOut = document.querySelector('.purchase-form p');
-                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
-                    return;
-                }
-
-                //Check if the form inputs and price are there
-                if (!pricesToSubmit || !finalPriceElement) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'An error occured: Unable to process product price',
-                        text: `This product is not ready for purchase right now! Feel free to check the others.`
-                    });
-                    document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
-                    const stockOut = document.querySelector('.purchase-form p');
-                    stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
-                    return;
-                }
-
-               
-
-                let priceText = finalPriceElement.innerText;
-                let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
-
-                if (isNaN(priceNumber)) {
-                    console.log("Price is not a number");
-                    return;
-                }
-
-                pricesToSubmit.forEach(function (price) {
-                    price.value = priceNumber;
-                    console.log('Price is', price.value);
-                });
-            });
-
-            //Format date display
-            document.addEventListener('DOMContentLoaded', function () {
-                
-                const releaseDates = document.querySelectorAll('.release-date');
-                const fomoDate = document.querySelector('.fomo-info>span');
-
-                // Formatting functions for Vietnam locale
-                const formatDate = (date) =>
-                    new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
-                const formatTime = (date) =>
-                    new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
-
-                //ReleaseDate
-                if (releaseDates) {
-                    releaseDates.forEach(rlsDate => {
-                        const rlsDateObj = new Date(rlsDate.innerText.trim());
-                        if (!isNaN(rlsDateObj)) {
-                            rlsDate.innerText = formatDate(rlsDateObj);
+                        if (!isNaN(price)) {
+                            price = Math.round(price);
+                            // Format price with commas (e.g., 4,400 VND)
+                            priceEl.innerText = price.toLocaleString() + " đ";
                         }
                     });
-                }
+                });
 
-                //Last modified time
-                if (fomoDate) {
-                    const dateObj = new Date(fomoDate.innerText.trim());
-                    if (!isNaN(dateObj)) {
-                        const today = new Date();
-                        // Remove time from today's date for accurate comparison
-                        today.setHours(0, 0, 0, 0);
 
-                        // Show time if today, otherwise show formatted date
-                        const formattedDate = dateObj.toDateString() === today.toDateString()
-                                ? formatTime(dateObj)
-                                : formatDate(dateObj);
-                        fomoDate.innerText = formattedDate;
+                //Map final price to forms
+                document.addEventListener("DOMContentLoaded", function () {
+
+                    const finalPriceElement = document.querySelector(".final-price");
+                    const purchaseForms = document.querySelectorAll(".purchase-form form");
+                    let pricesToSubmit = document.querySelectorAll("input[name='priceWithQuantity']");
+
+                    if (!purchaseForms) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'An error occured: Purchase forms not found',
+                            text: `This product is not ready for purchase right now! Feel free to check the others.`
+                        });
+                        document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                        const stockOut = document.querySelector('.purchase-form p');
+                        stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
+                        return;
                     }
-                }
 
-            });
+                    //Check if the form inputs and price are there
+                    if (!pricesToSubmit || !finalPriceElement) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'An error occured: Unable to process product price',
+                            text: `This product is not ready for purchase right now! Feel free to check the others.`
+                        });
+                        document.querySelector('.purchase-form').innerHTML = `<p>UNAVAILABLE</p>`;
+                        const stockOut = document.querySelector('.purchase-form p');
+                        stockOut.classList.add('text-center', 'text-xl', 'text-gray-400', 'py-8', 'md:px-2', 'bg-gray-100', 'my-16', 'max-w-full');
+                        return;
+                    }
 
-            //Format tags-link
-            document.addEventListener('DOMContentLoaded', function () {
-                
-                const tagsLink = document.querySelectorAll('.tags-link');
-                if (tagsLink) {
-                    const type = `${requestScope.type}`;
-                    if (type !== '') {
-                        tagsLink.forEach(link => {
-                            const tag = link.dataset.tag ? link.dataset.tag : "";
-                            let params = `type=${type}`;
-                            params += tag !== type ? "&query=" + tag : "";
-                            link.href = decodeURIComponent("search?" + encodeURIComponent(params));
+
+
+                    let priceText = finalPriceElement.innerText;
+                    let priceNumber = parseFloat(priceText.replace(/[^0-9]/g, ""));
+
+                    if (isNaN(priceNumber)) {
+                        console.log("Price is not a number");
+                        return;
+                    }
+
+                    pricesToSubmit.forEach(function (price) {
+                        price.value = priceNumber;
+                        console.log('Price is', price.value);
+                    });
+                });
+
+                //Format date display
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    const releaseDates = document.querySelectorAll('.release-date');
+                    const fomoDate = document.querySelector('.fomo-info>span');
+
+                    // Formatting functions for Vietnam locale
+                    const formatDate = (date) =>
+                        new Intl.DateTimeFormat('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(date);
+                    const formatTime = (date) =>
+                        new Intl.DateTimeFormat('vi-VN', {hour: '2-digit', minute: '2-digit', hour12: true}).format(date);
+
+                    //ReleaseDate
+                    if (releaseDates) {
+                        releaseDates.forEach(rlsDate => {
+                            const rlsDateObj = new Date(rlsDate.innerText.trim());
+                            if (!isNaN(rlsDateObj)) {
+                                rlsDate.innerText = formatDate(rlsDateObj);
+                            }
                         });
                     }
-                }
-            });
 
+                    //Last modified time
+                    if (fomoDate) {
+                        const dateObj = new Date(fomoDate.innerText.trim());
+                        if (!isNaN(dateObj)) {
+                            const today = new Date();
+                            // Remove time from today's date for accurate comparison
+                            today.setHours(0, 0, 0, 0);
 
-            ////Close sidebar on resize
-            //window.addEventListener('resize', () => {
-            //    const clientWidth = document.documentElement.clientWidth;
-            //    const sidebar = document.getElementById('cus-sidebar');
-            //    sidebar.style.display = 'none';
-            //});
-
-            // Stock check function for Add to Cart
-            function checkStock(cartQuantity, stockCount, event) {
-                let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
-                if (cartQuantity + quantityToAdd > stockCount) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Stock Limit Reached',
-                        text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
-                    });
-                    event.preventDefault();
-                    return false;
-                }
-                return true;
-            }
-
-            //Format creators display
-            document.addEventListener('DOMContentLoaded', function () {
-            
-                const creators = document.querySelectorAll('.cre-details-gr');
-                const creStrs = [
-            <c:forEach var="c" items="${requestScope.creatorList}">
-                    {"role": `${c.creatorRole}`, "name": `${c.creatorName}`},
-            </c:forEach>
-                ];
-                if (creators) {
-                    creators.forEach(cre => {
-                        let title = cre.querySelector('td:nth-child(1)');
-                        let content = cre.querySelector('td:nth-child(2)');
-                        if (content && title) {
-                            let title_text = title.innerText;
-                            let content_text = content.innerText;
-                            creStrs.forEach(cre_obj => {
-                                content_text +=
-                                        title_text.toLowerCase() === cre_obj["role"] ?
-                                        cre_obj["name"] + ', '
-                                        : '';
-                            });
-
-                            if (content_text) {
-                                content.innerText = content_text.replace(/,\s*$/, '');
-                            } else {
-                                cre.remove();
-                            }
-
+                            // Show time if today, otherwise show formatted date
+                            const formattedDate = dateObj.toDateString() === today.toDateString()
+                                    ? formatTime(dateObj)
+                                    : formatDate(dateObj);
+                            fomoDate.innerText = formattedDate;
                         }
+                    }
+
+                });
+
+                //Format tags-link
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    const tagsLink = document.querySelectorAll('.tags-link');
+                    if (tagsLink) {
+                        const type = `${requestScope.type}`;
+                        if (type !== '') {
+                            tagsLink.forEach(link => {
+                                const tag = link.dataset.tag ? link.dataset.tag : "";
+                                let params = `type=${type}`;
+                                params += tag !== type ? "&query=" + tag : "";
+                                link.href = decodeURIComponent("search?" + encodeURIComponent(params));
+                            });
+                        }
+                    }
+                });
+
+
+                ////Close sidebar on resize
+                //window.addEventListener('resize', () => {
+                //    const clientWidth = document.documentElement.clientWidth;
+                //    const sidebar = document.getElementById('cus-sidebar');
+                //    sidebar.style.display = 'none';
+                //});
+
+                // Stock check function for Add to Cart
+                function checkStock(cartQuantity, stockCount, event) {
+                    let quantityToAdd = parseInt(document.querySelector("input[name='quantity']").value) || 1; // Get quantity from form
+                    if (cartQuantity + quantityToAdd > stockCount) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Stock Limit Reached',
+                            text: `The quantity in your cart (${cartQuantity}). The selected quantity cannot be added to the cart because it exceeds your purchasing limit.`
+                        });
+                        event.preventDefault();
+                        return false;
+                    }
+                    return true;
+                }
+
+                //Format creators display
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    const creators = document.querySelectorAll('.cre-details-gr');
+                    if (!creators) {
+                        console.warn("FOUND NO CREATORS DISPLAY CONTAINER!");
+                    }
+                    const creStrs = [
+                    <c:forEach var="c" items="${requestScope.product.creatorList}">
+                        {"role": `${c.creatorRole}`, "name": `${c.creatorName}`},
+                    </c:forEach>
+                    ];
+                    console.log("Creator List:", creStrs);
+                    if (creators) {
+                        creators.forEach(cre => {
+                            let title = cre.querySelector('td:nth-child(1)');
+                            let content = cre.querySelector('td:nth-child(2)');
+                            if (content && title) {
+                                let title_text = title.innerText;
+                                let content_text = content.innerText;
+                                creStrs.forEach(cre_obj => {
+                                    content_text +=
+                                            title_text.toLowerCase() === cre_obj["role"].toLowerCase() ?
+                                            cre_obj["name"] + ', '
+                                            : '';
+                                });
+
+                                if (content_text) {
+                                    content.innerText = content_text.replace(/,\s*$/, '');
+                                    console.log(content);
+                                } else {
+                                    cre.remove();
+                                }
+
+                            }
+                        });
+                    }
+                });
+
+                //Format genres display
+                <c:if test="${requestScope.type == 'book'}">
+                    document.addEventListener('DOMContentLoaded', function () {
+
+                        const cat_gens = document.querySelector('.gen-details-gr');
+                        if (!cat_gens) return;
+
+                        const genStrs = [
+                        <c:forEach var="g" items="${requestScope.product.genreList}">
+                            `${g.genreName}`,
+                        </c:forEach>
+                        ];
+                        const catStr = `${requestScope.product.specificCategory.categoryName}`;
+                        let content = cat_gens.querySelector('td:nth-child(2)');
+                        if (content) {
+                            let text = content.innerText;
+                            text = !catStr && genStrs.length === 0 ? ''
+                                    : genStrs.length === 0 ? catStr
+                                    : [catStr, ...genStrs].join(', ');
+                            content.innerText = text ? text : 'Uncategorized';
+                        }
+
                     });
-                }
-            });
-
-            //Format genres display
-            document.addEventListener('DOMContentLoaded', function () {
-            
-                const cat_gens = document.querySelector('.gen-details-gr');
-                if (!cat_gens) {
-                    return;
-                }
-                const genStrs = [
-            <c:forEach var="g" items="${requestScope.genreList}">
-                    `${g.genreName}`,
-            </c:forEach>
-                ];
-                const catStr = `${requestScope.product.specificCategory.categoryName}`;
-                let content = cat_gens.querySelector('td:nth-child(2)');
-                if (content) {
-                    let text = content.innerText;
-                    text = !catStr && genStrs.length === 0 ? ''
-                            : genStrs.length === 0 ? catStr
-                            : [catStr, ...genStrs].join(', ');
-                    content.innerText = text ? text : 'Uncategorized';
-                }
-
-            });
-      </c:if>      
+                </c:if>
+            </c:if>
             //            Pop-up message
             document.addEventListener('DOMContentLoaded', function () {
                 const reqMessage = `${requestScope.message}`;
@@ -726,7 +732,7 @@
             });
 
         </script>
-       
+
     </body>
 
 </html>

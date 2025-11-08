@@ -12,14 +12,18 @@ import java.util.Set;
 
 public class ChatDAO {
 
-    private DBContext context;
     private static final int ADMIN_ID = 1;
+    private static final ChatDAO instance = new ChatDAO();
+    private final DBContext context;
 
-    public ChatDAO() {
-        context = new DBContext();
+    private ChatDAO() {
+        context = DBContext.getInstance();
     }
 
-   
+    public static ChatDAO getInstance() {
+        return instance;
+    }
+
     public String getCustomerName(int customerID) throws SQLException {
         String sql = "SELECT firstName FROM [dbo].[Account] WHERE accountID = ?";
         Object[] params = {customerID};
@@ -47,8 +51,8 @@ public class ChatDAO {
         int rowsAffected = context.exeNonQuery(sql, params);
         return rowsAffected > 0;
     }
-    
-     public boolean updateStatusSeen(int user, Chat chat) throws SQLException {
+
+    public boolean updateStatusSeen(int user, Chat chat) throws SQLException {
         int dialogueID = getOrCreateDialogueID(chat.getSenderID(), chat.getReceiverID());
         String sql = "UPDATE [dbo].[Message] SET isSeen = 1 WHERE senderID = ? AND dialogueID = ? AND isSeen = 0";
         Object[] params = {
@@ -56,7 +60,7 @@ public class ChatDAO {
             dialogueID
         };
         int rowsAffected = context.exeNonQuery(sql, params);
-         return rowsAffected > 0;
+        return rowsAffected > 0;
     }
 
     private int getOrCreateDialogueID(int user1ID, int user2ID) throws SQLException {
@@ -117,6 +121,7 @@ public class ChatDAO {
                 rs.getBoolean("isSeen")
         );
     }
+
     public static void main(String[] args) throws SQLException {
         ChatDAO cd = new ChatDAO();
         Chat chat = new Chat();

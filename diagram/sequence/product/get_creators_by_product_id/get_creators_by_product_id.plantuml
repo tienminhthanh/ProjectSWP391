@@ -1,0 +1,32 @@
+@startuml
+<style>
+    sequenceDiagram {
+        actor { BackgroundColor white; LineThickness 1.0 }
+        participant { BackgroundColor white; RoundCorner 0 }
+        database { BackgroundColor white }
+    }
+</style>
+
+hide footbox
+
+mainframe Get Creators by Product ID
+
+participant "<u>:CreatorDAO" as dao
+participant "<u>:Creator" as cre
+participant "<u>:DBContext" as context
+
+database Database as db
+dao++
+dao -> context++:1.exeQuery()
+context -> db++:2.SELECT creators\nbased on productID
+db -->context--:3.Return ResultSet
+context-->dao--:4.Return ResultSet, then instantitate List<Creator>
+dao->dao++:5.Instantitate List<Creator>
+dao--
+loop ResultSet.next() == true
+dao -> cre++:6.new Creator()
+cre --> dao--:7.Return creator object
+dao->dao++:8.Add creator object to List<Creator>
+dao--
+end
+@enduml

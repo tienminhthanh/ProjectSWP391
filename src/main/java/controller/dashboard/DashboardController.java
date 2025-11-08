@@ -1,7 +1,8 @@
 package controller.dashboard;
 
+import model.Customer;
+import model.Product;
 import dao.*;
-import model.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,7 +21,7 @@ import java.util.Map;
 @WebServlet(name = "DashboardController", urlPatterns = {"/dashboard"})
 public class DashboardController extends HttpServlet {
 
-    private final DashboardDAO dashboardDAO = new DashboardDAO();
+    private final DashboardDAO dashboardDAO = DashboardDAO.getInstance();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,26 +65,25 @@ public class DashboardController extends HttpServlet {
             revenueTrendYear = defaultYear;
         }
 
-        DashboardDAO dao = new DashboardDAO();
-        double totalRevenue = dao.getTotalRevenue(year, quarter, month, isFilterApplied);
-        int totalQuantitySold = dao.getTotalQuantitySold(year, quarter, month, isFilterApplied);
-        int totalQuantitySoldFromOrder = dao.getTotalQuantitySoldFromOrder(year, quarter, month, isFilterApplied);
-        double grossProfit = dao.getGrossProfit(year, quarter, month, isFilterApplied);
-        double profitMargin = dao.getProfitMargin(year, quarter, month, isFilterApplied);
-        double orderConversionRate = dao.getOrderConversionRate(year, quarter, month, isFilterApplied);
-        int totalOrders = dao.getTotalOrders(year, quarter, month, isFilterApplied);
-        int successfulOrders = dao.getSuccessfulOrders(year, quarter, month, isFilterApplied);
-        List<Customer> topBuyers = dao.getTopBuyers(); // Không áp dụng bộ lọc thời gian
+        double totalRevenue = dashboardDAO.getTotalRevenue(year, quarter, month, isFilterApplied);
+        int totalQuantitySold = dashboardDAO.getTotalQuantitySold(year, quarter, month, isFilterApplied);
+        int totalQuantitySoldFromOrder = dashboardDAO.getTotalQuantitySoldFromOrder(year, quarter, month, isFilterApplied);
+        double grossProfit = dashboardDAO.getGrossProfit(year, quarter, month, isFilterApplied);
+        double profitMargin = dashboardDAO.getProfitMargin(year, quarter, month, isFilterApplied);
+        double orderConversionRate = dashboardDAO.getOrderConversionRate(year, quarter, month, isFilterApplied);
+        int totalOrders = dashboardDAO.getTotalOrders(year, quarter, month, isFilterApplied);
+        int successfulOrders = dashboardDAO.getSuccessfulOrders(year, quarter, month, isFilterApplied);
+        List<Customer> topBuyers = dashboardDAO.getTopBuyers(); // Không áp dụng bộ lọc thời gian
 
         // Tạo Map để lưu totalQuantitySold và totalRevenue
         Map<Integer, Integer> quantitySoldMap = new HashMap<>();
         Map<Integer, Double> revenueMap = new HashMap<>();
 
         // Lấy top 5 sản phẩm theo thể loại
-        Map<String, List<Product>> topProductsByCategory = dao.getTopProductsByCategory(year, quarter, month, isFilterApplied, quantitySoldMap, revenueMap);
+        Map<String, List<Product>> topProductsByCategory = dashboardDAO.getTopProductsByCategory(year, quarter, month, isFilterApplied, quantitySoldMap, revenueMap);
 
         // Luôn lấy Revenue Trend theo tháng cho năm được chọn
-        Map<String, Double> revenueTrend = dao.getRevenueTrend("month", revenueTrendYear, null, null, true);
+        Map<String, Double> revenueTrend = dashboardDAO.getRevenueTrend("month", revenueTrendYear, null, null, true);
 
         // Đưa dữ liệu vào request
         request.setAttribute("totalRevenue", totalRevenue);
@@ -101,7 +101,7 @@ public class DashboardController extends HttpServlet {
         request.setAttribute("quantitySoldMap", quantitySoldMap);
         request.setAttribute("revenueMap", revenueMap);
 
-        Map<String, Integer> ageStats = dao.getAgeStatistics();
+        Map<String, Integer> ageStats = dashboardDAO.getAgeStatistics();
         request.setAttribute("ageStatistics", ageStats);
 
         // Truyền các tham số lọc để JSP hiển thị giá trị đã chọn

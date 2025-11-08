@@ -171,12 +171,12 @@
                                         <br/>
                                         <c:choose>
                                             <c:when test="${product.isActive}">
-                                                <a class="text-red-500 hover:text-red-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to deactivate this product?', 'changeProductStatus?id=${product.productID}&action=deactivate')">
+                                                <a class="text-red-500 hover:text-red-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to deactivate this product?', 'deleteProduct?id=${product.productID}&action=deactivate')">
                                                     <i class="fas fa-lock"></i><span> Deactivate</span>
                                                 </a>
                                             </c:when>
                                             <c:otherwise>
-                                                <a class="text-green-500 hover:text-green-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to activate this product?', 'changeProductStatus?id=${product.productID}&action=activate')">
+                                                <a class="text-green-500 hover:text-green-700 action-btn" href="javascript:void(0);" onclick="confirmAction('Do you really want to activate this product?', 'deleteProduct?id=${product.productID}&action=activate')">
                                                     <i class="fas fa-unlock"></i><span> Activate</span>
                                                 </a>
                                             </c:otherwise>

@@ -15,6 +15,14 @@
     </properties>
     
     <dependencies>
+        <!--Reflections for forcing static init-->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
+        
         <!-- Selenium Java (compatible with JUnit 4) -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -169,7 +177,7 @@
                 <version>2.12.4</version>  
             </plugin>
             
-<!--            PMD
+            <!--            PMD
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>

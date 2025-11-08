@@ -1,0 +1,51 @@
+@startuml 
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe Associate Product-Creator For Insert Book
+
+participant "<u>:BookDAO" as bdao
+participant "<u>:CreatorDAO" as dao
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+bdao++
+bdao->dao++:1.associateProductCreatorForInsert()
+dao->dao++:2.addAssociation()
+dao-> ctx++:3.exeNonQuery()
+ctx->db++:4.INSERT productID, creatorIDs\nINTO ProductCreator
+db-->ctx--:5.Return numberOfRowsAffected
+ctx-->dao--:6.Return numberOfRowsAffected
+alt numberOfRowsAffected > 0
+    dao -->bdao: 6.1.Return true
+else numberOfRowsAffected == 0
+    dao-->bdao--: 6.2.Return false
+    dao--
+end
+
+@enduml

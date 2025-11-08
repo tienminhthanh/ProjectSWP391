@@ -28,6 +28,8 @@ import model.Product;
 public class EventProductDeleteController extends HttpServlet {
 
     private final String EVENT_PRODUCT_DELETE_PAGE = "eventProductDelete.jsp";
+private final EventDAO eDao = EventDAO.getInstance();
+private final EventProductDAO epDao = EventProductDAO.getInstance();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -68,8 +70,6 @@ public class EventProductDeleteController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 //        ProductDAO pDao = new ProductDAO();
-        EventProductDAO epDao = new EventProductDAO();
-        EventDAO eDao = new EventDAO();
         try {
             int id = Integer.parseInt(request.getParameter("eventId"));
 
@@ -135,7 +135,6 @@ public class EventProductDeleteController extends HttpServlet {
         }
 
         // Gọi DAO để xóa sản phẩm khỏi sự kiện
-        EventProductDAO epDao = new EventProductDAO();
         List<Integer> failedProducts = new ArrayList<>();
 
         for (int productId : productSet) {

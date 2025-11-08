@@ -16,6 +16,7 @@
         </div>
 
         <script>
+            console.log("Start chat AI");
             function sendMessage1() {
                 var userMessage = document.getElementById("userMessage").value;
                 if (userMessage.trim() === "") {
@@ -60,6 +61,7 @@
                         })
                         .catch(error => console.error("Lỗi khi gửi yêu cầu:", error));
             }
+            console.log("End chat AI");
         </script>
     </body>
 </html>

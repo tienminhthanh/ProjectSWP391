@@ -1,38 +1,59 @@
 package model;
 
+import model.Product;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class Creator {
+public class Creator implements IProductClassification{
     private int creatorID; // Maps to INT
     private String creatorName; // Maps to NVARCHAR(200)
     private String creatorRole; // Maps to VARCHAR(20)
     private String generalCategory;
+     private List<Product> productList;
 
     // Constructor
     public Creator() {}
 
-    public Creator(int creatorID, String creatorName, String creatorRole) {
+    public Creator(int creatorID, String creatorName, String creatorRole, String generalCategory, List<Product> productList) {
         this.creatorID = creatorID;
         this.creatorName = creatorName;
         this.creatorRole = creatorRole;
+        this.generalCategory = generalCategory;
+        this.productList = productList;
     }
-
+    
+    
+    
     public Creator(int creatorID, String creatorName, String creatorRole, String generalCategory) {
         this.creatorID = creatorID;
         this.creatorName = creatorName;
         this.creatorRole = creatorRole;
         this.generalCategory = generalCategory;
     }
+    
+    public Creator(int creatorID, String creatorName, String creatorRole) {
+        this.creatorID = creatorID;
+        this.creatorName = creatorName;
+        this.creatorRole = creatorRole;
+    }
+
 
     // Getters
     public int getCreatorID() { return creatorID; }
     public String getCreatorName() { return creatorName; }
     public String getCreatorRole() { return creatorRole; }
     public String getGeneralCategory() { return generalCategory; }
+
+    public List<Product> getProductList() {
+        return productList;
+    }
+    
 
     // Fluent Setters
     public Creator setCreatorID(int creatorID) { 
@@ -54,6 +75,12 @@ public class Creator {
         this.generalCategory = generalCategory; 
         return this; 
     }
+
+    public Creator setProductList(List<Product> productList) {
+        this.productList = productList;
+        return this; 
+    }
+    
     
     @Override
     public boolean equals(Object obj) {
@@ -67,4 +94,38 @@ public class Creator {
     public int hashCode() {
         return Objects.hash(creatorID);
     }
+
+    @Override
+    public int getId() {
+        return getCreatorID();
+    }
+
+    @Override
+    public String getName() {
+        return getCreatorName();
+    }
+
+    @Override
+    public String getType() {
+        return getGeneralCategory();
+    }
+
+    @Override
+    public Map<String, Object> getExtraAttributes() {
+        return Map.of("creatorRole",getCreatorRole());
+    }
+
+    @Override
+    public String getCode() {
+        return "creator";
+    }
+
+    @Override
+    public String toString() {
+        return "Creator{" + "creatorID=" + creatorID + ", creatorName=" + creatorName + ", creatorRole=" + creatorRole + ", generalCategory=" + generalCategory + ", productList=" + productList + '}';
+    }
+    
+    
+    
+    
 }

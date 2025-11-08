@@ -94,7 +94,7 @@
                                     <p class="category w-full">${product.specificCategory.categoryName}</p>
                                 </div>
                                 <div class="creator-top text-xs">
-                                    <c:forEach var="creator" items ="${creatorList}" varStatus="loopStatus">
+                                    <c:forEach var="creator" items ="${product.creatorList}" varStatus="loopStatus">
                                         <c:out value="${creator.creatorName}"/>
                                         <c:if test="${!loopStatus.last}"> - </c:if>
                                     </c:forEach>
@@ -336,7 +336,7 @@
                                 <c:when test="${not empty requestScope.reviewMap}">
                                     <c:forEach var="review" items="${requestScope.reviewMap}">
                                         <div class="customer-review p-2 m-2 border-b-4 rounded-lg flex flex-col items-start gap-2">
-                                            <h4 class="customer-name text-md font-bold">${review.key}</h4>
+                                            <h4 class="customer-name text-md font-bold">${review.value[2]}</h4>
                                             <p class="avg-rating">
                                                 <c:forEach var="i" begin="1" end="${review.value[0]}">
                                                     <i class="fa-solid fa-star"></i>
@@ -478,7 +478,7 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const creators = document.querySelectorAll('.cre-details-gr');
                 const creStrs = [
-            <c:forEach var="c" items="${requestScope.creatorList}">
+            <c:forEach var="c" items="${product.creatorList}">
                     {"role": `${c.creatorRole}`, "name": `${c.creatorName}`},
             </c:forEach>
                 ];
@@ -500,50 +500,50 @@
                     });
                 }
             });
+            <c:if test="${type == 'book'}">
+                //Format genres display
+                document.addEventListener('DOMContentLoaded', function () {
+                    const cat_gens = document.querySelector('.gen-details-gr');
+                    if (!cat_gens) {
+                        return;
+                    }
+                    const genStrs = [
+                <c:forEach var="g" items="${product.genreList}">
+                        `${g.genreName}`,
+                </c:forEach>
+                    ];
+                    const catStr = `${requestScope.product.specificCategory.categoryName}`;
+                    let content = cat_gens.querySelector('td:nth-child(2)');
+                    if (content) {
+                        let text = content.innerText;
+                        text = !catStr && genStrs.length === 0 ? 'Unknown'
+                                : genStrs.length === 0 ? catStr
+                                : [catStr, ...genStrs].join(', ');
+                        content.innerText = text;
+                    }
 
-            //Format genres display
-            document.addEventListener('DOMContentLoaded', function () {
-                const cat_gens = document.querySelector('.gen-details-gr');
-                if (!cat_gens) {
-                    return;
-                }
-                const genStrs = [
-            <c:forEach var="g" items="${requestScope.genreList}">
-                    `${g.genreName}`,
-            </c:forEach>
-                ];
-                const catStr = `${requestScope.product.specificCategory.categoryName}`;
-                let content = cat_gens.querySelector('td:nth-child(2)');
-                if (content) {
-                    let text = content.innerText;
-                    text = !catStr && genStrs.length === 0 ? 'Unknown'
-                            : genStrs.length === 0 ? catStr
-                            : [catStr, ...genStrs].join(', ');
-                    content.innerText = text;
-                }
-
-            });
-
+                });
+            </c:if>
             document.addEventListener("DOMContentLoaded", function () {
-    const mess = `${sessionScope.message}`;
-    const messType = `${sessionScope.messageType}` || 'error';
-    const productId = `${product.productID}`; // Lấy productId từ product
-    if (mess && mess.trim() !== "" && !window.formValidationFailed) {
-        Swal.fire({
-            icon: messType === "success" ? "success" : "error",
-            title: messType === "success" ? "Success" : "Error",
-            text: mess
-        }).then(() => {
-            // Gọi servlet manageProductDetails với action=clearMessage để xóa session
-            fetch(`manageProductDetails?productId=${productId}&action=clearMessage`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                const mess = `${sessionScope.message}`;
+                const messType = `${sessionScope.messageType}` || 'error';
+                const productId = `${product.productID}`; // Lấy productId từ product
+                if (mess && mess.trim() !== "" && !window.formValidationFailed) {
+                    Swal.fire({
+                        icon: messType === "success" ? "success" : "error",
+                        title: messType === "success" ? "Success" : "Error",
+                        text: mess
+                    }).then(() => {
+                        // Gọi servlet manageProductDetails với action=clearMessage để xóa session
+                        fetch(`manageProductDetails?productId=${productId}&action=clearMessage`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            }
+                        }).catch(error => console.error('Error clearing session message:', error));
+                    });
                 }
-            }).catch(error => console.error('Error clearing session message:', error));
-        });
-    }
-});
+            });
 
             function validateForm() {
                 let discountInput = document.getElementById('discountInput');

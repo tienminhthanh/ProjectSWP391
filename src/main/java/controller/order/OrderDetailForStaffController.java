@@ -34,6 +34,9 @@ import model.Voucher;
  */
 @WebServlet(name = "OrderDetailForStaffController", urlPatterns = {"/OrderDetailForStaffController"})
 public class OrderDetailForStaffController extends HttpServlet {
+    private final OrderDAO orderDAO = OrderDAO.getInstance();
+private final VoucherDAO vDao = VoucherDAO.getInstance(); 
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -81,8 +84,6 @@ public class OrderDetailForStaffController extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
-        OrderDAO orderDAO = new OrderDAO();
-        VoucherDAO voucherDao = new VoucherDAO();
 
         DeliveryOption delivery = new DeliveryOption();
         OrderInfo orderInfo = null; // Khai báo biến orderInfo trước khi dùng
@@ -99,7 +100,7 @@ public class OrderDetailForStaffController extends HttpServlet {
                 if (customer != null) {
                     int idcus = customer.getAccountID();
                     orderInfo = orderDAO.getOrderByID(id, idcus);
-                    voucher = voucherDao.getVoucherByID(orderInfo.getVoucherID());
+                    voucher = vDao.getVoucherByID(orderInfo.getVoucherID());
 
                     if (voucher != null) {
                         if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
@@ -157,17 +158,15 @@ public class OrderDetailForStaffController extends HttpServlet {
             return;
         }
         int orderID = Integer.parseInt(request.getParameter("orderID"));
-        OrderDAO orderDao = new OrderDAO();
         String status = "canceled";
-        NotificationDAO notificationDAO = new NotificationDAO();
         String cusID = request.getParameter("customerID");
 
         try {
 
             int customerID = Integer.parseInt(cusID);
-            orderDao.updateOrderstatus(orderID, status);
-            orderDao.restoreProductStockByOrderID(orderID);
-            orderDao.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
+            orderDAO.updateOrderstatus(orderID, status);
+            orderDAO.restoreProductStockByOrderID(orderID);
+            orderDAO.updateAdminIdForOrderInfo(account.getAccountID(), orderID);
             // Send notification to shipper
             Notification notification = new Notification();
             notification.setSenderID(account.getAccountID()); // Staff who assigned the order

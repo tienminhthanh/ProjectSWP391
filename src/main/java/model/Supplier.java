@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -11,17 +12,28 @@ import java.util.Objects;
  * @author anhkc
  */
 public class Supplier {
+
     private int supplierID;
     private String supplierName;
+    private List<ProductSupplier> productSupplyList;
 
     public Supplier() {
     }
-    
+
     // Constructor
+    public Supplier(int supplierID, String supplierName, List<ProductSupplier> productSupplyList) {
+        this.supplierID = supplierID;
+        this.supplierName = supplierName;
+        this.productSupplyList = productSupplyList;
+    }
+
     public Supplier(int supplierID, String supplierName) {
         this.supplierID = supplierID;
         this.supplierName = supplierName;
+        this.productSupplyList = null;
     }
+    
+    
 
     // Getters
     public int getSupplierID() {
@@ -31,6 +43,11 @@ public class Supplier {
     public String getSupplierName() {
         return supplierName;
     }
+
+    public List<ProductSupplier> getProductSupplyList() {
+        return productSupplyList;
+    }
+
 
     // Fluent Setters
     public Supplier setSupplierID(int supplierID) {
@@ -42,15 +59,22 @@ public class Supplier {
         this.supplierName = supplierName;
         return this;
     }
-    
-    
+    public Supplier setProductSupplyList(List<ProductSupplier> productSupplyList) {
+        this.productSupplyList = productSupplyList;
+        return this;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Supplier)) return false;
-        
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Supplier)) {
+            return false;
+        }
+
         Supplier other = (Supplier) obj;
-        return this.supplierID == other.supplierID; // Compare by genreID
+        return this.supplierID == other.supplierID;
     }
 
     @Override
@@ -62,7 +86,5 @@ public class Supplier {
     public String toString() {
         return String.valueOf(supplierID);
     }
-    
-    
-}
 
+}

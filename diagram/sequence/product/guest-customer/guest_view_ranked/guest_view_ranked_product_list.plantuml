@@ -1,0 +1,55 @@
+@startuml 
+<style>
+   sequenceDiagram {
+        actor { BackgroundColor white; LineThickness 1.0 }
+        participant { BackgroundColor white; RoundCorner 0 }
+        database { BackgroundColor white }
+    }
+</style>
+
+hide footbox
+
+mainframe View Product Ranking (Apply to Customer as well)
+
+actor Guest as act
+
+participant "<u>:ProductListView" as view
+participant "<u>:ViewProductRankingController" as ctrl
+participant "<u>:ProductDAO" as dao
+participant "<u>:Product" as product
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+activate act
+act->view++:1.Select a ranking option\n(Books or Merchandise) 
+view->ctrl++:2.doGet()
+ctrl->dao++:3.getRankedProducts()
+dao->ctx++:4.exeQuery()
+ctx -> db++:5.SELECT a product list\nsorted by their sales performance
+db -->ctx--:6. Return ResultSet
+ctx-->dao--:7.Return ResultSet
+dao->dao++:8.Instantiate List<Product>
+dao--
+
+alt ResultSet is not empty
+    loop ResultSet.next() == true
+       dao -> product++:8.1.new Product()
+        product --> dao--:8.1.1.Return product object
+        dao->dao++:8.1.2.Add product object to List<Product>
+        dao--
+    end
+
+    dao --> ctrl:8.1.3.Return List<Product>
+    ctrl --> view:8.1.4.Return List<Product>
+
+    loop For each product in List<Product>
+        view --> act:8.1.5.Display product general information
+    end
+else ResultSet is empty
+    dao --> ctrl--: 8.2.Return an empty list
+    ctrl --> view--: 8.2.1.Return failed message
+    view --> act--:8.2.2.Display the message
+end
+deactivate act
+@enduml

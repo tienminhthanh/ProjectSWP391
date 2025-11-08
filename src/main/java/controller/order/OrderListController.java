@@ -30,6 +30,7 @@ import model.OrderInfo;
  */
 @WebServlet(name = "OrderListController", urlPatterns = {"/OrderListController"})
 public class OrderListController extends HttpServlet {
+        private final OrderDAO orderDAO = OrderDAO.getInstance();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,7 +70,6 @@ public class OrderListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
         String status = request.getParameter("status");

@@ -34,6 +34,8 @@ import model.Shipper;
  */
 @WebServlet(name = "OrderListForShipperController", urlPatterns = {"/OrderListForShipperController"})
 public class OrderListForShipperController extends HttpServlet {
+        private final OrderDAO orderDAO = OrderDAO.getInstance();
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -73,7 +75,6 @@ public class OrderListForShipperController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
         String status = request.getParameter("status");
         Account account = (Account) session.getAttribute("account");
@@ -111,8 +112,7 @@ public class OrderListForShipperController extends HttpServlet {
                 System.out.println(orderInfo.getExpectedDeliveryDate());
             }
 
-            NotificationDAO notiDAO = new NotificationDAO();
-            List<Notification> listNoti = session.getAttribute("notifications") != null ? (List<Notification>) session.getAttribute("notifications") : notiDAO.getNotificationsByReceiverDESC(account.getAccountID());
+            List<Notification> listNoti = session.getAttribute("notifications") != null ? (List<Notification>) session.getAttribute("notifications") : notificationDAO.getNotificationsByReceiverDESC(account.getAccountID());
             session.setAttribute("notifications", listNoti);
 
             request.setAttribute("list", orderList); // Đặt dữ liệu vào requestScope
@@ -141,10 +141,9 @@ public class OrderListForShipperController extends HttpServlet {
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         String actionType = request.getParameter("actionType");
         Account account = new Account();
-        OrderDAO orderDao = new OrderDAO();
         Shipper accShipper = null;
         try {
-            account = orderDao.getShipperByOrderID(orderID); // Lấy thông tin từ DAO
+            account = orderDAO.getShipperByOrderID(orderID); // Lấy thông tin từ DAO
             if (account instanceof Shipper) { // Kiểm tra xem có đúng là Shipper không
                 accShipper = (Shipper) account;
             } else {
@@ -159,17 +158,17 @@ public class OrderListForShipperController extends HttpServlet {
         try {
             if ("update".equals(actionType)) {
                 String status = "delivered";
-                orderDao.updateDeliverystatus(orderID, status);
+                orderDAO.updateDeliverystatus(orderID, status);
                 totalDeliveries = accShipper.getTotalDeliveries();
                 totalDeliveries = totalDeliveries + 1;
-                orderDao.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
+                orderDAO.updateTotalDeliveries(account.getAccountID(), totalDeliveries);
                 request.setAttribute("message", "Cập nhật trạng thái đơn hàng thành công!");
             } else if ("cancel".equals(actionType)) {
                 String statusDeli = "delivered";
-                orderDao.updateDeliverystatus(orderID, statusDeli);
+                orderDAO.updateDeliverystatus(orderID, statusDeli);
                 String status = "canceled";
-                orderDao.updateOrderstatus(orderID, status);
-                orderDao.restoreProductStockByOrderID(orderID);
+                orderDAO.updateOrderstatus(orderID, status);
+                orderDAO.restoreProductStockByOrderID(orderID);
                request.setAttribute("message", "Đơn hàng đã bị hủy!");
             }
 

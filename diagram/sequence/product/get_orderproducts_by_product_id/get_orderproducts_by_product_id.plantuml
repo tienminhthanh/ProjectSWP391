@@ -1,0 +1,42 @@
+@startuml
+<style>
+    sequenceDiagram {
+        actor { BackgroundColor white; LineThickness 1.0 }
+        participant { BackgroundColor white; RoundCorner 0 }
+        database { BackgroundColor white }
+    }
+</style>
+
+hide footbox
+
+mainframe Get OrderProducts By Product ID
+
+participant "<u>:OrderProductDAO" as dao
+participant "<u>:Customer" as cus
+participant "<u>:OrderInfo" as oi
+participant "<u>:OrderProduct" as op
+participant "<u>:DBContext" as context
+
+database Database as db
+dao++
+dao -> context++:1.exeQuery()
+context -> db++:2.SELECT order history of product\nbased on productID
+db -->context--:3.Return ResultSet
+context-->dao--:4.Return ResultSet
+dao->dao++:5.Instantitate List<OrderProduct>
+dao--
+loop ResultSet.next() == true
+    dao->cus++:6.new Customer()
+    cus-->dao--:7.Return customer object
+    dao->oi++:8.new OrderInfo()
+    oi-->dao--:9.Return orderInfo object
+    dao->dao++:10.orderInfo.setCustomer()
+    dao--
+    dao -> op++:11.new OrderProduct()
+    op --> dao--:12.Return orderProduct object
+    dao->dao++:13.orderProduct.setOrderInfo()
+    dao--
+    dao->dao++:14.Add orderProduct object\nto List<OrderProduct>
+    dao--
+end
+@enduml

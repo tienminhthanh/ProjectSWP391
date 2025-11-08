@@ -4,6 +4,8 @@
  */
 package controller.event;
 
+import dao.EventProductDAO;
+import dao.EventDAO;
 import dao.*;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -24,6 +26,9 @@ import model.Event;
 public class EventListController extends HttpServlet {
 
     private final String EVENT_LIST_PAGE = "eventList.jsp";
+    private final EventDAO eDao = EventDAO.getInstance();
+private final EventProductDAO epDao = EventProductDAO.getInstance();
+
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -51,8 +56,6 @@ public class EventListController extends HttpServlet {
             }
         }
         try {
-            EventDAO eDao = new EventDAO();
-            EventProductDAO epDao = new EventProductDAO();
             List<Event> listEvent = eDao.getEventByPage(page, pageSize, isActiveParam, searchKeyword);
             int totalEvent = eDao.getTotalEvent(searchKeyword, isActiveParam);
             int totalPages = (int) Math.ceil((double) totalEvent / pageSize);

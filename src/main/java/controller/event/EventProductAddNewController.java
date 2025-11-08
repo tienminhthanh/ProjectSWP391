@@ -4,6 +4,9 @@
  */
 package controller.event;
 
+import dao.EventProductDAO;
+import dao.EventDAO;
+import model.Product;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.*;
@@ -21,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import model.*;
 
 /**
  *
@@ -31,6 +33,8 @@ import model.*;
 public class EventProductAddNewController extends HttpServlet {
 
     private final String EVENT_PRODUCT_ADDNEW_PAGE = "eventProductAddNew.jsp";
+private final EventDAO eDao = EventDAO.getInstance();
+private final EventProductDAO epDao = EventProductDAO.getInstance();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -72,8 +76,6 @@ public class EventProductAddNewController extends HttpServlet {
             throws ServletException, IOException {
 
 //        ProductDAO pDao = new ProductDAO();
-        EventProductDAO epDao = new EventProductDAO();
-        EventDAO eDao = new EventDAO();
 
         try {
             int id = Integer.parseInt(request.getParameter("eventId"));
@@ -157,7 +159,6 @@ public class EventProductAddNewController extends HttpServlet {
         }
 
         // Gọi DAO để thêm sản phẩm vào sự kiện
-        EventProductDAO epDao = new EventProductDAO();
         List<Integer> failedProducts = new ArrayList<>();
 
         for (int productId : productSet) {

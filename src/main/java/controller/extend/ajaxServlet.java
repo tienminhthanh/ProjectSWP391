@@ -25,6 +25,8 @@ import model.OrderProduct;
 @WebServlet(name = "ajaxServlet", urlPatterns = {"/ajaxServlet"})
 
 public class ajaxServlet extends HttpServlet {
+    private final OrderDAO orderDAO = OrderDAO.getInstance();
+        private final VoucherDAO vDao = VoucherDAO.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,13 +48,11 @@ public class ajaxServlet extends HttpServlet {
         }
 
         double orderTotal = Double.parseDouble(orderTotalStr);
-        OrderDAO orderDAO = new OrderDAO();
-        VoucherDAO voucherDAO = new VoucherDAO();
 
         Integer voucherID = null;
         if (voucherIDParam != null && !voucherIDParam.trim().isEmpty()) {
             int tempVoucherID = Integer.parseInt(voucherIDParam);
-            Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
+            Voucher voucher = vDao.getVoucherByID(tempVoucherID);
             if (voucher != null) {
                 voucherID = voucher.getVoucherID();
             }

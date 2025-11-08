@@ -15,7 +15,7 @@ import model.Account;
 
 @WebServlet(name = "ForgotPasswordServlet", urlPatterns = {"/forgotPassword"})
 public class ForgotPasswordController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -27,7 +27,6 @@ public class ForgotPasswordController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
-        AccountDAO accountDAO = new AccountDAO();
 
         Account account = new Account();
         try {

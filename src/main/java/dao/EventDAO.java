@@ -4,15 +4,16 @@
  */
 package dao;
 
+import model.Event;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.DBContext;
 
 /**
  *
@@ -20,10 +21,15 @@ import java.util.logging.Logger;
  */
 public class EventDAO {
 
-    private utils.DBContext context;
+    private static final EventDAO instance = new EventDAO();
+    private final DBContext context;
 
-    public EventDAO() {
-        context = new utils.DBContext();
+    private EventDAO() {
+        context = DBContext.getInstance();
+    }
+
+    public static EventDAO getInstance() {
+        return instance;
     }
 
 //    public List<Event>
@@ -266,8 +272,6 @@ public class EventDAO {
         }
         return null;
     }
-
-   
 
     public List<String> getBannerEvent() {
         String sql = "SELECT e.[banner]\n"

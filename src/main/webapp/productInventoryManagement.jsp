@@ -255,6 +255,19 @@
                         }
 
                     } else if (formAction === 'add' || formAction === 'update') {
+                        let creatorCheckboxes = document.querySelectorAll('input[name="creator"]:checked');
+                        const creatorMessage = 'Please select at least 1 creator!';
+                        creatorCheckboxes = creatorCheckboxes ? creatorCheckboxes : [];
+                        if (creatorCheckboxes.length === 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                text: creatorMessage
+                            });
+                            event.preventDefault();
+                            return;
+                        }
+
+
                         const typeSelector = document.querySelector('.type-selector');
                         let type;
                         if (typeSelector) {

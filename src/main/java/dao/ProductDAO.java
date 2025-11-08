@@ -4,6 +4,19 @@
  */
 package dao;
 
+import dao.interfaces.IGeneralProductDAO;
+import model.Creator;
+import model.Product;
+import model.OGCharacter;
+import model.Publisher;
+import model.Category;
+import model.Series;
+import model.Supplier;
+import model.ImportItem;
+import model.Book;
+import model.Genre;
+import model.Merchandise;
+import model.Brand;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,69 +27,34 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Stream;
-import model.*;
 import utils.*;
+import model.interfaces.IProductClassification;
 
 /**
  *
  * @author anhkc
  */
-public class ProductDAO {
+public class ProductDAO implements IGeneralProductDAO {
 
-    private final DBContext context;
-    private final Utility tool;
+    private static final ProductDAO instance = new ProductDAO();
+    protected final DBContext context;
 
     //Normal run
-    public ProductDAO() {
-        context = new DBContext();
-        tool = new Utility();
+    protected ProductDAO() {
+        context = DBContext.getInstance();
     }
 
-    //Test run
-    public ProductDAO(DBContext context, Utility tool) {
-        this.context = context;
-        this.tool = tool;
+    public static ProductDAO getInstance() {
+        return instance;
     }
 
-    /**
-     * For add, update cart
-     *
-     * @param productId
-     * @return
-     */
-    public boolean isSoldOutOrPreOrder(int productId) {
-        String sql = "SELECT p.stockCount, \n"
-                + "       p.specialFilter\n"
-                + "FROM WIBOOKS.dbo.Product p\n"
-                + "WHERE [productID] = ?";
-        int stock = 0;
-        String specialFilter = "";
-        try {
-            Object[] params = {productId};
-            ResultSet rs = context.exeQuery(sql, params);
-            if (rs.next()) {
-                stock = rs.getInt(1);
-                specialFilter = rs.getString(2);
-            }
-            if ("upcoming".equals(specialFilter) || stock == 0) {
-                return true;  // Sản phẩm là Pre-order hoặc hết hàng
-            }
-            return false;  // Sản phẩm còn hàng và không phải Pre-order
-
-        } catch (Exception e) {
-            System.out.println("loi");
-        }
-        return true;
-    }
-
+    
+    @Override
     public Product getProductById(int productID) throws SQLException {
         StringBuilder sql = getCTETables(null).append("SELECT P.*, \n"
                 + "       C.categoryName, \n"
@@ -88,13 +66,16 @@ public class ProductDAO {
                 + "    ON P.productID = PD.productID AND PD.rn = 1\n"
                 + "LEFT JOIN Category AS C \n"
                 + "    ON C.categoryID = P.categoryID\n"
-                + "WHERE P.productIsActive = 1 AND P.productID = ?");
+                + "WHERE P.productID = ?\n");
+
+        sql.append("AND P.productIsActive = 1\n");
+
         System.out.println(sql);
 
         Object[] params = {productID};
-        try ( ResultSet rs = context.exeQuery(sql.toString(), params)) {
+        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
             if (rs.next()) {
-                return mapResultSetToProduct(rs, null);
+                return this.mapResultSetToProduct(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,146 +84,8 @@ public class ProductDAO {
         return null;
     }
 
-    /**
-     * Caller method for getBookById and getMerchById
-     *
-     * @param type
-     * @param productID
-     * @param isManagement
-     * @return
-     * @throws SQLException
-     */
-    public Product callGetProductByTypeAndId(String type, int productID, boolean isManagement) throws SQLException {
-        switch (type) {
-            case "merch":
-                return getMerchById(productID, isManagement);
-            case "book":
-                return getBookById(productID, isManagement);
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * For view merch details
-     *
-     * @param productID
-     * @param isManagement
-     * @return
-     * @throws SQLException
-     */
-    public Product getMerchById(int productID, boolean isManagement) throws SQLException {
-        StringBuilder sql = getCTETables("rank").append("SELECT\n"
-                + "P.*,\n"
-                + "C.categoryName,\n"
-                + "M.seriesID,\n"
-                + "M.characterID,\n"
-                + "M.brandID,\n"
-                + "M.size,\n"
-                + "M.scaleLevel,\n"
-                + "M.material,\n"
-                + "S.seriesName,\n"
-                + "Ch.characterName,\n"
-                + "B.brandName,\n"
-                + "PD.discountPercentage,\n"
-                + "PD.eventDateStarted,\n"
-                + "PD.eventDuration,\n"
-                + "TS.salesRank\n"
-                + "FROM Product AS P\n"
-                + "JOIN Merchandise AS M ON P.productID = M.merchandiseID\n"
-                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
-                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
-                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-                + "LEFT JOIN Brand AS B ON M.brandID = B.brandID\n"
-                + "LEFT JOIN Character AS Ch ON M.characterID = Ch.characterID\n"
-                + "LEFT JOIN Series AS S ON M.seriesID = S.seriesID\n"
-                + "WHERE P.productID = ?\n");
-
-        if (!isManagement) {
-            sql.append(" AND P.productIsActive = 1\n");
-        }
-
-        //Print the final query to console
-        System.out.println(sql);
-        System.out.println("-------------------------------------------------------------------------------------");
-
-        Object[] params = {productID};
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
-            if (rs.next()) {
-                return mapResultSetToProduct(rs, rs.getString("generalCategory"));
-            }
-        }
-        return null;
-    }
-
-    /**
-     * For view book details
-     *
-     * @param productID
-     * @return
-     * @throws SQLException
-     */
-    public Product getBookById(int productID, boolean isManagement) throws SQLException {
-
-        StringBuilder sql = getCTETables("rank").append("SELECT\n"
-                + "P.*, C.categoryName, B.publisherID, B.bookDuration,\n"
-                + "Pub.publisherName, PD.discountPercentage,PD.eventDateStarted,PD.eventDuration,TS.salesRank\n"
-                + "FROM Product AS P\n"
-                + "JOIN Book AS B ON P.productID = B.bookID\n"
-                + "LEFT JOIN TopSale TS ON TS.productID = P.productID\n"
-                + "LEFT JOIN ProductDiscount PD ON P.productID = PD.productID AND PD.rn = 1\n"
-                + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n"
-                + "LEFT JOIN Publisher AS Pub ON B.publisherID = Pub.publisherID\n"
-                + "WHERE P.productID = ?\n");
-
-        if (!isManagement) {
-            sql.append(" AND P.productIsActive = 1\n");
-        }
-
-        //Print the final query to console
-        System.out.println(sql);
-        System.out.println("-------------------------------------------------------------------------------------");
-
-        Object[] params = {productID};
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
-            if (rs.next()) {
-                return mapResultSetToProduct(rs, rs.getString("generalCategory"));
-            }
-        }
-        return null;
-    }
-
-    public List<Creator> getCreatorsOfThisProduct(int productID) throws SQLException {
-        String sql = "SELECT PC.creatorID, C.creatorName, C.creatorRole\n"
-                + "FROM Creator AS C\n"
-                + "JOIN Product_Creator AS PC ON C.creatorID = PC.creatorID\n"
-                + "WHERE PC.productID = ?";
-        Object[] params = {productID};
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            List<Creator> creatorList = new ArrayList<>();
-            while (rs.next()) {
-                creatorList.add(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"), rs.getString("creatorRole")));
-            }
-            return creatorList;
-        }
-    }
-
-    public List<Genre> getGenresOfThisBook(int productID) throws SQLException {
-        String sql = "SELECT BG.genreID, G.genreName\n"
-                + "FROM Book_Genre AS BG\n"
-                + "JOIN Genre AS G ON BG.genreID = G.genreID\n"
-                + "WHERE BG.bookID = ?";
-        Object[] params = {productID};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            List<Genre> genreList = new ArrayList<>();
-            while (rs.next()) {
-                genreList.add(new Genre(rs.getInt(1), rs.getString(2)));
-            }
-            return genreList;
-        }
-    }
-
+    
+    
     /**
      * Count search result
      *
@@ -252,7 +95,8 @@ public class ProductDAO {
      * @return
      * @throws SQLException
      */
-    public int getProductsCount(String query, String type, Map<String, String> filterMap) throws SQLException {
+    @Override
+    public int countSearchResult(String query, String type, Map<String, String> filterMap) throws SQLException {
         //Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
 
@@ -319,117 +163,27 @@ public class ProductDAO {
 
     }
 
-    /**
-     * When user does not enter anything in the search bar
-     *
-     * @param type
-     * @param sortCriteria
-     * @param filterMap
-     * @param page
-     * @param pageSize
-     * @return
-     * @throws SQLException
-     */
-    public List<Product> getActiveProducts(String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
-//        Prepare the query with CTE first
-        StringBuilder sql = getCTETables(null);
-
-        //Append base query
-        sql.append("SELECT P.*, \n"
-                + "       C.categoryName, \n"
-                + "       PD.discountPercentage, \n"
-                + "       PD.eventDateStarted,\n"
-                + "	   PD.eventDuration\n"
-                + "FROM Product AS P\n");
-
-        //Type specific join
-        if (type.equals("book")) {
-            sql.append("JOIN Book B \n"
-                    + "    ON B.bookID = P.productID\n"
-            );
-        } else if (type.equals("merch")) {
-            sql.append("JOIN Merchandise M \n"
-                    + "    ON M.merchandiseID = P.productID\n"
-            );
-        }
-
-        //Common left join and where clause
-        sql.append("LEFT JOIN ProductDiscount PD \n"
-                + "    ON P.productID = PD.productID AND PD.rn = 1\n"
-                + "LEFT JOIN Category AS C \n"
-                + "    ON C.categoryID = P.categoryID\n"
-                + "WHERE P.productIsActive = 1\n");
-
-        //Initialize the param list
-        List<Object> paramList = new ArrayList<>();
-
-        //Append filter
-        if (filterMap != null && !filterMap.isEmpty()) {
-            for (Map.Entry<String, String> entry : filterMap.entrySet()) {
-                String filterOption = entry.getKey();
-                String filterParam = entry.getValue();
-                filterParam = filterParam != null ? filterParam.trim() : "";
-
-                //Split the filter params if there are more than 1
-                String[] selectedFilters = !filterParam.isEmpty() ? filterParam.split(",") : new String[0];
-
-                //Append filter clause based on filterOption
-                sql.append(processFilter(filterOption, selectedFilters.length));
-
-                //Then add filter param to the param list to match with the appended clause
-                if (filterOption.equals("ftPrc")) {
-                    //Handle special case with price range
-                    String[] valParts = !filterParam.isEmpty() ? filterParam.split("-") : new String[0];
-                    paramList.add(valParts[0]);
-                    paramList.add(valParts[1]);
-                } else {
-                    //Normal case
-                    Collections.addAll(paramList, selectedFilters);
-                }
-            }
-        }
-
-        //Append order
-        sql.append("ORDER BY ");
-        sql.append(processSort(sortCriteria));
-
-        //Append paginated
-        sql.append("\nOFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-        int offset = (page - 1) * pageSize;
-        paramList.add(offset);
-        paramList.add(pageSize);
-
-        //Print the final query to console
-        System.out.println(sql);
-        System.out.println("-------------------------------------------------------------------------------------");
-
-        //Execute query
-        Object[] params = paramList.toArray();
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
-            List<Product> productList = new ArrayList<>();
-            while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs, null));
-            }
-            return productList;
-        }
-
-    }
-
+    @Override
     public List<Product> getSearchResult(String query, String type, String sortCriteria, Map<String, String> filterMap, int page, int pageSize) throws SQLException {
-
+        boolean searchTermExist = query != null && !query.trim().isEmpty();
         //Prepare the query with CTE first
         StringBuilder sql = getCTETables(null);
 
         // Base SELECT clause
-        sql.append("SELECT P.*,");
-        sql.append("\n       C.categoryName,");
-        sql.append("\n       PD.discountPercentage,");
-        sql.append("\n       PD.eventDateStarted,");
-        sql.append("\n       PD.eventDuration,");
-        sql.append("\n       KEY_TBL.RANK AS relevance_score");
-        sql.append("\nFROM Product AS P");
-        sql.append("\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL");
-        sql.append("\n    ON P.productID = KEY_TBL.[KEY]");
+        sql.append("SELECT P.*");
+        sql.append("\n       ,C.categoryName");
+        sql.append("\n       ,PD.discountPercentage");
+        sql.append("\n       ,PD.eventDateStarted");
+        sql.append("\n       ,PD.eventDuration");
+
+        if (searchTermExist) {
+            sql.append("\n       ,KEY_TBL.RANK AS relevance_score");
+            sql.append("\nFROM Product AS P");
+            sql.append("\nJOIN CONTAINSTABLE(Product, keywords, ?) AS KEY_TBL");
+            sql.append("\n    ON P.productID = KEY_TBL.[KEY]");
+        } else {
+            sql.append("\nFROM Product AS P");
+        }
 
         // Type-specific JOIN
         if (type.equals("book")) {
@@ -449,7 +203,9 @@ public class ProductDAO {
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        paramList.add(formatQueryBroad(query));
+        if (searchTermExist) {
+            paramList.add(formatQueryBroad(query));
+        }
 
         //Append filter
         if (filterMap != null && !filterMap.isEmpty()) {
@@ -496,7 +252,7 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
             List<Product> productList = new ArrayList<>();
             while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs, null));
+                productList.add(mapResultSetToProduct(rs));
             }
             return productList;
         }
@@ -556,19 +312,24 @@ public class ProductDAO {
     /**
      * Overload for filtered list
      *
-     * @param conditionID
-     * @param condition
-     * @param type
+     * @param clsfID
+     * @param clsfCode
+     * @param clsfType
      * @param filterMap
      * @return
      * @throws SQLException
      */
-    public int getProductsCount(int conditionID, Map<String, String> filterMap, String condition, String type) throws SQLException {
+    @Override
+    public int countClassifiedProductList(IProductClassification clsf, Map<String, String> filterMap) throws SQLException {
+        int clsfID = clsf.getId();
+        String clsfCode = clsf.getCode();
+        String clsfType = clsf.getType();
+
         StringBuilder sql = getCTETables(null);
         sql.append("SELECT COUNT(*) FROM Product P\n");
 
         //Conditional joins
-        sql.append(getSpecificJoin(condition, type));
+        sql.append(getSpecificJoin(clsfCode, clsfType));
 
         //Discount join
         sql.append("LEFT JOIN ProductDiscount PD \n"
@@ -576,12 +337,12 @@ public class ProductDAO {
         );
 
         //Initialize where clause
-        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, null));
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(clsfCode, clsfID, false));
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        if (conditionID > 0) {
-            paramList.add(conditionID);
+        if (clsfID > 0) {
+            paramList.add(clsfID);
         }
 
         //Append filter
@@ -618,14 +379,24 @@ public class ProductDAO {
 
     }
 
-    public List<Product> getProductsByCondition(int conditionID, String sortCriteria, Map<String, String> filterMap, String condition, String generalCategory, String location, int page, int pageSize) throws SQLException {
+    @Override
+    public List<Product> getClassifiedProductList(IProductClassification clsf,
+            String sortCriteria, Map<String, String> filterMap,
+            int page, int pageSize, boolean isHomepage)
+            throws SQLException {
+
+        int clsfID = clsf.getId();
+        String clsfType = clsf.getType();
+        String clsfCode = clsf.getCode();
+
         StringBuilder sql = getCTETables(null);
-        sql.append(location.equals("home") ? "SELECT TOP 7\n" : "SELECT\n");
+
+        sql.append("SELECT\n");
         sql.append("P.*, C.categoryName, PD.discountPercentage, PD.eventDateStarted, PD.eventDuration\n"
                 + "FROM Product AS P\n");
 
         //Conditional joins
-        sql.append(getSpecificJoin(condition, generalCategory));
+        sql.append(getSpecificJoin(clsfCode, clsfType));
 
         //Discount join
         sql.append("LEFT JOIN ProductDiscount PD \n"
@@ -633,12 +404,12 @@ public class ProductDAO {
         );
 
         //Initialize where clause
-        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(condition, conditionID, location));
+        sql.append("WHERE P.productIsActive = 1\n").append(getInitialWhereClause(clsfCode, clsfID, isHomepage));
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
-        if (conditionID > 0) {
-            paramList.add(conditionID);
+        if (clsfID > 0) {
+            paramList.add(clsfID);
         }
 
         //Append filter
@@ -688,7 +459,7 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
             List<Product> productList = new ArrayList<>();
             while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs, null));
+                productList.add(mapResultSetToProduct(rs));
             }
             return productList;
         }
@@ -699,30 +470,30 @@ public class ProductDAO {
         StringBuilder joinClause = new StringBuilder();
         generalCategory = generalCategory != null ? generalCategory.toLowerCase() : "";
         switch (condition != null ? condition.toLowerCase() : "") {
-            case "ctg":
+            case "category":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
                 joinClause.append("JOIN Category AS C \n"
                         + "    ON C.categoryID = P.categoryID\n");
                 break;
-            case "crt":
+            case "creator":
                 joinClause.append(generalCategory.equals("book")
                         ? "JOIN Book B on B.bookID = P.productID\n" : "JOIN Merchandise M on M.merchandiseID = P.productID\n");
                 joinClause.append("JOIN Product_Creator PC ON PC.productID = P.productID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
-            case "gnr":
+            case "genre":
                 joinClause.append("JOIN Book AS B ON P.productID = B.bookID\n"
                         + "JOIN Book_Genre as BG ON BG.bookID = B.bookID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
-            case "pbl":
+            case "publisher":
                 joinClause.append("JOIN Book AS B ON P.productID = B.bookID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
-            case "srs":
-            case "chr":
-            case "brn":
+            case "series":
+            case "character":
+            case "brand":
                 joinClause.append("JOIN Merchandise AS M ON P.productID = M.merchandiseID\n"
                         + "LEFT JOIN Category AS C ON P.categoryID = C.categoryID\n");
                 break;
@@ -737,21 +508,25 @@ public class ProductDAO {
         return joinClause;
     }
 
-    private String getInitialWhereClause(String condition, int conditionID, String location) {
+    private String getInitialWhereClause(String condition, int conditionID, boolean isHomepage) {
         switch (condition) {
-            case "ctg":
+            case "category":
                 return "AND P.categoryID = ?\n";
-            case "crt":
+            case "creator":
                 return "AND PC.creatorID = ?\n";
-            case "gnr":
-                return conditionID == 18 && location != null && location.equals("home") ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n" : "AND BG.genreID = ?\n";
-            case "pbl":
+            case "genre":
+                return conditionID == 18 && isHomepage
+                        ? "AND BG.genreID = ?\n AND P.specialFilter not in ('upcoming','new')\n"
+                        : "AND BG.genreID = ?\n";
+            case "publisher":
                 return "AND B.publisherID = ?\n";
-            case "srs":
-                return conditionID == 1 && location != null && location.equals("home") ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n" : "AND M.seriesID = ?\n";
-            case "chr":
+            case "series":
+                return conditionID == 1 && isHomepage
+                        ? "AND M.seriesID = ?\n AND P.specialFilter not in ('upcoming')\n"
+                        : "AND M.seriesID = ?\n";
+            case "character":
                 return "AND M.characterID = ?\n";
-            case "brn":
+            case "brand":
                 return "AND M.brandID = ?\n";
             case "new":
                 return "AND P.specialFilter = 'new'\n";
@@ -791,6 +566,7 @@ public class ProductDAO {
         }
     }
 
+    @Override
     public List<Product> getRankedProducts(String type) throws SQLException {
         //Base query
         StringBuilder sql = getCTETables("rank").append("SELECT P.*,\n"
@@ -819,14 +595,14 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), null)) {
             List<Product> productList = new ArrayList<>();
             while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs, null).setSalesRank(rs.getInt("salesRank")));
+                productList.add(mapResultSetToProduct(rs).setSalesRank(rs.getInt("salesRank")));
             }
             return productList;
 
         }
     }
 
-    private StringBuilder getCTETables(String condition) {
+    protected StringBuilder getCTETables(String condition) {
         StringBuilder cte = new StringBuilder("WITH ");
         if (condition != null && condition.equals("rank")) {
             cte.append("TopSale AS (\n"
@@ -854,322 +630,122 @@ public class ProductDAO {
                 + ")\n");
     }
 
-    private Product mapResultSetToProduct(ResultSet rs, String type) throws SQLException {
+//    private Product mapResultSetToProduct(ResultSet rs, String type) throws SQLException {
+//        Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
+//
+//        LocalDate eventEndDate = Utility.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
+//        int discountPercentage = 0;
+//        if (eventEndDate != null) {
+//            discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
+//        }
+//
+//        LocalDate rlsDate = Utility.getLocalDate(rs.getDate("releaseDate"), 0);
+//
+//        LocalDateTime lastMdfTime = Utility.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
+//
+//        switch (type != null ? type : "") {
+//            case "book":
+//                // For book details
+//                Publisher publisher = new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
+//                return new Book(publisher, rs.getString("bookDuration"),
+//                        rs.getInt("productID"),
+//                        rs.getString("productName"),
+//                        rs.getDouble("price"),
+//                        rs.getInt("stockCount"),
+//                        category,
+//                        rs.getString("description"),
+//                        rlsDate,
+//                        lastMdfTime,
+//                        rs.getDouble("averageRating"),
+//                        rs.getInt("numberOfRating"),
+//                        rs.getString("specialFilter"),
+//                        rs.getInt("adminID"),
+//                        rs.getString("keywords"),
+//                        rs.getString("generalCategory"),
+//                        rs.getBoolean("productIsActive"),
+//                        rs.getString("imageURL"),
+//                        discountPercentage,
+//                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
+//            case "merch":
+//                // For merch details
+//                Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
+//                Series series = new Series(rs.getInt("seriesID"), rs.getString("seriesName"));
+//                OGCharacter character = new OGCharacter(rs.getInt("characterID"), rs.getString("characterName"));
+//                return new Merchandise(series, character, brand, rs.getString("size"), rs.getString("scaleLevel"), rs.getString("material"),
+//                        rs.getInt("productID"),
+//                        rs.getString("productName"),
+//                        rs.getDouble("price"),
+//                        rs.getInt("stockCount"),
+//                        category,
+//                        rs.getString("description"),
+//                        rlsDate,
+//                        lastMdfTime,
+//                        rs.getDouble("averageRating"),
+//                        rs.getInt("numberOfRating"),
+//                        rs.getString("specialFilter"),
+//                        rs.getInt("adminID"),
+//                        rs.getString("keywords"),
+//                        rs.getString("generalCategory"),
+//                        rs.getBoolean("productIsActive"),
+//                        rs.getString("imageURL"),
+//                        discountPercentage,
+//                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
+//
+//            default:
+//                //For listing, sort, search, filter
+//                return new Product(rs.getInt("productID"),
+//                        rs.getString("productName"),
+//                        rs.getDouble("price"),
+//                        rs.getInt("stockCount"),
+//                        category,
+//                        rs.getString("description"),
+//                        rlsDate,
+//                        lastMdfTime,
+//                        rs.getDouble("averageRating"),
+//                        rs.getInt("numberOfRating"),
+//                        rs.getString("specialFilter"),
+//                        rs.getInt("adminID"),
+//                        rs.getString("keywords"),
+//                        rs.getString("generalCategory"),
+//                        rs.getBoolean("productIsActive"),
+//                        rs.getString("imageURL"),
+//                        discountPercentage,
+//                        eventEndDate);
+//        }
+//
+//    }
+    protected Product mapResultSetToProduct(ResultSet rs) throws SQLException {
         Category category = new Category(rs.getInt("categoryID"), rs.getString("categoryName"));
 
-        LocalDate eventEndDate = tool.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
+        LocalDate eventEndDate = Utility.getLocalDate(rs.getDate("eventDateStarted"), rs.getInt("eventDuration"));
         int discountPercentage = 0;
         if (eventEndDate != null) {
             discountPercentage = LocalDate.now().isAfter(eventEndDate) ? 0 : rs.getInt("discountPercentage");
         }
 
-        LocalDate rlsDate = tool.getLocalDate(rs.getDate("releaseDate"), 0);
+        LocalDate rlsDate = Utility.getLocalDate(rs.getDate("releaseDate"), 0);
 
-        LocalDateTime lastMdfTime = tool.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
+        LocalDateTime lastMdfTime = Utility.getLocalDateTime(rs.getTimestamp("lastModifiedTime"));
 
-        switch (type != null ? type : "") {
-            case "book":
-                // For book details
-                Publisher publisher = new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
-                return new Book(publisher, rs.getString("bookDuration"),
-                        rs.getInt("productID"),
-                        rs.getString("productName"),
-                        rs.getDouble("price"),
-                        rs.getInt("stockCount"),
-                        category,
-                        rs.getString("description"),
-                        rlsDate,
-                        lastMdfTime,
-                        rs.getDouble("averageRating"),
-                        rs.getInt("numberOfRating"),
-                        rs.getString("specialFilter"),
-                        rs.getInt("adminID"),
-                        rs.getString("keywords"),
-                        rs.getString("generalCategory"),
-                        rs.getBoolean("productIsActive"),
-                        rs.getString("imageURL"),
-                        discountPercentage,
-                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
-            case "merch":
-                // For merch details
-                Brand brand = new Brand(rs.getInt("brandID"), rs.getString("brandName"));
-                Series series = new Series(rs.getInt("seriesID"), rs.getString("seriesName"));
-                OGCharacter character = new OGCharacter(rs.getInt("characterID"), rs.getString("characterName"));
-                return new Merchandise(series, character, brand, rs.getString("size"), rs.getString("scaleLevel"), rs.getString("material"),
-                        rs.getInt("productID"),
-                        rs.getString("productName"),
-                        rs.getDouble("price"),
-                        rs.getInt("stockCount"),
-                        category,
-                        rs.getString("description"),
-                        rlsDate,
-                        lastMdfTime,
-                        rs.getDouble("averageRating"),
-                        rs.getInt("numberOfRating"),
-                        rs.getString("specialFilter"),
-                        rs.getInt("adminID"),
-                        rs.getString("keywords"),
-                        rs.getString("generalCategory"),
-                        rs.getBoolean("productIsActive"),
-                        rs.getString("imageURL"),
-                        discountPercentage,
-                        eventEndDate).setSalesRank(rs.getInt("salesRank"));
+        return new Product(rs.getInt("productID"),
+                rs.getString("productName"),
+                rs.getDouble("price"),
+                rs.getInt("stockCount"),
+                category,
+                rs.getString("description"),
+                rlsDate,
+                lastMdfTime,
+                rs.getDouble("averageRating"),
+                rs.getInt("numberOfRating"),
+                rs.getString("specialFilter"),
+                rs.getInt("adminID"),
+                rs.getString("keywords"),
+                rs.getString("generalCategory"),
+                rs.getBoolean("productIsActive"),
+                rs.getString("imageURL"),
+                discountPercentage,
+                eventEndDate);
 
-            default:
-                //For listing, sort, search, filter
-                return new Product(rs.getInt("productID"),
-                        rs.getString("productName"),
-                        rs.getDouble("price"),
-                        rs.getInt("stockCount"),
-                        category,
-                        rs.getString("description"),
-                        rlsDate,
-                        lastMdfTime,
-                        rs.getDouble("averageRating"),
-                        rs.getInt("numberOfRating"),
-                        rs.getString("specialFilter"),
-                        rs.getInt("adminID"),
-                        rs.getString("keywords"),
-                        rs.getString("generalCategory"),
-                        rs.getBoolean("productIsActive"),
-                        rs.getString("imageURL"),
-                        discountPercentage,
-                        eventEndDate);
-        }
-
-    }
-
-    public Category getCategoryById(int id) throws SQLException {
-        String sql = "SELECT *\n"
-                + "FROM Category\n"
-                + "WHERE categoryID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new Category(rs.getInt("categoryID"), rs.getString("categoryName"), rs.getString("generalCategory"));
-            }
-        }
-        return null;
-
-    }
-
-    public Map<Category, Integer> getAllCategories() throws SQLException {
-        String sql = "SELECT c.*, COUNT(p.productID) AS productCount  \n"
-                + "FROM Category AS c  \n"
-                + "LEFT JOIN Product AS p  \n"
-                + "    ON p.categoryID = c.categoryID AND p.productIsActive = 1  \n"
-                + "GROUP BY c.categoryID, c.categoryName, c.generalCategory;";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<Category, Integer> categoryMap = new HashMap<>();
-            while (rs.next()) {
-                categoryMap.put(new Category(rs.getInt("categoryID"), rs.getString("categoryName"), rs.getString("generalCategory")), rs.getInt("productCount"));
-            }
-            return categoryMap;
-        }
-    }
-
-    public Creator getCreatorById(int id) throws SQLException {
-        String sql = "SELECT top 1 Creator.creatorID, Creator.creatorName, Creator.creatorRole, Product.generalCategory\n"
-                + "FROM     Creator INNER JOIN\n"
-                + "                  Product_Creator ON Creator.creatorID = Product_Creator.creatorID INNER JOIN\n"
-                + "                  Product ON Product_Creator.productID = Product.productID\n"
-                + "WHERE  Product_Creator.creatorID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
-                        tool.toTitleCase(rs.getString("creatorRole")), rs.getString("generalCategory"));
-            }
-        }
-        return null;
-    }
-
-    public Map<Creator, Integer> getAllCreators() throws SQLException {
-
-        String sql = "SELECT \n"
-                + "    c.creatorID, \n"
-                + "    c.creatorName, \n"
-                + "    c.creatorRole, \n"
-                + "    p.generalCategory, \n"
-                + "    COUNT(p.productID) AS productCount\n"
-                + "FROM Creator c\n"
-                + " JOIN Product_Creator pc \n"
-                + "    ON c.creatorID = pc.creatorID\n"
-                + "LEFT JOIN Product p\n"
-                + "    ON pc.productID = p.productID \n"
-                + "    AND p.productIsActive = 1  \n"
-                + "GROUP BY c.creatorID, c.creatorName, c.creatorRole, p.generalCategory";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<Creator, Integer> creatorMap = new HashMap<>();
-            while (rs.next()) {
-
-                creatorMap.put(new Creator(rs.getInt("creatorID"), rs.getString("creatorName"),
-                        tool.toTitleCase(rs.getString("creatorRole"))).setGeneralCategory(rs.getString("generalCategory")),
-                        rs.getInt("productCount"));
-            }
-            return creatorMap;
-        }
-    }
-
-    public Genre getGenreById(int id) throws SQLException {
-        String sql = "select * from Genre where genreID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new Genre(rs.getInt("genreID"), rs.getString("genreName"));
-            }
-        }
-        return null;
-
-    }
-
-    public Map<Genre, Integer> getAllGenres() throws SQLException {
-        String sql = "SELECT \n"
-                + "    g.genreID, \n"
-                + "    g.genreName, \n"
-                + "    COUNT(P.productID) AS productCount\n"
-                + "FROM Genre g  \n"
-                + "JOIN Book_Genre bg ON g.genreID = bg.genreID  \n"
-                + "JOIN Book b ON bg.bookID = b.bookID  \n"
-                + "LEFT JOIN Product p ON b.bookID = p.productID AND p.productIsActive = 1\n"
-                + "GROUP BY g.genreID, g.genreName;";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<Genre, Integer> genreMap = new HashMap<>();
-            while (rs.next()) {
-                genreMap.put(new Genre(rs.getInt("genreID"), rs.getString("genreName")), rs.getInt("productCount"));
-            }
-            return genreMap;
-        }
-    }
-
-    public Publisher getPublisherById(int id) throws SQLException {
-        String sql = "select * from Publisher where publisherID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new Publisher(rs.getInt("publisherID"), rs.getString("publisherName"));
-            }
-        }
-        return null;
-    }
-
-    public Map<Publisher, Integer> getAllPublishers() throws SQLException {
-        String sql = "SELECT \n"
-                + "    p.publisherID, \n"
-                + "    p.publisherName, \n"
-                + "    COUNT(pr.productID) AS productCount\n"
-                + "FROM Publisher p\n"
-                + "JOIN Book b ON p.publisherID = b.publisherID\n"
-                + "LEFT JOIN Product pr ON b.bookID = pr.productID AND pr.productIsActive = 1\n"
-                + "GROUP BY p.publisherID, p.publisherName;";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<Publisher, Integer> publisherMap = new HashMap<>();
-            while (rs.next()) {
-                publisherMap.put(new Publisher(rs.getInt("publisherID"), rs.getString("publisherName")), rs.getInt("productCount"));
-            }
-            return publisherMap;
-        }
-    }
-
-    public Series getSeriesById(int id) throws SQLException {
-        String sql = "select * from Series where seriesID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new Series(rs.getInt("seriesID"), rs.getString("seriesName"));
-            }
-        }
-        return null;
-    }
-
-    public Map<Series, Integer> getAllSeries() throws SQLException {
-        String sql = "SELECT \n"
-                + "    s.seriesID, \n"
-                + "    s.seriesName, \n"
-                + "    COUNT(pr.productID) AS productCount\n"
-                + "FROM Series s\n"
-                + "JOIN Merchandise m ON m.seriesID = s.seriesID\n"
-                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.productIsActive = 1\n"
-                + "GROUP BY s.seriesID, s.seriesName";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<Series, Integer> seriesMap = new HashMap<>();
-            while (rs.next()) {
-                seriesMap.put(new Series(rs.getInt("seriesID"), rs.getString("seriesName")), rs.getInt("productCount"));
-            }
-            return seriesMap;
-        }
-    }
-
-    public OGCharacter getCharacterById(int id) throws SQLException {
-        String sql = "select * from Character where characterID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new OGCharacter(rs.getInt("characterID"), rs.getString("characterName"));
-            }
-        }
-        return null;
-    }
-
-    public Map<OGCharacter, Integer> getAllCharacters() throws SQLException {
-        String sql = "SELECT \n"
-                + "    ch.characterID, \n"
-                + "    ch.characterName, \n"
-                + "    COUNT(pr.productID) AS productCount\n"
-                + "FROM Character ch\n"
-                + "JOIN Merchandise m ON m.characterID = ch.characterID\n"
-                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.productIsActive = 1\n"
-                + "GROUP BY ch.characterID, ch.characterName";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<OGCharacter, Integer> characterMap = new HashMap<>();
-            while (rs.next()) {
-                characterMap.put(new OGCharacter(rs.getInt("characterID"), rs.getString("characterName")), rs.getInt("productCount"));
-            }
-            return characterMap;
-        }
-    }
-
-    public Brand getBrandById(int id) throws SQLException {
-        String sql = "select * from Brand where brandID = ?";
-        Object[] params = {id};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            if (rs.next()) {
-                return new Brand(rs.getInt("brandID"), rs.getString("brandName"));
-            }
-        }
-        return null;
-    }
-
-    public Map<Brand, Integer> getAllBrands() throws SQLException {
-        String sql = "SELECT \n"
-                + "    br.brandID, \n"
-                + "    br.brandName, \n"
-                + "    COUNT(pr.productID) AS productCount\n"
-                + "FROM Brand br\n"
-                + "JOIN Merchandise m ON m.brandID = br.brandID\n"
-                + "LEFT JOIN Product pr ON m.merchandiseID = pr.productID AND pr.productIsActive = 1\n"
-                + "GROUP BY br.brandID, br.brandName";
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            Map<Brand, Integer> brandMap = new HashMap<>();
-            while (rs.next()) {
-                brandMap.put(new Brand(rs.getInt("brandID"), rs.getString("brandName")), rs.getInt("productCount"));
-            }
-            return brandMap;
-        }
     }
 
     /**
@@ -1183,6 +759,7 @@ public class ProductDAO {
      * @return
      * @throws SQLException
      */
+    @Override
     public List<Product> getAllProducts(String query, String type, String sortCriteria, int page, int pageSize) throws SQLException {
 
         StringBuilder sql = getCTETables(null);
@@ -1242,7 +819,7 @@ public class ProductDAO {
         try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql.toString()), params)) {
             List<Product> productList = new ArrayList<>();
             while (rs.next()) {
-                productList.add(mapResultSetToProduct(rs, null));
+                productList.add(mapResultSetToProduct(rs));
             }
             return productList;
         }
@@ -1256,7 +833,8 @@ public class ProductDAO {
      * @return
      * @throws SQLException
      */
-    public int getProductsCount(String query, String type) throws SQLException {
+    @Override
+    public int countProductListForManagement(String query, String type) throws SQLException {
         StringBuilder sql = getCTETables(null);
         sql.append("SELECT COUNT(*) FROM Product P\n");
 
@@ -1272,6 +850,8 @@ public class ProductDAO {
             sql.append("\nJOIN Merchandise M");
             sql.append("\n    ON M.merchandiseID = P.productID");
         }
+
+        System.out.println("-------------------------------");
 
         //Initialize the param list
         List<Object> paramList = new ArrayList<>();
@@ -1572,7 +1152,7 @@ public class ProductDAO {
                     ImportItem item = (ImportItem) newObjects[0];
                     Product product = item.getProduct();
                     Supplier supplier = item.getSupplier();
-                    
+
                     paramList.add(product.getProductID());
                     paramList.add(supplier.getSupplierID());
                     paramList.add(item.getImportPrice());
@@ -1581,7 +1161,7 @@ public class ProductDAO {
                     paramList.add(item.isIsImported());
 
                 }
-                
+
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected entity name: " + classNames);
@@ -1678,7 +1258,6 @@ public class ProductDAO {
                 int quantity = 0;
                 int productID = 0;
                 String specialFilter = "";
-                LocalDate releaseDate = null;
                 for (Object updatedObj : updatedObjs) {
                     if (updatedObj instanceof ImportItem) {
                         ImportItem item = (ImportItem) updatedObj;
@@ -1691,19 +1270,11 @@ public class ProductDAO {
                             specialFilter = product.getSpecialFilter();
                         }
 
-                        if (releaseDate == null) {
-                            releaseDate = product.getReleaseDate();
-                        }
                     }
                 }
 
                 sql.append("UPDATE Product SET stockCount = stockCount + ?\n");
                 paramList.add(quantity);
-
-                if (releaseDate != null && releaseDate.isBefore(LocalDate.now())) {
-                    sql.append(", releaseDate = ?\n");
-                    paramList.add(LocalDate.now());
-                }
 
                 if (!specialFilter.equalsIgnoreCase("new")) {
                     sql.append(", specialFilter = ?\n");
@@ -1717,12 +1288,12 @@ public class ProductDAO {
             case "queuedimportproduct":
                 if (updatedObjs[0] instanceof ImportItem) {
                     sql.append("UPDATE Product SET lastModifiedTime = GETDATE() WHERE productID = ?\n");
-                    
+
                     ImportItem item = (ImportItem) updatedObjs[0];
                     Product product = item.getProduct();
                     paramList.add(product != null ? product.getProductID() : 0);
                 }
-                
+
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected entity name: " + classNames);
@@ -2028,199 +1599,24 @@ public class ProductDAO {
         }
     }
 
+    @Override
     public boolean changeProductStatus(int productID, boolean newStatus) throws SQLException {
         String sql = "UPDATE Product SET productIsActive = ? WHERE productID = ?";
         Object[] params = {newStatus, productID};
         return context.exeNonQuery(sql, params) > 0;
     }
 
-    public Map<Supplier, List<ImportItem>> getPendingImportMapByProductID(int productID) throws SQLException {
-        String sql = "SELECT ii.*, \n"
-                + "       p.productName, \n"
-                + "       p.specialFilter, \n"
-                + "       p.releaseDate, \n"
-                + "       p.price, \n"
-                + "       s.supplierName\n"
-                + "FROM ImportItem AS ii\n"
-                + "INNER JOIN Product AS p ON ii.productID = p.productID\n"
-                + "INNER JOIN Supplier AS s ON ii.supplierID = s.supplierID\n"
-                + "WHERE ii.productID = ? AND ii.isImported = 0";
-
-        Object[] params = {productID};
-
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), params)) {
-            Map<Supplier, List<ImportItem>> importMap = new HashMap<>();
-            while (rs.next()) {
-                LocalDate importDate = rs.getDate("importDate") != null ? rs.getDate("importDate").toLocalDate() : LocalDate.EPOCH;
-                LocalDate releaseDate = rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX;
-                Supplier supplier = new Supplier(rs.getInt("supplierID"), rs.getString("supplierName"));
-                ImportItem item = new ImportItem()
-                        .setImportItemID(rs.getInt("importItemID"))
-                        .setProduct(new Product().setProductID(rs.getInt("productID")).setProductName(rs.getString("productName"))
-                                .setSpecialFilter(rs.getString("specialFilter")).setReleaseDate(releaseDate).setPrice(rs.getDouble("price")))
-                        .setSupplier(supplier)
-                        .setImportDate(importDate)
-                        .setImportPrice(rs.getDouble("importPrice"))
-                        .setImportQuantity(rs.getInt("importQuantity"))
-                        .setIsImported(rs.getBoolean("isImported"));
-
-                importMap.computeIfAbsent(supplier, key -> new ArrayList<>()).add(item);
-            }
-
-            return importMap;
-        }
-    }
-
-    public boolean importProducts(List<ImportItem> items) throws SQLException {
-        if (items == null) {
-            throw new IllegalArgumentException("Cannot import null items!");
-        }
-
-        Connection connection = null;
-        try {
-            connection = context.getConnection();
-            connection.setAutoCommit(false);
-            SimpleEntry<String, Object[]> stmtEntry;
-            ImportItem[] itemArr = items.toArray(ImportItem[]::new);
-
-            stmtEntry = generateUpdateStatement(itemArr, "ImportItem");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to update import status!");
-            }
-
-            stmtEntry = generateUpdateStatement(itemArr, "ImportedProduct");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to update product info after import!");
-            }
-
-            connection.commit();
-            return true;
-
-        } catch (Exception e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    e.addSuppressed(ex);
-                }
-
-            }
-            throw e;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true); // Restore auto-commit
-                    connection.close();
-                } catch (SQLException e) {
-                    throw e;
-                }
-            }
-
-        }
-    }
-
-    public List<Product> getAllProductsForQueueing() throws SQLException {
-        String sql = "SELECT productID, \n"
-                + "       productName, \n"
-                + "       stockCount, \n"
-                + "       price, \n"
-                + "       releaseDate\n"
-                + "FROM Product\n"
-                + "WHERE releaseDate <= DATEADD(DAY, 30, GETDATE())\n"
-                + "ORDER BY stockCount ASC, \n"
-                + "         DATEDIFF(DAY, releaseDate, GETDATE()) ASC";
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            List<Product> productList = new ArrayList<>();
-            while (rs.next()) {
-                productList.add(new Product().setProductID(rs.getInt("productID"))
-                        .setProductName(rs.getString("productName"))
-                        .setStockCount(rs.getInt("stockCount"))
-                        .setPrice(rs.getDouble("price"))
-                        .setReleaseDate(rs.getDate("releaseDate") != null ? rs.getDate("releaseDate").toLocalDate() : LocalDate.MAX));
-            }
-            return productList;
-        }
-
-    }
-
-    public List<Supplier> getAllSuppliers() throws SQLException {
-        String sql = "SELECT supplierID, supplierName FROM Supplier";
-        try ( Connection connection = context.getConnection();  ResultSet rs = context.exeQuery(connection.prepareStatement(sql), null)) {
-            List<Supplier> supplierList = new ArrayList<>();
-            while (rs.next()) {
-                supplierList.add(new Supplier(rs.getInt("supplierID"), rs.getString("supplierName")));
-            }
-            return supplierList;
-        }
-    }
-
-    public boolean queueImport(ImportItem queuedItem) throws SQLException {
-        if (queuedItem == null) {
-            throw new IllegalArgumentException("Cannot queue null import!");
-        }
-
-        Connection connection = null;
-        try {
-            connection = context.getConnection();
-            connection.setAutoCommit(false);
-            SimpleEntry<String, Object[]> stmtEntry;
-            ImportItem[] itemArr = new ImportItem[]{queuedItem};
-
-            stmtEntry = generateInsertStatement(itemArr, "ImportItem");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to add new import to queue!");
-            }
-            stmtEntry = generateUpdateStatement(itemArr, "QueuedImportProduct");
-            if (context.exeNonQuery(connection, stmtEntry.getKey(), stmtEntry.getValue(), false) == 0) {
-                throw new SQLException("Failed to update product info after queueing!");
-            }
-
-            connection.commit();
-            return true;
-
-        } catch (Exception e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    e.addSuppressed(ex);
-                }
-
-            }
-            throw e;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true); // Restore auto-commit
-                    connection.close();
-                } catch (SQLException e) {
-                    throw e;
-                }
-            }
-
-        }
-
-    }
 
     public static void main(String[] args) {
         try {
-            ProductDAO productDAO = new ProductDAO();
-            // Checking the final map
-            while (true) {
-                Scanner sc = new Scanner(System.in);
-                System.out.print("Enter keywords: ");
-                String i = sc.nextLine();
-                System.out.println(i);
-                System.out.println(productDAO.formatQueryBroad(i)); 
-                System.out.println(productDAO.formatQueryTight(i, "AND")); 
-                if (i.equalsIgnoreCase("break")) {
-                    break;
-                }
-            }
+            System.out.println(ProductDAO.getInstance().getProductById(1));
+
         } catch (Exception ex) {
-            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         }
 
     }
+
+    
 
 }

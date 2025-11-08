@@ -23,6 +23,7 @@ import model.Voucher;
 public class VoucherDetailsController extends HttpServlet {
 
     private final String VOUCHER_DETAILS_PAGE = "voucherDetails.jsp";
+    private final VoucherDAO vDao = VoucherDAO.getInstance(); 
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,7 +41,6 @@ public class VoucherDetailsController extends HttpServlet {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             int id = Integer.parseInt(request.getParameter("voucherId"));
-            VoucherDAO vDao = new VoucherDAO();
             Voucher voucherDetails = vDao.getVoucherByID(id);
             request.setAttribute("VOUCHER_DETAILS", voucherDetails);
 

@@ -15,12 +15,7 @@ import model.Notification;
 @WebServlet(name = "ListNotification", urlPatterns = {"/listnotification"})
 public class ListNotificationController extends HttpServlet {
 
-    private NotificationDAO notificationDAO;
-
-    @Override
-    public void init() throws ServletException {
-        notificationDAO = new NotificationDAO();
-    }
+private final NotificationDAO notificationDAO = NotificationDAO.getInstance(); 
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

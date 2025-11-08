@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterController extends HttpServlet {
-
+private final AccountDAO accountDAO = AccountDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -40,7 +40,6 @@ public class RegisterController extends HttpServlet {
         String message = null;
 
         try {
-            AccountDAO accountDAO = new AccountDAO();
             AccountLib lib = new AccountLib();
 
             // Kiểm tra email có bị trùng không

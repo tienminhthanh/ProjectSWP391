@@ -6,6 +6,7 @@ package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Product {
 //Maps from categoryID int
@@ -25,9 +26,16 @@ public class Product {
     private String generalCategory;
     private boolean isActive;
     private String imageURL;
+    
     private int discountPercentage;
     private LocalDate eventEndDate;
     private int salesRank;
+    private List<Creator> creatorList;
+    private List<OrderProduct> orderProductList;
+    private List<ProductSupplier> productSupplyList;
+    private List<CartItem> cartItemList;
+    private List<EventProduct> eventProductList;
+    
 
     /**
      * EMPTY - Set attributes later
@@ -36,7 +44,7 @@ public class Product {
     }
     
     /**
-     * Omit salesRank, set later if query for Leaderboard - For Catalog
+     * Full atrributes
      * @param productID
      * @param productName
      * @param price
@@ -54,8 +62,152 @@ public class Product {
      * @param isActive
      * @param imageURL
      * @param discountPercentage
-     * @param eventEndDate 
+     * @param eventEndDate
+     * @param salesRank
+     * @param creatorList
+     * @param orderProductList
+     * @param productSupplyList
+     * @param cartItemList
+     * @param eventProductList 
      */
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate, int salesRank, List<Creator> creatorList, List<OrderProduct> orderProductList, List<ProductSupplier> productSupplyList, List<CartItem> cartItemList, List<EventProduct> eventProductList) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+        this.stockCount = stockCount;
+        this.specificCategory = specificCategory;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lastModifiedTime = lastModifiedTime;
+        this.averageRating = averageRating;
+        this.numberOfRating = numberOfRating;
+        this.specialFilter = specialFilter;
+        this.adminID = adminID;
+        this.keywords = keywords;
+        this.generalCategory = generalCategory;
+        this.isActive = isActive;
+        this.imageURL = imageURL;
+        this.discountPercentage = discountPercentage;
+        this.eventEndDate = eventEndDate;
+        this.salesRank = salesRank;
+        this.creatorList = creatorList;
+        this.orderProductList = orderProductList;
+        this.productSupplyList = productSupplyList;
+        this.cartItemList = cartItemList;
+        this.eventProductList = eventProductList;
+    }
+    
+    
+    
+    /**
+     * For view details, leaderboard - Omit creatorList, orderProductList, importItemList, cartItemList, eventProductList
+     * @param productID
+     * @param productName
+     * @param price
+     * @param stockCount
+     * @param specificCategory
+     * @param description
+     * @param releaseDate
+     * @param lastModifiedTime
+     * @param averageRating
+     * @param numberOfRating
+     * @param specialFilter
+     * @param adminID
+     * @param keywords
+     * @param generalCategory
+     * @param isActive
+     * @param imageURL
+     * @param discountPercentage
+     * @param eventEndDate
+     * @param salesRank 
+     */
+    
+    
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate, int salesRank) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+        this.stockCount = stockCount;
+        this.specificCategory = specificCategory;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lastModifiedTime = lastModifiedTime;
+        this.averageRating = averageRating;
+        this.numberOfRating = numberOfRating;
+        this.specialFilter = specialFilter;
+        this.adminID = adminID;
+        this.keywords = keywords;
+        this.generalCategory = generalCategory;
+        this.isActive = isActive;
+        this.imageURL = imageURL;
+        this.discountPercentage = discountPercentage;
+        this.eventEndDate = eventEndDate;
+        this.salesRank = salesRank;
+    }
+    
+ 
+    
+    /**
+     * For management - Omit discountPercentage, eventEndDate, salesRank, orderProductList, importItemList, cartItemList, eventProductList
+     * @param productID
+     * @param productName
+     * @param price
+     * @param stockCount
+     * @param specificCategory
+     * @param description
+     * @param releaseDate
+     * @param lastModifiedTime
+     * @param averageRating
+     * @param numberOfRating
+     * @param specialFilter
+     * @param adminID
+     * @param keywords
+     * @param generalCategory
+     * @param isActive
+     * @param imageURL
+     * @param creatorList 
+     */
+    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, List<Creator> creatorList) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+        this.stockCount = stockCount;
+        this.specificCategory = specificCategory;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lastModifiedTime = lastModifiedTime;
+        this.averageRating = averageRating;
+        this.numberOfRating = numberOfRating;
+        this.specialFilter = specialFilter;
+        this.adminID = adminID;
+        this.keywords = keywords;
+        this.generalCategory = generalCategory;
+        this.isActive = isActive;
+        this.imageURL = imageURL;
+        this.creatorList = creatorList;
+    }
+    
+       /**
+        * For list, search, filter, sort - Omit salesRank, creatorList, orderProductList, importItemList, cartItemList, eventProductList
+        * @param productID
+        * @param productName
+        * @param price
+        * @param stockCount
+        * @param specificCategory
+        * @param description
+        * @param releaseDate
+        * @param lastModifiedTime
+        * @param averageRating
+        * @param numberOfRating
+        * @param specialFilter
+        * @param adminID
+        * @param keywords
+        * @param generalCategory
+        * @param isActive
+        * @param imageURL
+        * @param discountPercentage
+        * @param eventEndDate 
+        */
     public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL, int discountPercentage, LocalDate eventEndDate) {
         this.productID = productID;
         this.productName = productName;
@@ -78,44 +230,6 @@ public class Product {
     }
     
     
-    
-    /**
-     * Omit discountPercentage, eventEndDate, salesRank - For Management
-     * @param productID
-     * @param productName
-     * @param price
-     * @param stockCount
-     * @param specificCategory
-     * @param description
-     * @param releaseDate
-     * @param lastModifiedTime
-     * @param averageRating
-     * @param numberOfRating
-     * @param specialFilter
-     * @param adminID
-     * @param keywords
-     * @param generalCategory
-     * @param isActive
-     * @param imageURL 
-     */
-    public Product(int productID, String productName, double price, int stockCount, Category specificCategory, String description, LocalDate releaseDate, LocalDateTime lastModifiedTime, double averageRating, int numberOfRating, String specialFilter, int adminID, String keywords, String generalCategory, boolean isActive, String imageURL) {
-        this.productID = productID;
-        this.productName = productName;
-        this.price = price;
-        this.stockCount = stockCount;
-        this.specificCategory = specificCategory;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.lastModifiedTime = lastModifiedTime;
-        this.averageRating = averageRating;
-        this.numberOfRating = numberOfRating;
-        this.specialFilter = specialFilter;
-        this.adminID = adminID;
-        this.keywords = keywords;
-        this.generalCategory = generalCategory;
-        this.isActive = isActive;
-        this.imageURL = imageURL;
-    }
 
     public int getProductID() {
         return productID;
@@ -192,6 +306,30 @@ public class Product {
     public int getSalesRank() {
         return salesRank;
     }
+
+    public List<Creator> getCreatorList() {
+        return creatorList;
+    }
+
+    public List<OrderProduct> getOrderProductList() {
+        return orderProductList;
+    }
+
+    public List<ProductSupplier> getProductSupplyList() {
+        return productSupplyList;
+    }
+
+    
+
+    public List<CartItem> getCartItemList() {
+        return cartItemList;
+    }
+
+    public List<EventProduct> getEventProductList() {
+        return eventProductList;
+    }
+    
+    
     
 
     // Fluent Setters
@@ -289,13 +427,40 @@ public class Product {
         this.salesRank = salesRank;
         return this;
     }
+    
+
+    public Product setCreatorList(List<Creator> creatorList) {
+        this.creatorList = creatorList;
+        return this;
+    }
+
+    public Product setOrderProductList(List<OrderProduct> orderProductList) {
+        this.orderProductList = orderProductList;
+        return this;
+    }
+
+    public Product setProductSupplyList(List<ProductSupplier> productSupplyList) {
+        this.productSupplyList = productSupplyList;
+        return this;
+    }
+
+
+    public Product setCartItemList(List<CartItem> cartItemList) {
+        this.cartItemList = cartItemList;
+        return this;
+    }
+
+    public Product setEventProductList(List<EventProduct> eventProductList) {
+        this.eventProductList = eventProductList;
+        return this;
+    }
 
     @Override
     public String toString() {
-        return "{productID=" + productID + ", productName=" + productName + ", price=" + price + ", stockCount=" + stockCount + ", specificCategory=" + specificCategory + ", description=" + description + ", releaseDate=" + releaseDate + ", lastModifiedTime=" + lastModifiedTime + ", averageRating=" + averageRating + ", numberOfRating=" + numberOfRating + ", specialFilter=" + specialFilter + ", adminID=" + adminID + ", keywords=" + keywords + ", generalCategory=" + generalCategory + ", isActive=" + isActive + ", imageURL=" + imageURL + ", discountPercentage=" + discountPercentage + ", eventEndDate=" + eventEndDate + ", salesRank=" + salesRank + '}';
+        return "Product{" + "productID=" + productID + ", productName=" + productName + ", price=" + price + ", stockCount=" + stockCount + ", specificCategory=" + specificCategory + ", description=" + description + ", releaseDate=" + releaseDate + ", lastModifiedTime=" + lastModifiedTime + ", averageRating=" + averageRating + ", numberOfRating=" + numberOfRating + ", specialFilter=" + specialFilter + ", adminID=" + adminID + ", keywords=" + keywords + ", generalCategory=" + generalCategory + ", isActive=" + isActive + ", imageURL=" + imageURL + ", discountPercentage=" + discountPercentage + ", eventEndDate=" + eventEndDate + ", salesRank=" + salesRank + ", creatorList=" + creatorList + ", orderProductList=" + orderProductList + ", productSupplyList=" + productSupplyList + ", cartItemList=" + cartItemList + ", eventProductList=" + eventProductList + '}';
     }
-
     
+
     
     public double getCurrentPrice() {
         LocalDate now = LocalDate.now();

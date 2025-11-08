@@ -38,6 +38,7 @@ public class EventAddNewController extends HttpServlet {
 
     private final String EVENT_ADDNEW_PAGE = "eventAddNew.jsp";
     private final String EVENT_LIST_PAGE = "eventList";
+    private final EventDAO eDao = EventDAO.getInstance();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -93,7 +94,6 @@ public class EventAddNewController extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        EventDAO eDao = new EventDAO();
 
         try {
             boolean isMultipart = request.getContentType() != null && request.getContentType().startsWith("multipart/");

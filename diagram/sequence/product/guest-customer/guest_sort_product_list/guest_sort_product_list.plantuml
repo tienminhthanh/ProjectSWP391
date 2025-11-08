@@ -1,0 +1,63 @@
+@startuml 
+<style>
+    sequenceDiagram {
+        actor { BackgroundColor white; LineThickness 1.0 }
+        participant { BackgroundColor white; RoundCorner 0 }
+        database { BackgroundColor white }
+    }
+</style>
+
+hide footbox
+
+mainframe Sort Product List (Apply to Customer as well)
+
+actor Guest as act
+
+participant "<u>:ProductListView" as view
+participant "<u>:ViewProductListController" as ctrl
+participant "<u>:ProductDAO" as dao
+participant "<u>:Product" as product
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+act++
+act->view++:1.Select a sort criteria
+view->ctrl++:2.doGet()
+ctrl->ctrl++:3.getClassificationAttributes()
+ctrl--
+ctrl->dao++:4.getClassifiedProductList()
+dao->dao++:5.processSort()
+dao--
+dao->ctx++:6.exeQuery()
+ctx -> db++:7.SELECT a product list\nbased on classification, pageNumber\nsorted by sortCriteria
+db -->ctx:8. Return ResultSet
+ctx-->dao:9.Return ResultSet
+dao->dao++:10.Instantiate List<Product>
+dao--
+alt ResultSet is not empty
+    loop ResultSet.next() == true
+        dao -> product++:10.1.new Product()
+        product --> dao--:10.1.1.Return product object
+        dao->dao++:10.1.2.Add product object to List<Product>
+        dao--
+    end
+
+    dao --> ctrl:10.1.3.Return List<Product>
+    ctrl ->dao:10.1.4.countClassifiedProductList()
+    dao -> ctx:10.1.5.exeQuery()
+    ctx -> db:10.1.6.SELECT productCounts\nbased on classification
+    db-->ctx--:10.1.7.Return ResultSet
+    ctx-->dao--:10.1.8.Return ResultSet
+    dao --> ctrl:10.1.9.Return productCounts
+    ctrl --> view:10.1.10.Return List<Product> and productCounts
+    loop For each product in List<Product>
+        view --> act:10.1.11.Display product general information
+    end
+else ResultSet is empty
+    dao --> ctrl--: 10.2.Return an empty list
+    ctrl --> view--: 10.2.1.Return failed message
+    view --> act--:10.2.2.Display the message
+end
+deactivate act
+@enduml

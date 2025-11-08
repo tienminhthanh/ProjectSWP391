@@ -2,7 +2,7 @@
 <%@ page import="dao.EventDAO" %>
 <%@ page import="java.util.List" %>
 <%
-    EventDAO eventDAO = new EventDAO(); // Khởi tạo đối tượng DAO
+    EventDAO eventDAO = EventDAO.getInstance(); // Khởi tạo đối tượng DAO
     List<String> banners = eventDAO.getBannerEvent(); // Lấy danh sách banner từ SQL
 %>
 <script>

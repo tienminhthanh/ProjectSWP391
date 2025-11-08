@@ -1,0 +1,53 @@
+@startuml 
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe Get Event By Product ID
+
+
+participant "<u>:ManageProductDetailsController" as ctrl
+participant "<u>:EventDAO" as dao
+participant "<u>:Event" as ev
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+ctrl++
+ctrl->dao++:1.getEventByProductID()
+dao-> ctx++:2.exeQuery()
+ctx->db++:3.SELECT an event \nFROM Event\nbased on productID
+db-->ctx--:4.Return ResultSet
+ctx-->dao--:5.Return ResultSet
+alt ResultSet is not empty
+    dao->ev++:5.1.new Event()
+    ev-->dao--:5.1.1.Return event object
+    dao-->ctrl:5.1.2.Return event object
+else ResultSet is empty
+    dao-->ctrl--:5.2.Return null
+end
+
+@enduml
