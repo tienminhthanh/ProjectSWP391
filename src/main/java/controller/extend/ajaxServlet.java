@@ -102,6 +102,7 @@ public class ajaxServlet extends HttpServlet {
         String vnp_TxnRef = newTxnRef;
         String vnp_IpAddr = Config.getIpAddress(req);
         String vnp_TmnCode = Config.vnp_TmnCode;
+        System.out.println("ma key:"+vnp_TmnCode);
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
@@ -147,6 +148,8 @@ public class ajaxServlet extends HttpServlet {
         }
 
         String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hashData.toString());
+        System.out.println("ma key:"+Config.secretKey);
+         System.out.println("ma key:"+vnp_SecureHash);
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
         String paymentUrl = Config.vnp_PayUrl + "?" + query;
         resp.sendRedirect(paymentUrl);

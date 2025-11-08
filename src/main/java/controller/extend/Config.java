@@ -22,8 +22,8 @@ public class Config {
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_ReturnUrl = "http://localhost:8080/OrderListController"; // về orderlist
-    public static String vnp_TmnCode = "032ISTIY";
-    public static String secretKey = "OW0S5NSH34KCTAMZ8YYB9JDNTCIPEJQW";
+    public static String vnp_TmnCode = "JV2282HR";
+    public static String secretKey = "MIPHCUSLMJU3U1ZQ6X3G5TLPCO4C1OPM";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static String md5(String message) {
