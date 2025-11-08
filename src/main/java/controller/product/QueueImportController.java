@@ -4,7 +4,14 @@
  */
 package controller.product;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
+import dao.ImportItemDAO;
 import dao.ProductDAO;
+import dao.interfaces.IGeneralProductDAO;
+import dao.interfaces.IImportItemDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,14 +20,20 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
-import model.product_related.ImportItem;
-import model.product_related.Product;
-import model.product_related.Supplier;
+import model.ImportItem;
+import model.Product;
+import model.ProductSupplier;
+import model.Supplier;
 import utils.LoggingConfig;
 
 /**
@@ -31,7 +44,7 @@ import utils.LoggingConfig;
 public class QueueImportController extends HttpServlet {
 
     private static final Logger LOGGER = LoggingConfig.getLogger(QueueImportController.class);
-    private final ProductDAO productDAO = ProductDAO.getInstance();
+    private final IImportItemDAO importItemDAO = ImportItemDAO.getInstance();
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -65,19 +78,19 @@ public class QueueImportController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Product> productList = productDAO.getAllProductsForQueueing();
-            List<Supplier> supplierList = productDAO.getAllSuppliers();
+            List<ProductSupplier> productSupplyList = importItemDAO.getAllProductSupplies();
 
-            if (productList.isEmpty() || supplierList.isEmpty()) {
+            if (productSupplyList.isEmpty()) {
                 request.setAttribute("errorMessage", "Failed to retrieve sufficient information for queueing imports!");
             } else {
-                request.setAttribute("productList", productList);
-                request.setAttribute("supplierList", supplierList);
+                String json = new Gson().toJson(productSupplyList);
+                request.setAttribute("productSupplyList", productSupplyList);
+                request.setAttribute("productSupplyListJSON", json);
                 request.setAttribute("formAction", "queue");
 
             }
-            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
 
+            request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An error occurred while fetching products and suppliers for queueing imports", e);
             request.setAttribute("errorMessage", "An error occurred while fetching products and suppliers for queueing imports: " + e.getMessage());
@@ -96,28 +109,24 @@ public class QueueImportController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        String supplyData = request.getParameter("importData");
         try {
-            int productID = Integer.parseInt(request.getParameter("product"));
-            int supplierID = Integer.parseInt(request.getParameter("supplier"));
-            double price = Double.parseDouble(request.getParameter("price"));
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-
-            ImportItem queuedItem = new ImportItem()
-                    .setProduct(new Product().setProductID(productID))
-                    .setSupplier(new Supplier().setSupplierID(supplierID))
-                    .setImportDate(LocalDate.now())
-                    .setImportPrice(price * 1000)
-                    .setImportQuantity(quantity)
-                    .setIsImported(false);
-
-            if (productDAO.queueImport(queuedItem)) {
-                LOGGER.log(Level.INFO, "A new import has been queued successfully! (productID:{0} - supplierID:{1})",
-                        new Object[]{productID, supplierID});
-                request.setAttribute("message", "A new import has been queued successfully! (productID:" + productID + " - supplierID:" + supplierID + ")");
+            if (supplyData == null) {
+                throw new Exception("Cannot retrieve supply data from form submission!");
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            List<ImportItem> items = new ArrayList<>();
+            Map<String, ImportItem> importMap = objectMapper.readValue(supplyData,
+                    new TypeReference<Map<String, ImportItem>>() {
+            });
+            items.addAll(importMap.values());
+            if (importItemDAO.queueImports(items)) {
+                LOGGER.log(Level.INFO, "New imports has been queued successfully!");
+                request.setAttribute("message", "New import has been queued successfully!");
             } else {
-                LOGGER.log(Level.SEVERE, "Failed to queue the import!");
-                request.setAttribute("errorMessage", "Failed to queue the import!");
+                LOGGER.log(Level.SEVERE, "Failed to queue imports!");
+                request.setAttribute("errorMessage", "Failed to queue imports!");
             }
 
         } catch (Exception e) {
@@ -127,11 +136,10 @@ public class QueueImportController extends HttpServlet {
             for (Throwable sup : suppressed) {
                 LOGGER.log(Level.SEVERE, "Suppressed Exception: " + sup.toString(), sup);
             }
-            request.setAttribute("errorMessage", "Failed to queue the import due to:<br>" + e.toString());
+            request.setAttribute("errorMessage", "Failed to queue imports due to:<br>" + e.toString());
 
         }
         request.getRequestDispatcher("productInventoryManagement.jsp").forward(request, response);
-
     }
 
     /**

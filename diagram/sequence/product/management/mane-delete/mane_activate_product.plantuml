@@ -1,0 +1,59 @@
+@startuml 
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe Activate Products
+
+actor Admin as act
+
+participant "<u>:ProductManagementView" as view
+participant "<u>:DeleteProductController" as ctrl
+participant "<u>:ProductDAO" as dao
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+act++
+act->view++:1.Click the "Activate" link of a product
+view->ctrl++:2.doGet()
+ctrl->dao++:3.changeProductStatus()
+dao->ctx++:4.exeNonQuery()
+ctx -> db++:5.UPDATE status of the selected product to 'active'
+db -->ctx--: 6. Return numberOfRowsAffected
+ctx-->dao--:7.Return numberOfRowsAffected
+
+alt numberOfRowsAffected > 0
+    dao --> ctrl: 7.1.Return true
+    ctrl --> view: 7.1.1.Return successful message
+    view --> act:7.1.2.Display the message
+else numberOfRowsAffected == 0
+    dao --> ctrl--: 7.2.Return false
+    ctrl --> view--: 7.2.1.Return failed message
+    view --> act--:7.2.2.Display the message
+end
+act--
+@enduml

@@ -1,6 +1,7 @@
 package dao;
 
-import model.product_related.Product;
+import model.Customer;
+import model.Product;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,7 +9,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import model.*;
 import utils.DBContext;
 
 public class DashboardDAO {

@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.LoggingConfig;
 import model.Account;
-import model.product_related.Product;
+import model.Product;
 
 /**
  *

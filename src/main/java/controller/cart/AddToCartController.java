@@ -17,7 +17,8 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import model.CartItem;
-import model.product_related.Product;
+import model.Product;
+
 
 /**
  *

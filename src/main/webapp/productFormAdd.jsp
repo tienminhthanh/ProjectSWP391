@@ -1,5 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <div id="title-group" class=" bg-orange-400 rounded-t-lg p-4">
     <label for="generalCategory">
         <span class="text-2xl font-bold text-white">Add New</span>
@@ -42,10 +42,10 @@
                             <c:if test="${catEntry.key.generalCategory eq 'book'}">
                                 <option class="cat-opt-book" value="${catEntry.key.categoryID}">${catEntry.key.categoryName}</option>
                             </c:if>
-                             <c:if test="${catEntry.key.generalCategory eq 'merch'}">
+                            <c:if test="${catEntry.key.generalCategory eq 'merch'}">
                                 <option class="cat-opt-merch" value="${catEntry.key.categoryID}">${catEntry.key.categoryName}</option>
                             </c:if>
-                                
+
                         </c:forEach>
                     </select>
                 </span>
@@ -92,22 +92,33 @@
             <textarea id="imageURLBook" name="imageURL" maxlength="512" required></textarea>
         </div>
 
-        <!--Creators-->
-        <div class="creator-wrapper">
-            <div class="creator-section">
-                <div class="creator-group" id="cre-gr-0">
-                    <label for="creatorNameBook0">Creator Name:</label>
-                    <input type="text" id="creatorNameBook0" name="creatorName" maxlength="100" required>
-                    <label for="creatorRoleBook0">Creator Role:</label>
-                    <select id="creatorRoleBook0" name="creatorRole" required>
-                        <option class="hidden" value="author">Author</option>
-                        <option class="hidden" value="sculptor">Sculptor</option>
-                        <option value="artist">Artist</option>
-                    </select>
-                    <button type="button" class="remove-btn" onclick="removeCreator(this)">Remove</button>
-                </div>
+        <!-- ====================  CREATORS (checkboxes with Show All)  ==================== -->
+        <div class="form-group">
+            <label>Creators:</label>
+            <a class="p-2 mb-4 md:mb-0 bg-blue-500 hover:bg-blue-700 rounded-lg text-white" 
+               href="#" id="showAllCreators" onclick="toggleCreators(event)">Show All</a>
+            <div class="pair-group checkbox-group" id="creatorContainer">
+                <c:forEach var="creatorEntry" items="${applicationScope.creators}" varStatus="loop">
+                    <c:set var="creator" value="${creatorEntry.key}" />
+                    <c:set var="creatorRole" value="${fn:toLowerCase(creator.creatorRole)}" />
+                    <c:set var="creatorClass">
+                        hidden-creator
+                        <c:if test="${creatorRole eq 'sculptor'}"> hidden-book</c:if>
+                        <c:if test="${creatorRole eq 'author'}"> hidden-merch</c:if>
+                    </c:set>
+
+                    <div class="${creatorClass}">
+                        <input type="checkbox"
+                               id="creator${loop.index}"
+                               name="creator"
+                               value="${creator.creatorID}"
+                               class="creator-checkbox" />
+                        <label for="creator${loop.index}">
+                            ${creator.creatorName} <em>(${creator.creatorRole})</em>
+                        </label>
+                    </div>
+                </c:forEach>
             </div>
-            <button type="button" class="add-btn" onclick="addCreator('mergedForm')">Add Creator</button>
         </div>
 
         <!--Genres-->
@@ -118,37 +129,35 @@
 
             <div class="pair-group checkbox-group" id="genreContainer">
                 <c:forEach var="genEntry" items="${applicationScope.genres}" varStatus="loopStatus">
-                    <c:choose>
-                        <c:when test="${loopStatus.index < 3}">
-                            <div>
-                                <input type="checkbox" id="genre${loopStatus.index}" name="genre" value="${genEntry.key.genreID}"/>
-                                <label for="genre${loopStatus.index}">${genEntry.key.genreName}</label>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="hidden-genre">
-                                <input type="checkbox" id="genre${loopStatus.index}" name="genre" value="${genEntry.key.genreID}"/>
-                                <label for="genre${loopStatus.index}">${genEntry.key.genreName}</label>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                    <div class="hidden-genre">
+                        <input type="checkbox" id="genre${loopStatus.index}" name="genre" value="${genEntry.key.genreID}"/>
+                        <label for="genre${loopStatus.index}">${genEntry.key.genreName}</label>
+                    </div>
+
                 </c:forEach>
             </div>
         </div>
 
         <!--Publisher-->
         <div class="form-group book-gr">
-            <label for="publisherNameBook">Publisher:</label>
-            <input type="text" id="publisherNameBook" name="publisherName" maxlength="50" required>
+            <label for="publisherIDBook">Publisher:</label>
+            <select id="publisherIDBook" name="publisher" required>
+                <option value="">-- Select Publisher --</option>
+                <c:forEach var="pubEntry" items="${applicationScope.publishers}">
+                    <option value="${pubEntry.key.publisherID}">${pubEntry.key.publisherName}</option>
+                </c:forEach>
+            </select>
         </div>
+
+
 
         <!--Duration-->
         <div class="form-group book-gr">
             <label for="durationBook">Duration:</label>
             <input type="text" id="durationBook" name="duration" maxlength="40" required>
         </div>
-        
-         <!--Scale - Mat-->
+
+        <!--Scale - Mat-->
         <div class="form-group merch-gr">
             <label>Specs:</label>
             <div class="pair-group">
@@ -167,21 +176,48 @@
 
         <!--Series-->
         <div class="form-group merch-gr">
-            <label for="seriesNameMerch">Series:</label>
-            <input type="text" id="seriesNameMerch" name="seriesName" required>
+            <label for="seriesIDMerch">Series:</label>
+            <select id="seriesIDMerch" name="series" required>
+                <option value="">-- Select Series --</option>
+                <c:forEach var="serEntry" items="${applicationScope.series}">
+                    <option value="${serEntry.key.seriesID}">${serEntry.key.seriesName}</option>
+                </c:forEach>
+            </select>
         </div>
+        <!--        <div class="form-group merch-gr">
+                    <label for="seriesNameMerch">Series:</label>
+                    <input type="text" id="seriesNameMerch" name="seriesName" required>
+                </div>-->
 
         <!--Character-->
         <div class="form-group merch-gr">
-            <label for="characterNameMerch">Character:</label>
-            <input type="text" id="characterNameMerch" name="characterName" required>
+            <label for="characterIDMerch">Character:</label>
+            <select id="characterIDMerch" name="character" required>
+                <option value="">-- Select Character --</option>
+                <c:forEach var="charEntry" items="${applicationScope.characters}">
+                    <option value="${charEntry.key.characterID}">${charEntry.key.characterName}</option>
+                </c:forEach>
+            </select>
         </div>
+        <!--        <div class="form-group merch-gr">
+                    <label for="characterNameMerch">Character:</label>
+                    <input type="text" id="characterNameMerch" name="characterName" required>
+                </div>-->
 
         <!--Brand-->
         <div class="form-group merch-gr">
-            <label for="brandNameMerch">Brand:</label>
-            <input type="text" id="brandNameMerch" name="brandName" required>
+            <label for="brandIDMerch">Brand:</label>
+            <select id="brandIDMerch" name="brand" required>
+                <option value="">-- Select Brand --</option>
+                <c:forEach var="brandEntry" items="${applicationScope.brands}">
+                    <option value="${brandEntry.key.brandID}">${brandEntry.key.brandName}</option>
+                </c:forEach>
+            </select>
         </div>
+        <!--        <div class="form-group merch-gr">
+                    <label for="brandNameMerch">Brand:</label>
+                    <input type="text" id="brandNameMerch" name="brandName" required>
+                </div>-->
 
         <!--Submit-->
         <button class="add-product-btn" name="action" type="submit" value="addBook">Save</button>

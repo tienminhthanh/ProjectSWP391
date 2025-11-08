@@ -4,7 +4,9 @@
  */
 package controller.event;
 
-import model.product_related.Product;
+import dao.EventProductDAO;
+import dao.EventDAO;
+import model.Product;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.*;
@@ -22,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import model.*;
 
 /**
  *

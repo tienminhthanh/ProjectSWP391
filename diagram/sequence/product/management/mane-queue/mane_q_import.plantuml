@@ -1,0 +1,72 @@
+@startuml 
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe Queue New Imports
+
+actor Admin as act
+
+participant "<u>:ImportQueueingForm" as view
+participant "<u>:QueueImportController" as ctrl
+participant "<u>:ImportItem" as pro
+participant "<u>:ImportItemDAO" as dao
+participant "<u>:DBContext" as ctx
+
+database Database as db
+
+act++
+act->view++:1.Click the "Save" button
+view->view++:2.Validate input
+group opt [Invalid input]
+    view-->act:2.1.Display error message
+end
+view--
+view->ctrl++:3.doPost()
+ctrl->ctrl++:4.Instantiate List<ImportItem>
+ctrl--
+loop for each selected product supply
+    ctrl->pro++:5.new ImportItem()
+    pro-->ctrl--:6.Return importItem object
+    ctrl->ctrl++:7.Add importItem object to List<ImportItem>
+    ctrl--
+end
+ctrl->dao++:8.queueImports()
+dao->ctx++:9.exeNonQuery()
+ctx -> db++:10.INSERT new pending imports
+db -->ctx--:11.Return numberOfRowsAffected
+ctx -->dao--:12.Return numberOfRowsAffected
+alt numberOfRowsAffected == 0
+    dao-->ctrl:12.1.Return false
+    ctrl-->view:12.1.1.Return failed message
+    view-->act:12.1.2.Display the message
+else numberOfRowsAffected > 0
+    dao-->ctrl--:12.2.Return true
+    ctrl-->view--:12.2.1.Return successful message
+    view-->act--:12.2.2.Display the message
+end
+
+@enduml

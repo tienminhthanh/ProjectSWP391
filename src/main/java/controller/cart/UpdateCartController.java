@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import model.CartItem;
-import model.product_related.Product;
+import model.Product;
 
 /**
  *

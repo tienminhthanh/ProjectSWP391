@@ -7,7 +7,9 @@ package dao.interfaces;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import model.product_related.Product;
+import model.ImportItem;
+import model.Product;
+import model.ProductSupplier;
 import model.interfaces.IProductClassification;
 
 /**
@@ -33,4 +35,6 @@ public interface IGeneralProductDAO {
     int countProductListForManagement(String query, String type) throws SQLException;
 
     boolean changeProductStatus(int productID, boolean newStatus) throws SQLException;
+
+    
 }

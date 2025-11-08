@@ -21,10 +21,10 @@ import model.Account;
 import model.CartItem;
 import model.Notification;
 import model.Voucher;
-import model.product_related.Genre;
-import model.product_related.NonEntityClassification;
-import model.product_related.Product;
-import model.product_related.Series;
+import model.Genre;
+import model.NonEntityClassification;
+import model.Product;
+import model.Series;
 import model.interfaces.IProductClassification;
 
 /**

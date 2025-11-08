@@ -1,0 +1,114 @@
+@startuml
+<style>
+    sequenceDiagram{
+        actor{
+            BackgroundColor white
+            LineThickness 1.0
+        }
+        participant{
+            BackgroundColor white
+            RoundCorner 0
+        }
+        database{
+            BackgroundColor white
+        }
+        groupHeader{
+            BackgroundColor white
+        }
+        referenceHeader{
+            BackgroundColor white
+        }
+        reference{
+            BackgroundColor white
+        }
+    }
+</style>
+
+hide footbox
+
+mainframe View Book Details (Apply to Admin as well)
+
+actor Staff as act
+
+participant "<u>:ProductDetailsManagementView" as view
+participant "<u>:ManageProductDetailsController" as ctrl
+participant "<u>:ProductFactory" as fac
+participant "<u>:BookProvider" as prv
+participant "<u>:BookDAO" as dao
+participant "<u>:Book" as pro
+participant "<u>:CreatorDAO" as credao
+participant "<u>:GenreDAO" as gnrdao
+participant "<u>:OrderProductDAO" as opdao
+participant "<u>:EventDAO" as edao
+participant "<u>:DBContext" as context
+
+database Database as db
+
+activate act
+act -> view++:1.Select a book
+view -> ctrl++:2.doGet()
+ctrl->fac++:3.getProduct()
+fac->prv++:4.findProduct()
+prv -> dao++:5.getProductById()
+dao -> context++:6.exeQuery()
+context -> db++:7.SELECT a book\nbased on bookID
+db -->context--: 8 Return ResultSet
+context-->dao--:9.Return ResultSet
+alt ResultSet is not empty
+    dao -> pro++:9.1.new Book()
+    pro --> dao--:9.1.1.Return book object
+    dao-->prv:9.1.2.Return book object
+    prv -> credao++:9.1.3.getExtraAttributesByProductID()
+    ref over credao, context, db
+        9.1.4.Get Creators By Product ID
+    end ref
+
+   
+    credao-->prv--:9.1.5.Return List<Creator>
+    
+
+    prv->gnrdao++:9.1.6.getExtraAttributesByProductID()
+    ref over gnrdao, context, db
+        9.1.7.Get Genre By Book ID
+    end ref
+
+    gnrdao-->prv--:9.1.8.Return List<Genre>
+
+    prv->opdao++:9.1.9.getExtraAttributesByProductID()
+    ref over opdao, context, db
+        9.1.10.Get OrderProducts By Product ID
+    end ref
+    opdao-->prv--:9.1.11.Return List<OrderProduct>
+
+    prv->prv++:9.1.12.Set extra attributes to book object
+    prv--
+    prv --> fac:9.1.13.Return book object
+    fac --> ctrl:9.1.14.Return book object
+    ctrl->ctrl++:9.1.15.getReviewMap()
+    ctrl--
+    ctrl->edao++:9.1.16.getListActiveEvents()
+    ref over edao, context, db
+        9.1.17.Get List Active Events
+    end ref
+    edao-->ctrl:9.1.18.Return List<Event>
+    ctrl->edao:9.1.19.getEventByProductID()
+    ref over edao, context, db
+        9.1.20.Get Event By Product ID
+    end ref
+    edao-->ctrl--:9.1.21.Return Event object\nor null
+    ctrl --> view:9.1.22.Return book object,\nreviewMap, event data
+    alt actor is Admin
+        view --> act:9.1.22.1.Display book details,\nbook reviews and assignable events
+    else actor is Staff
+        view --> act:9.1.22.2.Display book details,\nbook reviews
+    end
+else ResultSet is empty
+    dao --> prv--: 9.2.Return null
+    prv --> fac--: 9.2.1.Return null
+    fac --> ctrl--: 9.2.2.Return null
+    ctrl --> view--: 9.2.3.Return failed message
+    view --> act--:9.2.4.Display the message    
+end
+
+deactivate act
+@enduml

@@ -1,0 +1,74 @@
+@startuml
+<style>
+     sequenceDiagram {
+        actor { BackgroundColor white; LineThickness 1.0 }
+        participant { BackgroundColor white; RoundCorner 0 }
+        database { BackgroundColor white }
+    }
+</style>
+
+hide footbox
+
+mainframe View Merchandise Details (Apply to Customer as well)
+
+actor Guest as act
+
+participant "<u>:ProductDetailsView" as view
+participant "<u>:ViewProductDetailsController" as ctrl
+participant "<u>:ProductFactory" as fac
+participant "<u>:MerchProvider" as prv
+participant "<u>:MerchDAO" as dao
+participant "<u>:Merchandise" as pro
+participant "<u>:CreatorDAO" as credao
+participant "<u>:OrderProductDAO" as opdao
+participant "<u>:DBContext" as context
+
+database Database as db
+
+activate act
+act -> view++:1.Select a merchandise
+view -> ctrl++:2.doGet()
+ctrl->fac++:3.getProduct()
+fac->prv++:4.findProduct()
+prv -> dao++:5.getProductById()
+dao -> context++:6.exeQuery()
+context -> db++:7.SELECT a merchandise\nbased on merchandiseID
+db -->context--: 8 Return ResultSet
+context-->dao--:9.Return ResultSet
+alt ResultSet is not empty
+    dao -> pro++:9.1.new Merchandise()
+    pro --> dao--:9.1.1.Return merchandise object
+    dao-->prv:9.1.2.Return merchandise object
+    prv -> credao++:9.1.3.getExtraAttributesByProductID()
+    ref over credao, context, db
+        9.1.4.Get Creators By Product ID
+    end ref
+
+   
+    credao-->prv--:9.1.5.Return List<Creator>
+    
+
+    prv->opdao++:9.1.6.getExtraAttributesByProductID()
+    ref over opdao, context, db
+        9.1.7.Get OrderProducts By Product ID
+    end ref
+    opdao-->prv--:9.1.8.Return List<OrderProduct>
+
+    prv->prv++:9.1.9.Set extra attributes to merchandise object
+    prv--
+    prv --> fac:9.1.10.Return merchandise object
+    fac --> ctrl:9.1.11.Return merchandise object
+    ctrl->ctrl++:9.1.12.getReviewMap()
+    ctrl--
+    ctrl --> view:9.1.13.Return merchandise object\nand reviewMap
+    view --> act:9.1.14.Display merchandise details\nand merchandise reviews
+else ResultSet is empty
+    dao --> prv--: 9.2.Return null
+    prv --> fac--: 9.2.1.Return null
+    fac --> ctrl--: 9.2.2.Return null
+    ctrl --> view--: 9.2.3.Return failed message
+    view --> act--:9.2.4.Display the message    
+end
+
+deactivate act
+@enduml

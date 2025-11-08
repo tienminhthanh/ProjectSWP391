@@ -4,6 +4,8 @@
  */
 package controller.product;
 
+import dao.BookDAO;
+import dao.MerchDAO;
 import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,17 +29,19 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Account;
-import model.product_related.Book;
-import model.product_related.Brand;
-import model.product_related.Category;
-import model.product_related.Creator;
-import model.product_related.Genre;
-import model.product_related.Merchandise;
-import model.product_related.OGCharacter;
-import model.product_related.Product;
-import model.product_related.Publisher;
-import model.product_related.Series;
-import service.factory.ProductDetailsFactory;
+import model.Book;
+import model.Brand;
+import model.Category;
+import model.Creator;
+import model.Genre;
+import model.Merchandise;
+import model.OGCharacter;
+import model.Product;
+import model.Publisher;
+import model.Series;
+import dao.factory_product.ProductFactory;
+import dao.interfaces.ISpecificProductDAO;
+import java.util.AbstractList;
 import utils.LoggingConfig;
 
 /**
@@ -49,7 +53,8 @@ public class UpdateProductController extends HttpServlet {
 
     private static final Logger LOGGER = LoggingConfig.getLogger(UpdateProductController.class);
     private static final boolean IS_MANAGEMENT = true;
-    private final ProductDAO productDAO = ProductDAO.getInstance();
+//    private final ProductDAO productDAO = ProductDAO.getInstance();
+    private ISpecificProductDAO productDAO;
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -87,7 +92,7 @@ public class UpdateProductController extends HttpServlet {
         String type = request.getParameter("type");
         try {
             int id = Integer.parseInt(productID);
-            Product requestedProduct = ProductDetailsFactory.getProduct(type, id, IS_MANAGEMENT);
+            Product requestedProduct = ProductFactory.getProduct(type, id, IS_MANAGEMENT);
             if (requestedProduct == null) {
                 request.setAttribute("message", "Cannot retrieve information of productID=" + id);
                 request.getRequestDispatcher("manageProductList").forward(request, response);
@@ -127,8 +132,6 @@ public class UpdateProductController extends HttpServlet {
 
         Map<String, String[]> paramMap = request.getParameterMap() != null ? request.getParameterMap() : new HashMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<Object> dataList = new ArrayList<>();
-        List<Object> tempObjects = new ArrayList<>();
         int associatedCounter = 0;
 
         Account currentAccount = (Account) (request.getSession().getAttribute("account"));
@@ -160,45 +163,38 @@ public class UpdateProductController extends HttpServlet {
             Set<String> creIDSet = associatedCreatorIDs != null
                     ? new HashSet<>(Arrays.asList(associatedCreatorIDs))
                     : new HashSet<>();
-            String[] creatorNames = paramMap.get("creatorName");
-            String[] creatorRoles = paramMap.get("creatorRole");
 
-            for (int i = 0; i < creatorNames.length; i++) {
-                //Skip if name is empty
-                if (creatorNames[i].trim().isEmpty()) {
-                    continue;
+            String[] creators = paramMap.get("creator");
+            creators = creators != null ? creators : new String[0];
+            List<Creator> creatorList = new ArrayList<>();
+            if (creators.length > 0) {
+                for (String crtIDStr : creators) {
+                    int creatorID = Integer.parseInt(crtIDStr);
+                    Creator creator = new Creator().setCreatorID(creatorID).setCreatorName("");
+                    if (creIDSet.contains(String.valueOf(creatorID))) {
+                        //Mark if associated
+                        associatedCounter++;
+                        creator.setCreatorName("associated");
+                    }
+
+                    creatorList.add(creator);
                 }
 
-                Creator creator = new Creator();
-                int creatorID = productDAO.getCreatorIDByNameAndRole(creatorNames[i], creatorRoles[i]);
+                associatedCounter = 0;
 
-                if (creatorID == 0) {
-                    //New creator -> add new + associate
-                    creator.setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]);
-                } else if (creIDSet.contains(String.valueOf(creatorID))) {
-                    //Existing creator that already associated -> mark them
-                    associatedCounter++;
-                    creator.setCreatorID(creatorID).setCreatorName(creatorNames[i] + "(associated)").setCreatorRole(creatorRoles[i]);
-                } else {
-                    //Existing creator that not associated yet-> associate
-                    creator.setCreatorID(creatorID).setCreatorName(creatorNames[i]).setCreatorRole(creatorRoles[i]);
-                }
+            } else {
+                //Delete all
 
-                tempObjects.add(creator);
-
-            }
-            //Only add if there are changes
-            if (associatedCounter < creIDSet.size() || tempObjects.size() != creIDSet.size()) {
-                dataList.addAll(tempObjects);
+                creatorList.add(new Creator().setCreatorID(0).setCreatorName("deleteAll"));
             }
 
-            //Reset after done with an entity
-            tempObjects.clear();
-            associatedCounter = 0;
+            updatedProduct.setCreatorList(creatorList);
 
             //Type-specific atributes
             if (updatedProduct instanceof Book) {
+                productDAO = BookDAO.getInstance();
                 Book updatedBook = (Book) updatedProduct;
+
                 updatedBook.setDuration(paramMap.get("duration")[0]);
 
                 String[] associatedGenreIDs = paramMap.get("associatedGenreID");
@@ -206,6 +202,7 @@ public class UpdateProductController extends HttpServlet {
                         ? new HashSet<>(Arrays.asList(associatedGenreIDs))
                         : new HashSet<>();
                 String[] genres = paramMap.get("genre");
+                List<Genre> genreList = new ArrayList<>();
                 genres = genres != null ? genres : new String[0];
                 if (genres.length > 0) {
                     for (String genIdStr : genres) {
@@ -214,36 +211,23 @@ public class UpdateProductController extends HttpServlet {
                         if (genIDSet.contains(String.valueOf(genreID))) {
                             //Mark if associated
                             associatedCounter++;
-                            genre.setGenreName("(associated)");
+                            genre.setGenreName("associated");
                         }
-                        tempObjects.add(genre);
+
+                        genreList.add(genre);
                     }
 
-                    //Only add if there are changes
-                    if (associatedCounter < genIDSet.size() || tempObjects.size() != genIDSet.size()) {
-                        dataList.addAll(tempObjects);
-                    }
+                    associatedCounter = 0;
+
                 } else {
                     //Delete all
-                    dataList.add(new Genre().setGenreID(Integer.parseInt(associatedGenreIDs[0])).setGenreName("(deleteAll)"));
+                    genreList.add(new Genre().setGenreID(0).setGenreName("deleteAll"));
                 }
+                updatedBook.setGenreList(genreList);
 
-                String associatedPublisherID = paramMap.get("associatedPublisherID")[0];
-                associatedPublisherID = associatedPublisherID != null ? associatedPublisherID : "";
-                if (!paramMap.get("publisherName")[0].trim().isEmpty()) {
+                updatedBook.setPublisher(new Publisher().setPublisherID(Integer.parseInt(paramMap.get("publisher")[0])));
 
-                    Publisher publisher = new Publisher().setPublisherName(paramMap.get("publisherName")[0]);
-                    int publisherID = productDAO.getPublisherIDByName(paramMap.get("publisherName")[0]);
-
-                    if (publisherID > 0) {
-                        //Set if exist
-                        publisher.setPublisherID(publisherID).setPublisherName(paramMap.get("publisherName")[0]);
-                    }
-
-                    dataList.add(publisher);
-                }
-
-                if (productDAO.updateProducts(updatedBook, dataList.toArray())) {
+                if (productDAO.updateProduct(updatedBook)) {
                     LOGGER.log(Level.INFO, "The Book has been updated successfully!");
                     request.setAttribute("message", "The Book has been updated successfully!");
                 } else {
@@ -252,6 +236,7 @@ public class UpdateProductController extends HttpServlet {
                 }
 
             } else if (updatedProduct instanceof Merchandise) {
+                productDAO = MerchDAO.getInstance();
                 Merchandise updatedMerch = (Merchandise) updatedProduct;
                 //set String attributes
                 updatedMerch.setScaleLevel(paramMap.get("scaleLevel")[0])
@@ -259,45 +244,11 @@ public class UpdateProductController extends HttpServlet {
                         .setSize(paramMap.get("size")[0]);
 
                 //Handle series,character,brand
-                String associatedMerchAttrID = paramMap.get("associatedSeriesID")[0];
-                associatedMerchAttrID = associatedMerchAttrID != null ? associatedMerchAttrID : "";
-                if (!paramMap.get("seriesName")[0].trim().isEmpty()) {
-                    Series series = new Series().setSeriesName(paramMap.get("seriesName")[0]);
-                    int id = productDAO.getSeriesIDByName(paramMap.get("seriesName")[0]);
+                updatedMerch.setSeries(new Series().setSeriesID(Integer.parseInt(paramMap.get("series")[0])));
+                updatedMerch.setCharacter(new OGCharacter().setCharacterID(Integer.parseInt(paramMap.get("character")[0])));
+                updatedMerch.setBrand(new Brand().setBrandID(Integer.parseInt(paramMap.get("brand")[0])));
 
-                    if (id > 0) {
-                        series.setSeriesID(id);
-                    }
-
-                    dataList.add(series);
-                }
-
-                associatedMerchAttrID = paramMap.get("associatedCharacterID")[0];
-                associatedMerchAttrID = associatedMerchAttrID != null ? associatedMerchAttrID : "";
-                if (!paramMap.get("characterName")[0].trim().isEmpty()) {
-                    OGCharacter character = new OGCharacter().setCharacterName(paramMap.get("characterName")[0]);
-                    int id = productDAO.getCharacterIDByName(paramMap.get("characterName")[0]);
-
-                    if (id > 0) {
-                        character.setCharacterID(id);
-                    }
-
-                    dataList.add(character);
-                }
-
-                associatedMerchAttrID = paramMap.get("associatedBrandID")[0];
-                associatedMerchAttrID = associatedMerchAttrID != null ? associatedMerchAttrID : "";
-                if (!paramMap.get("brandName")[0].trim().isEmpty()) {
-                    Brand brand = new Brand().setBrandName(paramMap.get("brandName")[0]);
-                    int id = productDAO.getBrandIDByName(paramMap.get("brandName")[0]);
-
-                    if (id > 0) {
-                        brand.setBrandID(id);
-                    }
-                    dataList.add(brand);
-                }
-
-                if (productDAO.updateProducts(updatedMerch, dataList.toArray())) {
+                if (productDAO.updateProduct(updatedMerch)) {
                     LOGGER.log(Level.INFO, "The Merch has been updated successfully!");
                     request.setAttribute("message", "The Merch has been updated successfully!");
                 } else {
@@ -306,12 +257,6 @@ public class UpdateProductController extends HttpServlet {
                 }
             }
 
-            //Ensure application scope attributes are up to date
-//            getServletContext().setAttribute("creators", productDAO.getAllCreators());
-//            getServletContext().setAttribute("publishers", productDAO.getAllPublishers());
-//            getServletContext().setAttribute("brands", productDAO.getAllBrands());
-//            getServletContext().setAttribute("series", productDAO.getAllSeries());
-//            getServletContext().setAttribute("characters", productDAO.getAllCharacters());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.toString(), e);
 

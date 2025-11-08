@@ -4,7 +4,7 @@
  */
 package controller.product;
 
-import service.factory.ProductDetailsFactory;
+import dao.factory_product.ProductFactory;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +20,7 @@ import java.util.Map;
 import model.Account;
 import model.Customer;
 import model.OrderProduct;
-import model.product_related.Product;
+import model.Product;
 import utils.Utility;
 
 /**
@@ -80,7 +80,7 @@ public class ViewProductDetailsController extends HttpServlet {
         try {
             int id = Integer.parseInt(productID);
 
-            Product requestedProduct = ProductDetailsFactory.getProduct(type, id, IS_MANGEMENT);
+            Product requestedProduct = ProductFactory.getProduct(type, id, IS_MANGEMENT);
             if (requestedProduct == null) {
                 request.setAttribute("message", "The product is not available right now!");
             } else {
