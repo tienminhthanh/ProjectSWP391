@@ -6,7 +6,6 @@ package controller.order;
 
 import dao.AccountDAO;
 import dao.OrderDAO;
-import dao.ProductDAO;
 import dao.VoucherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,9 +34,7 @@ import model.Voucher;
  */
 @WebServlet(name = "OrderDetailController", urlPatterns = {"/OrderDetailController"})
 public class OrderDetailController extends HttpServlet {
-private final OrderDAO orderDAO = OrderDAO.getInstance();
-private final AccountDAO accountDAO = AccountDAO.getInstance();
-private final VoucherDAO vDao = VoucherDAO.getInstance(); 
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -76,8 +73,11 @@ private final VoucherDAO vDao = VoucherDAO.getInstance();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        OrderDAO orderDAO = new OrderDAO();
         HttpSession session = request.getSession();
+        AccountDAO accountDAO = new AccountDAO();
         Account account = (Account) session.getAttribute("account");
+        VoucherDAO voucherDao = new VoucherDAO();
         List<DeliveryAddress> listAddress = new ArrayList<>();
 
         Voucher voucher = new Voucher();
@@ -94,7 +94,7 @@ private final VoucherDAO vDao = VoucherDAO.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, deliveryTimeInDays);
             Date expectedDeliveryDate = new Date(calendar.getTimeInMillis());
             orderInfo.setExpectedDeliveryDate(expectedDeliveryDate);
-            voucher = vDao.getVoucherByID(orderInfo.getVoucherID());
+            voucher = voucherDao.getVoucherByID(orderInfo.getVoucherID());
             double valueOfVoucher = 0;
             if (voucher != null) {
                 if (voucher.getVoucherType().equals("FIXED_AMOUNT")) {
@@ -141,24 +141,25 @@ private final VoucherDAO vDao = VoucherDAO.getInstance();
         int orderID = Integer.parseInt(request.getParameter("orderID"));
         String status = "completed";
         String action = request.getParameter("action");
+        OrderDAO orderDao = new OrderDAO();
 
         try {
             if (null != action) {
                 switch (action) {
                     case "confirm":
-                        orderDAO.updateOrderstatus(orderID, status);
+                        orderDao.updateOrderstatus(orderID, status);
                         break;
-                    case "rate": {
+                    case "rateAndReview": {
                         int productID = Integer.parseInt(request.getParameter("productID"));
                         int rate = Integer.parseInt(request.getParameter("rating"));
-                        orderDAO.updateRatingForProduct(orderID, productID, rate);
+                        orderDao.updateRatingForProduct(orderID, productID, rate);
+                        String reviewContent = request.getParameter("reviewContent");
+                        orderDao.updateCommentForProduct(orderID, productID, reviewContent);
                         break;
+                      
                     }
                     case "review": {
-                        int productID = Integer.parseInt(request.getParameter("productID"));
-                        String reviewContent = request.getParameter("reviewContent");
-                        orderDAO.updateCommentForProduct(orderID, productID, reviewContent);
-                        break;
+                        
                     }
                     default:
                         break;

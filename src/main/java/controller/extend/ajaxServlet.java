@@ -25,8 +25,6 @@ import model.OrderProduct;
 @WebServlet(name = "ajaxServlet", urlPatterns = {"/ajaxServlet"})
 
 public class ajaxServlet extends HttpServlet {
-    private final OrderDAO orderDAO = OrderDAO.getInstance();
-        private final VoucherDAO vDao = VoucherDAO.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -48,11 +46,13 @@ public class ajaxServlet extends HttpServlet {
         }
 
         double orderTotal = Double.parseDouble(orderTotalStr);
+        OrderDAO orderDAO = new OrderDAO();
+        VoucherDAO voucherDAO = new VoucherDAO();
 
         Integer voucherID = null;
         if (voucherIDParam != null && !voucherIDParam.trim().isEmpty()) {
             int tempVoucherID = Integer.parseInt(voucherIDParam);
-            Voucher voucher = vDao.getVoucherByID(tempVoucherID);
+            Voucher voucher = voucherDAO.getVoucherByID(tempVoucherID);
             if (voucher != null) {
                 voucherID = voucher.getVoucherID();
             }
@@ -102,6 +102,7 @@ public class ajaxServlet extends HttpServlet {
         String vnp_TxnRef = newTxnRef;
         String vnp_IpAddr = Config.getIpAddress(req);
         String vnp_TmnCode = Config.vnp_TmnCode;
+        System.out.println("ma key:"+vnp_TmnCode);
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
@@ -147,6 +148,8 @@ public class ajaxServlet extends HttpServlet {
         }
 
         String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hashData.toString());
+        System.out.println("ma key:"+Config.secretKey);
+         System.out.println("ma key:"+vnp_SecureHash);
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
         String paymentUrl = Config.vnp_PayUrl + "?" + query;
         resp.sendRedirect(paymentUrl);
