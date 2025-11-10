@@ -297,7 +297,7 @@
                                         <c:if test="${ item.rating eq 0 }">
 
                                             <button type="submit" id="rateButton_${item.product.productID}" 
-                                                    onclick="openRatingPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
+                                                    onclick="openRatingPopup(`${item.product.productID}`, `${orderInfo.orderID}`, `${item.product.productName}`, `${item.product.imageURL}`)"
                                                     class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4">
                                                 Rate
                                             </button>
@@ -306,7 +306,7 @@
                                     <c:if test="${ orderInfo.orderStatus eq 'completed' and (item.comment eq null or item.comment eq '') }">      
                                         <button type="button" 
                                                 id="reviewButton_${item.product.productID}"
-                                                onclick="openReviewPopup('${item.product.productID}', '${orderInfo.orderID}', '${item.product.productName}', '${item.product.imageURL}')"
+                                                onclick="openReviewPopup(`${item.product.productID}`, `${orderInfo.orderID}`, `${item.product.productName}`, `${item.product.imageURL}`)"
                                                 class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 mt-2">
                                             Review
                                         </button>

@@ -52,7 +52,7 @@ public class CartItemDAO {
         }
         return null;
     }
-
+    
     public List<CartItem> getCartItemsByCustomer(int customerID) throws SQLException {
         List<CartItem> cartItems = new ArrayList<>();
         String sql = "SELECT * FROM CartItem join Product on CartItem.productID=Product.productID WHERE customerID = ?";
