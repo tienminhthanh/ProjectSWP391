@@ -56,7 +56,7 @@
                 </a>
 
                 <!--Cart button with unique item count-->
-                <a href="viewCart?customerID=${sessionScope.account.accountID}" class="relative">
+                <a href="cart?customerID=${sessionScope.account.accountID}" class="relative">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <c:if test="${not empty sessionScope.cartItems}">
                         <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${fn:length(sessionScope.cartItems)}</span>

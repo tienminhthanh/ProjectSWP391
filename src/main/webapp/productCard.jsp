@@ -103,7 +103,7 @@
         </c:if>
     </c:forEach>
     <!-- Add to Cart Button (Hidden if Out of Stock) -->
-    <form action="addToCart" method="post" onsubmit="return checkStockCard(${cartQuantity}, ${currentProduct.stockCount}, event)">
+    <form action="cart" method="post" onsubmit="return checkStockCard(${cartQuantity}, ${currentProduct.stockCount}, event)">
         <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
         <input type="hidden" name="productID" value="${currentProduct.productID}">
         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
@@ -111,7 +111,7 @@
         <input type="hidden" name="priceWithQuantity"/>
         <c:if test="${currentProduct.stockCount gt 0 and currentProduct.specialFilter ne 'upcoming' 
                       && (pageContext.request.servletPath eq '/home.jsp' || pageContext.request.servletPath eq '/productCatalog.jsp' || pageContext.request.servletPath eq '/eventDetailsCus.jsp')}">
-              <button ${empty sessionScope.account || sessionScope.account.getRole() ne 'customer' ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
+              <button name="action" value="add" ${empty sessionScope.account || sessionScope.account.getRole() ne 'customer' ? 'onclick=openLoginPopup()' : '' } type="submit" class="add-to-cart"><i class="fa-solid fa-cart-plus"></i></button>
             </c:if>
     </form>
 

@@ -116,7 +116,8 @@
                                 </div>
                                 <p><fmt:formatNumber value="${item.priceWithQuantity}" type="number" groupingUsed="true"/> đ</p>
                                 <!-- Form cập nhật CartItem -->
-                                <form action="updateCart" method="post" class="ml-4">
+                                <form action="cart" method="post" class="ml-4">
+                                    <input type="hidden" name="action" value="update" />
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
@@ -128,11 +129,10 @@
                                     </button>
                                 </form>
                                 <!-- Form xóa CartItem -->
-                                <form action="deleteCart" method="post" class="ml-4">
+                                <form action="cart" method="post" class="ml-4">
                                     <input type="hidden" name="itemID" value="${item.itemID}" />
                                     <input type="hidden" name="customerID" value="${item.customerID}" />
-                                    <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
-                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded">
+                                    <button type="submit" name="action" value="delete" class="bg-red-500 text-white px-3 py-1 rounded">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>

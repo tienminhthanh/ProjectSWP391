@@ -212,13 +212,13 @@
                                                         </c:forEach>
 
                                                         <!-- Add to Cart form with stock check -->
-                                                        <form action="addToCart" method="post" onsubmit="return checkStock(${cartQuantity}, ${product.stockCount}, event)">
+                                                        <form action="cart" method="post" onsubmit="return checkStock(${cartQuantity}, ${product.stockCount}, event)">
                                                             <input type="hidden" name="customerID" value="${sessionScope.account.accountID}">
                                                             <input type="hidden" name="productID" value="${product.productID}"/>
                                                             <input type="hidden" name="priceWithQuantity"/>
                                                             <input type="hidden" name="currentURL" class="currentURL" value="${requestScope.currentURL}"/>
                                                             <input type="hidden" name="quantity" class="quantity"/>
-                                                            <button onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
+                                                            <button name="action" value="add" onclick="openLoginPopup()" class="add-to-cart" type="submit">Add to Cart</button>
                                                         </form>
                                                         <form action="OrderController" method="get">
                                                             <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->

@@ -70,13 +70,13 @@
                         </button>
                     </form>
 
-                    <form action="addToCart" method="post">
+                    <form action="cart" method="post">
                         <input type="hidden" name="customerID" value="${sessionScope.account.accountID}"> <!-- Assuming account has customerID -->
                         <input type="hidden" name="productID" value="${currentProduct.productID}">
                         <input type="hidden" name="currentURL" value="${requestScope.currentURL}">
                         <input type="hidden" name="quantity" value="1"> <!-- Default quantity of 1 -->
                         <input type="hidden" name="priceWithQuantity" value="${currentProduct.discountPercentage > 0 ? currentProduct.price * (100-currentProduct.discountPercentage)/100 : currentProduct.price}">
-                        <button ${empty sessionScope.account || sessionScope.account.getRole() ne 'customer' ? 'onclick=openLoginPopup()' : '' } type="submit" class="a-cart-btn">
+                        <button name="action" value="add" ${empty sessionScope.account || sessionScope.account.getRole() ne 'customer' ? 'onclick=openLoginPopup()' : '' } type="submit" class="a-cart-btn">
                             <i class="fa-solid fa-cart-plus"></i>
                             <span class="a-cart-btn-txt">Cart</span>
                         </button>
